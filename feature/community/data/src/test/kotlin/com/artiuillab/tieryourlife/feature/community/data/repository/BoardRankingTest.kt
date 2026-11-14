@@ -1,5 +1,8 @@
 package com.artiuillab.tieryourlife.feature.community.data.repository
 
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShowRankingRequestDto
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -65,6 +68,34 @@ class BoardRankingTest {
     fun tiersThatNoLongerMatchTheList_cannotGoAsItsRanking() = runBlocking {
         val refusal = runCatching { board.rankingRequest(3, 3, 7, pictures(setOf("mine"))) }.exceptionOrNull()
         assertEquals(PublishError.RankInstead, (refusal as PublishRefused).error)
+    }
+
+    // Mine from the list's page: the list's cards where Mine has them, nothing this reader added is lost.
+    private val fromMine = ShowRankingRequestDto(arrangement = listOf(0, 0, 1), rows = listOf(listOf(1, 0), listOf(2)), tierLabels = listOf("S", "A"), version = 7)
+
+    @Test
+    fun mineFromTheListsPage_takesTheAddedCardsFromTheSavedBoard_inItsTiers() = runBlocking {
+        val request = fromMine.keepingAdded(board, { error("the board is enough") }, pictures(setOf("mine")))
+
+        assertEquals(listOf(listOf(1, 0, 3), listOf(2, 4)), request.rows)
+        assertEquals(listOf(0, 0, 1), request.arrangement)
+        assertEquals(listOf("mine", null), request.addedCards!!.map { it.pictureId })
+    }
+
+    @Test
+    fun mineFromTheListsPage_withoutABoard_sendsBackTheAddedCardsTheRankingHas() = runBlocking {
+        val kept = PublishedItemDto(title = "Mine", pictureId = "kept")
+        val ranking = RankingDto(uid = "me", mine = true, rows = listOf(listOf(0), listOf(1, 2)), allRows = listOf(listOf(0, 3), listOf(1, 2)), addedCards = listOf(kept))
+
+        val request = fromMine.keepingAdded(null, { ranking }, pictures(emptySet()))
+
+        assertEquals(listOf(listOf(1, 0, 3), listOf(2)), request.rows)
+        assertEquals(listOf(kept), request.addedCards)
+    }
+
+    @Test
+    fun mineFromTheListsPage_withNothingAddedAnywhere_goesAsItIs() = runBlocking {
+        assertEquals(fromMine, fromMine.keepingAdded(null, { null }, pictures(emptySet())))
     }
 
     @Test

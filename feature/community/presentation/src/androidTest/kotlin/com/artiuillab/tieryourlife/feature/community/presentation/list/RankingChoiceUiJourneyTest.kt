@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowA
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.cancel
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -76,8 +77,8 @@ class RankingChoiceUiJourneyTest {
             override suspend fun publish(list: com.artiuillab.tieryourlife.feature.tier.domain.model.TierList) =
                 super.publish(list).also { publicCalls++ }
 
-            override suspend fun showMyRankingVersioned(listId: String, arrangement: List<Int?>, rows: List<List<Int>>, tierLabels: List<String>, version: Long?, expectedOwnerUid: String?) =
-                super.showMyRankingVersioned(listId, arrangement, rows, tierLabels, version, expectedOwnerUid).also { publicCalls++ }
+            override suspend fun showMyRankingVersioned(listId: String, arrangement: List<Int?>, rows: List<List<Int>>, tierLabels: List<String>, version: Long?, expectedOwnerUid: String?, board: TierList?) =
+                super.showMyRankingVersioned(listId, arrangement, rows, tierLabels, version, expectedOwnerUid, board).also { publicCalls++ }
 
             override suspend fun open(id: String) = Result.success(
                 PublishedList(

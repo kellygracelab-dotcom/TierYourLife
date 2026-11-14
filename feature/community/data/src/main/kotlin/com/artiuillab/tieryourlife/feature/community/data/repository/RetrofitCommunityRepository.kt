@@ -312,8 +312,10 @@ class RetrofitCommunityRepository @Inject constructor(
         tierLabels: List<String>,
         version: Long?,
         expectedOwnerUid: String?,
+        board: TierList?,
     ): Result<ShownRanking> = try {
         val request = ShowRankingRequestDto(arrangement, rows, tierLabels, version)
+            .keepingAdded(board, { api.myRanking(listId) }, pictures)
         val answer = rankingForOwner(listId, request, expectedOwnerUid, { me }, api)
         Result.success(answer.toShown())
     } catch (e: CancellationException) {

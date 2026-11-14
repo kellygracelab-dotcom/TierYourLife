@@ -35,6 +35,7 @@ internal class RankingPublisher(
     private val visibilityChanged: suspend (Boolean) -> Unit,
     private val shown: (ShownRanking, PublishedList) -> Unit,
     private val tell: suspend (RankingNotice) -> Unit,
+    private val savedBoard: suspend () -> TierList? = { null },
 ) {
     private val epoch = AtomicLong()
     private var identity = identityOf(accounts.current())
@@ -86,7 +87,7 @@ internal class RankingPublisher(
         }
         val result = community.showMyRankingVersioned(
             listId, arrangementOf(answer, lease.mine), rowsOf(answer, lease.mine), tierLabelsOf(answer, lease.mine),
-            answer.summary.updatedAtMillis, expectedOwnerUid = lease.uid,
+            answer.summary.updatedAtMillis, expectedOwnerUid = lease.uid, board = savedBoard(),
         )
         if (!sameSnapshot(lease)) return
         result.fold(

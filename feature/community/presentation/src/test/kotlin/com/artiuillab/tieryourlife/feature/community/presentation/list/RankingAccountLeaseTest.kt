@@ -15,6 +15,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDr
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -141,7 +142,7 @@ private class LeaseFixture(private val holdRead: Boolean = false, private val ho
     }
 
     override suspend fun showMyRankingVersioned(
-        listId: String, arrangement: List<Int?>, rows: List<List<Int>>, tierLabels: List<String>, version: Long?, expectedOwnerUid: String?,
+        listId: String, arrangement: List<Int?>, rows: List<List<Int>>, tierLabels: List<String>, version: Long?, expectedOwnerUid: String?, board: TierList?,
     ) = withContext(NonCancellable) {
         postedOwners += expectedOwnerUid
         postStarted.complete(Unit)
