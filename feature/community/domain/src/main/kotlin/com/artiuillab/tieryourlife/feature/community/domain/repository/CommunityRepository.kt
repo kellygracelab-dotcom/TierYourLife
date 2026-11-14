@@ -129,6 +129,15 @@ interface CommunityRepository {
     /** Readers' own placings of this list's cards, newest first, this reader's ahead of the first page. */
     suspend fun rankings(listId: String, after: String? = null): Result<RankingsPage>
 
+    /**
+     * A saved copy of [listId] as this person's ranking of it, cards they added
+     * included (SPEC list-flow К3). Fails with a
+     * [com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused]
+     * that names why, in the board's words.
+     */
+    suspend fun showBoardInRankings(board: TierList, listId: String, expectedOwnerUid: String): Result<ShownRanking> =
+        Result.failure(UnsupportedOperationException("showBoardInRankings"))
+
     /** Takes this person's ranking of that list down. */
     suspend fun withdrawRanking(listId: String): Result<Unit>
 

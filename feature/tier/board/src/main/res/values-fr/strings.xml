@@ -169,7 +169,7 @@
     <string name="list_settings_moves_to">Passera dans %1$s une fois approuvée</string>
     <string name="list_settings_public_gone">Cette liste n’est plus dans la communauté : elle a été retirée, supprimée ou publiée depuis un autre compte. Activez Publique pour la publier à nouveau.</string>
     <string name="list_settings_public_section_unavailable">La section de cette liste n’accepte plus de listes. Choisissez-en une autre, puis publiez à nouveau.</string>
-    <string name="list_settings_public_rank_instead">Cette liste vient de quelqu’un d’autre et ne peut pas être publiée à part. Votre classement peut figurer dans ses Classements avec les cartes de la liste.</string>
+    <string name="list_settings_public_rank_instead">Cette liste est à quelqu’un d’autre : elle ne peut pas être publiée comme la vôtre. Seul votre classement le peut, dans ses Classements.</string>
     <string name="list_settings_unpublish_failed">Impossible de retirer cette liste ; elle est toujours publique. Réessayez.</string>
     <string name="tier_detail_about_picture">À propos de l’image</string>
     <string name="tier_detail_picture_author">Auteur</string>

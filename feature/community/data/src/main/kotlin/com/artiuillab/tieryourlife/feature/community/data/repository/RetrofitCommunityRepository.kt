@@ -270,6 +270,18 @@ class RetrofitCommunityRepository @Inject constructor(
         RankingsPage(rankings = page.rankings.map { it.toDomain() }, nextCursor = page.nextCursor)
     }
 
+    override suspend fun showBoardInRankings(board: TierList, listId: String, expectedOwnerUid: String): Result<ShownRanking> = try {
+        requirePublicationOwner(expectedOwnerUid, me)
+        val source = api.open(listId)
+        val request = board.rankingRequest(source.items.size, source.tiers.size, board.originVersion ?: source.updatedAt, pictures)
+        Result.success(rankingForOwner(listId, request, expectedOwnerUid, { me }, api).toShown())
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Timber.w(e, "Showing a board in Rankings failed")
+        Result.failure(PublishRefused(e.boardRankingError()))
+    }
+
     override suspend fun withdrawRanking(listId: String): Result<Unit> = attempt("Taking a ranking down") {
         api.deleteMyRanking(listId)
     }
