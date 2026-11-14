@@ -7,10 +7,12 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CachedFeed
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -78,17 +80,18 @@ class FeedLoaderTest {
     }
 
     @Test
-    fun theSamePersonComingBack_keepsWhatIsOnScreen() = runTest {
+    fun theSamePersonComingBack_asksTheServerAgain() = runTest {
         answers += Result.success(page("a"))
         val loader = loader()
         loader.open()
         advanceUntilIdle()
 
+        answers += Result.success(page("b", "a"))
         loader.open()
         advanceUntilIdle()
 
-        assertEquals(listOf("a"), loader.pane.value.lists.map { it.id })
-        assertEquals(1, asked.size)
+        assertEquals(listOf("b", "a"), loader.pane.value.lists.map { it.id })
+        assertEquals(2, asked.size)
     }
 
     // 409 CURSOR_GONE: the last list on the page went; asking from that cursor again is refused again.
@@ -125,21 +128,25 @@ class FeedLoaderTest {
     }
 
     @Test
-    fun aKeptFeedShowsAtOnce_andIsNotAskedForWhileFresh() = runTest {
+    fun aKeptFeedShowsAtOnce_beforeTheServerAnswers() = runTest {
         val cache = FakeCommunityFeedCache(mapOf("explore" to CachedFeed(page("a"), fetchedAtMillis = clock.now - minute)))
-        val loader = loader(cache)
+        val gate = CompletableDeferred<Result<CommunityPage>>()
+        val loader = FeedLoader("explore", backgroundScope, cache, clock) { gate.await() }
 
         loader.open()
-        advanceUntilIdle()
+        runCurrent()
 
         assertEquals(listOf("a"), loader.pane.value.lists.map { it.id })
         assertEquals(FeedPhase.Ready, loader.pane.value.phase)
-        assertTrue(asked.isEmpty())
+        gate.complete(Result.success(page("b", "a")))
+        runCurrent()
+        assertEquals(listOf("b", "a"), loader.pane.value.lists.map { it.id })
     }
 
+    // SPEC list-flow К6: a kept page a minute old is still asked for again, not shown for five minutes.
     @Test
-    fun aKeptFeedOlderThanFiveMinutes_isRefreshedInPlaceWhenNotScrolled() = runTest {
-        val cache = FakeCommunityFeedCache(mapOf("explore" to CachedFeed(page("a"), fetchedAtMillis = clock.now - 6 * minute)))
+    fun aKeptFeedOnlyAMinuteOld_isStillRefreshedInPlaceWhenNotScrolled() = runTest {
+        val cache = FakeCommunityFeedCache(mapOf("explore" to CachedFeed(page("a"), fetchedAtMillis = clock.now - minute)))
         answers += Result.success(page("b", "a"))
         val loader = loader(cache)
 
