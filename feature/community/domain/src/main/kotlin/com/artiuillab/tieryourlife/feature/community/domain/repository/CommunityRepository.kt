@@ -160,7 +160,12 @@ interface CommunityRepository {
     /** As the server has it, not as this phone remembers: a list survives the phone that published it. */
     suspend fun myPublished(): Result<List<PublishedListSummary>>
 
-    /** Version-bound positional write; old test/alternative implementations retain their original method. */
+    /**
+     * Version-bound positional write; old test/alternative implementations
+     * retain their original method. The cards this reader added go with it:
+     * from [board], their saved copy of the list, or else the ones their
+     * ranking already has (SPEC list-flow К3).
+     */
     suspend fun showMyRankingVersioned(
         listId: String,
         arrangement: List<Int?>,
@@ -168,6 +173,7 @@ interface CommunityRepository {
         tierLabels: List<String>,
         version: Long?,
         expectedOwnerUid: String? = null,
+        board: TierList? = null,
     ): Result<ShownRanking> = showMyRanking(listId, arrangement, rows, tierLabels)
 
     /** A read-only preflight, including guests, without uploading pictures or publishing. */
