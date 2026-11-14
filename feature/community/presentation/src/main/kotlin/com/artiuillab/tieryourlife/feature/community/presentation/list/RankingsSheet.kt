@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -56,6 +58,8 @@ internal fun RankingsSheet(
     onLoadMore: () -> Unit,
     onWithdraw: () -> Unit,
     onLike: (Ranking) -> Unit = {},
+    /** What the page has to say while the sheet covers it, a guest's Like answered first of all. */
+    snackbars: SnackbarHostState? = null,
 ) {
     AdaptiveSheet(onDismiss = onDismiss, modifier = Modifier.testTag(CommunityListTestTags.RANKINGS_SHEET)) {
         Text(
@@ -115,6 +119,7 @@ internal fun RankingsSheet(
                 }
             }
         }
+        snackbars?.let { SnackbarHost(it) }
     }
 }
 

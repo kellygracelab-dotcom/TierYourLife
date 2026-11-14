@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityReposit
 import com.artiuillab.tieryourlife.feature.community.domain.FakeOpenedLists
 import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslations
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.RankingsPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
@@ -130,15 +131,62 @@ class RankingChoiceJourneyTest {
         placeSeven(vm)
         vm.choices.choose(public = true, languageTag = "")
         until { fixture.boards.saved?.rankingOf != null }
+        // The rankings cannot be read now: the page still knows, and says nothing about the read that failed.
+        fixture.readable = false
 
         val reopened = open(fixture, RankingDrafts.None)
         assertTrue(reopened.loaded().rankingShown)
+        until { fixture.read > 0 && !reopened.loaded().rankingsLoading }
         assertTrue(reopened.loaded().rankings.isEmpty())
 
         reopened.rankings.withdrawMine()
         assertFalse((reopened.state.value as CommunityListUiState.Success).rankingShown)
         until { fixture.boards.saved?.rankingOf == null }
         assertEquals(1, fixture.withdrawn)
+    }
+
+    // QA list-flow Н6: shown from another visit, with no copy here, the page reads the first page as it opens
+    // and its menu says Update rather than Show.
+    @Test fun aRankingShownEarlier_isKnownAsThePageOpens_withoutACopy() = runBlocking {
+        val fixture = ChoiceFixture(signedIn = true)
+        placeSeven(open(fixture))
+        fixture.served = listOf(someone("olena"), Ranking("me", "Me", null, emptyList(), listOf("S"), 1, mine = true))
+
+        val reopened = open(fixture)
+
+        reopened.state.firstWithin { (it as CommunityListUiState.Success).rankingShown }
+        assertEquals(0, fixture.boards.created)
+        assertEquals(0, fixture.shown)
+    }
+
+    // ... and where their own is not among them, Show sends it, and again only replaces it: one row, one copy.
+    @Test fun withoutOneOfTheirOwn_showSendsIt_andShowingAgainReplacesIt() = runBlocking {
+        val fixture = ChoiceFixture(signedIn = true)
+        placeSeven(open(fixture))
+        fixture.served = listOf(someone("olena"))
+        val reopened = open(fixture)
+        reopened.state.firstWithin { (it as CommunityListUiState.Success).rankings.isNotEmpty() && !it.rankingsLoading }
+        assertFalse(reopened.loaded().rankingShown)
+
+        reopened.showMyRanking()
+        until { fixture.shown == 1 && reopened.loaded().rankingShown }
+        reopened.showMyRanking()
+        until { fixture.shown == 2 && !reopened.loaded().sendingRanking }
+
+        assertEquals(1, reopened.loaded().rankings.count { it.mine })
+        assertEquals(1, fixture.boards.created)
+    }
+
+    // A guest or a reader with nothing arranged reads nothing until the sheet opens.
+    @Test fun nothingArranged_readsNoRankingsAsThePageOpens() = runBlocking {
+        val fixture = ChoiceFixture(signedIn = true)
+        fixture.served = listOf(someone("olena"))
+
+        val vm = open(fixture)
+        delay(200)
+
+        assertEquals(0, fixture.read)
+        assertTrue(vm.loaded().rankings.isEmpty())
     }
 
     // The game's result is on the board: the offer comes straight away, however many cards it placed.
@@ -306,6 +354,8 @@ class RankingChoiceJourneyTest {
 
 private fun CommunityListViewModel.loaded() = state.value as CommunityListUiState.Success
 
+private fun someone(uid: String) = Ranking(uid, uid, null, emptyList(), listOf("S"), 1)
+
 private class ChoiceFixture(signedIn: Boolean = false, translations: ListTranslations = ListTranslations(), cover: String? = null) : FakeCommunityRepository() {
     val boards = ChoiceBoards()
     val accounts = FakeAccountRepository().apply { if (signedIn) accounts.value = Account.SignedIn("me@example.com", null, uid = "me") }
@@ -325,16 +375,30 @@ private class ChoiceFixture(signedIn: Boolean = false, translations: ListTransla
 
     @Volatile var shown = 0
 
+    /** The rankings' first page as the server has it; the list counts them. */
+    @Volatile var served: List<Ranking> = emptyList()
+
+    @Volatile var read = 0
+
+    @Volatile var readable = true
+
     @Volatile var withdrawn = 0
 
-    override suspend fun open(publishedId: String) = Result.success(source)
+    override suspend fun open(publishedId: String) = Result.success(source.copy(summary = source.summary.copy(rankingCount = served.size)))
+    override suspend fun rankings(listId: String, after: String?): Result<RankingsPage> {
+        read++
+        return if (readable) Result.success(RankingsPage(served, null)) else Result.failure(IllegalStateException("offline"))
+    }
     override suspend fun withdrawRanking(listId: String): Result<Unit> {
         withdrawn++
         return Result.success(Unit)
     }
     override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, rows: List<List<Int>>, tierLabels: List<String>): Result<ShownRanking> {
         shown++
-        return Result.success(ShownRanking(Ranking("me", "Me", null, arrangement, tierLabels, 123, mine = true, rows = rows), created = true))
+        val mine = Ranking("me", "Me", null, arrangement, tierLabels, 123, mine = true, rows = rows)
+        val created = served.none { it.mine }
+        served = served.filterNot { it.mine } + mine
+        return Result.success(ShownRanking(mine, created = created))
     }
 }
 

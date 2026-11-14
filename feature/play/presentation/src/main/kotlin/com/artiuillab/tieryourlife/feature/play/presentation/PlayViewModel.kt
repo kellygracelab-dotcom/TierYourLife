@@ -297,7 +297,7 @@ class PlayViewModel @Inject constructor(
                 val done = if (step.own) restore(target) else target
                 if (done == null) say(PlayNotice.Failed)
                 _events.send(PlayEvent.Arranged(done ?: target, undone))
-                if (done != null) say(if (undone) PlayNotice.GameUndone(step.duels) else PlayNotice.BoardArranged(step.duels))
+                if (done != null && step.own) say(if (undone) PlayNotice.GameUndone(step.duels) else PlayNotice.BoardArranged(step.duels))
             }
         }
     }
@@ -410,7 +410,8 @@ class PlayViewModel @Inject constructor(
             }
             forget(current)
             _events.send(PlayEvent.Arranged(after))
-            say(PlayNotice.BoardArranged(shown.duels))
+            // Into Mine, the list's page has its own Undo and asks about showing it at once: a snackbar would sit under that.
+            if (into == null) say(PlayNotice.BoardArranged(shown.duels))
         }
     }
 

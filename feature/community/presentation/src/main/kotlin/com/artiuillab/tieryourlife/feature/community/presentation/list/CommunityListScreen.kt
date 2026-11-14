@@ -204,6 +204,7 @@ fun CommunityListScreenContent(
     // A card in the air on Theirs: the strip says what dropping it will do.
     var lifted by remember { mutableStateOf(false) }
     val snackbars = remember { SnackbarHostState() }
+    val sheetSnackbars = remember { SnackbarHostState() }
     val loadedNow = state as? CommunityListUiState.Success
     val copyLink = rememberCopyLink(loadedNow?.listId.orEmpty(), snackbars)
     val onOwnBoard: () -> Unit = {
@@ -350,6 +351,7 @@ fun CommunityListScreenContent(
                     onLoadMore = onLoadMoreRankings,
                     onWithdraw = { removeRankingVisible = true },
                     onLike = onLikeRanking,
+                    snackbars = sheetSnackbars,
                 )
             }
 
@@ -418,6 +420,7 @@ fun CommunityListScreenContent(
         }
         ListSnackbar(
             host = snackbars,
+            sheetHost = { sheetSnackbars.takeIf { rankingsVisible } },
             userMessages = userMessages,
             rankingNotices = rankingNotices,
             listNotices = listNotices,
@@ -512,6 +515,8 @@ private fun ListMenu(
 @Composable
 private fun ListSnackbar(
     host: SnackbarHostState,
+    /** The Rankings sheet's own, while it is up: the page's would be under it. */
+    sheetHost: () -> SnackbarHostState?,
     userMessages: Flow<UserMessage>,
     rankingNotices: Flow<RankingNotice>,
     listNotices: Flow<ListNotice>,
@@ -525,40 +530,42 @@ private fun ListSnackbar(
     val undo by rememberUpdatedState(onUndoStartFromTheirs)
     val leave by rememberUpdatedState(onTakenDown)
     val openBoard by rememberUpdatedState(onOpenBoard)
+    val onTop by rememberUpdatedState(sheetHost)
     LaunchedEffect(userMessages) {
         userMessages.collect {
             val text = if (it == UserMessage.TargetIsStaff) ThemeR.string.snack_target_is_staff else ThemeR.string.snack_action_failed
-            host.showSnackbar(resources.getString(text))
+            (onTop() ?: host).showSnackbar(resources.getString(text))
         }
     }
     LaunchedEffect(rankingNotices) {
         rankingNotices.collect { notice ->
+            val target = onTop() ?: host
             when (notice) {
-                RankingNotice.Shown -> host.showSnackbar(resources.getString(R.string.community_ranking_shown))
-                RankingNotice.ListChanged -> host.showSnackbar(resources.getString(R.string.community_ranking_list_changed))
-                RankingNotice.Banned -> host.showSnackbar(resources.getString(R.string.community_ranking_banned))
-                RankingNotice.OwnList -> host.showSnackbar(resources.getString(R.string.community_ranking_own_list))
-                RankingNotice.ListGone -> host.showSnackbar(resources.getString(R.string.community_ranking_list_gone))
-                RankingNotice.BadTierNames -> host.showSnackbar(resources.getString(R.string.community_ranking_bad_tier_names))
-                RankingNotice.CardsDontMatch -> host.showSnackbar(resources.getString(R.string.community_ranking_cards_dont_match))
-                RankingNotice.NotAccepted -> host.showSnackbar(resources.getString(R.string.community_ranking_not_accepted))
-                RankingNotice.TooManyWebPictures -> host.showSnackbar(resources.getString(ThemeR.string.refusal_too_many_web_pictures))
-                RankingNotice.WebPicturesToday -> host.showSnackbar(resources.getString(ThemeR.string.refusal_web_pictures_today))
+                RankingNotice.Shown -> target.showSnackbar(resources.getString(R.string.community_ranking_shown))
+                RankingNotice.ListChanged -> target.showSnackbar(resources.getString(R.string.community_ranking_list_changed))
+                RankingNotice.Banned -> target.showSnackbar(resources.getString(R.string.community_ranking_banned))
+                RankingNotice.OwnList -> target.showSnackbar(resources.getString(R.string.community_ranking_own_list))
+                RankingNotice.ListGone -> target.showSnackbar(resources.getString(R.string.community_ranking_list_gone))
+                RankingNotice.BadTierNames -> target.showSnackbar(resources.getString(R.string.community_ranking_bad_tier_names))
+                RankingNotice.CardsDontMatch -> target.showSnackbar(resources.getString(R.string.community_ranking_cards_dont_match))
+                RankingNotice.NotAccepted -> target.showSnackbar(resources.getString(R.string.community_ranking_not_accepted))
+                RankingNotice.TooManyWebPictures -> target.showSnackbar(resources.getString(ThemeR.string.refusal_too_many_web_pictures))
+                RankingNotice.WebPicturesToday -> target.showSnackbar(resources.getString(ThemeR.string.refusal_web_pictures_today))
                 RankingNotice.SignInFirst -> {
-                    val answer = host.showSnackbar(
+                    val answer = target.showSnackbar(
                         message = resources.getString(R.string.community_sign_in_to_show_ranking),
                         actionLabel = resources.getString(R.string.community_action_sign_in),
                     )
                     if (answer == SnackbarResult.ActionPerformed) signIn()
                 }
                 RankingNotice.SignInToLike -> {
-                    val answer = host.showSnackbar(
+                    val answer = target.showSnackbar(
                         message = resources.getString(R.string.community_sign_in_to_like),
                         actionLabel = resources.getString(R.string.community_action_sign_in),
                     )
                     if (answer == SnackbarResult.ActionPerformed) signIn()
                 }
-                RankingNotice.TooManyLikes -> host.showSnackbar(resources.getString(R.string.community_too_many_likes))
+                RankingNotice.TooManyLikes -> target.showSnackbar(resources.getString(R.string.community_too_many_likes))
             }
         }
     }

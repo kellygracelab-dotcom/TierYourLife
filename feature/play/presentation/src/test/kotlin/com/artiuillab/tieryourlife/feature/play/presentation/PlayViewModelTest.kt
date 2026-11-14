@@ -12,9 +12,11 @@ import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -428,6 +430,8 @@ class PlayViewModelTest {
         assertTrue(arranged.board.tiers.first { it.isPool }.items.isEmpty())
         assertEquals(6, arranged.board.tiers.sumOf { it.items.size })
         assertTrue(repository.moves.isEmpty())
+        // QA list-flow Н4: the page has its own Undo, and its question about showing comes now; no snackbar under it.
+        assertNull(withTimeoutOrNull(500) { viewModel.events.first { it is PlayEvent.Said } })
     }
 
     @Test
