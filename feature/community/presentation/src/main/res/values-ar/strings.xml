@@ -151,7 +151,7 @@
     <string name="moderation_moderators_unavailable">تعذّرت قراءة قائمة المشرفين.</string>
     <string name="community_rankings_title">التصنيفات</string>
     <string name="community_rankings_body">البطاقات نفسها مرتبة على طريقة شخص آخر. اختر صفوف من تريد عرضها.</string>
-    <string name="community_ranking_author">صاحب القائمة</string>
+    <string name="community_ranking_author">المؤلف</string>
     <string name="community_ranking_you">أنت</string>
     <string name="community_ranking_withdraw">سحب</string>
     <string name="community_action_rankings">التصنيفات · %1$d</string>
@@ -294,6 +294,9 @@
     </plurals>
     <string name="community_show_my_ranking">اعرض ترتيبي للآخرين</string>
     <string name="community_sign_in_to_show_ranking">سجّل الدخول لعرض ترتيبك</string>
+    <string name="community_ranking_like">إعجاب</string>
+    <string name="community_sign_in_to_like">سجّل الدخول للإعجاب بالترتيبات</string>
+    <string name="community_too_many_likes">إعجابات كثيرة خلال هذه الساعة. حاول لاحقًا.</string>
     <string name="community_ranking_shown">أصبح ترتيبك ضمن تصنيفات القائمة</string>
     <string name="community_action_sign_in">تسجيل الدخول</string>
     <string name="community_your_list_badge">قائمتك</string>

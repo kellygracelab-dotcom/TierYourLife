@@ -209,7 +209,15 @@ data class RankingDto(
     val mine: Boolean = false,
     /** Empty for a placing kept before its order was. */
     val rows: List<List<Int>> = emptyList(),
+    val isAuthor: Boolean = false,
+    val likedByMe: Boolean = false,
+    /** The reader's own cards, at N+k in [allRows]; absent when they added none. */
+    val addedCards: List<PublishedItemDto> = emptyList(),
+    val allRows: List<List<Int>> = emptyList(),
 )
+
+@Serializable
+data class LikedDto(val likedByMe: Boolean = false)
 
 /**
  * The tiers' cards left to right by item position, and the same as one entry
@@ -234,6 +242,8 @@ data class ShownRankingDto(
     val updatedAtMs: Long = 0,
     val created: Boolean = false,
     val rows: List<List<Int>> = emptyList(),
+    val addedCards: List<PublishedItemDto> = emptyList(),
+    val allRows: List<List<Int>> = emptyList(),
 )
 
 @Serializable

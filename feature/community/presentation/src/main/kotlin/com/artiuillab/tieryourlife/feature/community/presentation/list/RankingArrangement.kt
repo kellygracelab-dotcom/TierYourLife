@@ -8,25 +8,28 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 /**
  * The author's cards where [ranking] put them, under the words it gave the
  * tiers: in its order within each tier when it kept one, in the list's order
- * when it kept only which tier.
+ * when it kept only which tier. Cards the reader added come after the list's
+ * own, where they put them too.
  */
 internal fun placedBy(answer: PublishedList, ranking: Ranking): TierList {
-    val rows = rowsPlaced(answer, ranking.rows) ?: answer.tiers.indices.map { index ->
+    val firstAdded = (answer.items.maxOfOrNull { it.id } ?: -1L) + 1
+    val cards = answer.items + ranking.addedCards.mapIndexed { k, card -> card.copy(id = firstAdded + k) }
+    val rows = rowsPlaced(answer, cards, ranking.allRows.ifEmpty { ranking.rows }) ?: answer.tiers.indices.map { index ->
         answer.items.filterIndexed { at, _ -> ranking.arrangement.getOrNull(at) == index }
     }
     val placed = rows.flatten().mapTo(mutableSetOf()) { it.id }
     val ranked = answer.tiers.mapIndexed { index, tier ->
         tier.copy(label = ranking.tierLabels.getOrNull(index) ?: tier.label, items = rows.getOrNull(index).orEmpty())
     }
-    return TierList(id = 0, title = answer.summary.title, tiers = ranked + pool(answer.items.filterNot { it.id in placed }), authorName = ranking.authorName)
+    return TierList(id = 0, title = answer.summary.title, tiers = ranked + pool(cards.filterNot { it.id in placed }), authorName = ranking.authorName)
 }
 
 /** Each tier's cards from [rows], each card once; null when there are none to go by. */
-private fun rowsPlaced(answer: PublishedList, rows: List<List<Int>>): List<List<TierItem>>? {
+private fun rowsPlaced(answer: PublishedList, cards: List<TierItem>, rows: List<List<Int>>): List<List<TierItem>>? {
     if (rows.isEmpty()) return null
     val seen = mutableSetOf<Int>()
     return answer.tiers.indices.map { index ->
-        rows.getOrNull(index).orEmpty().filter { seen.add(it) }.mapNotNull(answer.items::getOrNull)
+        rows.getOrNull(index).orEmpty().filter { seen.add(it) }.mapNotNull(cards::getOrNull)
     }
 }
 

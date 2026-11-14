@@ -143,7 +143,7 @@
     <string name="moderation_moderators_unavailable">Die Moderatorenliste konnte nicht gelesen werden.</string>
     <string name="community_rankings_title">Ranglisten</string>
     <string name="community_rankings_body">Dieselben Karten, von jemandem anders gesetzt. Wähle, wessen Reihen gezeigt werden.</string>
-    <string name="community_ranking_author">Autor der Liste</string>
+    <string name="community_ranking_author">Autor</string>
     <string name="community_ranking_you">Du</string>
     <string name="community_ranking_withdraw">Zurückziehen</string>
     <string name="community_action_rankings">Ranglisten · %1$d</string>
@@ -270,6 +270,9 @@
     </plurals>
     <string name="community_show_my_ranking">Meine Rangliste anderen zeigen</string>
     <string name="community_sign_in_to_show_ranking">Melde dich an, um deine Rangliste zu zeigen</string>
+    <string name="community_ranking_like">Gefällt mir</string>
+    <string name="community_sign_in_to_like">Melde dich an, um Ranglisten zu liken</string>
+    <string name="community_too_many_likes">Zu viele Likes in dieser Stunde. Versuch es später noch einmal.</string>
     <string name="community_ranking_shown">Deine Rangliste steht jetzt bei den Ranglisten der Liste</string>
     <string name="community_action_sign_in">Anmelden</string>
     <string name="community_your_list_badge">Deine Liste</string>

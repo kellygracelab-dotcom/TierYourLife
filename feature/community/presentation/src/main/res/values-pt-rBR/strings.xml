@@ -145,7 +145,7 @@
     <string name="moderation_moderators_unavailable">Não foi possível ler a lista de moderadores.</string>
     <string name="community_rankings_title">Classificações</string>
     <string name="community_rankings_body">Os mesmos cartões, colocados do jeito de alguém. Escolha de quem mostrar as fileiras.</string>
-    <string name="community_ranking_author">Autor da lista</string>
+    <string name="community_ranking_author">Autor</string>
     <string name="community_ranking_you">Você</string>
     <string name="community_ranking_withdraw">Retirar</string>
     <string name="community_action_rankings">Classificações · %1$d</string>
@@ -276,6 +276,9 @@
     </plurals>
     <string name="community_show_my_ranking">Mostrar meu ranking aos outros</string>
     <string name="community_sign_in_to_show_ranking">Entre para mostrar seu ranking</string>
+    <string name="community_ranking_like">Curtir</string>
+    <string name="community_sign_in_to_like">Entre para curtir rankings</string>
+    <string name="community_too_many_likes">Curtidas demais nesta hora. Tente mais tarde.</string>
     <string name="community_ranking_shown">Seu ranking está entre os rankings da lista</string>
     <string name="community_action_sign_in">Entrar</string>
     <string name="community_your_list_badge">Sua lista</string>

@@ -99,6 +99,8 @@ open class FakeCommunityRepository : CommunityRepository {
 
     override suspend fun withdrawRanking(listId: String): Result<Unit> = Result.success(Unit)
 
+    override suspend fun likeRanking(listId: String, uid: String, like: Boolean): Result<Boolean> = Result.success(like)
+
     override suspend fun showMyRanking(
         listId: String,
         arrangement: List<Int?>,
