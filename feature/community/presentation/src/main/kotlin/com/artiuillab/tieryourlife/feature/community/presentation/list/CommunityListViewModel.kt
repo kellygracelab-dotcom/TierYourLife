@@ -78,6 +78,7 @@ class CommunityListViewModel @Inject constructor(
         visibilityChanged = { progress.publicVisibility(it) },
         accounts = accounts,
         mineReady = { progress.isCurrentOwner },
+        savedBoard = { tiers.getAllTierLists().firstOrNull { it.takenFrom == publishedId } },
     )
 
     /** Told once a ranking was shown, or that it takes signing in. */

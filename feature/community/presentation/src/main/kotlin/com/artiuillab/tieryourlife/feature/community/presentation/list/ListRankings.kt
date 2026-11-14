@@ -12,6 +12,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.presentation.list.components.RankingPublisher
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +40,7 @@ internal class ListRankings(
     private val visibilityChanged: suspend (Boolean) -> Unit = {},
     private val accounts: AccountRepository,
     private val mineReady: () -> Boolean = { true },
+    private val savedBoard: suspend () -> TierList? = { null },
 ) {
     fun returnAllToPool() = resetMine()
 
@@ -68,6 +70,7 @@ internal class ListRankings(
         ready = mineReady, visibilityChanged = visibilityChanged,
         shown = { shown, answer -> state.update { if (it is CommunityListUiState.Success) it.withMine(shown, answer) else it } },
         tell = told::send,
+        savedBoard = savedBoard,
     )
 
     fun opened(answer: PublishedList, fromServer: Boolean, sameBoard: Boolean = false) {
