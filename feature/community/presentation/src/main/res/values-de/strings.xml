@@ -178,7 +178,7 @@
     <string name="search_sections">Rubriken</string>
     <string name="search_lists">Listen</string>
     <string name="section_topics">Themen</string>
-    <string name="section_tier_lists">Tier-Listen</string>
+    <string name="section_tier_lists">Tierlisten</string>
     <string name="section_show_fewer">Weniger anzeigen</string>
     <plurals name="section_show_all_topics">
         <item quantity="one">Alle %1$d Themen anzeigen</item>

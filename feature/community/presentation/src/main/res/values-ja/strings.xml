@@ -176,7 +176,7 @@
     <string name="search_sections">セクション</string>
     <string name="search_lists">リスト</string>
     <string name="section_topics">トピック</string>
-    <string name="section_tier_lists">ティアリスト</string>
+    <string name="section_tier_lists">ティア表</string>
     <string name="section_show_fewer">閉じる</string>
     <plurals name="section_show_all_topics">
         <item quantity="other">%1$d件のトピックをすべて表示</item>
