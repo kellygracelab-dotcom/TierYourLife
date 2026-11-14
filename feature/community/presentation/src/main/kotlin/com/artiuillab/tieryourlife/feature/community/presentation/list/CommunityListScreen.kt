@@ -276,6 +276,8 @@ fun CommunityListScreenContent(
                             actions = TierDetailActions(
                                 onBack = onBack,
                                 onMoveItem = onMoveItem,
+                                // As on the website: one's own cards go on one's own copy, after Save.
+                                onAddClick = null,
                                 onPlay = onPlay.takeUnless { loaded.own || loaded.arriving },
                                 playSaved = playSaved,
                                 onCardLifted = { lifted = it },

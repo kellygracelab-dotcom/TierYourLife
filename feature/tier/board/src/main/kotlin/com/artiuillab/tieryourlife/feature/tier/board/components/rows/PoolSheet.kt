@@ -91,7 +91,7 @@ private val DOCKED_ADD_FIELD_WIDTH = 300.dp
 @Composable
 fun PoolSheet(
     pool: Tier,
-    onAddClick: () -> Unit,
+    onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
@@ -292,7 +292,7 @@ private fun PoolCards(
 /** The phone's strip under the handle: the count, a glimpse while folded, Add. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun StripHead(pool: Tier, expanded: Boolean, readOnly: Boolean, onAddClick: () -> Unit, onGenerateClick: () -> Unit) {
+private fun StripHead(pool: Tier, expanded: Boolean, readOnly: Boolean, onAddClick: (() -> Unit)?, onGenerateClick: () -> Unit) {
     val count = pool.items.size
     // The count and the two chips sit on one line while they fit and take
     // two when they do not. Given weight instead, the count was squeezed
@@ -322,7 +322,7 @@ private fun StripHead(pool: Tier, expanded: Boolean, readOnly: Boolean, onAddCli
             }
         }
         // Someone else's pool is material to rank, not a place to add to.
-        if (!readOnly) {
+        if (!readOnly && onAddClick != null) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -363,7 +363,7 @@ private fun DockedHead(
     lifting: Boolean,
     dragController: TierDragController,
     note: (@Composable () -> Unit)?,
-    onAddClick: () -> Unit,
+    onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
 ) {
     Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -378,7 +378,7 @@ private fun DockedHead(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            if (!readOnly) {
+            if (!readOnly && onAddClick != null) {
                 AddCardField(onAddClick = onAddClick, onGenerateClick = onGenerateClick, modifier = Modifier.width(DOCKED_ADD_FIELD_WIDTH))
             }
         }

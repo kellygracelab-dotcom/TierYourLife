@@ -13,6 +13,7 @@ data class TopicDto(
     val createdBy: String = "",
     val mergedInto: String? = null,
     val pictureUrl: String? = null,
+    val listCount: Int? = null,
 )
 
 @Serializable

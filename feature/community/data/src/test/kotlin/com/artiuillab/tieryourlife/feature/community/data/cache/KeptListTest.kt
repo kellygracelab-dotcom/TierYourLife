@@ -112,4 +112,12 @@ class KeptListTest {
         assertEquals("https://p/t.webp", withPicture.pictureUrl)
         assertNull(withNone.pictureUrl)
     }
+
+    @Test
+    fun `a topic answer carries how many lists it has, or nothing where the server did not say`() {
+        val json = Json { ignoreUnknownKeys = true }
+
+        assertEquals(7, json.decodeFromString(TopicDto.serializer(), """{"id":"t","listCount":7}""").listCount)
+        assertNull(json.decodeFromString(TopicDto.serializer(), """{"id":"t"}""").listCount)
+    }
 }

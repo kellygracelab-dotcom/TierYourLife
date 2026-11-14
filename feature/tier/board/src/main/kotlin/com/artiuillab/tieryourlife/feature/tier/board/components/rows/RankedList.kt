@@ -174,7 +174,7 @@ private fun TierBadge(tier: Tier) {
 @Composable
 fun RankedPoolSection(
     pool: Tier,
-    onAddClick: () -> Unit,
+    onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
     onSelect: (itemId: Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -241,7 +241,7 @@ fun RankedPoolSection(
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (!readOnly) {
+                if (!readOnly && onAddClick != null) {
                     CollapsedPoolAddChip(onClick = onAddClick)
                     if (Features.GENERATION_OFFERED) {
                         GenerateChip(onClick = onGenerateClick, compact = true)
