@@ -179,7 +179,7 @@
     <string name="list_settings_moves_to">Перейдёт в «%1$s», как только его одобрят</string>
     <string name="list_settings_public_gone">Этого списка больше нет в сообществе: его сняли, удалили или опубликовали с другого аккаунта. Включите «Публичный», чтобы опубликовать его снова.</string>
     <string name="list_settings_public_section_unavailable">Раздел этого списка больше не принимает списки. Выберите другой раздел и опубликуйте снова.</string>
-    <string name="list_settings_public_rank_instead">Этот список взят у другого человека, поэтому опубликовать его отдельным списком нельзя. Ваша расстановка может попасть в его рейтинги — с карточками самого списка.</string>
+    <string name="list_settings_public_rank_instead">Это чужой список, поэтому опубликовать его как свой нельзя. Можно показать только вашу расстановку — в его рейтингах.</string>
     <string name="list_settings_unpublish_failed">Не удалось снять список с публикации; он всё ещё публичный. Попробуйте ещё раз.</string>
     <string name="tier_detail_about_picture">О картинке</string>
     <string name="tier_detail_picture_author">Автор</string>

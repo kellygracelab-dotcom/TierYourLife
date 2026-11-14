@@ -179,7 +179,7 @@
     <string name="list_settings_moves_to">Перейде в «%1$s», щойно його схвалять</string>
     <string name="list_settings_public_gone">Цього списку більше немає в спільноті: його зняли, видалили або опублікували з іншого облікового запису. Увімкніть «Публічний», щоб опублікувати його знову.</string>
     <string name="list_settings_public_section_unavailable">Розділ цього списку більше не приймає списки. Оберіть інший розділ і опублікуйте знову.</string>
-    <string name="list_settings_public_rank_instead">Цей список узято в іншої людини, тому опублікувати його окремим списком не можна. Ваше розміщення може потрапити до його рейтингів — із картками самого списку.</string>
+    <string name="list_settings_public_rank_instead">Це чужий список, тому опублікувати його як свій не можна. Можна показати лише ваше розміщення — у його рейтингах.</string>
     <string name="list_settings_unpublish_failed">Не вдалося зняти список з публікації; він досі публічний. Спробуйте ще раз.</string>
     <string name="tier_detail_about_picture">Про зображення</string>
     <string name="tier_detail_picture_author">Автор</string>

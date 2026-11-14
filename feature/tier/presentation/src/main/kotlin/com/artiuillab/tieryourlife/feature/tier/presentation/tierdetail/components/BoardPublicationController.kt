@@ -61,8 +61,8 @@ internal class BoardPublicationController(
         if (mutable.value.preview?.let { !same(it.list, list) } == true) dismissPreview()
         if (mutable.value.offer?.let { !same(it.list, list) } == true) dismissOffer()
         if (!canOffer(list)) return
-        val total = list.tiers.sumOf { it.items.size }
-        val placed = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
+        val total = total(list)
+        val placed = placed(list)
         if (placed == 0 || (placed < total && !afterGame)) return
         offerJob?.cancel()
         val who = owner()
@@ -80,12 +80,24 @@ internal class BoardPublicationController(
     }
 
     private fun active(ticket: Int, who: String?): Boolean = ticket == generation && owner() == who
+    private fun total(list: TierList): Int = list.tiers.sumOf { it.items.size }
+    private fun placed(list: TierList): Int = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
+
+    /** What a copy can go out as: a ranking of its list, with the cards the reader added when it has any (SPEC list-flow К3–К4). */
+    private fun rankingOf(kind: PublicationKind, list: TierList): PublicationKind.Ranking? = when (kind) {
+        is PublicationKind.Ranking -> kind
+        is PublicationKind.NewList -> {
+            val listId = list.takenFrom ?: kind.basedOn?.id
+            val version = list.originVersion ?: kind.sourceVersion
+            if (kind.basedOn == null || listId == null || version == null) null else PublicationKind.Ranking(listId, version, ownCards = true)
+        }
+    }
 
     private suspend fun offer(list: TierList, who: String?, ticket: Int, placed: Int, total: Int) {
         val kind = community.classifyPublication(list).getOrNull() ?: return
         if (!active(ticket, who) || !present(list, who)) return
         checked = list
-        if (kind is PublicationKind.Ranking) rememberOffer(list, kind, who, ticket, placed, total)
+        rankingOf(kind, list)?.let { rememberOffer(list, it, who, ticket, placed, total) }
     }
 
     private suspend fun rememberOffer(list: TierList, kind: PublicationKind.Ranking, who: String?, ticket: Int, placed: Int, total: Int) {
@@ -122,14 +134,20 @@ internal class BoardPublicationController(
         }
     }
 
-    /** Somebody else's list never goes out as a separate one; only its own cards, as a ranking. */
+    /** Somebody else's list never goes out as a separate one; what it can do instead is offered: Show in Rankings. */
     private fun review(list: TierList) {
         val who = owner()
         action {
             val result = community.classifyPublication(list).getOrThrow()
             if (!active(it, who) || !present(list, who)) return@action
-            if (result is PublicationKind.NewList && result.basedOn != null) fail(PublishError.RankInstead)
-            else mutable.value = mutable.value.copy(preview = PublicationPreview(list, result, who))
+            if (result is PublicationKind.NewList && result.basedOn != null) {
+                fail(PublishError.RankInstead)
+                rankingOf(result, list)?.let { ranking ->
+                    mutable.value = mutable.value.copy(offer = RankingOffer(list, ranking, who, placed(list), total(list)))
+                }
+            } else {
+                mutable.value = mutable.value.copy(preview = PublicationPreview(list, result, who))
+            }
         }
     }
 
@@ -230,6 +248,7 @@ internal class BoardPublicationController(
     private suspend fun send(list: TierList, public: Boolean, kind: PublicationKind?, who: String?, ticket: Int) {
         if (!public && list.rankingOf != null) repository.setRankingChoice(list.id, RankingChoice.Ranking)
         if (!active(ticket, who) || !present(list, who)) return
+        if (public && kind is PublicationKind.Ranking && kind.ownCards) return showWithOwnCards(list, kind, requireNotNull(who), ticket)
         val sending = publicationRequest(list, kind)
         val published = (if (public) community.publishOwned(sending, requireNotNull(who)) else takeDown(list)).getOrThrow()
         if (active(ticket, who)) {
@@ -240,6 +259,17 @@ internal class BoardPublicationController(
                 if (active(ticket, who)) reload()
             }
         }
+    }
+
+    /** Not a list: the reader's version in the list's Rankings, with the cards they added (SPEC list-flow К3). */
+    private suspend fun showWithOwnCards(list: TierList, kind: PublicationKind.Ranking, who: String, ticket: Int) {
+        community.showBoardInRankings(list, kind.listId, who).getOrThrow()
+        if (!active(ticket, who)) return
+        repository.setRankingOf(list.id, kind.listId)
+        repository.setRankingChoice(list.id, RankingChoice.Ranking)
+        if (!active(ticket, who)) return
+        finish(ticket)
+        reload()
     }
 
     private suspend fun rememberPublication(list: TierList, published: Published?, kind: PublicationKind?, ticket: Int, who: String?) {
