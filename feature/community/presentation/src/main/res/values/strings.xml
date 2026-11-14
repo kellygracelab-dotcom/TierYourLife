@@ -309,4 +309,9 @@
     <string name="moderation_not_kept">Could not leave it up: the reports are still open. Try again.</string>
     <string name="moderation_not_moved">Not moved: the list is where it was. Try again.</string>
     <string name="moderation_moved_not_dismissed">Moved, but its reports are still open. Tap “Leave it up” to clear them.</string>
+    <string name="community_action_redo">Redo</string>
+    <string name="section_suggest_topic">Suggest a topic</string>
+    <string name="section_suggest_topic_body">Topics are named or chosen under Topic in a list’s List settings. A new one goes out with the list when it is published and waits for a moderator.</string>
+    <string name="section_suggest_topic_make">Make a list in %1$s</string>
+    <string name="section_new_list_title">Untitled list</string>
 </resources>

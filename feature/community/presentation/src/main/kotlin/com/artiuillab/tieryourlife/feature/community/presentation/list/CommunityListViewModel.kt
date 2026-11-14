@@ -104,14 +104,17 @@ class CommunityListViewModel @Inject constructor(
 
     /** Mine as it was before a move on Theirs replaced it, for Undo. */
     private var beforeTheirs: Pair<TierList, Boolean>? = null
-    private var beforeResult: BeforeResult? = null
+    internal val game: GameTurns = GameTurns(_state) { afterGame ->
+        progress.keep()
+        choices.offerIfNeeded(afterGame)
+    }
 
     /** When the board on screen was last changed by its author, as the server said. */
     private var shownUpdatedAt: Long? = null
     internal val progress = PrivateRankingProgress(
         publishedId, _state, accounts, drafts, viewModelScope, messages, ::emptied,
         invalidateUndo = {
-            beforeResult = null
+            game.forget()
             beforeTheirs = null
         },
         tiers = tiers,
@@ -254,7 +257,7 @@ class CommunityListViewModel @Inject constructor(
         ownList.opened(answer)
         shownUpdatedAt = answer.summary.updatedAtMillis
         if (!sameBoard) {
-            beforeResult = null
+            game.forget()
             beforeTheirs = null
         }
         val continuing = if (sameBoard) fresh.keepingWhatTheReaderDid(before) else null
@@ -319,6 +322,7 @@ class CommunityListViewModel @Inject constructor(
         val current = _state.value as? CommunityListUiState.Success ?: return
         if (current.own || current.arriving) return
         if (current.showing == Showing.Theirs) return startFromTheirs(current, itemId, toTierId, toPosition)
+        game.forget()
         _state.update { state ->
             if (state !is CommunityListUiState.Success) return@update state
             state.copy(mine = state.mine.withItemMoved(itemId, toTierId, toPosition), arranged = true)
@@ -337,6 +341,7 @@ class CommunityListViewModel @Inject constructor(
         val listCards = current.list.tiers.flatMap { it.items }.mapTo(mutableSetOf()) { it.id }
         if (itemId !in listCards) return
         beforeTheirs = current.mine to current.arranged
+        game.forget()
         _state.update { state ->
             if (state !is CommunityListUiState.Success) return@update state
             val theirs = state.theirs.tiers.map { tier -> tier.copy(items = tier.items.filter { it.id in listCards }) }
@@ -362,36 +367,16 @@ class CommunityListViewModel @Inject constructor(
         choices.offerIfNeeded()
     }
 
-    /**
-     * A game's result on someone else's list: it becomes the reader's own
-     * arrangement, on screen, still unsaved. Its undo puts back what was on
-     * screen before, Theirs and an untouched Mine included.
-     */
-    fun putInMine(board: TierList, undone: Boolean = false) {
-        val current = _state.value as? CommunityListUiState.Success ?: return
-        if (current.arriving) return
-        val before = beforeResult
-        beforeResult = null
-        // No record: a republished list replaced Mine meanwhile, and the result with it.
-        if (undone) {
-            before?.let { _state.value = current.copy(mine = it.mine, showing = it.showing, arranged = it.arranged) }
-            progress.keep()
-            choices.offerIfNeeded()
-            return
-        }
-        beforeResult = BeforeResult(current.mine, current.showing, current.arranged)
-        _state.value = current.copy(mine = board.inWordsOf(current.mine, current.list), showing = Showing.Mine, arranged = true)
-        progress.keep()
-        choices.offerIfNeeded(afterGame = true)
-    }
+    /** A game's result on someone else's list, or the game's own undo of it. */
+    fun putInMine(board: TierList, undone: Boolean = false) = game.put(board, undone)
 
     /** A single private editor action; it never changes the author's arrangement. */
     private fun returnAllToPool() {
         val current = (_state.value as? CommunityListUiState.Success)?.takeUnless { it.own || it.arriving } ?: return
         if (current.mine.tiers.none { !it.isPool && it.items.isNotEmpty() }) return
-        beforeResult = null
+        game.forget()
         beforeTheirs = null
-        _state.value = current.copy(mine = current.mine.returningAllToPool(), showing = Showing.Mine, arranged = true)
+        _state.value = current.copy(mine = current.mine.returningAllToPool(), showing = Showing.Mine, arranged = true, gameStep = null)
         progress.keep()
     }
 
@@ -495,6 +480,7 @@ private fun CommunityListUiState.Success.keepingWhatTheReaderDid(before: Communi
     theirs = before.theirs,
     sendingRanking = before.sendingRanking,
     ownBusy = before.ownBusy,
+    gameStep = before.gameStep,
 )
 
 /** The one tier a published list does not carry: where its unplaced cards wait. */
@@ -506,6 +492,3 @@ internal fun pool(items: List<TierItem>) = Tier(
     items = items,
     isPool = true,
 )
-
-/** What was on screen when a game's result went into Mine, for its undo. */
-private data class BeforeResult(val mine: TierList, val showing: Showing, val arranged: Boolean)

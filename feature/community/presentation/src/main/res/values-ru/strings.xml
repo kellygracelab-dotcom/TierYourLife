@@ -323,4 +323,9 @@
     <string name="moderation_not_kept">Не удалось оставить список: жалобы всё ещё открыты. Попробуйте ещё раз.</string>
     <string name="moderation_not_moved">Не перемещено: список остался на месте. Попробуйте ещё раз.</string>
     <string name="moderation_moved_not_dismissed">Перемещено, но жалобы остались открытыми. Нажмите «Оставить», чтобы закрыть их.</string>
+    <string name="community_action_redo">Вернуть</string>
+    <string name="section_suggest_topic">Предложить тему</string>
+    <string name="section_suggest_topic_body">Темы называют или выбирают в пункте «Тема» в настройках списка. Новая тема выходит вместе со списком, когда его публикуют, и ждёт модератора.</string>
+    <string name="section_suggest_topic_make">Создать список в разделе «%1$s»</string>
+    <string name="section_new_list_title">Список без названия</string>
 </resources>

@@ -316,4 +316,9 @@
     <string name="moderation_not_kept">Não foi possível manter a lista: as denúncias continuam abertas. Tente de novo.</string>
     <string name="moderation_not_moved">Não movida: a lista continua onde estava. Tente de novo.</string>
     <string name="moderation_moved_not_dismissed">Movida, mas as denúncias continuam abertas. Toque em “Manter” para encerrá-las.</string>
+    <string name="community_action_redo">Refazer</string>
+    <string name="section_suggest_topic">Sugerir um tema</string>
+    <string name="section_suggest_topic_body">Os temas são nomeados ou escolhidos em “Tema” nas Configurações da lista. Um novo sai com a lista quando ela é publicada e aguarda um moderador.</string>
+    <string name="section_suggest_topic_make">Criar uma lista em %1$s</string>
+    <string name="section_new_list_title">Lista sem título</string>
 </resources>

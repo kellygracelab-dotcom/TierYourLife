@@ -11,6 +11,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 /** Whose arrangement is on screen. */
 enum class Showing { Theirs, Mine }
 
+/** Which way the page's game button turns: back to the board before the game, or forward to its result. */
+enum class GameStep { Undo, Redo }
+
 /** What their own list's page offers when the board behind it is not on this phone. */
 enum class OwnBoardAction { Restore, GetBack }
 
@@ -92,6 +95,8 @@ sealed interface CommunityListUiState {
         val rankingOffer: RankingOffer? = null,
         /** A house list's cover and who made it, when the editor said so: the menu offers it. */
         val cover: CoverCredit? = null,
+        /** A game's result on Mine, there to turn over until the next change. */
+        val gameStep: GameStep? = null,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine
@@ -127,6 +132,6 @@ sealed interface CommunityListUiState {
 
 data class CoverCredit(val imageUrl: String, val attribution: PictureAttribution)
 
-/** Save author's list on Author, Save my list on Mine and where there is only the reader's half. */
+/** Save author's list only on the author's own placing; Save my list on Mine, on a reader's placing and on a single half. */
 internal val CommunityListUiState.Success.savesTheAuthors: Boolean
-    get() = twoHalves && showing == Showing.Theirs
+    get() = twoHalves && showing == Showing.Theirs && chosenRanking == null

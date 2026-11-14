@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -28,6 +29,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.Fol
 import com.artiuillab.tieryourlife.feature.community.presentation.following.FollowKeys
 import com.artiuillab.tieryourlife.feature.community.presentation.following.FollowingScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.following.FollowingUiState
+import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionCallbacks
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionUiState
@@ -36,6 +38,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.common.LocalSections
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -262,6 +265,19 @@ class CommunityScreenshotTest {
         composeRule.onNodeWithTag(SectionTestTags.topic("m6")).assertExists()
         composeRule.onNodeWithText("Show fewer").assertExists()
         composeRule.onRoot().captureRoboImage("src/test/screenshots/section_many_topics_open.png", roborazziOptions = OPTIONS)
+    }
+
+    // QA Н5: Suggest a topic says where topics come from, and leads to a new list in the section.
+    @Test
+    fun section_suggestTopic_explains_thenMakesAList() {
+        var made = 0
+        composeRule.setContent { TierYourLifeTheme { SectionScreenContent(manyTopics, onBack = {}, calls = SectionCallbacks(onMakeList = { made++ })) } }
+        composeRule.onNodeWithTag(SectionTestTags.SUGGEST_TOPIC).assertTextEquals("Suggest a topic").performClick()
+        composeRule.onNodeWithText("Topics are named or chosen under Topic in a list’s List settings.", substring = true).assertExists()
+        composeRule.onNodeWithText("Cancel").assertExists()
+        composeRule.onNodeWithTag(SectionTestTags.MAKE_LIST).assertTextEquals("Make a list in Games").performClick()
+        composeRule.runOnIdle { assertEquals(1, made) }
+        composeRule.onNodeWithTag(SectionTestTags.SUGGEST_TOPIC_DIALOG).assertDoesNotExist()
     }
 
     private val manage = FollowingUiState.Ready(

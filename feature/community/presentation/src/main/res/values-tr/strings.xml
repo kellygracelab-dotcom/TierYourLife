@@ -309,4 +309,9 @@
     <string name="moderation_not_kept">Liste bırakılamadı: şikayetler hâlâ açık. Yeniden deneyin.</string>
     <string name="moderation_not_moved">Taşınmadı: liste olduğu yerde. Yeniden deneyin.</string>
     <string name="moderation_moved_not_dismissed">Taşındı, ancak şikayetleri hâlâ açık. Kapatmak için “Bırak” düğmesine dokunun.</string>
+    <string name="community_action_redo">Yinele</string>
+    <string name="section_suggest_topic">Konu öner</string>
+    <string name="section_suggest_topic_body">Konular Liste ayarlarında “Konu” altında adlandırılır ya da seçilir. Yeni bir konu, liste yayımlanırken onunla gider ve bir moderatörü bekler.</string>
+    <string name="section_suggest_topic_make">%1$s bölümünde liste oluştur</string>
+    <string name="section_new_list_title">Başlıksız liste</string>
 </resources>

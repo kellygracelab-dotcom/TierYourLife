@@ -30,6 +30,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFo
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.sectionRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -97,6 +98,7 @@ class SectionViewModel @Inject constructor(
     private val sortMemory: SectionSortMemory,
     private val catalog: SectionCatalog,
     afterSignIn: FollowAfterSignIn,
+    private val tiers: TierRepository,
 ) : ViewModel() {
 
     private val route = savedStateHandle.sectionRoute()
@@ -106,6 +108,24 @@ class SectionViewModel @Inject constructor(
     val section: String get() = sectionId.value
 
     private val notes = Channel<CommunityNotice>(Channel.BUFFERED)
+
+    private val boards = Channel<Long>(Channel.CONFLATED)
+
+    /** A list just made here, to open. */
+    val boardMade: Flow<Long> = boards.receiveAsFlow()
+
+    /** A new list of one's own, already filed under this section, as Suggest a topic promises. */
+    fun makeList(title: String) {
+        val filedUnder = sectionId.value
+        viewModelScope.launch {
+            runCatching { tiers.createTierList(title, emptyList()).also { tiers.setCategory(it, filedUnder) } }
+                .onSuccess { boards.send(it) }
+                .onFailure {
+                    Timber.w(it, "Making a list in a section failed")
+                    notes.send(CommunityNotice.ActionFailed)
+                }
+        }
+    }
 
     private val guest = GuestFollows(afterSignIn, viewModelScope)
 

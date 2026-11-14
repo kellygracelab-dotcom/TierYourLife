@@ -38,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -96,7 +98,12 @@ class SectionCallbacks(
     val onOpenTopic: (Topic) -> Unit = {},
     val onSelectSort: (FeedSort) -> Unit = {},
     val onToggleSectionFollow: () -> Unit = {},
+    /** A new list of one's own, filed under this section; Suggest a topic leads there. */
+    val onMakeList: () -> Unit = {},
 )
+
+/** The topics' own page-level actions: a waiting topic's sheet and the Suggest a topic window. */
+private class TopicCalls(val onOpenWaiting: (Topic) -> Unit, val onSuggest: () -> Unit)
 
 @Composable
 fun SectionScreen(
@@ -105,6 +112,7 @@ fun SectionScreen(
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
     onSignIn: () -> Unit = {},
+    onOpenBoard: (Long) -> Unit = {},
     viewModel: SectionViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -112,7 +120,10 @@ fun SectionScreen(
     LaunchedEffect(Unit) { viewModel.open() }
     val openTopic by rememberUpdatedState(onOpenTopic)
     LaunchedEffect(viewModel) { viewModel.mergedIntoTopic.collect { openTopic(it) } }
+    val openBoard by rememberUpdatedState(onOpenBoard)
+    LaunchedEffect(viewModel) { viewModel.boardMade.collect { openBoard(it) } }
     val languageTag = currentLanguageTag()
+    val untitled = stringResource(R.string.section_new_list_title)
     SectionScreenContent(
         state = state,
         onBack = onBack,
@@ -130,6 +141,7 @@ fun SectionScreen(
             onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
             onSelectSort = viewModel::selectSort,
             onToggleSectionFollow = viewModel::toggleSectionFollow,
+            onMakeList = { viewModel.makeList(untitled) },
         ),
         onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it, languageTag)) },
         onOpenAuthor = onAuthorClick,
@@ -151,6 +163,8 @@ fun SectionScreenContent(
     val snackbar = remember { SnackbarHostState() }
     var menuFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var waitingTopic by remember { mutableStateOf<Topic?>(null) }
+    var suggesting by rememberSaveable { mutableStateOf(false) }
+    val topicCalls = TopicCalls(onOpenWaiting = { waitingTopic = it }, onSuggest = { suggesting = true })
     SectionNotices(notices, snackbar, feed.onRefresh, calls.onToggleSectionFollow)
 
     Surface(Modifier.fillMaxSize().testTag(SectionTestTags.SCREEN), color = MaterialTheme.colorScheme.surface) {
@@ -163,16 +177,26 @@ fun SectionScreenContent(
                     // The inset stays with the screen while the bar leaves.
                     modifier = Modifier.statusBarsPadding(),
                     header = { CompactSectionBar(state, onBack, calls.onToggleSectionFollow) },
-                    body = { SectionFeed(state, layout, feed, calls, cards, headerShown = false, onOpenWaiting = { waitingTopic = it }) },
+                    body = { SectionFeed(state, layout, feed, calls, cards, headerShown = false, topicCalls = topicCalls) },
                 )
 
-                else -> SectionFeed(state, layout, feed, calls, cards, headerShown = true, onOpenWaiting = { waitingTopic = it }, onBack = onBack)
+                else -> SectionFeed(state, layout, feed, calls, cards, headerShown = true, topicCalls = topicCalls, onBack = onBack)
             }
             SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
         }
     }
     FeedListMenus(menuFor, { menuFor = null }, feed, onOpenAuthor)
     waitingTopic?.let { WaitingTopicSheet(it) { waitingTopic = null } }
+    if (suggesting) {
+        SuggestTopicDialog(
+            section = state.section,
+            onDismiss = { suggesting = false },
+            onMake = {
+                suggesting = false
+                calls.onMakeList()
+            },
+        )
+    }
 }
 
 @Composable
@@ -223,7 +247,7 @@ private fun SectionFeed(
     calls: SectionCallbacks,
     cards: CardActions,
     headerShown: Boolean,
-    onOpenWaiting: (Topic) -> Unit,
+    topicCalls: TopicCalls,
     onBack: () -> Unit = {},
 ) {
     val grid = rememberLazyGridState()
@@ -251,7 +275,7 @@ private fun SectionFeed(
                                 SectionHeader(state.section, state.stats, calls.onToggleSectionFollow, Modifier.edgeToEdge(sideOf(layout)))
                             }
                         }
-                        sectionBody(state, layout, alpha, feed, calls, cards, onOpenWaiting)
+                        sectionBody(state, layout, alpha, feed, calls, cards, topicCalls)
                     }
                 }
             }
@@ -283,14 +307,14 @@ private fun LazyGridScope.sectionBody(
     feed: FeedCallbacks,
     calls: SectionCallbacks,
     cards: CardActions,
-    onOpenWaiting: (Topic) -> Unit,
+    topicCalls: TopicCalls,
 ) {
     if (!state.topicsKnown || state.feed.phase == FeedPhase.Loading) {
         item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { SectionLoading() }
         return
     }
     item(key = "topics", span = { GridItemSpan(maxLineSpan) }) {
-        TopicTiles(state.section, state.topics, state.waiting, calls.onOpenTopic, onOpenWaiting)
+        TopicTiles(state.section, state.topics, state.waiting, calls.onOpenTopic, topicCalls.onOpenWaiting, topicCalls.onSuggest)
     }
     item(key = "sort", span = { GridItemSpan(maxLineSpan) }) {
         SortRow(sort = state.sort, onSort = calls.onSelectSort, count = state.stats?.listCount?.takeIf { it > 0 })

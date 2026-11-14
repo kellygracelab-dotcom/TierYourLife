@@ -302,4 +302,9 @@
     <string name="moderation_not_kept">リストを残せませんでした。通報はまだ未処理です。もう一度お試しください。</string>
     <string name="moderation_not_moved">移動できませんでした。リストは元の場所のままです。もう一度お試しください。</string>
     <string name="moderation_moved_not_dismissed">移動しましたが、通報はまだ残っています。「残す」をタップすると解消できます。</string>
+    <string name="community_action_redo">やり直す</string>
+    <string name="section_suggest_topic">トピックを提案</string>
+    <string name="section_suggest_topic_body">トピックは「リストの設定」の「トピック」で名付けるか選びます。新しいトピックはリストの公開と一緒に送られ、モデレーターの確認を待ちます。</string>
+    <string name="section_suggest_topic_make">%1$sでリストを作る</string>
+    <string name="section_new_list_title">無題のリスト</string>
 </resources>

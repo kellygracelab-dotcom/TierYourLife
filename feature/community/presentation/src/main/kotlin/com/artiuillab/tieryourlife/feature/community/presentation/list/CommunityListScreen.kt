@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -143,6 +144,7 @@ fun CommunityListScreen(
         ),
         onUndoStartFromTheirs = viewModel::undoStartFromTheirs,
         listNotices = viewModel.listNotices,
+        onTurnGame = viewModel.game::turn,
     )
     val loaded = state as? CommunityListUiState.Success
     val offer = loaded?.rankingOffer
@@ -193,6 +195,8 @@ fun CommunityListScreenContent(
     own: OwnListCallbacks = OwnListCallbacks(),
     onUndoStartFromTheirs: () -> Unit = {},
     listNotices: Flow<ListNotice> = emptyFlow(),
+    /** The board before the last game, or its result again. */
+    onTurnGame: () -> Unit = {},
 ) {
     var actionsVisible by remember { mutableStateOf(false) }
     var returnToPoolVisible by rememberSaveable { mutableStateOf(false) }
@@ -298,10 +302,11 @@ fun CommunityListScreenContent(
                                     onOpenSaved = onOpenSaved,
                                     onOwnBoard = onOwnBoard,
                                     onCopyLink = copyLink,
+                                    onTurnGame = onTurnGame,
                                 )
                             },
                             // The strip's sentence, under the side pool's title.
-                            poolNote = { ReaderStatusLine(loaded, lifted) },
+                            poolNote = { ReaderStatusLine(loaded, lifted, onTurnGame) },
                             // The same, in the bar, when the pool sits beside the rows.
                             barExtras = { mode ->
                                 ReaderBarControls(
@@ -594,6 +599,7 @@ private fun ReaderStrip(
     onOpenSaved: (Long) -> Unit,
     onOwnBoard: () -> Unit,
     onCopyLink: () -> Unit,
+    onTurnGame: () -> Unit,
 ) {
     Column(
         Modifier
@@ -643,22 +649,48 @@ private fun ReaderStrip(
                 }
             }
         }
-        if (state.foldsToRankIt && !lifted) {
-            RankItYourselfLine()
-        } else {
-            Text(
-                text = statusText(state, lifted),
-                modifier = Modifier
-                    .padding(top = 4.dp)
-                    .testTag(CommunityListTestTags.STATUS),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f)) {
+                if (state.foldsToRankIt && !lifted) {
+                    RankItYourselfLine()
+                } else {
+                    Text(
+                        text = statusText(state, lifted),
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .testTag(CommunityListTestTags.STATUS),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            GameStepButton(state, onTurnGame)
         }
     }
 }
+
+/**
+ * Undo after a game, and Redo after that: the board before the game and its
+ * result, for as long as nothing else changes on the board. It stays on the
+ * page, so an offer opening over the board takes nothing away.
+ */
+@Composable
+private fun GameStepButton(state: CommunityListUiState.Success, onTurnGame: () -> Unit) {
+    val step = state.gameStep?.takeUnless { state.own } ?: return
+    TextButton(
+        onClick = onTurnGame,
+        contentPadding = PaddingValues(horizontal = 12.dp),
+        modifier = Modifier
+            .height(GAME_STEP_HEIGHT)
+            .testTag(CommunityListTestTags.GAME_STEP),
+    ) {
+        Text(stringResource(if (step == GameStep.Undo) R.string.community_action_undo else R.string.community_action_redo), maxLines = 1)
+    }
+}
+
+private val GAME_STEP_HEIGHT = 32.dp
 
 /**
  * Theirs with nothing left unranked and nothing of the reader's yet: the
@@ -771,15 +803,18 @@ private fun statusText(state: CommunityListUiState.Success, lifted: Boolean): St
     }
 }
 
-/** The same sentence, small, under the side pool's title. */
+/** The same sentence, small, under the side pool's title, and a game's Undo under it. */
 @Composable
-private fun ReaderStatusLine(state: CommunityListUiState.Success, lifted: Boolean) {
-    Text(
-        text = statusText(state, lifted),
-        modifier = Modifier.testTag(CommunityListTestTags.STATUS),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        maxLines = 3,
-        overflow = TextOverflow.Ellipsis,
-    )
+private fun ReaderStatusLine(state: CommunityListUiState.Success, lifted: Boolean, onTurnGame: () -> Unit) {
+    Column {
+        Text(
+            text = statusText(state, lifted),
+            modifier = Modifier.testTag(CommunityListTestTags.STATUS),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
+        )
+        GameStepButton(state, onTurnGame)
+    }
 }

@@ -350,6 +350,7 @@ private fun NavContent(
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             onOpenTopic = { route -> navController.navigateToTopic(route) },
             onSignIn = { navController.navigateToAccount() },
+            onOpenBoard = { id -> navController.navigateToTierDetail(id) },
         )
         allSectionsScreen(
             onBack = { navController.popBackStack() },
