@@ -14,12 +14,14 @@ import com.artiuillab.tieryourlife.feature.community.presentation.list.draftOf
 import com.artiuillab.tieryourlife.feature.community.presentation.list.on
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.itemLayout
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -60,6 +62,7 @@ internal class PrivateRankingProgress(
         val record = if (continuing == null && !fresh.own) drafts.read(listId, account) else null
         val copy = if (continuing == null && !fresh.own) savedFor(record?.savedBoardUid, answer) else null
         val kept = copy?.draftOn(answer, fresh.mine)?.on(answer, fresh.mine) ?: record?.on(answer, fresh.mine)
+            ?: copy?.placedOn(answer)?.on(answer, fresh.mine)
         if (account != currentOwner()) return previous ?: fresh
         owner = account
         if (continuing == null) {
@@ -82,7 +85,7 @@ internal class PrivateRankingProgress(
         if (current != null) state.value = current.copy(arriving = true)
         val record = drafts.read(listId, account)
         val copy = original?.let { savedFor(record?.savedBoardUid, it) }
-        val kept = original?.let { copy?.draftOn(it, empty(it)) } ?: record
+        val kept = original?.let { copy?.draftOn(it, empty(it)) } ?: record ?: original?.let { copy?.placedOn(it) }
         if (currentOwner() != account) return
         owner = account
         ready = true
@@ -114,6 +117,30 @@ internal class PrivateRankingProgress(
             if (mine === guestProgress && guestProgress != null) keep()
         }
     }
+
+    /**
+     * A copy that came after the page did, from the account's boards (SPEC
+     * list-flow Н2): Mine takes its places while nothing is arranged here.
+     */
+    suspend fun copyMayHaveArrived() {
+        val answer = source ?: return
+        val account = owner
+        if (!waitingForMine(account) || drafts.read(listId, account) != null) return
+        val copy = savedFor(null, answer) ?: return
+        val mine = (copy.draftOn(answer, empty(answer)) ?: copy.placedOn(answer))?.on(answer, empty(answer)) ?: return
+        if (account != currentOwner()) return
+        savedCopy = copy
+        choice = choice ?: copy.rankingChoice
+        state.update { now ->
+            val still = now as? CommunityListUiState.Success
+            if (still != null && still.unarranged() && still.version == answer.summary.updatedAtMillis) still.copy(mine = mine, arranged = true, savedId = copy.id) else now
+        }
+    }
+
+    private fun waitingForMine(account: String?): Boolean =
+        ready && account == currentOwner() && (state.value as? CommunityListUiState.Success)?.let { !it.own && it.unarranged() } == true
+
+    private fun CommunityListUiState.Success.unarranged() = !arranged && !arriving
 
     fun keep() {
         if (!ready) return
@@ -219,6 +246,29 @@ internal class PrivateRankingProgress(
     private suspend fun savedFor(uid: String?, source: PublishedList): TierList? {
         val copies = tiers.getAllTierLists().filter { it.takenFrom == source.summary.id }
         return copies.firstOrNull { it.uid == uid } ?: copies.maxByOrNull { it.editedAt ?: 0 }
+    }
+
+    /**
+     * Where a copy that is no longer exactly the list puts the list's cards
+     * (SPEC list-flow Н2): renamed tiers, added cards or an older version of
+     * the list. A card counts where it is still the list's card at that
+     * place; the rest of the list waits in the pool. Null when the tiers no
+     * longer match or none of its cards is placed.
+     */
+    private fun TierList.placedOn(source: PublishedList): RankingDraft? {
+        val ranked = tiers.filterNot { it.isPool }
+        val sameVersion = originVersion == source.summary.updatedAtMillis
+        val seen = mutableSetOf<Int>()
+        fun TierItem.at(): Int? = sourceIndex?.takeIf { it in source.items.indices && (sameVersion || source.items[it].title == title) && seen.add(it) }
+        val rows = ranked.map { tier -> tier.items.mapNotNull { it.at() } }
+        if (ranked.size != source.tiers.size || seen.isEmpty()) return null
+        return RankingDraft(
+            version = source.summary.updatedAtMillis,
+            rows = rows,
+            pool = source.items.indices.filterNot { it in seen },
+            choice = rankingChoice,
+            savedBoardUid = uid,
+        )
     }
 
     /** Where the copy's cards stand, as a draft of this version; null for a copy of another version, which is not mapped over. */

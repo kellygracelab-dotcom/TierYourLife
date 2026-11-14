@@ -21,8 +21,12 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
@@ -215,9 +219,55 @@ class RankingChoiceJourneyTest {
         assertEquals(0, fixture.shown)
     }
 
-    private suspend fun open(fixture: ChoiceFixture, drafts: RankingDrafts = fixture.drafts): CommunityListViewModel = CommunityListViewModel(
+    // SPEC list-flow Н2: a copy changed on its board still gives Mine its places when nothing is arranged on this phone.
+    @Test fun aChangedCopy_givesMineItsPlaces_whenNothingIsArrangedHere() = runBlocking {
+        val fixture = ChoiceFixture()
+        val vm = open(fixture)
+        placeSeven(vm)
+        vm.choices.choose(public = false, languageTag = "")
+        vm.state.firstWithin { (it as? CommunityListUiState.Success)?.savedId != null && !it.saving }
+        fixture.boards.saved = changed(requireNotNull(fixture.boards.saved))
+
+        val elsewhere = open(fixture, RankingDrafts.None).loaded()
+
+        assertEquals((0L..6L).toList(), elsewhere.mine.tiers.first().items.map { it.id })
+        assertEquals(13, elsewhere.mine.tiers.last().items.size)
+        assertEquals(100L, elsewhere.savedId)
+    }
+
+    @Test fun aCopyThatArrivesAfterThePage_givesMineItsPlaces_butNeverOverwritesWhatIsArranged() = runBlocking {
+        val fixture = ChoiceFixture()
+        val vm = open(fixture)
+        placeSeven(vm)
+        vm.choices.choose(public = false, languageTag = "")
+        vm.state.firstWithin { (it as? CommunityListUiState.Success)?.savedId != null && !it.saving }
+        val copy = changed(requireNotNull(fixture.boards.saved))
+        fixture.boards.saved = null
+        val sync = SyncRuns()
+        val late = open(fixture, RankingDrafts.None, sync)
+        assertFalse(late.loaded().arranged)
+
+        fixture.boards.saved = copy
+        sync.finish()
+        val shown = late.state.firstWithin { (it as CommunityListUiState.Success).arranged } as CommunityListUiState.Success
+        assertEquals((0L..6L).toList(), shown.mine.tiers.first().items.map { it.id })
+
+        late.moveItem(7, 1, 0)
+        sync.finish()
+        delay(200)
+        assertEquals(listOf(7L), late.loaded().mine.tiers[1].items.map { it.id })
+    }
+
+    /** Its first tier renamed and a card of the reader's own added: no longer exactly the list. */
+    private fun changed(copy: TierList) = copy.copy(
+        tiers = copy.tiers.mapIndexed { at, tier ->
+            if (at == 0) tier.copy(label = "Love", items = tier.items + TierItem(5000, "Mine only", null)) else tier
+        },
+    )
+
+    private suspend fun open(fixture: ChoiceFixture, drafts: RankingDrafts = fixture.drafts, sync: BoardSync = BoardSync.None): CommunityListViewModel = CommunityListViewModel(
         fixture, fixture.boards, FakeAppPreferences(), SavedStateHandle(mapOf("publishedId" to "abc")),
-        fixture.accounts, FakeOpenedLists(), FollowAfterSignIn(fixture.accounts), drafts,
+        fixture.accounts, FakeOpenedLists(), FollowAfterSignIn(fixture.accounts), drafts, sync,
     ).also {
         models += it
         it.state.firstWithin { state -> state is CommunityListUiState.Success }
@@ -288,5 +338,14 @@ private class ChoiceBoards : TierRepository by RecordingTierRepository() {
         val cards = before.tiers.flatMap { it.items }.associateBy { it.id }
         saved = before.copy(tiers = before.tiers.map { tier -> tier.copy(items = target.getValue(tier.id).map(cards::getValue)) })
         return true
+    }
+}
+
+private class SyncRuns : BoardSync {
+    private val runs = MutableSharedFlow<SyncReport>(extraBufferCapacity = 4)
+    override val finished: Flow<SyncReport> = runs
+    override suspend fun sync() = SyncReport(signedIn = false)
+    fun finish() {
+        runs.tryEmit(SyncReport(signedIn = true))
     }
 }

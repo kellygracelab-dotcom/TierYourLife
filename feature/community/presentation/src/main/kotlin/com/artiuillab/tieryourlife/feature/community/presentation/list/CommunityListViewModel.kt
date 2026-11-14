@@ -30,6 +30,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -54,6 +55,7 @@ class CommunityListViewModel @Inject constructor(
     private val openedLists: OpenedLists,
     afterSignIn: FollowAfterSignIn,
     private val drafts: RankingDrafts = RankingDrafts.None,
+    boardSync: BoardSync = BoardSync.None,
 ) : ViewModel() {
 
     private val route = savedStateHandle.communityListRoute()
@@ -127,6 +129,7 @@ class CommunityListViewModel @Inject constructor(
             open(quietly = false)
         }
         viewModelScope.launch { guest.signInRequests.collect { told.send(ListNotice.SignInToFollow) } }
+        viewModelScope.launch { boardSync.finished.collect { progress.copyMayHaveArrived() } }
         guest.afterSignIn({ it == authorTarget() }) { setFollowing(FollowState(following = true)) }
         viewModelScope.launch {
             accounts.account.collect { account ->
