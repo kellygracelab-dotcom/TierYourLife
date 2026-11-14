@@ -27,7 +27,8 @@ data class TierDetailActions(
     val onProposeSection: ((String?) -> Unit)? = null,
     val onChooseCover: () -> Unit = {},
     val onChooseTopic: () -> Unit = {},
-    val onAddClick: () -> Unit = {},
+    /** Null where cards cannot be added, as on someone else's list: no Add then. */
+    val onAddClick: (() -> Unit)? = {},
     val onManualAddClick: () -> Unit = {},
     val onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit = { _, _, _ -> },
     val onReturnAllToPool: (() -> Unit)? = null,

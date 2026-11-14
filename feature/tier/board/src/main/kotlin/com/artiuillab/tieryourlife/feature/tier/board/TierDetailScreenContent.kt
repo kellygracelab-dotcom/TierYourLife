@@ -340,7 +340,7 @@ private fun TierScreenBody(
             onChooseTopic = actions.onChooseTopic,
             onAddCards = {
                 listSettingsVisible = false
-                actions.onAddClick()
+                actions.onAddClick?.invoke()
             },
             onShare = {
                 scope.launch {

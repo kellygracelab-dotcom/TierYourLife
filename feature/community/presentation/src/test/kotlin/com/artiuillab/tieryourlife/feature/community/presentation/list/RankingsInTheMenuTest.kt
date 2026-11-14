@@ -1,6 +1,9 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -8,11 +11,13 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.presentation.components.CommunityTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -42,6 +47,8 @@ class RankingsInTheMenuTest {
 
     private var asked = 0
 
+    private val notices = MutableSharedFlow<RankingNotice>(extraBufferCapacity = 1)
+
     private fun show(state: CommunityListUiState.Success) {
         composeRule.setContent {
             TierYourLifeTheme {
@@ -52,6 +59,8 @@ class RankingsInTheMenuTest {
                     onSave = {},
                     onRetry = {},
                     onOpenRankings = { asked++ },
+                    onLikeRanking = { notices.tryEmit(RankingNotice.SignInToLike) },
+                    rankingNotices = notices,
                 )
             }
         }
@@ -77,6 +86,21 @@ class RankingsInTheMenuTest {
 
         composeRule.runOnIdle { assertEquals(1, asked) }
         composeRule.onNodeWithTag(CommunityListTestTags.RANKINGS_SHEET).assertExists()
+    }
+
+    // QA list-flow Н7: a guest's Like is answered on the sheet, not under it.
+    @Test
+    fun aGuestsLike_asksToSignIn_onTheSheet() {
+        show(theirs.copy(rankings = listOf(Ranking("olena", "Olena M.", null, emptyList(), listOf("S"), 1))))
+        composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_RANKINGS).performClick()
+
+        composeRule.onNodeWithTag(CommunityListTestTags.like("olena")).performClick()
+
+        composeRule.waitUntil(5_000) {
+            composeRule.onAllNodes(hasText("Sign in to like rankings") and hasAnyAncestor(hasTestTag(CommunityListTestTags.RANKINGS_SHEET)))
+                .fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     @Test

@@ -26,6 +26,8 @@ data class Topic(
     val mergedInto: String? = null,
     /** Its own square picture; without one the section's tinted square stands in. */
     val pictureUrl: String? = null,
+    /** Published lists filed under it; null where the server did not say. */
+    val listCount: Int? = null,
 ) {
     val pending: Boolean get() = status == TopicStatus.Pending
 }

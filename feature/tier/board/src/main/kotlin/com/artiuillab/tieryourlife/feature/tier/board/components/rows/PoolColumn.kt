@@ -101,7 +101,7 @@ private val PlacedDark = Color(0xFF7BD394)
 @Composable
 fun PoolColumn(
     pool: Tier,
-    onAddClick: () -> Unit,
+    onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
     dragController: TierDragController,
     onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
@@ -235,7 +235,7 @@ private fun OpenColumnHead(
     dragController: TierDragController,
     note: (@Composable () -> Unit)?,
     onFold: () -> Unit,
-    onAddClick: () -> Unit,
+    onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
 ) {
     Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
@@ -245,7 +245,7 @@ private fun OpenColumnHead(
         }
         OpenHead(count = count, roomy = roomy, onFold = onFold)
         note?.let { line -> Box(Modifier.fillMaxWidth().padding(bottom = 6.dp)) { line() } }
-        if (!readOnly) {
+        if (!readOnly && onAddClick != null) {
             AddCardField(onAddClick = onAddClick, onGenerateClick = onGenerateClick, modifier = Modifier.fillMaxWidth())
         }
     }
@@ -321,7 +321,7 @@ private fun FoldedStrip(
     lifting: Boolean,
     dragController: TierDragController,
     onOpen: () -> Unit,
-    onAddClick: () -> Unit,
+    onAddClick: (() -> Unit)?,
 ) {
     val openDescription = pluralStringResource(R.plurals.tier_detail_ranked_pool_collapsed_description, count, count)
     Column(
@@ -349,7 +349,7 @@ private fun FoldedStrip(
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        if (!readOnly) {
+        if (!readOnly && onAddClick != null) {
             val addDescription = stringResource(R.string.tier_detail_add_card)
             FilledTonalIconButton(
                 onClick = onAddClick,

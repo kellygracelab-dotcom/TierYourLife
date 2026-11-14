@@ -485,6 +485,7 @@ private fun TopicDto.toDomain() = Topic(
     createdBy = createdBy,
     mergedInto = mergedInto,
     pictureUrl = pictureUrl.webPictureOrNull(),
+    listCount = listCount,
 )
 
 private fun PendingTopicDto.toDomain() = PendingTopic(

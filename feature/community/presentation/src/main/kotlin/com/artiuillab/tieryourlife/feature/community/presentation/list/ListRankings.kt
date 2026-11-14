@@ -89,6 +89,20 @@ internal class ListRankings(
         fetch(after = null)
     }
 
+    /**
+     * The first page as the page opens, for a signed-in reader with Mine
+     * arranged: whether their own is among them decides between Show and
+     * Update in the menu (QA list-flow Н6, as on the website). Nothing is said
+     * when it cannot be read; the sheet asks again.
+     */
+    fun peek() {
+        val current = state.value as? CommunityListUiState.Success ?: return
+        if (current.mayHoldMine && !firstPageRead) fetch(after = null, quietly = true)
+    }
+
+    private val CommunityListUiState.Success.mayHoldMine: Boolean
+        get() = signedIn && arranged && !own && !arriving && !rankingsLoading && rankingCount > 0
+
     /** A thumb up on somebody else's placing, or taken back; the server says which it is now (SPEC list-flow К2). */
     fun like(ranking: Ranking) {
         val current = state.value as? CommunityListUiState.Success ?: return
@@ -133,7 +147,7 @@ internal class ListRankings(
         fetch(after)
     }
 
-    private fun fetch(after: String?) {
+    private fun fetch(after: String?, quietly: Boolean = false) {
         state.update { current ->
             if (current is CommunityListUiState.Success) current.copy(rankingsLoading = true) else current
         }
@@ -169,7 +183,7 @@ internal class ListRankings(
                     state.update { current ->
                         if (current is CommunityListUiState.Success) current.copy(rankingsLoading = false) else current
                     }
-                    messages.send(UserMessage.ActionFailed)
+                    if (!quietly) messages.send(UserMessage.ActionFailed)
                 },
             )
         }

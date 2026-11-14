@@ -143,6 +143,7 @@ class CommunityListViewModel @Inject constructor(
                 _state.update { current ->
                     if (current is CommunityListUiState.Success) current.copy(signedIn = account is Account.SignedIn) else current
                 }
+                rankings.peek()
             }
         }
     }
@@ -215,6 +216,7 @@ class CommunityListViewModel @Inject constructor(
                 openedLists.keep(answer)
                 if (givesWayToBoard(answer)) return
                 val loaded = present(answer, fromServer = true, followTapped = followTaps != tapsBefore)
+                rankings.peek()
                 if (loaded.own) {
                     ownList.find()
                 } else if (!loaded.editorial && answer.summary.viewerFollowsAuthor == null) {

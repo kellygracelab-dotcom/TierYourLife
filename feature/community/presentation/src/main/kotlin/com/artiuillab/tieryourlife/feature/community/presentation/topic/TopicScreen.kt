@@ -140,7 +140,7 @@ fun TopicScreenContent(
                 bar = {
                     TopBar(onBack = onBack, section = state.section)
                     Header(state = state, onToggleFollow = onToggleFollow)
-                    SortRow(sort = state.sort, onSort = onSelectSort, modifier = Modifier.padding(start = 20.dp, end = 8.dp))
+                    SortRow(sort = state.sort, onSort = onSelectSort, modifier = Modifier.padding(start = 20.dp, end = 8.dp), count = state.topic?.listCount)
                 },
             ) {
                 Column(Modifier.fillMaxSize()) {
