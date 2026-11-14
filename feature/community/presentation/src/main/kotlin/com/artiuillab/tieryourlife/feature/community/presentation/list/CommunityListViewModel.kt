@@ -329,11 +329,15 @@ class CommunityListViewModel @Inject constructor(
      * with that one move made. The board stays as it was under the finger.
      */
     private fun startFromTheirs(current: CommunityListUiState.Success, itemId: Long, toTierId: Long, toPosition: Int) {
+        // Cards another reader added stay in their version: Mine on this page holds the list's cards only.
+        val listCards = current.list.tiers.flatMap { it.items }.mapTo(mutableSetOf()) { it.id }
+        if (itemId !in listCards) return
         beforeTheirs = current.mine to current.arranged
         _state.update { state ->
             if (state !is CommunityListUiState.Success) return@update state
+            val theirs = state.theirs.tiers.map { tier -> tier.copy(items = tier.items.filter { it.id in listCards }) }
             state.copy(
-                mine = state.mine.copy(tiers = state.theirs.tiers).withItemMoved(itemId, toTierId, toPosition),
+                mine = state.mine.copy(tiers = theirs).withItemMoved(itemId, toTierId, toPosition),
                 showing = Showing.Mine,
                 arranged = true,
             )

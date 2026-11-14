@@ -4,6 +4,8 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.LikeRefusal
+import com.artiuillab.tieryourlife.feature.community.domain.model.LikeRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
@@ -45,6 +47,12 @@ internal class ListRankings(
     private var fromServer = false
     private var cursor: String? = null
 
+    /** Whether the first page was read since the list opened; this reader's own may be all that is known before it. */
+    private var firstPageRead = false
+
+    /** Likes on their way to the server, by whose placing: a second tap waits for the first answer. */
+    private val liking = mutableSetOf<String>()
+
     private val told = Channel<RankingNotice>(Channel.BUFFERED)
     val notices: Flow<RankingNotice> = told.receiveAsFlow()
 
@@ -63,14 +71,52 @@ internal class ListRankings(
     fun opened(answer: PublishedList, fromServer: Boolean, sameBoard: Boolean = false) {
         opened = answer
         this.fromServer = fromServer
-        if (!sameBoard) cursor = null
+        if (!sameBoard) {
+            cursor = null
+            firstPageRead = false
+        }
     }
 
     /** The first page, asked for when the sheet opens; nothing is read for a list nobody has ranked. */
     fun load() {
         val current = state.value as? CommunityListUiState.Success ?: return
-        if (current.rankingsLoading || current.rankings.isNotEmpty() || current.rankingCount == 0) return
+        if (current.rankingsLoading || firstPageRead || current.rankingCount == 0) return
         fetch(after = null)
+    }
+
+    /** A thumb up on somebody else's placing, or taken back; the server says which it is now (SPEC list-flow К2). */
+    fun like(ranking: Ranking) {
+        val current = state.value as? CommunityListUiState.Success ?: return
+        if (!ranking.likeable || ranking.uid in liking) return
+        if (!current.signedIn) {
+            scope.launch { told.send(RankingNotice.SignInToLike) }
+            return
+        }
+        val wanted = !ranking.likedByMe
+        liking += ranking.uid
+        setLiked(ranking.uid, wanted)
+        scope.launch {
+            community.likeRanking(listId, ranking.uid, wanted).fold(
+                onSuccess = { liked -> setLiked(ranking.uid, liked) },
+                onFailure = { error ->
+                    setLiked(ranking.uid, ranking.likedByMe)
+                    when ((error as? LikeRefused)?.reason) {
+                        LikeRefusal.NotSignedIn -> told.send(RankingNotice.SignInToLike)
+                        LikeRefusal.TooMany -> told.send(RankingNotice.TooManyLikes)
+                        else -> messages.send(UserMessage.ActionFailed)
+                    }
+                },
+            )
+            liking -= ranking.uid
+        }
+    }
+
+    private fun setLiked(uid: String, liked: Boolean) {
+        fun Ranking.liked() = if (this.uid == uid) copy(likedByMe = liked) else this
+        state.update { current ->
+            if (current !is CommunityListUiState.Success) return@update current
+            current.copy(rankings = current.rankings.map { it.liked() }, chosenRanking = current.chosenRanking?.liked())
+        }
     }
 
     fun loadMore() {
@@ -88,11 +134,14 @@ internal class ListRankings(
             community.rankings(listId, after).fold(
                 onSuccess = { page ->
                     cursor = page.nextCursor
+                    if (after == null) firstPageRead = true
                     state.update { current ->
                         if (current !is CommunityListUiState.Success) return@update current
-                        val known = current.rankings.mapTo(mutableSetOf()) { it.uid }
+                        // The first page is the server's order from the top: what was known before it goes.
+                        val before = if (after == null) emptyList() else current.rankings
+                        val known = before.mapTo(mutableSetOf()) { it.uid }
                         current.copy(
-                            rankings = current.rankings + page.rankings.filterNot { it.uid in known },
+                            rankings = before + page.rankings.filterNot { it.uid in known },
                             rankingsLoading = false,
                             moreRankings = page.nextCursor != null,
                         )
@@ -162,13 +211,23 @@ internal class ListRankings(
 
     fun accountChanged(account: Account) = publisher.accountChanged(account)
 
-    /** First among the readers', as the server lists it, and in the left half if an older one of theirs was there. */
+    /**
+     * In its own place among the readers', as the server orders them; a new
+     * one is placed by the server on the next read. In the left half if an
+     * older one of theirs was there.
+     */
     private fun CommunityListUiState.Success.withMine(shown: ShownRanking, answer: PublishedList): CommunityListUiState.Success {
         val ranking = shown.ranking
         val wasShown = chosenRanking?.mine == true || chosenRanking?.uid == ranking.uid
+        val at = rankings.indexOfFirst { it.mine || it.uid == ranking.uid }
+        val placed = when {
+            at >= 0 -> rankings.mapIndexedNotNull { index, one -> if (index == at) ranking else one.takeUnless { one.mine || one.uid == ranking.uid } }
+            else -> rankings + ranking
+        }
+        if (at < 0) firstPageRead = false
         return copy(
             sendingRanking = false,
-            rankings = listOf(ranking) + rankings.filterNot { it.mine || it.uid == ranking.uid },
+            rankings = placed,
             rankingCount = rankingCount + if (shown.created) 1 else 0,
             chosenRanking = if (wasShown) ranking else chosenRanking,
             theirs = if (wasShown) placedBy(answer, ranking) else theirs,
@@ -189,4 +248,6 @@ enum class RankingNotice {
     NotAccepted,
     TooManyWebPictures,
     WebPicturesToday,
+    SignInToLike,
+    TooManyLikes,
 }

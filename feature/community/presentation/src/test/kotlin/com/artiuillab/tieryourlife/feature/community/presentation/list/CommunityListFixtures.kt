@@ -3,6 +3,8 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
+import com.artiuillab.tieryourlife.feature.community.domain.model.LikeRefusal
+import com.artiuillab.tieryourlife.feature.community.domain.model.LikeRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
@@ -55,7 +57,16 @@ internal class TestCommunity(
     private val unpublishFails: Boolean = false,
     private val holdOpen: Boolean = false,
     private val reportRefusal: Throwable? = null,
+    private val likeRefusal: LikeRefusal? = null,
 ) : FakeCommunityRepository() {
+    val likes = mutableListOf<Pair<String, Boolean>>()
+
+    override suspend fun likeRanking(listId: String, uid: String, like: Boolean): Result<Boolean> {
+        likes += uid to like
+        likeRefusal?.let { return Result.failure(LikeRefused(it)) }
+        return Result.success(like)
+    }
+
     val unpublished = mutableListOf<String>()
 
     /** Lets a held open answer through. */
