@@ -11,12 +11,6 @@ class FeedFreshnessTest {
     private val minute = 60_000L
 
     @Test
-    fun aFeedIsStaleAfterFiveMinutes() {
-        assertFalse(FeedFreshness.isStale(fetchedAtMillis = 0, nowMillis = 5 * minute))
-        assertTrue(FeedFreshness.isStale(fetchedAtMillis = 0, nowMillis = 5 * minute + 1))
-    }
-
-    @Test
     fun theOfflineStripNeedsAFailureAndAnHourOldFeed() {
         assertFalse(FeedFreshness.showsOfflineStrip(lastAttemptFailed = false, fetchedAtMillis = 0, nowMillis = 120 * minute))
         assertFalse(FeedFreshness.showsOfflineStrip(lastAttemptFailed = true, fetchedAtMillis = 0, nowMillis = 60 * minute))

@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDr
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -66,9 +67,12 @@ class RankingLikesTest {
         val shown = withRankings(viewModel)
 
         viewModel.rankings.like(shown.rankings.single())
-        val liked = viewModel.state.firstWithin { (it as CommunityListUiState.Success).rankings.single().likedByMe && community.likes.size == 1 }
+        val liked = viewModel.state.firstWithin { (it as CommunityListUiState.Success).rankings.single().likedByMe }
+        // The second tap comes before the first answer; it waits for it rather than being lost.
         viewModel.rankings.like((liked as CommunityListUiState.Success).rankings.single())
-        viewModel.state.firstWithin { !(it as CommunityListUiState.Success).rankings.single().likedByMe && community.likes.size == 2 }
+        // The server's answer may equal what is already shown, and a state flow says nothing new then: wait for the calls.
+        withTimeout(10_000) { while (community.likes.size < 2) delay(10) }
+        viewModel.state.firstWithin { !(it as CommunityListUiState.Success).rankings.single().likedByMe }
 
         assertEquals(listOf("r1" to true, "r1" to false), community.likes)
     }

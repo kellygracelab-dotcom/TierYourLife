@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.hides
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
@@ -89,12 +90,11 @@ class TopicViewModel @Inject constructor(
         moreJob?.cancel()
         loadJob = viewModelScope.launch {
             _state.update { it.copy(feed = CommunityFeed.Loading) }
-            val hidden = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
             val feed = community.feed(topic = route.topicId, sort = _state.value.sort).fold(
                 onSuccess = { page ->
                     cursor = page.nextCursor
                     CommunityFeed.Ready(
-                        lists = page.lists.filterNot { it.id in hidden || it.authorUid in hidden },
+                        lists = page.lists.filterNot(preferences::hides).distinctBy { it.id },
                         canLoadMore = page.nextCursor != null,
                     )
                 },
@@ -117,12 +117,11 @@ class TopicViewModel @Inject constructor(
             community.feed(topic = route.topicId, sort = _state.value.sort, after = after).fold(
                 onSuccess = { page ->
                     cursor = page.nextCursor
-                    val hidden = preferences.hiddenListIds() + preferences.hiddenAuthorUids()
                     _state.update { current ->
                         val now = current.feed as? CommunityFeed.Ready ?: return@update current
                         current.copy(
                             feed = now.copy(
-                                lists = now.lists + page.lists.filterNot { it.id in hidden || it.authorUid in hidden },
+                                lists = (now.lists + page.lists.filterNot(preferences::hides)).distinctBy { it.id },
                                 canLoadMore = page.nextCursor != null,
                                 loadingMore = false,
                             ),
