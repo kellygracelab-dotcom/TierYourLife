@@ -180,6 +180,13 @@
     <string name="search_sections">Seções</string>
     <string name="search_lists">Listas</string>
     <string name="section_topics">Temas</string>
+    <string name="section_tier_lists">Tier lists</string>
+    <string name="section_show_fewer">Mostrar menos</string>
+    <plurals name="section_show_all_topics">
+        <item quantity="one">Ver todos os %1$d temas</item>
+        <item quantity="many">Ver todos os %1$d temas</item>
+        <item quantity="other">Ver todos os %1$d temas</item>
+    </plurals>
     <string name="section_sort_popular">Populares</string>
     <string name="section_sort_newest">Recentes</string>
     <string name="section_share">Compartilhar seção</string>

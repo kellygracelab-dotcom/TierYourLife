@@ -178,6 +178,12 @@
     <string name="search_sections">Sections</string>
     <string name="search_lists">Lists</string>
     <string name="section_topics">Topics</string>
+    <string name="section_tier_lists">Tier lists</string>
+    <string name="section_show_fewer">Show fewer</string>
+    <plurals name="section_show_all_topics">
+        <item quantity="one">Show all %1$d topics</item>
+        <item quantity="other">Show all %1$d topics</item>
+    </plurals>
     <string name="section_sort_popular">Popular</string>
     <string name="section_sort_newest">Newest</string>
     <string name="section_share">Share section</string>
