@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasAnyDescendant
@@ -24,8 +25,10 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
@@ -52,6 +55,7 @@ import com.artiuillab.tieryourlife.feature.play.presentation.DuelScreen
 import com.artiuillab.tieryourlife.feature.play.presentation.DuelState
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
+import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -85,12 +89,12 @@ class StoreListingScreenshotTest {
         var shot by mutableStateOf(SCREENS.first())
 
         composeRule.setContent {
-            TierYourLifeTheme(darkTheme = true) {
+            TierYourLifeTheme(darkTheme = shot.dark) {
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
                     BoxWithConstraints {
                         val shape = WindowShape.of(width = maxWidth, height = maxHeight)
                         CompositionLocalProvider(LocalWindowShape provides shape) {
-                            Screen(shot)
+                            Screen(shot.name, shot.dark)
                         }
                     }
                 }
@@ -100,13 +104,33 @@ class StoreListingScreenshotTest {
         SCREENS.forEachIndexed { index, next ->
             composeRule.runOnUiThread { shot = next }
             composeRule.waitForIdle()
-            if (next == "rankings") openRankings()
+            if (next.name == "rankings") openRankings()
+            if (next.name == "drag") liftOverTheTop()
             Thread.sleep(ARTWORK_MILLIS)
             composeRule.waitForIdle()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                save("${index + 1}-$next", if (next == "rankings") pageUnderSheet() else composeRule.onRoot().captureToImage().asAndroidBitmap())
+                val picture = if (next.name == "rankings") pageUnderSheet() else composeRule.onRoot().captureToImage().asAndroidBitmap()
+                save("${if (next.dark) "dark" else "light"}-${index + 1}-${next.name}", picture)
+            }
+            if (next.name == "drag") composeRule.onNodeWithTag(TierDetailTestTags.tile(LIFTED)).performTouchInput { up() }
+        }
+    }
+
+    /** A card held up over the top row on its way to a better place, the moment a board is about. */
+    private fun liftOverTheTop() {
+        val top = composeRule.onNodeWithTag(TierDetailTestTags.tierItems(1)).fetchSemanticsNode().boundsInRoot
+        val tile = composeRule.onNodeWithTag(TierDetailTestTags.tile(LIFTED)).fetchSemanticsNode().boundsInRoot
+        val to = Offset(top.left + top.width * 0.38f, top.top + top.height * 0.3f)
+        val by = to - tile.center
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(LIFTED)).performTouchInput {
+            down(center)
+            advanceEventTime(HOLD_MILLIS)
+            repeat(DRAG_STEPS) {
+                moveBy(by / DRAG_STEPS.toFloat())
+                advanceEventTime(STEP_MILLIS)
             }
         }
+        composeRule.waitForIdle()
     }
 
     /** The way a reader gets there: the list's menu, then its Rankings line. */
@@ -131,7 +155,9 @@ class StoreListingScreenshotTest {
     }
 
     @Composable
-    private fun Screen(name: String): Unit = when (name) {
+    private fun Screen(name: String, dark: Boolean): Unit = when (name) {
+        "hero-board", "drag" -> TierDetailScreenContent(state = TierDetailUiState.Success(gardenBoard()))
+
         "board" -> TierDetailScreenContent(state = TierDetailUiState.Success(fruitBoard()))
 
         "settings" -> SettingsScreenContent(
@@ -139,7 +165,7 @@ class StoreListingScreenshotTest {
             credits = 7,
             onAccountClick = {},
             versionName = "1.0",
-            themeChoice = ThemeChoice.DARK,
+            themeChoice = if (dark) ThemeChoice.DARK else ThemeChoice.LIGHT,
             onThemeChoiceChange = {},
             languageTag = null,
             onLanguageTagChange = {},
@@ -280,6 +306,49 @@ class StoreListingScreenshotTest {
         ),
     )
 
+    /** A new board's five tiers, every one of them full, and nothing left to place. */
+    private fun gardenBoard() = TierList(
+        id = 5,
+        title = "Fruit & veg, ranked",
+        tiers = listOf(
+            tier(
+                1, "S", "#B03A32", "#F1948C", "Perfect",
+                listOf(
+                    item(41, "Mango", "mango"), item(42, "Strawberry", "strawberry"), item(43, "Pineapple", "pineapple"),
+                    item(44, "Cherries", "cherries"), item(LIFTED, "Blueberries", "blueberries"),
+                ),
+            ),
+            tier(
+                2, "A", "#C06A25", "#E9A867", "Great",
+                listOf(
+                    item(46, "Watermelon", "watermelon"), item(47, "Peach", "peach"), item(48, "Avocado", "avocado"),
+                    item(49, "Apple", "apple"), item(50, "Grapes", "grapes"),
+                ),
+            ),
+            tier(
+                3, "B", "#A98B1F", "#D8C05A", "Good",
+                listOf(
+                    item(52, "Kiwi", "kiwi"), item(53, "Orange", "orange"), item(54, "Plum", "plum"),
+                    item(55, "Tomato", "tomato"), item(56, "Pear", "pear"),
+                ),
+            ),
+            tier(
+                4, "C", "#3F7F55", "#7FC393", "Fine",
+                listOf(
+                    item(57, "Banana", "banana"), item(58, "Carrot", "carrot"), item(59, "Coconut", "coconut"),
+                    item(60, "Pepper", "pepper"), item(61, "Lime", "lime"),
+                ),
+            ),
+            tier(
+                5, "D", "#3C6E99", "#86B8DE", "Meh",
+                listOf(
+                    item(62, "Broccoli", "broccoli"), item(63, "Lemon", "lemon"), item(64, "Pumpkin", "pumpkin"),
+                    item(65, "Radish", "radish"), item(66, "Eggplant", "eggplant"),
+                ),
+            ),
+        ),
+    )
+
     private fun soupBoard() = TierList(
         id = 2,
         title = "What goes in the soup",
@@ -352,6 +421,14 @@ class StoreListingScreenshotTest {
         const val PICTURE_ROOT = "listing"
         const val ARTWORK_MILLIS = 800L
         const val DAY_MILLIS = 24 * 60 * 60 * 1000L
-        val SCREENS = listOf("board", "settings", "lists", "pool", "community", "game", "section", "rankings")
+        const val LIFTED = 45L
+        const val HOLD_MILLIS = 600L
+        const val STEP_MILLIS = 16L
+        const val DRAG_STEPS = 20
+        val SCREENS = listOf("hero-board", "drag", "game", "rankings", "section", "board", "pool", "lists", "community", "settings")
+            .map { Shot(it, dark = false) } +
+            listOf("board", "settings", "lists", "pool", "community", "game", "section", "rankings").map { Shot(it, dark = true) }
     }
 }
+
+private data class Shot(val name: String, val dark: Boolean)
