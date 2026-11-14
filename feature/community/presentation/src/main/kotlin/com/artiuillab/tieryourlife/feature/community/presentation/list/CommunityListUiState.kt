@@ -97,6 +97,8 @@ sealed interface CommunityListUiState {
         val cover: CoverCredit? = null,
         /** A game's result on Mine, there to turn over until the next change. */
         val gameStep: GameStep? = null,
+        /** The reader's own ranking is in this list's Rankings: the menu updates or removes it rather than showing it. */
+        val rankingShown: Boolean = false,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine

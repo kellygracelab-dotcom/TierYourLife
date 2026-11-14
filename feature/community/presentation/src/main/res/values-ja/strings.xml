@@ -267,7 +267,6 @@
     <plurals name="propose_waiting_count">
         <item quantity="other">%2$d件中%1$d件の提案が確認待ちです。</item>
     </plurals>
-    <string name="community_show_my_ranking">自分のランキングをほかの人に見せる</string>
     <string name="community_sign_in_to_show_ranking">ランキングを見せるにはログインしてください</string>
     <string name="community_ranking_like">いいね</string>
     <string name="community_sign_in_to_like">いいねするにはログインしてください</string>
@@ -307,4 +306,9 @@
     <string name="section_suggest_topic_body">トピックは「リストの設定」の「トピック」で名付けるか選びます。新しいトピックはリストの公開と一緒に送られ、モデレーターの確認を待ちます。</string>
     <string name="section_suggest_topic_make">%1$sでリストを作る</string>
     <string name="section_new_list_title">無題のリスト</string>
+    <string name="community_update_in_rankings">ランキングを更新</string>
+    <string name="community_remove_from_rankings">ランキングから外す</string>
+    <string name="community_remove_ranking_title">ランキングから外しますか？</string>
+    <string name="community_remove_ranking_body">このリストのランキングから消えます。ボードはあなたのリストに残ります。</string>
+    <string name="community_remove_ranking_confirm">外す</string>
 </resources>

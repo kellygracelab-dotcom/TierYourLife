@@ -58,6 +58,9 @@ fun ListActionsSheet(
     /** On somebody else's list the reader has arranged: show their ranking to others, or, for a guest, sign in to. */
     onShowMyRanking: (() -> Unit)? = null,
     signInToShowRanking: Boolean = false,
+    /** Their ranking is already in Rankings: [onShowMyRanking] updates it, and [onRemoveRanking] takes it out. */
+    rankingShown: Boolean = false,
+    onRemoveRanking: (() -> Unit)? = null,
     /** On their own list: down for everyone. */
     onTakeDown: (() -> Unit)? = null,
     /** On a list's page, first: the readers' placings of it, and how many there are. */
@@ -119,10 +122,24 @@ fun ListActionsSheet(
             }
             if (onShowMyRanking != null) {
                 ActionRow(
-                    text = stringResource(if (signInToShowRanking) R.string.community_sign_in_to_show_ranking else R.string.community_show_my_ranking),
+                    text = stringResource(
+                        when {
+                            signInToShowRanking -> R.string.community_sign_in_to_show_ranking
+                            rankingShown -> R.string.community_update_in_rankings
+                            else -> com.artiuillab.tieryourlife.core.theme.R.string.ranking_offer_show
+                        },
+                    ),
                     testTag = CommunityTestTags.ACTION_SHOW_RANKING,
                     onClick = onShowMyRanking,
                     icon = { size, tint -> FormatListNumberedIcon(size, tint) },
+                )
+            }
+            if (onRemoveRanking != null) {
+                ActionRow(
+                    text = stringResource(R.string.community_remove_from_rankings),
+                    testTag = CommunityTestTags.ACTION_REMOVE_RANKING,
+                    onClick = onRemoveRanking,
+                    icon = { size, tint -> DeleteOutlineIcon(size, tint) },
                 )
             }
             if (onReturnAllToPool != null) {

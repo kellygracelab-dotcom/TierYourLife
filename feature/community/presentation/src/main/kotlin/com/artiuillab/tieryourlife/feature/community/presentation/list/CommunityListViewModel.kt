@@ -481,6 +481,7 @@ private fun CommunityListUiState.Success.keepingWhatTheReaderDid(before: Communi
     sendingRanking = before.sendingRanking,
     ownBusy = before.ownBusy,
     gameStep = before.gameStep,
+    rankingShown = before.rankingShown,
 )
 
 /** The one tier a published list does not carry: where its unplaced cards wait. */

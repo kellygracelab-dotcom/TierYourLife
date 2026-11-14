@@ -288,7 +288,6 @@
         <item quantity="many">Czeka %1$d z %2$d twoich propozycji.</item>
         <item quantity="other">Czeka %1$d z %2$d twoich propozycji.</item>
     </plurals>
-    <string name="community_show_my_ranking">Pokaż mój ranking innym</string>
     <string name="community_sign_in_to_show_ranking">Zaloguj się, aby pokazać swój ranking</string>
     <string name="community_ranking_like">Lubię to</string>
     <string name="community_sign_in_to_like">Zaloguj się, aby polubić ranking</string>
@@ -328,4 +327,9 @@
     <string name="section_suggest_topic_body">Tematy nazywa się lub wybiera w polu „Temat” w Ustawieniach listy. Nowy wychodzi razem z listą przy publikacji i czeka na moderatora.</string>
     <string name="section_suggest_topic_make">Utwórz listę w: %1$s</string>
     <string name="section_new_list_title">Lista bez tytułu</string>
+    <string name="community_update_in_rankings">Zaktualizuj w Rankingach</string>
+    <string name="community_remove_from_rankings">Usuń z Rankingów</string>
+    <string name="community_remove_ranking_title">Usunąć twój ranking z Rankingów?</string>
+    <string name="community_remove_ranking_body">Zniknie z rankingów tej listy. Twoja tablica zostaje w twoich listach.</string>
+    <string name="community_remove_ranking_confirm">Usuń</string>
 </resources>

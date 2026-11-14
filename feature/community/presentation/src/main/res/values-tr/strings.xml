@@ -274,7 +274,6 @@
         <item quantity="one">%2$d önerinden %1$d tanesi bekliyor.</item>
         <item quantity="other">%2$d önerinden %1$d tanesi bekliyor.</item>
     </plurals>
-    <string name="community_show_my_ranking">Sıralamamı başkalarına göster</string>
     <string name="community_sign_in_to_show_ranking">Sıralamanızı göstermek için oturum açın</string>
     <string name="community_ranking_like">Beğen</string>
     <string name="community_sign_in_to_like">Sıralamaları beğenmek için oturum açın</string>
@@ -314,4 +313,9 @@
     <string name="section_suggest_topic_body">Konular Liste ayarlarında “Konu” altında adlandırılır ya da seçilir. Yeni bir konu, liste yayımlanırken onunla gider ve bir moderatörü bekler.</string>
     <string name="section_suggest_topic_make">%1$s bölümünde liste oluştur</string>
     <string name="section_new_list_title">Başlıksız liste</string>
+    <string name="community_update_in_rankings">Sıralamalarda güncelle</string>
+    <string name="community_remove_from_rankings">Sıralamalardan kaldır</string>
+    <string name="community_remove_ranking_title">Sıralamanız Sıralamalardan kaldırılsın mı?</string>
+    <string name="community_remove_ranking_body">Bu listenin sıralamalarından kalkar. Panonuz listelerinizde kalır.</string>
+    <string name="community_remove_ranking_confirm">Kaldır</string>
 </resources>

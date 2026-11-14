@@ -281,7 +281,6 @@
         <item quantity="many">%1$d de vos %2$d propositions sont en attente.</item>
         <item quantity="other">%1$d de vos %2$d propositions sont en attente.</item>
     </plurals>
-    <string name="community_show_my_ranking">Montrer mon classement aux autres</string>
     <string name="community_sign_in_to_show_ranking">Connectez-vous pour montrer votre classement</string>
     <string name="community_ranking_like">J’aime</string>
     <string name="community_sign_in_to_like">Connectez-vous pour aimer des classements</string>
@@ -321,4 +320,9 @@
     <string name="section_suggest_topic_body">Les thèmes se nomment ou se choisissent sous « Thème » dans les Paramètres de la liste. Un nouveau part avec la liste à sa publication et attend un modérateur.</string>
     <string name="section_suggest_topic_make">Créer une liste dans %1$s</string>
     <string name="section_new_list_title">Liste sans titre</string>
+    <string name="community_update_in_rankings">Mettre à jour dans Classements</string>
+    <string name="community_remove_from_rankings">Retirer de Classements</string>
+    <string name="community_remove_ranking_title">Retirer votre classement de Classements ?</string>
+    <string name="community_remove_ranking_body">Il disparaîtra des classements de cette liste. Votre tableau reste dans vos listes.</string>
+    <string name="community_remove_ranking_confirm">Retirer</string>
 </resources>

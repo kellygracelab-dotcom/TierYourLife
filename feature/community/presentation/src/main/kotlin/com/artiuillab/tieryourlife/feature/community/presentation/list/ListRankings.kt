@@ -151,6 +151,7 @@ internal class ListRankings(
                             rankings = before + page.rankings.filterNot { it.uid in known },
                             rankingsLoading = false,
                             moreRankings = page.nextCursor != null,
+                            rankingShown = current.rankingShown || page.rankings.any { it.mine },
                         )
                     }
                 },
@@ -191,15 +192,18 @@ internal class ListRankings(
     /** This reader's own comes down at once, back if the server refuses; the author's placing fills the left half meanwhile. */
     fun withdrawMine() {
         val current = state.value as? CommunityListUiState.Success ?: return
-        val mine = current.rankings.firstOrNull { it.mine } ?: return
+        // From the menu the rankings may not have been read: what this phone knows is enough to take it down.
+        val mine = current.rankings.firstOrNull { it.mine }
+        if (mine == null && !current.rankingShown) return
         state.update { now ->
             if (now !is CommunityListUiState.Success) return@update now
-            val wasShown = now.chosenRanking?.uid == mine.uid
+            val wasShown = mine != null && (now.chosenRanking?.uid == mine.uid || now.chosenRanking?.mine == true)
             now.copy(
-                rankings = now.rankings - mine,
+                rankings = now.rankings.filterNot { it.mine },
                 rankingCount = (now.rankingCount - 1).coerceAtLeast(0),
                 chosenRanking = now.chosenRanking.takeUnless { wasShown },
                 theirs = if (wasShown) now.list else now.theirs,
+                rankingShown = false,
             )
         }
         scope.launch {
@@ -207,7 +211,7 @@ internal class ListRankings(
                 Timber.w(error, "Taking a ranking down failed")
                 state.update { now ->
                     if (now !is CommunityListUiState.Success) return@update now
-                    now.copy(rankings = listOf(mine) + now.rankings, rankingCount = now.rankingCount + 1)
+                    now.copy(rankings = listOfNotNull(mine) + now.rankings, rankingCount = now.rankingCount + 1, rankingShown = true)
                 }
                 messages.send(UserMessage.ActionFailed)
             }
@@ -234,6 +238,7 @@ internal class ListRankings(
         if (at < 0) firstPageRead = false
         return copy(
             sendingRanking = false,
+            rankingShown = true,
             rankings = placed,
             rankingCount = rankingCount + if (shown.created) 1 else 0,
             chosenRanking = if (wasShown) ranking else chosenRanking,
