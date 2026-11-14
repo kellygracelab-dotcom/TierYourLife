@@ -143,7 +143,7 @@
     <string name="moderation_moderators_unavailable">Moderatör listesi okunamadı.</string>
     <string name="community_rankings_title">Sıralamalar</string>
     <string name="community_rankings_body">Aynı kartlar, birinin kendi usulünce dizilmiş. Kimin sıralarının gösterileceğini seçin.</string>
-    <string name="community_ranking_author">Listenin yazarı</string>
+    <string name="community_ranking_author">Yazar</string>
     <string name="community_ranking_you">Siz</string>
     <string name="community_ranking_withdraw">Geri çek</string>
     <string name="community_action_rankings">Sıralamalar · %1$d</string>
@@ -270,6 +270,9 @@
     </plurals>
     <string name="community_show_my_ranking">Sıralamamı başkalarına göster</string>
     <string name="community_sign_in_to_show_ranking">Sıralamanızı göstermek için oturum açın</string>
+    <string name="community_ranking_like">Beğen</string>
+    <string name="community_sign_in_to_like">Sıralamaları beğenmek için oturum açın</string>
+    <string name="community_too_many_likes">Bu saat içinde çok fazla beğeni. Daha sonra tekrar deneyin.</string>
     <string name="community_ranking_shown">Sıralamanız listenin sıralamaları arasında</string>
     <string name="community_action_sign_in">Oturum aç</string>
     <string name="community_your_list_badge">Sizin listeniz</string>

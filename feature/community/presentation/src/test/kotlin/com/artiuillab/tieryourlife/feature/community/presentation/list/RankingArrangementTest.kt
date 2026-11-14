@@ -116,4 +116,24 @@ class RankingArrangementTest {
         assertEquals(listOf("Film 2"), board.tiers[1].items.map { it.title })
         assertEquals(listOf("Film 0", "Film 3"), board.tiers.single { it.isPool }.items.map { it.title })
     }
+
+    // SPEC list-flow п. 5 / К3: an opened ranking shows the cards its reader added, where they put them.
+    @Test
+    fun cardsTheReaderAdded_showWhereTheyPutThem_andTheUnplacedOneInThePool() {
+        val added = ranking.copy(
+            mine = false,
+            rows = listOf(listOf(2), emptyList(), listOf(0)),
+            allRows = listOf(listOf(4, 2), listOf(5), listOf(0)),
+            addedCards = listOf(TierItem(0, "Dune", "https://x/dune.jpg"), TierItem(1, "Alien", null), TierItem(2, "Solaris", null)),
+        )
+
+        val board = placedBy(answer, added)
+
+        assertEquals(listOf("Dune", "Film 2"), board.tiers[0].items.map { it.title })
+        assertEquals(listOf("Alien"), board.tiers[1].items.map { it.title })
+        assertEquals(listOf("Film 0"), board.tiers[2].items.map { it.title })
+        assertEquals(listOf("Film 1", "Film 3", "Solaris"), board.tiers.single { it.isPool }.items.map { it.title })
+        assertEquals("https://x/dune.jpg", board.tiers[0].items.first().imageUrl)
+        assertEquals(board.tiers.flatMap { it.items }.size, board.tiers.flatMap { it.items }.map { it.id }.toSet().size)
+    }
 }

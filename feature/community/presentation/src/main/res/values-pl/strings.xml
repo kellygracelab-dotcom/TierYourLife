@@ -147,7 +147,7 @@
     <string name="moderation_moderators_unavailable">Nie udało się odczytać listy moderatorów.</string>
     <string name="community_rankings_title">Rankingi</string>
     <string name="community_rankings_body">Te same karty ułożone po czyjemuś. Wybierz, czyje rzędy pokazać.</string>
-    <string name="community_ranking_author">Autor listy</string>
+    <string name="community_ranking_author">Autor</string>
     <string name="community_ranking_you">Ty</string>
     <string name="community_ranking_withdraw">Wycofaj</string>
     <string name="community_action_rankings">Rankingi · %1$d</string>
@@ -282,6 +282,9 @@
     </plurals>
     <string name="community_show_my_ranking">Pokaż mój ranking innym</string>
     <string name="community_sign_in_to_show_ranking">Zaloguj się, aby pokazać swój ranking</string>
+    <string name="community_ranking_like">Lubię to</string>
+    <string name="community_sign_in_to_like">Zaloguj się, aby polubić ranking</string>
+    <string name="community_too_many_likes">Za dużo polubień w tej godzinie. Spróbuj później.</string>
     <string name="community_ranking_shown">Twój ranking jest wśród rankingów listy</string>
     <string name="community_action_sign_in">Zaloguj się</string>
     <string name="community_your_list_badge">Twoja lista</string>
