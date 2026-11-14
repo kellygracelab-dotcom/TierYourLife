@@ -420,6 +420,8 @@ class CommunityListViewModel @Inject constructor(
 
     fun showMyRanking(languageTag: String = "") {
         val current = _state.value as? CommunityListUiState.Success ?: return
+        // Nothing placed is nothing to show: saving the copy would mark the empty board arranged and send it.
+        if (!current.canShowRanking) return
         if (current.signedIn) choices.showMine(languageTag) else rankings.showMine()
     }
 
