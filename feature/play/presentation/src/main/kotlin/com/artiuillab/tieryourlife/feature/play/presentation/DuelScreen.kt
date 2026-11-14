@@ -468,12 +468,14 @@ private fun DuelCard(card: TierItem, metrics: DuelMetrics, chosen: Boolean?, sti
                 .then(ring),
             contentAlignment = Alignment.Center,
         ) {
-            if (card.imageUrl != null) {
+            var broken by remember(card.imageUrl) { mutableStateOf(false) }
+            if (card.imageUrl != null && !broken) {
                 AsyncImage(
                     model = card.imageUrl,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
+                    onError = { broken = true },
                 )
             } else {
                 Box(
