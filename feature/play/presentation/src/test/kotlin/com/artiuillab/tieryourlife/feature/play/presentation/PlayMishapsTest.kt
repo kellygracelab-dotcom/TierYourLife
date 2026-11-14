@@ -12,7 +12,6 @@ import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -40,8 +39,6 @@ class PlayMishapsTest {
         viewModel.picker.start()
         viewModel.playToTheEnd()
 
-        viewModel.result.apply()
-
         val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
         assertEquals(PlayNotice.Failed, said.notice)
         assertEquals(unranked.ids(), repository.board.ids())
@@ -49,7 +46,7 @@ class PlayMishapsTest {
         viewModel.open()
         viewModel.state.firstWithin { picker(it)?.resume != null }
         viewModel.picker.resume()
-        assertTrue(viewModel.state.value.stage is PlayStage.Finished)
+        assertEquals(PlayStage.Closed, viewModel.state.value.stage)
     }
 
     @Test
@@ -59,10 +56,8 @@ class PlayMishapsTest {
         val viewModel = viewModel(games, boards)
         viewModel.open()
         viewModel.picker.start()
-        viewModel.playToTheEnd()
         boards.gone = true
-
-        viewModel.result.apply()
+        viewModel.playToTheEnd()
 
         val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
         assertEquals(PlayNotice.Failed, said.notice)
@@ -106,10 +101,8 @@ class PlayMishapsTest {
         val viewModel = viewModel(games, MovingTierRepository(unranked), PlayRequest.someoneElses("abc", 7, theirs, mine))
         viewModel.open()
         viewModel.picker.start()
-        viewModel.playToTheEnd()
         viewModel.offer(PlayRequest.someoneElses("abc", 8, theirs, mine))
-
-        viewModel.result.apply()
+        viewModel.playToTheEnd()
 
         val first = viewModel.events.firstWithin { it is PlayEvent.Said || it is PlayEvent.Arranged }
         assertEquals(PlayEvent.Said(PlayNotice.ListUpdated), first)
@@ -130,22 +123,6 @@ class PlayMishapsTest {
         val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
         assertEquals(PlayNotice.ListUpdated, said.notice)
         eventually { games.games.isEmpty() }
-    }
-
-    @Test
-    fun playingAgainAfterANewVersion_offersNothingOfTheOldOne() = runBlocking {
-        val games = FakeSavedGames()
-        val viewModel = viewModel(games, MovingTierRepository(unranked), PlayRequest.someoneElses("abc", 7, theirs, mine))
-        viewModel.open()
-        viewModel.picker.start()
-        viewModel.playToTheEnd()
-        viewModel.offer(PlayRequest.someoneElses("abc", 8, theirs, mine))
-
-        viewModel.result.playAgain()
-
-        eventually { games.games.isEmpty() }
-        delay(100)
-        assertNull(picker(viewModel.state.value)!!.resume)
     }
 
     private fun viewModel(

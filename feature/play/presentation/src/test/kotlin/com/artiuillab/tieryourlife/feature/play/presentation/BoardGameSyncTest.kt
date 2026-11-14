@@ -67,9 +67,6 @@ class BoardGameSyncTest {
         viewModel.open()
         viewModel.picker.start()
         while (viewModel.state.value.stage is PlayStage.Dueling) viewModel.duel.pick(first = true)
-        eventually { repository.board.play != null }
-
-        viewModel.result.apply()
 
         viewModel.events.firstWithin { it is PlayEvent.Arranged }
         eventually { repository.board.play == null && KEY !in games.games }

@@ -89,46 +89,6 @@
     <string name="play_skip">تخطي</string>
     <string name="play_skip_hint">تخطَّ إن لم تستطع الاختيار. لا يُسجَّل شيء.</string>
     <string name="play_pick">اختيار %1$s</string>
-    <string name="play_your_result">نتيجتك</string>
-    <plurals name="play_from_duels">
-        <item quantity="zero">من دون مواجهات</item>
-        <item quantity="one">من مواجهة واحدة</item>
-        <item quantity="two">من مواجهتين</item>
-        <item quantity="few">من %1$d مواجهات</item>
-        <item quantity="many">من %1$d مواجهة</item>
-        <item quantity="other">من %1$d مواجهة</item>
-    </plurals>
-    <string name="play_dashed_legend">الإطار المتقطّع: لعبت أقل من مواجهتين.</string>
-    <string name="play_empty_tier">فارغ</string>
-    <string name="play_nothing_to_apply">تم تخطي كل المواجهات، فلا شيء لتطبيقه.</string>
-    <plurals name="play_thin">
-        <item quantity="zero">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="one">%1$d بطاقة لعبت أقل من مواجهتين، لذا مكانها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="two">%1$d بطاقتان لعبتا أقل من مواجهتين، لذا مكانهما تخمين. يضيف التحسين حتى %2$d مواجهة لهما، أو طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="few">%1$d بطاقات لعبت أقل من مواجهتين، لذا أماكنها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="many">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="other">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. يضيف التحسين حتى %2$d مواجهة لها، أو طبّق الآن وعدّل يدويًا.</item>
-    </plurals>
-    <plurals name="play_thin_refined">
-        <item quantity="zero">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="one">%1$d بطاقة لعبت أقل من مواجهتين، لذا مكانها تخمين. طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="two">%1$d بطاقتان لعبتا أقل من مواجهتين، لذا مكانهما تخمين. طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="few">%1$d بطاقات لعبت أقل من مواجهتين، لذا أماكنها تخمين. طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="many">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. طبّق الآن وعدّل يدويًا.</item>
-        <item quantity="other">%1$d بطاقة لعبت أقل من مواجهتين، لذا أماكنها تخمين. طبّق الآن وعدّل يدويًا.</item>
-    </plurals>
-    <string name="play_apply">تطبيق</string>
-    <string name="play_put_in_mine">ضعها في «ترتيبي»</string>
-    <string name="play_refine">تحسين</string>
-    <plurals name="play_refine_up_to">
-        <item quantity="zero">تحسين · لا مواجهات</item>
-        <item quantity="one">تحسين · مواجهة واحدة</item>
-        <item quantity="two">تحسين · حتى مواجهتين</item>
-        <item quantity="few">تحسين · حتى %1$d مواجهات</item>
-        <item quantity="many">تحسين · حتى %1$d مواجهة</item>
-        <item quantity="other">تحسين · حتى %1$d مواجهة</item>
-    </plurals>
-    <string name="play_again">العب مجددًا</string>
     <string name="play_snack_game_saved">حُفظت اللعبة · %1$d من %2$d</string>
     <string name="play_snack_discard">تجاهل</string>
     <plurals name="play_snack_arranged">
@@ -140,8 +100,10 @@
         <item quantity="other">رُتّبت اللوحة من %1$d مواجهة</item>
     </plurals>
     <string name="play_snack_saved_discarded">تم تجاهل اللعبة المحفوظة</string>
-    <string name="play_snack_result_discarded">تم تجاهل النتيجة</string>
     <string name="play_snack_undo">تراجع</string>
+    <string name="play_snack_game_undone">عادت اللوحة كما كانت قبل اللعبة</string>
+    <string name="play_snack_redo">إعادة</string>
+    <string name="play_snack_nothing_answered">لم تُجب عن أي مواجهة، لذا لم يتحرك شيء</string>
     <string name="play_snack_not_saved">تعذّر حفظ اللعبة</string>
     <string name="play_snack_list_updated">تم تحديث هذه القائمة أثناء اللعب، لذلك أُلغيت اللعبة</string>
     <string name="play_random_sample">اختيار عشوائي</string>
@@ -149,7 +111,4 @@
     <string name="play_select_candidates">اختيار جميع البطاقات المتاحة</string>
     <string name="play_clear_selection">إلغاء الاختيار</string>
     <string name="play_card_unnamed">بطاقة بلا عنوان</string>
-    <string name="play_unplayed_options">البطاقات خارج اللعبة</string>
-    <string name="play_unplayed_keep">إبقاؤها في مستوياتها الأصلية بعد البطاقات التي لعبت</string>
-    <string name="play_unplayed_pool">نقل إلى المجموعة</string>
 </resources>

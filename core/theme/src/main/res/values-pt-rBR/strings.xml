@@ -47,18 +47,13 @@
     <string name="community_return_to_pool_title">Devolver todas as cartas à reserva?</string>
     <string name="community_return_to_pool_explanation">A distribuição nos níveis será redefinida.</string>
     <string name="community_return_to_pool_confirm">Devolver à reserva</string>
-    <string name="ranking_choice_title">Salvar seu progresso</string>
-    <plurals name="ranking_choice_body">
-        <item quantity="one">Você posicionou %1$d de %2$d cartão. Publique seu ranking ao lado do original ou salve em particular e continue.</item>
-        <item quantity="many">Você posicionou %1$d de %2$d cartões. Publique seu ranking ao lado do original ou salve em particular e continue.</item>
-        <item quantity="other">Você posicionou %1$d de %2$d cartões. Publique seu ranking ao lado do original ou salve em particular e continue.</item>
-    </plurals>
-    <string name="ranking_choice_public">Publicar meu ranking</string>
     <string name="ranking_choice_sign_in">Entrar para publicar</string>
-    <string name="ranking_choice_private">Salvar para mim</string>
+    <string name="ranking_offer_title">Mostrar aos outros como você classificou?</string>
+    <string name="ranking_offer_show">Mostrar em Classificações</string>
+    <string name="ranking_offer_sign_in">Entre para compartilhar</string>
+    <string name="ranking_offer_not_now">Agora não</string>
     <string name="publication_preview_title">Como será publicado</string>
     <string name="publication_preview_ranking">Será seu ranking ao lado da lista original. Sua cópia particular continuará editável.</string>
-    <string name="publication_preview_list">Será uma lista independente com referência ao original. Sua cópia particular continuará editável.</string>
     <string name="publication_preview_confirm">Publicar</string>
     <string name="source_changed">A lista original mudou. Abra-a novamente antes de publicar seu ranking.</string>
     <string name="ranking_choice_storage_account">Sua cópia particular está salva na biblioteca e é sincronizada com sua conta.</string>

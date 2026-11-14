@@ -56,13 +56,14 @@ internal class BoardPublicationController(
         busy(false, null)
     }
 
-    fun loaded(list: TierList) {
+    /** Offered once: with every card placed, or straight after a game with anything placed. */
+    fun loaded(list: TierList, afterGame: Boolean = false) {
         if (mutable.value.preview?.let { !same(it.list, list) } == true) dismissPreview()
         if (mutable.value.offer?.let { !same(it.list, list) } == true) dismissOffer()
         if (!canOffer(list)) return
         val total = list.tiers.sumOf { it.items.size }
         val placed = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
-        if (total == 0 || placed * PROGRESS_DENOMINATOR <= total * PROGRESS_NUMERATOR) return
+        if (placed == 0 || (placed < total && !afterGame)) return
         offerJob?.cancel()
         val who = owner()
         val ticket = generation
@@ -121,11 +122,14 @@ internal class BoardPublicationController(
         }
     }
 
+    /** Somebody else's list never goes out as a separate one; only its own cards, as a ranking. */
     private fun review(list: TierList) {
         val who = owner()
         action {
             val result = community.classifyPublication(list).getOrThrow()
-            if (active(it, who) && present(list, who)) mutable.value = mutable.value.copy(preview = PublicationPreview(list, result, who))
+            if (!active(it, who) || !present(list, who)) return@action
+            if (result is PublicationKind.NewList && result.basedOn != null) fail(PublishError.RankInstead)
+            else mutable.value = mutable.value.copy(preview = PublicationPreview(list, result, who))
         }
     }
 
@@ -141,18 +145,6 @@ internal class BoardPublicationController(
     }
     fun dismissOffer() {
         mutable.value = mutable.value.copy(offer = null)
-    }
-
-    fun keepPrivate() {
-        val offer = mutable.value.offer ?: return
-        if (mutable.value.busy) return
-        action { ticket ->
-            if (!present(offer.list, offer.owner)) return@action
-            repository.setRankingChoice(offer.list.id, RankingChoice.Private)
-            if (!active(ticket, offer.owner)) return@action
-            dismissOffer()
-            reload()
-        }
     }
 
     fun shareOffer(onSignIn: () -> Unit) {
@@ -276,10 +268,5 @@ internal class BoardPublicationController(
     private fun fail(reason: PublishError) {
         error(reason)
         mutable.value = mutable.value.copy(error = reason)
-    }
-
-    private companion object {
-        const val PROGRESS_NUMERATOR = 3
-        const val PROGRESS_DENOMINATOR = 10
     }
 }

@@ -52,19 +52,13 @@
     <string name="community_return_to_pool_title">Zwrócić wszystkie karty do puli?</string>
     <string name="community_return_to_pool_explanation">Układ kart na poziomach zostanie wyzerowany.</string>
     <string name="community_return_to_pool_confirm">Zwróć do puli</string>
-    <string name="ranking_choice_title">Zachowaj postęp</string>
-    <plurals name="ranking_choice_body">
-        <item quantity="one">Ułożono %1$d z %2$d karty. Opublikuj swój ranking obok oryginału albo zapisz go prywatnie i kontynuuj.</item>
-        <item quantity="few">Ułożono %1$d z %2$d kart. Opublikuj swój ranking obok oryginału albo zapisz go prywatnie i kontynuuj.</item>
-        <item quantity="many">Ułożono %1$d z %2$d kart. Opublikuj swój ranking obok oryginału albo zapisz go prywatnie i kontynuuj.</item>
-        <item quantity="other">Ułożono %1$d z %2$d kart. Opublikuj swój ranking obok oryginału albo zapisz go prywatnie i kontynuuj.</item>
-    </plurals>
-    <string name="ranking_choice_public">Opublikuj mój ranking</string>
     <string name="ranking_choice_sign_in">Zaloguj się, aby opublikować</string>
-    <string name="ranking_choice_private">Zapisz dla siebie</string>
+    <string name="ranking_offer_title">Pokazać innym, jak ją ułożyłeś?</string>
+    <string name="ranking_offer_show">Pokaż w Rankingach</string>
+    <string name="ranking_offer_sign_in">Zaloguj się, aby udostępnić</string>
+    <string name="ranking_offer_not_now">Nie teraz</string>
     <string name="publication_preview_title">Sposób publikacji</string>
     <string name="publication_preview_ranking">To będzie Twój ranking obok oryginalnej listy. Prywatna kopia pozostanie edytowalna.</string>
-    <string name="publication_preview_list">To będzie osobna lista z odniesieniem do oryginału. Prywatna kopia pozostanie edytowalna.</string>
     <string name="publication_preview_confirm">Opublikuj</string>
     <string name="source_changed">Oryginalna lista się zmieniła. Otwórz ją ponownie przed publikacją rankingu.</string>
     <string name="ranking_choice_storage_account">Prywatna kopia jest zapisana w bibliotece i synchronizowana z Twoim kontem.</string>

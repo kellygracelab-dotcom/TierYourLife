@@ -39,16 +39,15 @@ class RankingChoiceUiJourneyTest {
         if (::vm.isInitialized) vm.viewModelScope.cancel()
     }
 
-    @Test fun privateButtonKeepsSevenCardsInTheLibraryAndClosesTheOfferWithoutPublishing() {
+    @Test fun notNowClosesTheOfferWithoutSavingOrPublishing() {
         val boards = show(signedIn = true)
-        placeSeven()
+        placeAll()
         compose.onNodeWithTag("ranking_choice_dialog").assertIsDisplayed()
-        compose.waitUntil(5_000) { (vm.state.value as? CommunityListUiState.Success)?.saving == false }
-        compose.onNodeWithTag("ranking_choice_private").performClick()
+        compose.onNodeWithTag("ranking_choice_not_now").performClick()
         compose.onNodeWithTag("ranking_choice_dialog").assertDoesNotExist()
         compose.runOnIdle {
-            assertEquals(7L, (vm.state.value as CommunityListUiState.Success).savedId)
-            assertEquals(7, boards.templates.last().tiers.sumOf { it.items.size })
+            assertEquals(null, (vm.state.value as CommunityListUiState.Success).savedId)
+            assertTrue(boards.templates.isEmpty())
             assertTrue(boards.publishedIds.isEmpty())
             assertTrue(boards.rankings.isEmpty())
             assertEquals(0, publicCalls)
@@ -58,13 +57,12 @@ class RankingChoiceUiJourneyTest {
     @Test fun guestPublicButtonKeepsPrivateProgressAndUsesSignInWithoutAnAutomaticPublicAction() {
         var signIns = 0
         val boards = show(signedIn = false, onSignIn = { signIns++ })
-        placeSeven()
+        placeAll()
         compose.onNodeWithTag("ranking_choice_dialog").assertIsDisplayed()
-        compose.waitUntil(5_000) { (vm.state.value as? CommunityListUiState.Success)?.saving == false }
         compose.onNodeWithTag("ranking_choice_public").performClick()
         compose.waitUntil(5_000) { signIns == 1 }
         compose.runOnIdle {
-            assertEquals(7, boards.templates.last().tiers.sumOf { it.items.size })
+            assertEquals(20, boards.templates.last().tiers.sumOf { it.items.size })
             assertTrue(boards.publishedIds.isEmpty())
             assertTrue(boards.rankings.isEmpty())
             assertEquals(0, publicCalls)
@@ -109,7 +107,7 @@ class RankingChoiceUiJourneyTest {
         return boards
     }
 
-    private fun placeSeven() {
-        compose.runOnIdle { repeat(7) { vm.moveItem(it.toLong(), 0, it) } }
+    private fun placeAll() {
+        compose.runOnIdle { repeat(20) { vm.moveItem(it.toLong(), 0, it) } }
     }
 }

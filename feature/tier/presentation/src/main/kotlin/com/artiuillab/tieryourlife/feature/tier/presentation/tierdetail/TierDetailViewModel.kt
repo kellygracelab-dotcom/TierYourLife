@@ -111,7 +111,6 @@ class TierDetailViewModel @Inject constructor(
     fun dismissPublication() = publication.dismissPreview()
     fun dismissPublicationError() = publication.dismissError()
     fun dismissRankingOffer() = publication.dismissOffer()
-    fun keepRankingPrivate() = publication.keepPrivate()
     fun shareRankingOffer(onSignIn: () -> Unit) = publication.shareOffer(onSignIn)
     fun recheckOriginal() = publication.recheckOriginal()
 
@@ -234,6 +233,11 @@ class TierDetailViewModel @Inject constructor(
     fun loadTierList() {
         viewModelScope.launch { reloadTierList() }
         if (boardsBesideWanted) loadBoardsBeside()
+    }
+
+    /** A game's result, or its undo, went through the repository: the board reads itself again, and a result may be shown to others. */
+    fun arrangedByGame(undone: Boolean) {
+        viewModelScope.launch { reloadTierList(afterGame = !undone) }
     }
 
     /** A phone never shows the column, so it never reads it. */
@@ -465,7 +469,7 @@ class TierDetailViewModel @Inject constructor(
 
     private var loadRevision = 0
 
-    private suspend fun reloadTierList() {
+    private suspend fun reloadTierList(afterGame: Boolean = false) {
         val revision = ++loadRevision
         val owner = (accountRepository.current() as? Account.SignedIn)?.recordKey
         val hasVisibleList = board is TierDetailUiState.Success
@@ -479,7 +483,7 @@ class TierDetailViewModel @Inject constructor(
             } else {
                 TierDetailUiState.Error
             }
-            if (list != null) publication.loaded(list)
+            if (list != null) publication.loaded(list, afterGame)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

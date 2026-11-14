@@ -61,30 +61,6 @@
     <string name="play_skip">Atla</string>
     <string name="play_skip_hint">Seçemiyorsanız atlayın. Hiçbir şey kaydedilmez.</string>
     <string name="play_pick">%1$s seç</string>
-    <string name="play_your_result">Sonucunuz</string>
-    <plurals name="play_from_duels">
-        <item quantity="one">%1$d düellodan</item>
-        <item quantity="other">%1$d düellodan</item>
-    </plurals>
-    <string name="play_dashed_legend">Kesikli: 2 düellodan az oynadı.</string>
-    <string name="play_empty_tier">Boş</string>
-    <string name="play_nothing_to_apply">Tüm düellolar geçildi, uygulanacak bir şey yok.</string>
-    <plurals name="play_thin">
-        <item quantity="one">%1$d kart 2 düellodan az oynadı, bu yüzden yeri bir tahmin. Netleştir onun için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>
-        <item quantity="other">%1$d kart 2 düellodan az oynadı, bu yüzden yerleri bir tahmin. Netleştir onlar için en fazla %2$d düello ekler; ya da şimdi uygulayıp elle düzeltin.</item>
-    </plurals>
-    <plurals name="play_thin_refined">
-        <item quantity="one">%1$d kart 2 düellodan az oynadı, bu yüzden yeri bir tahmin. Şimdi uygulayıp elle düzeltin.</item>
-        <item quantity="other">%1$d kart 2 düellodan az oynadı, bu yüzden yerleri bir tahmin. Şimdi uygulayıp elle düzeltin.</item>
-    </plurals>
-    <string name="play_apply">Uygula</string>
-    <string name="play_put_in_mine">“Benimki”ne koy</string>
-    <string name="play_refine">Netleştir</string>
-    <plurals name="play_refine_up_to">
-        <item quantity="one">Netleştir · %1$d düello</item>
-        <item quantity="other">Netleştir · en fazla %1$d düello</item>
-    </plurals>
-    <string name="play_again">Yeniden oyna</string>
     <string name="play_snack_game_saved">Oyun kaydedildi · %1$d/%2$d</string>
     <string name="play_snack_discard">Vazgeç</string>
     <plurals name="play_snack_arranged">
@@ -92,8 +68,10 @@
         <item quantity="other">Pano %1$d düellodan düzenlendi</item>
     </plurals>
     <string name="play_snack_saved_discarded">Kayıtlı oyun silindi</string>
-    <string name="play_snack_result_discarded">Sonuç silindi</string>
     <string name="play_snack_undo">Geri al</string>
+    <string name="play_snack_game_undone">Oyundan önceki tahtaya dönüldü</string>
+    <string name="play_snack_redo">Yinele</string>
+    <string name="play_snack_nothing_answered">Hiç düello yanıtlanmadı, hiçbir şey taşınmadı</string>
     <string name="play_snack_not_saved">Oyun kaydedilemedi</string>
     <string name="play_snack_list_updated">Liste oyun sırasında güncellendi, bu yüzden oyun silindi</string>
     <string name="play_random_sample">Rastgele seçim</string>
@@ -101,7 +79,4 @@
     <string name="play_select_candidates">Tüm uygun kartları seç</string>
     <string name="play_clear_selection">Seçimi temizle</string>
     <string name="play_card_unnamed">Başlıksız kart</string>
-    <string name="play_unplayed_options">Oyun dışındaki kartlar</string>
-    <string name="play_unplayed_keep">Oynanan kartlardan sonra özgün seviyelerinde tut</string>
-    <string name="play_unplayed_pool">Havuza taşı</string>
 </resources>

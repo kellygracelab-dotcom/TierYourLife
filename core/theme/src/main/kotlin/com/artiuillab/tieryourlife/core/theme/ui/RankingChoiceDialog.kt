@@ -6,39 +6,29 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.artiuillab.tieryourlife.core.theme.R
 
-/** Both actions keep progress; public visibility always requires the explicit action. */
+/** Asked once, after a game or with every card placed; nothing goes public without Show in Rankings. */
 @Composable
 fun RankingChoiceDialog(
-    placed: Int,
-    total: Int,
     signedIn: Boolean,
     busy: Boolean,
-    onPrivate: () -> Unit,
-    onPublic: () -> Unit,
-    onDismiss: () -> Unit,
+    onShow: () -> Unit,
+    onNotNow: () -> Unit,
 ) {
     AlertDialog(
         modifier = Modifier.testTag("ranking_choice_dialog"),
-        onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text(stringResource(R.string.ranking_choice_title)) },
-        text = {
-            Text(
-                pluralStringResource(R.plurals.ranking_choice_body, total, placed, total) + "\n\n" +
-                    stringResource(if (signedIn) R.string.ranking_choice_storage_account else R.string.ranking_choice_storage_guest),
-            )
-        },
+        onDismissRequest = { if (!busy) onNotNow() },
+        title = { Text(stringResource(R.string.ranking_offer_title)) },
         confirmButton = {
-            TextButton(onClick = onPublic, enabled = !busy, modifier = Modifier.testTag("ranking_choice_public")) {
-                Text(stringResource(if (signedIn) R.string.ranking_choice_public else R.string.ranking_choice_sign_in))
+            TextButton(onClick = onShow, enabled = !busy, modifier = Modifier.testTag("ranking_choice_public")) {
+                Text(stringResource(if (signedIn) R.string.ranking_offer_show else R.string.ranking_offer_sign_in))
             }
         },
         dismissButton = {
-            TextButton(onClick = onPrivate, enabled = !busy, modifier = Modifier.testTag("ranking_choice_private")) {
-                Text(stringResource(R.string.ranking_choice_private))
+            TextButton(onClick = onNotNow, enabled = !busy, modifier = Modifier.testTag("ranking_choice_not_now")) {
+                Text(stringResource(R.string.ranking_offer_not_now))
             }
         },
     )

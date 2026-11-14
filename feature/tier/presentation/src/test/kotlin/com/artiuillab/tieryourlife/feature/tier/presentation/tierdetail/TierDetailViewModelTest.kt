@@ -140,13 +140,13 @@ class TierDetailViewModelTest {
     }
 
     @Test
-    fun crossingThirtyPercentOffersOnce_andPrivateChoicePreservesTheMovedCard() = runBlocking {
+    fun placingTheLastCardOffersOnce_andNotNowKeepsTheMovedCard() = runBlocking {
         val cards = (1L..20L).map { TierItem(it, "Card $it", null, sourceIndex = (it - 1).toInt()) }
         val sourceCopy = TierList(
             1, "Original", takenFrom = "src-1",
             tiers = listOf(
-            Tier(10, "A", "#000000", "#000000", cards.take(6)),
-            Tier(20, "Pool", "#000000", "#000000", cards.drop(6), isPool = true),
+            Tier(10, "A", "#000000", "#000000", cards.take(19)),
+            Tier(20, "Pool", "#000000", "#000000", cards.drop(19), isPool = true),
         ),
         )
         val repository = FakeTierRepository(sourceCopy)
@@ -157,14 +157,14 @@ class TierDetailViewModelTest {
         assertNull(viewModel.publicationState.value.offer)
 
         repository.releaseMoves()
-        viewModel.moveItem(7, 10, 6)
+        viewModel.moveItem(20, 10, 19)
         viewModel.publicationState.firstWithin { it.offer != null }
         assertEquals(RankingChoice.Offered, repository.getTierListById(1)!!.rankingChoice)
-        viewModel.keepRankingPrivate()
+        viewModel.dismissRankingOffer()
         viewModel.publicationState.firstWithin { it.offer == null && !it.busy }
         val saved = repository.getTierListById(1)!!
-        assertEquals(RankingChoice.Private, saved.rankingChoice)
-        assertEquals((1L..7L).toList(), saved.tiers.first().items.map(TierItem::id))
+        assertEquals(RankingChoice.Offered, saved.rankingChoice)
+        assertEquals((1L..20L).toList(), saved.tiers.first().items.map(TierItem::id))
         assertTrue(community.published.isEmpty())
 
         val reopened = TierDetailViewModel(repository, community, accounts, savedStateHandle())

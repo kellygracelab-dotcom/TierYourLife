@@ -21,33 +21,17 @@ internal class CommunityRankingChoices(
     private val tell: suspend (ListNotice) -> Unit,
     private val showRanking: () -> Unit,
 ) {
-    fun offerIfNeeded() {
+    fun offerIfNeeded(afterGame: Boolean = false) {
         val current = state.value as? CommunityListUiState.Success ?: return
         if (current.own || current.arriving) return
         if (!current.arranged || current.showing != Showing.Mine) return
-        val offer = rankingOffer(current.mine, progress.choice) ?: return
+        val offer = rankingOffer(current.mine, progress.choice, afterGame) ?: return
         progress.rememberChoice(RankingChoice.Offered)
         state.value = current.copy(rankingOffer = offer)
     }
 
     fun dismiss() {
         state.update { if (it is CommunityListUiState.Success) it.copy(rankingOffer = null) else it }
-    }
-
-    fun recordOffer(languageTag: String) {
-        val current = state.value as? CommunityListUiState.Success ?: return
-        if (current.rankingOffer == null || current.saving || current.savedId != null) return
-        state.value = current.copy(saving = true)
-        val owner = progress.ownerKey
-        scope.launch {
-            var id: Long? = null
-            messages.guard("Keeping the ranking offer across devices") {
-                id = progress.saveCopy(Showing.Mine, languageTag, RankingChoice.Offered)
-            }
-            if (owner == progress.ownerKey) state.update { now ->
-                if (now is CommunityListUiState.Success) now.copy(saving = false, savedId = id ?: now.savedId) else now
-            }
-        }
     }
 
     fun choose(public: Boolean, languageTag: String) {
