@@ -54,7 +54,6 @@
     <string name="ranking_offer_not_now">Agora não</string>
     <string name="publication_preview_title">Como será publicado</string>
     <string name="publication_preview_ranking">Será seu ranking ao lado da lista original. Sua cópia particular continuará editável.</string>
-    <string name="publication_preview_list">Será uma lista independente com referência ao original. Sua cópia particular continuará editável.</string>
     <string name="publication_preview_confirm">Publicar</string>
     <string name="source_changed">A lista original mudou. Abra-a novamente antes de publicar seu ranking.</string>
     <string name="ranking_choice_storage_account">Sua cópia particular está salva na biblioteca e é sincronizada com sua conta.</string>

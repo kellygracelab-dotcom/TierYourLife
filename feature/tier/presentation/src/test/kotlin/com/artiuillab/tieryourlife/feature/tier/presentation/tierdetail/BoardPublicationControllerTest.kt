@@ -134,7 +134,7 @@ class BoardPublicationControllerTest {
     @Test
     fun manualPublishShowsAuthoritativeTypeBeforeAnyWrite() = runTest {
         val h = Harness(this, copy().copy(rankingChoice = RankingChoice.Private))
-        h.community.classification = { Result.success(PublicationKind.NewList(BasedOn("source", "Original", "Author"))) }
+        h.community.classification = { Result.success(PublicationKind.NewList()) }
         h.controller.setPublic(true)
         advanceUntilIdle()
         assertTrue(h.controller.state.value.preview!!.kind is PublicationKind.NewList)
@@ -144,16 +144,18 @@ class BoardPublicationControllerTest {
         assertEquals(1, h.community.published.size)
     }
 
+    // SPEC 14.11 п.4: a changed copy of somebody else's list is not a separate list of one's own.
     @Test
-    fun derivativePreviewPinsSourceVersionForLegacyCopy_withoutChangingItsPublicKind() = runTest {
+    fun aCopyThatDiffersFromItsSource_isRefused_neverPublishedAsASeparateList() = runTest {
         val h = Harness(this, copy().copy(originVersion = null))
         h.community.classification = { Result.success(PublicationKind.NewList(BasedOn("source", "Original", "Author"), sourceVersion = 42)) }
         h.controller.setPublic(true)
         advanceUntilIdle()
-        assertTrue(h.community.published.isEmpty())
+        assertNull(h.controller.state.value.preview)
+        assertEquals(PublishError.RankInstead, h.controller.state.value.error)
         h.controller.confirmPreview()
         advanceUntilIdle()
-        assertEquals(42L, h.community.published.single().originVersion)
+        assertTrue(h.community.published.isEmpty())
     }
 
     @Test

@@ -16,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKind
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
@@ -56,18 +57,16 @@ class PublicationPreviewUiTest {
         }
     }
 
-    @Test fun theAttributedListPreviewRequiresConfirmAndPublishesThePinnedSourceSnapshotOnce() {
+    // SPEC 14.11 п.4: somebody else's list does not go out as a separate list.
+    @Test fun aChangedCopyIsNotPublishedAsASeparateList() {
         val boards = show(PublicationKind.NewList(BasedOn("original", "Original", "Author"), sourceVersion = 123))
         askToPublish()
-        val text = InstrumentationRegistry.getInstrumentation().targetContext.getString(ThemeR.string.publication_preview_list)
-        compose.onNodeWithText(text, substring = true).assertIsDisplayed()
-        compose.runOnIdle { assertTrue(posted.isEmpty()) }
-        compose.onNodeWithTag("publication_confirm").performClick()
-        compose.waitUntil(5_000) { posted.size == 1 && !vm.publicationState.value.busy }
+        compose.onNodeWithTag("publication_error").assertIsDisplayed()
+        compose.onNodeWithTag("publication_preview").assertDoesNotExist()
         compose.runOnIdle {
-            assertEquals(123L, posted.single().originVersion)
-            assertEquals(listOf(1L to "independent"), boards.publishedIds)
-            assertEquals(listOf(1L to null), boards.rankings)
+            assertEquals(PublishError.RankInstead, vm.publicationState.value.error)
+            assertTrue(posted.isEmpty())
+            assertTrue(boards.publishedIds.isEmpty())
         }
     }
 

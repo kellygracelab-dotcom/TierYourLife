@@ -99,6 +99,7 @@ class PublishAnswersTest {
         assertEquals(PublishError.TooManyLists, refusal(409, """{"error":"Too many published lists","code":"TOO_MANY_LISTS"}""").asPublishError())
         assertEquals(PublishError.ChangedElsewhere, refusal(409, """{"code":"PUBLICATION_CHANGED"}""").asPublishError())
         assertEquals(PublishError.TooManyPendingTopics, refusal(409, """{"code":"TOO_MANY_PENDING_TOPICS"}""").asPublishError())
+        assertEquals(PublishError.RankInstead, refusal(409, """{"code":"RANK_INSTEAD","listId":"abc"}""").asPublishError())
     }
 
     @Test

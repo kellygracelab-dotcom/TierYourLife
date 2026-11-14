@@ -44,7 +44,6 @@
     <string name="ranking_offer_not_now">今はしない</string>
     <string name="publication_preview_title">公開方法の確認</string>
     <string name="publication_preview_ranking">元のリストの横に自分のランキングとして公開されます。非公開のコピーは引き続き編集できます。</string>
-    <string name="publication_preview_list">元のリストへの参照を付けた別のリストとして公開されます。非公開のコピーは引き続き編集できます。</string>
     <string name="publication_preview_confirm">公開</string>
     <string name="source_changed">元のリストが変更されました。ランキングを公開する前に開き直してください。</string>
     <string name="ranking_choice_storage_account">非公開のコピーはライブラリに保存され、アカウントと同期されます。</string>

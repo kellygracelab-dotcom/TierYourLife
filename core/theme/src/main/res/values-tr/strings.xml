@@ -49,7 +49,6 @@
     <string name="ranking_offer_not_now">Şimdi değil</string>
     <string name="publication_preview_title">Nasıl yayımlanacak</string>
     <string name="publication_preview_ranking">Bu, orijinal listenin yanında senin sıralaman olacak. Özel kopyan düzenlenebilir kalacak.</string>
-    <string name="publication_preview_list">Bu, orijinale atıf yapan ayrı bir liste olacak. Özel kopyan düzenlenebilir kalacak.</string>
     <string name="publication_preview_confirm">Yayımla</string>
     <string name="source_changed">Orijinal liste değişti. Sıralamanı yayımlamadan önce listeyi yeniden aç.</string>
     <string name="ranking_choice_storage_account">Özel kopyan kitaplığına kaydedilir ve hesabınla eşitlenir.</string>

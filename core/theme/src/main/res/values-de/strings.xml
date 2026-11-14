@@ -49,7 +49,6 @@
     <string name="ranking_offer_not_now">Nicht jetzt</string>
     <string name="publication_preview_title">So wird dies veröffentlicht</string>
     <string name="publication_preview_ranking">Dies wird deine Rangliste neben der ursprünglichen Liste. Deine private Kopie bleibt bearbeitbar.</string>
-    <string name="publication_preview_list">Dies wird eine eigene Liste mit Verweis auf das Original. Deine private Kopie bleibt bearbeitbar.</string>
     <string name="publication_preview_confirm">Veröffentlichen</string>
     <string name="source_changed">Die ursprüngliche Liste wurde geändert. Öffne sie vor dem Veröffentlichen erneut.</string>
     <string name="ranking_choice_storage_account">Deine private Kopie ist in deiner Bibliothek gespeichert und wird mit deinem Konto synchronisiert.</string>

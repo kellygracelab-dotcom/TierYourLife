@@ -59,7 +59,6 @@
     <string name="ranking_offer_not_now">Не зараз</string>
     <string name="publication_preview_title">Як це буде опубліковано</string>
     <string name="publication_preview_ranking">Це буде ваш рейтинг поруч з оригінальним списком. Особиста копія залишиться доступною для змін.</string>
-    <string name="publication_preview_list">Це буде окремий список із посиланням на оригінал. Особиста копія залишиться доступною для змін.</string>
     <string name="publication_preview_confirm">Опублікувати</string>
     <string name="source_changed">Оригінальний список змінився. Відкрийте його знову перед публікацією рейтингу.</string>
     <string name="ranking_choice_storage_account">Особисту копію збережено в бібліотеці та синхронізовано з вашим обліковим записом.</string>

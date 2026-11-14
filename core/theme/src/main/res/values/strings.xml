@@ -50,7 +50,6 @@
     <string name="ranking_offer_not_now">Not now</string>
     <string name="publication_preview_title">How this will be published</string>
     <string name="publication_preview_ranking">This will be your ranking next to the original list. Your private copy stays editable.</string>
-    <string name="publication_preview_list">This will be a separate list with credit to the original. Your private copy stays editable.</string>
     <string name="publication_preview_confirm">Publish</string>
     <string name="source_changed">The original list changed. Reopen it before publishing your ranking.</string>
     <string name="ranking_choice_storage_account">Your private copy is saved in your library and synced with your account.</string>

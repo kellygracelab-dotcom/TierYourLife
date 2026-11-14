@@ -75,7 +75,7 @@ internal fun BoardPublicationDialogs(
     val preview = state.preview ?: return
     val description = when (val kind = preview.kind) {
         is PublicationKind.Ranking -> ThemeR.string.publication_preview_ranking
-        is PublicationKind.NewList -> if (kind.basedOn == null) ThemeR.string.publication_preview_independent else ThemeR.string.publication_preview_list
+        is PublicationKind.NewList -> ThemeR.string.publication_preview_independent
     }
     AlertDialog(
         modifier = Modifier.testTag("publication_preview"),

@@ -121,11 +121,14 @@ internal class BoardPublicationController(
         }
     }
 
+    /** Somebody else's list never goes out as a separate one; only its own cards, as a ranking. */
     private fun review(list: TierList) {
         val who = owner()
         action {
             val result = community.classifyPublication(list).getOrThrow()
-            if (active(it, who) && present(list, who)) mutable.value = mutable.value.copy(preview = PublicationPreview(list, result, who))
+            if (!active(it, who) || !present(list, who)) return@action
+            if (result is PublicationKind.NewList && result.basedOn != null) fail(PublishError.RankInstead)
+            else mutable.value = mutable.value.copy(preview = PublicationPreview(list, result, who))
         }
     }
 
