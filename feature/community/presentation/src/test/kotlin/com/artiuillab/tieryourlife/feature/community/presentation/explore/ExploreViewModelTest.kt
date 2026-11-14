@@ -149,14 +149,32 @@ class ExploreViewModelTest {
     }
 
     @Test
-    fun aKeptFeed_isWhatOpens() = runBlocking {
+    fun aKeptFeed_opensFirst_thenTheServersAnswer() = runBlocking {
         val cache = FakeCommunityFeedCache(mapOf("explore" to CachedFeed(CommunityPage(listOf(summary("kept"))), clock.now)))
-        val viewModel = viewModel(Community(), cache)
+        val answer = CompletableDeferred<Unit>()
+        val community = object : Community() {
+            override suspend fun feed(
+                category: String?,
+                query: String?,
+                author: String?,
+                after: String?,
+                sort: FeedSort,
+                following: Boolean,
+                topic: String?,
+            ): Result<CommunityPage> {
+                answer.await()
+                return super.feed(category, query, author, after, sort, following, topic)
+            }
+        }
+        val viewModel = viewModel(community, cache)
 
         viewModel.open()
-        val state = viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
+        val kept = viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
+        assertEquals(listOf("kept"), kept.feed.lists.map { it.id })
 
-        assertEquals(listOf("kept"), state.feed.lists.map { it.id })
+        answer.complete(Unit)
+        val fresh = viewModel.state.firstWithin { it.feed.lists.map { list -> list.id } == listOf("a", "b") }
+        assertEquals(listOf("a", "b"), fresh.feed.lists.map { it.id })
     }
 
     @Test
