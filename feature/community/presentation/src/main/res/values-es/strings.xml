@@ -281,7 +281,6 @@
         <item quantity="many">Tienes %1$d de %2$d propuestas en espera.</item>
         <item quantity="other">Tienes %1$d de %2$d propuestas en espera.</item>
     </plurals>
-    <string name="community_show_my_ranking">Mostrar mi ranking a los demás</string>
     <string name="community_sign_in_to_show_ranking">Inicia sesión para mostrar tu ranking</string>
     <string name="community_ranking_like">Me gusta</string>
     <string name="community_sign_in_to_like">Inicia sesión para dar me gusta</string>
@@ -321,4 +320,9 @@
     <string name="section_suggest_topic_body">Los temas se nombran o se eligen en «Tema» de los Ajustes de la lista. Uno nuevo sale con la lista al publicarla y espera a un moderador.</string>
     <string name="section_suggest_topic_make">Crear una lista en %1$s</string>
     <string name="section_new_list_title">Lista sin título</string>
+    <string name="community_update_in_rankings">Actualizar en Clasificaciones</string>
+    <string name="community_remove_from_rankings">Quitar de Clasificaciones</string>
+    <string name="community_remove_ranking_title">¿Quitar tu ranking de Clasificaciones?</string>
+    <string name="community_remove_ranking_body">Desaparecerá de los rankings de esta lista. Tu tablero sigue en tus listas.</string>
+    <string name="community_remove_ranking_confirm">Quitar</string>
 </resources>

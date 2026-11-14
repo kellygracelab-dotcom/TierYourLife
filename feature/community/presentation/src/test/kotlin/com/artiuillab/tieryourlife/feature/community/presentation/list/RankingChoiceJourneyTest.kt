@@ -34,6 +34,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -119,6 +120,25 @@ class RankingChoiceJourneyTest {
         assertNull(reopened.loaded().rankingOffer)
         assertEquals(7, reopened.loaded().mine.tiers.first().items.size)
         assertEquals(RankingChoice.Ranking, fixture.boards.saved?.rankingChoice)
+    }
+
+    // Coordinator, parity with the website: a page opened over a copy already in Rankings knows it,
+    // so its menu says Update and Remove, and Remove works before the Rankings are read.
+    @Test fun aCopyAlreadyInRankings_opensKnowingIt_andComesOutFromTheMenu() = runBlocking {
+        val fixture = ChoiceFixture(signedIn = true)
+        val vm = open(fixture)
+        placeSeven(vm)
+        vm.choices.choose(public = true, languageTag = "")
+        until { fixture.boards.saved?.rankingOf != null }
+
+        val reopened = open(fixture, RankingDrafts.None)
+        assertTrue(reopened.loaded().rankingShown)
+        assertTrue(reopened.loaded().rankings.isEmpty())
+
+        reopened.rankings.withdrawMine()
+        assertFalse((reopened.state.value as CommunityListUiState.Success).rankingShown)
+        until { fixture.boards.saved?.rankingOf == null }
+        assertEquals(1, fixture.withdrawn)
     }
 
     // The game's result is on the board: the offer comes straight away, however many cards it placed.
@@ -305,7 +325,13 @@ private class ChoiceFixture(signedIn: Boolean = false, translations: ListTransla
 
     @Volatile var shown = 0
 
+    @Volatile var withdrawn = 0
+
     override suspend fun open(publishedId: String) = Result.success(source)
+    override suspend fun withdrawRanking(listId: String): Result<Unit> {
+        withdrawn++
+        return Result.success(Unit)
+    }
     override suspend fun showMyRanking(listId: String, arrangement: List<Int?>, rows: List<List<Int>>, tierLabels: List<String>): Result<ShownRanking> {
         shown++
         return Result.success(ShownRanking(Ranking("me", "Me", null, arrangement, tierLabels, 123, mine = true, rows = rows), created = true))

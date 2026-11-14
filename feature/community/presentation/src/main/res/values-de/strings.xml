@@ -274,7 +274,6 @@
         <item quantity="one">%1$d von %2$d Vorschlägen wartet.</item>
         <item quantity="other">%1$d von %2$d Vorschlägen warten.</item>
     </plurals>
-    <string name="community_show_my_ranking">Meine Rangliste anderen zeigen</string>
     <string name="community_sign_in_to_show_ranking">Melde dich an, um deine Rangliste zu zeigen</string>
     <string name="community_ranking_like">Gefällt mir</string>
     <string name="community_sign_in_to_like">Melde dich an, um Ranglisten zu liken</string>
@@ -314,4 +313,9 @@
     <string name="section_suggest_topic_body">Themen werden unter „Thema“ in den Listeneinstellungen benannt oder gewählt. Ein neues geht beim Veröffentlichen mit der Liste hinaus und wartet auf einen Moderator.</string>
     <string name="section_suggest_topic_make">Liste in %1$s anlegen</string>
     <string name="section_new_list_title">Unbenannte Liste</string>
+    <string name="community_update_in_rankings">In Ranglisten aktualisieren</string>
+    <string name="community_remove_from_rankings">Aus Ranglisten entfernen</string>
+    <string name="community_remove_ranking_title">Deine Rangliste aus den Ranglisten entfernen?</string>
+    <string name="community_remove_ranking_body">Sie verschwindet aus den Ranglisten dieser Liste. Dein Board bleibt in deinen Listen.</string>
+    <string name="community_remove_ranking_confirm">Entfernen</string>
 </resources>

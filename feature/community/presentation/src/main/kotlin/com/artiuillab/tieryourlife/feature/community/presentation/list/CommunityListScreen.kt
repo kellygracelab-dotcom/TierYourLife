@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -216,6 +217,7 @@ fun CommunityListScreenContent(
     var coverVisible by remember { mutableStateOf(false) }
     var reportedFrom by remember { mutableStateOf(false) }
     var rankingsVisible by remember { mutableStateOf(false) }
+    var removeRankingVisible by remember { mutableStateOf(false) }
     val openRankings = {
         onOpenRankings()
         rankingsVisible = true
@@ -344,7 +346,7 @@ fun CommunityListScreenContent(
                         onChooseRanking(ranking)
                     },
                     onLoadMore = onLoadMoreRankings,
-                    onWithdraw = onWithdrawRanking,
+                    onWithdraw = { removeRankingVisible = true },
                     onLike = onLikeRanking,
                 )
             }
@@ -360,9 +362,19 @@ fun CommunityListScreenContent(
                     onOpenRankings = openRankings,
                     onReturnAllToPool = { returnToPoolVisible = true },
                     onAboutCover = { coverVisible = true },
+                    onRemoveRanking = { removeRankingVisible = true },
                     own = own,
                 )
             }
+
+            RemoveRankingDialog(
+                visible = removeRankingVisible,
+                onDismiss = { removeRankingVisible = false },
+                onRemove = {
+                    removeRankingVisible = false
+                    onWithdrawRanking()
+                },
+            )
 
             CoverSheet(loaded.list.title, loaded.cover.takeIf { coverVisible }, onDismiss = { coverVisible = false })
 
@@ -415,6 +427,24 @@ fun CommunityListScreenContent(
     }
 }
 
+/** Taking one's own ranking out of the list's Rankings, asked first: the board on this phone stays. */
+@Composable
+private fun RemoveRankingDialog(visible: Boolean, onDismiss: () -> Unit, onRemove: () -> Unit) {
+    if (!visible) return
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.testTag(CommunityListTestTags.REMOVE_RANKING_DIALOG),
+        title = { Text(stringResource(R.string.community_remove_ranking_title)) },
+        text = { Text(stringResource(R.string.community_remove_ranking_body)) },
+        confirmButton = {
+            TextButton(onClick = onRemove, modifier = Modifier.testTag(CommunityListTestTags.REMOVE_RANKING_CONFIRM)) {
+                Text(stringResource(R.string.community_remove_ranking_confirm))
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(ThemeR.string.action_cancel)) } },
+    )
+}
+
 /** Who made a house list's cover, while the menu's line for it is open. */
 @Composable
 private fun CoverSheet(title: String, cover: CoverCredit?, onDismiss: () -> Unit) {
@@ -442,6 +472,7 @@ private fun ListMenu(
     onOpenRankings: () -> Unit,
     onReturnAllToPool: () -> Unit,
     onAboutCover: () -> Unit,
+    onRemoveRanking: () -> Unit,
     own: OwnListCallbacks,
 ) {
     fun closing(action: () -> Unit): () -> Unit = {
@@ -459,6 +490,8 @@ private fun ListMenu(
         onReport = closing(onReport).takeUnless { mine },
         onShowMyRanking = closing(onShowMyRanking).takeIf { loaded.canShowRanking },
         signInToShowRanking = !loaded.signedIn,
+        rankingShown = loaded.rankingShown,
+        onRemoveRanking = closing(onRemoveRanking).takeIf { loaded.rankingShown && loaded.signedIn && !mine },
         // The board's own Public switch does it there, and keeps the board in step.
         onTakeDown = closing(own.onTakeDown).takeIf { mine && !loaded.fromBoard },
         onOpenRankings = closing(onOpenRankings),

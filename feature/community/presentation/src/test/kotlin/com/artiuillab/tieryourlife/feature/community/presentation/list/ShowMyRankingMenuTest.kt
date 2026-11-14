@@ -37,6 +37,7 @@ class ShowMyRankingMenuTest {
 
     private var shown = 0
     private var signIns = 0
+    private var withdrawn = 0
 
     private fun openMenu(state: CommunityListUiState.Success, notice: RankingNotice? = null) {
         composeRule.setContent {
@@ -49,6 +50,7 @@ class ShowMyRankingMenuTest {
                     onRetry = {},
                     onShowMyRanking = { shown++ },
                     onSignIn = { signIns++ },
+                    onWithdrawRanking = { withdrawn++ },
                     rankingNotices = notice?.let { flowOf(it) } ?: flowOf(),
                 )
             }
@@ -60,7 +62,7 @@ class ShowMyRankingMenuTest {
     fun arrangedMine_offersToShowIt_andTappingSendsIt() {
         openMenu(arranged.copy(showing = Showing.Mine))
 
-        composeRule.onNodeWithText("Show my ranking to others").performClick()
+        composeRule.onNodeWithText("Show in Rankings").performClick()
 
         composeRule.runOnIdle { assertEquals(1, shown) }
     }
@@ -89,6 +91,37 @@ class ShowMyRankingMenuTest {
         openMenu(arranged.copy(authorUid = "me", own = true))
 
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_SHOW_RANKING).assertDoesNotExist()
+    }
+
+    // As on the website: once it is in Rankings, the menu updates it there or takes it out.
+    @Test
+    fun alreadyInRankings_updatesIt_insteadOfShowingIt() {
+        openMenu(arranged.copy(showing = Showing.Mine, rankingShown = true))
+
+        composeRule.onNodeWithText("Show in Rankings").assertDoesNotExist()
+        composeRule.onNodeWithText("Update in Rankings").performClick()
+
+        composeRule.runOnIdle { assertEquals(1, shown) }
+    }
+
+    @Test
+    fun removingFromRankings_asksFirst() {
+        openMenu(arranged.copy(rankingShown = true))
+
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_REMOVE_RANKING).performClick()
+        composeRule.onNodeWithText("Remove your ranking from Rankings?").assertExists()
+        composeRule.runOnIdle { assertEquals(0, withdrawn) }
+        composeRule.onNodeWithTag(CommunityListTestTags.REMOVE_RANKING_CONFIRM).performClick()
+
+        composeRule.runOnIdle { assertEquals(1, withdrawn) }
+        composeRule.onNodeWithTag(CommunityListTestTags.REMOVE_RANKING_DIALOG).assertDoesNotExist()
+    }
+
+    @Test
+    fun notInRankings_offersNoRemove() {
+        openMenu(arranged)
+
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_REMOVE_RANKING).assertDoesNotExist()
     }
 
     @Test

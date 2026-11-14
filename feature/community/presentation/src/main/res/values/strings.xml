@@ -274,7 +274,6 @@
         <item quantity="one">You have %1$d of %2$d proposals waiting.</item>
         <item quantity="other">You have %1$d of %2$d proposals waiting.</item>
     </plurals>
-    <string name="community_show_my_ranking">Show my ranking to others</string>
     <string name="community_sign_in_to_show_ranking">Sign in to show your ranking</string>
     <string name="community_ranking_like">Like</string>
     <string name="community_sign_in_to_like">Sign in to like rankings</string>
@@ -314,4 +313,9 @@
     <string name="section_suggest_topic_body">Topics are named or chosen under Topic in a list’s List settings. A new one goes out with the list when it is published and waits for a moderator.</string>
     <string name="section_suggest_topic_make">Make a list in %1$s</string>
     <string name="section_new_list_title">Untitled list</string>
+    <string name="community_update_in_rankings">Update in Rankings</string>
+    <string name="community_remove_from_rankings">Remove from Rankings</string>
+    <string name="community_remove_ranking_title">Remove your ranking from Rankings?</string>
+    <string name="community_remove_ranking_body">It leaves this list’s rankings. Your board stays in Your lists.</string>
+    <string name="community_remove_ranking_confirm">Remove</string>
 </resources>

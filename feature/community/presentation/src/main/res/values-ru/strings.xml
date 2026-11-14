@@ -288,7 +288,6 @@
         <item quantity="many">Ждут %1$d из %2$d ваших предложений.</item>
         <item quantity="other">Ждут %1$d из %2$d ваших предложений.</item>
     </plurals>
-    <string name="community_show_my_ranking">Показать мой рейтинг другим</string>
     <string name="community_sign_in_to_show_ranking">Войдите, чтобы показать свой рейтинг</string>
     <string name="community_ranking_like">Нравится</string>
     <string name="community_sign_in_to_like">Войдите, чтобы ставить лайки</string>
@@ -328,4 +327,9 @@
     <string name="section_suggest_topic_body">Темы называют или выбирают в пункте «Тема» в настройках списка. Новая тема выходит вместе со списком, когда его публикуют, и ждёт модератора.</string>
     <string name="section_suggest_topic_make">Создать список в разделе «%1$s»</string>
     <string name="section_new_list_title">Список без названия</string>
+    <string name="community_update_in_rankings">Обновить в рейтингах</string>
+    <string name="community_remove_from_rankings">Убрать из рейтингов</string>
+    <string name="community_remove_ranking_title">Убрать вашу расстановку из рейтингов?</string>
+    <string name="community_remove_ranking_body">Она исчезнет из рейтингов этого списка. Доска останется в ваших списках.</string>
+    <string name="community_remove_ranking_confirm">Убрать</string>
 </resources>

@@ -70,7 +70,7 @@ internal class PrivateRankingProgress(
             choice = copy?.rankingChoice ?: record?.choice
         }
         val shown = kept?.let { fresh.copy(mine = it, showing = Showing.Mine, arranged = true) } ?: fresh
-        return continuing ?: shown.copy(savedId = copy?.id)
+        return continuing ?: shown.copy(savedId = copy?.id, rankingShown = copy?.rankingOf == listId)
     }
 
     suspend fun ownerChanged(account: String?) {
@@ -113,6 +113,7 @@ internal class PrivateRankingProgress(
                 moreRankings = false,
                 savedId = copy?.id,
                 rankingOffer = null,
+                rankingShown = copy?.rankingOf == listId,
             )
             if (mine === guestProgress && guestProgress != null) keep()
         }
@@ -168,6 +169,7 @@ internal class PrivateRankingProgress(
     }
 
     suspend fun publicVisibility(shown: Boolean) {
+        state.update { if (it is CommunityListUiState.Success) it.copy(rankingShown = shown) else it }
         rememberChoice(RankingChoice.Ranking)
         savedCopy?.takeIf { isCurrentOwner }?.let { tiers.setRankingOf(it.id, listId.takeIf { shown }) }
     }
