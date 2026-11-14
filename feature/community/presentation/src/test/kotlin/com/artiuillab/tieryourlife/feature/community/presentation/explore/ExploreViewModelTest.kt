@@ -33,6 +33,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -103,11 +104,12 @@ class ExploreViewModelTest {
         community: FakeCommunityRepository,
         cache: FakeCommunityFeedCache = FakeCommunityFeedCache(),
         kept: SectionDirectory? = null,
+        preferences: FakeAppPreferences = FakeAppPreferences(),
     ) = ExploreViewModel(
         community,
         cache,
         FakeCommunityNetwork(),
-        FakeAppPreferences(),
+        preferences,
         clock,
         sectionCatalogFor(community, FakeSectionStore(kept), clock),
         signedInFollows(),
@@ -218,13 +220,13 @@ class ExploreViewModelTest {
         viewModel.open()
         viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
 
-        viewModel.enterSearch()
-        viewModel.updateQuery("ramen")
+        viewModel.search.enter()
+        viewModel.search.update("ramen")
         val searched = viewModel.state.firstWithin { it.results.lists.isNotEmpty() }
         assertEquals(listOf("a"), searched.results.lists.map { it.id })
         assertTrue("ramen" in community.queries)
 
-        viewModel.exitSearch()
+        viewModel.search.exit()
         val closed = viewModel.state.firstWithin { it.query == null }
         assertEquals(listOf("a", "b"), closed.feed.lists.map { it.id })
     }
@@ -242,8 +244,8 @@ class ExploreViewModelTest {
         viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
 
         withContext(Dispatchers.Main) {
-            viewModel.enterSearch()
-            viewModel.updateQuery("star")
+            viewModel.search.enter()
+            viewModel.search.update("star")
         }
 
         val found = viewModel.state.firstWithin { it.results.topics.isNotEmpty() }
@@ -267,11 +269,11 @@ class ExploreViewModelTest {
         viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready && it.answered() }
 
         withContext(Dispatchers.Main) {
-            viewModel.enterSearch()
-            viewModel.updateQuery("anime")
+            viewModel.search.enter()
+            viewModel.search.update("anime")
         }
         viewModel.state.firstWithin { it.query == "anime" && !it.results.loading && "anime" in community.queries }
-        withContext(Dispatchers.Main) { viewModel.updateQuery("zzqx") }
+        withContext(Dispatchers.Main) { viewModel.search.update("zzqx") }
         withTimeout(5_000) { community.told.await() }
 
         assertEquals(listOf("zzqx"), community.misses)
@@ -302,11 +304,11 @@ class ExploreViewModelTest {
         val viewModel = viewModel(community)
         viewModel.open()
         viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
-        viewModel.enterSearch()
-        viewModel.updateQuery("ramen")
+        viewModel.search.enter()
+        viewModel.search.update("ramen")
         viewModel.state.firstWithin { it.results.failed }
 
-        viewModel.retrySearch()
+        viewModel.search.retry()
 
         val found = viewModel.state.firstWithin { it.results.lists.isNotEmpty() }
         assertEquals(listOf("a"), found.results.lists.map { it.id })
@@ -323,7 +325,65 @@ class ExploreViewModelTest {
 
         assertEquals(mapOf("a" to false), viewModel.state.firstWithin { it.feed.justHidden.isNotEmpty() }.feed.justHidden)
     }
+
+    // SPEC list-flow К6: search pages on like the website's, in the server's order, each list once.
+    @Test
+    fun aSearch_pagesOn_inTheServersOrder_withoutRepeats() = runBlocking {
+        val community = object : Community() {
+            val afters = mutableListOf<String?>()
+
+            override suspend fun feed(
+                category: String?,
+                query: String?,
+                author: String?,
+                after: String?,
+                sort: FeedSort,
+                following: Boolean,
+                topic: String?,
+            ): Result<CommunityPage> {
+                if (query == null) return super.feed(category, query, author, after, sort, following, topic)
+                afters += after
+                return Result.success(
+                    if (after == null) CommunityPage(listOf(summary("c"), summary("a")), nextCursor = "a")
+                    else CommunityPage(listOf(summary("a"), summary("b")), nextCursor = null),
+                )
+            }
+        }
+        val viewModel = viewModel(community)
+        viewModel.open()
+        withContext(Dispatchers.Main) {
+            viewModel.search.enter()
+            viewModel.search.update("ramen")
+        }
+        val first = viewModel.state.firstWithin { it.results.lists.isNotEmpty() }
+        assertTrue(first.results.canLoadMore)
+
+        withContext(Dispatchers.Main) { viewModel.search.loadMore() }
+
+        val all = viewModel.state.firstWithin { it.results.lists.size == 3 }
+        assertEquals(listOf("c", "a", "b"), all.results.lists.map { it.id })
+        assertFalse(all.results.canLoadMore)
+        assertEquals(listOf(null, "a"), community.afters)
+    }
+
+    // SPEC list-flow К6: as on the website, an editorial list has no author to hide.
+    @Test
+    fun hidingTheEditorialAccount_keepsItsLists_butAnotherAuthorGoes() = runBlocking {
+        val editorial = summary("house", author = EDITORIAL_UID)
+        val preferences = FakeAppPreferences().apply {
+            hideAuthor(EDITORIAL_UID, "TierYourLife")
+            hideAuthor("u-a", "Author a")
+        }
+        val viewModel = viewModel(Community(lists = listOf(summary("a"), editorial, summary("b"))), preferences = preferences)
+
+        viewModel.open()
+
+        val ready = viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }
+        assertEquals(listOf("house", "b"), ready.feed.lists.map { it.id })
+    }
 }
+
+private const val EDITORIAL_UID = "85RRieyLyUPCEqHjdYCdxVlWxHx2"
 
 private const val ANSWERED = 3
 

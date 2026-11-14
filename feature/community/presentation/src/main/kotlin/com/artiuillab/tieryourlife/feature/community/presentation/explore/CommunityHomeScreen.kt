@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -117,6 +118,7 @@ class ExploreCallbacks(
     val onQueryChange: (String) -> Unit = {},
     val onExitSearch: () -> Unit = {},
     val onRetrySearch: () -> Unit = {},
+    val onLoadMoreSearch: () -> Unit = {},
     val onTogglePick: (String) -> Unit = {},
     val onFollowPicked: () -> Unit = {},
     /** Withdraws a waiting section proposal, or dismisses a notice. */
@@ -195,10 +197,11 @@ fun CommunityHomeScreen(
             exploreCalls = ExploreCallbacks(
                 onFollowSection = explore::follow,
                 onUnfollowSection = explore::unfollow,
-                onEnterSearch = explore::enterSearch,
-                onQueryChange = explore::updateQuery,
-                onExitSearch = explore::exitSearch,
-                onRetrySearch = explore::retrySearch,
+                onEnterSearch = explore.search::enter,
+                onQueryChange = explore.search::update,
+                onExitSearch = explore.search::exit,
+                onRetrySearch = explore.search::retry,
+                onLoadMoreSearch = explore.search::loadMore,
                 onTogglePick = following::togglePick,
                 onFollowPicked = following::followPicked,
                 onWithdrawProposal = following::withdrawProposal,
@@ -371,6 +374,7 @@ private fun HomeBody(
                 layout = layout,
                 cards = CardActions(destinations.onOpenList) { exploreMenu = it },
                 onRetry = exploreCalls.onRetrySearch,
+                onLoadMore = exploreCalls.onLoadMoreSearch,
                 onOpenTopic = destinations.onOpenTopic,
                 sections = explore.sections,
                 onOpenSection = destinations.onOpenSection,
@@ -619,13 +623,20 @@ private fun SearchResultsGrid(
     onOpenTopic: (Topic) -> Unit,
     sections: List<Section> = emptyList(),
     onOpenSection: (String) -> Unit = {},
+    onLoadMore: () -> Unit = {},
 ) {
-    val alpha = rememberSkeletonAlpha(running = results.loading)
+    val alpha = rememberSkeletonAlpha(running = results.loading || results.loadingMore)
+    val grid = rememberLazyGridState()
+    val nearEnd by remember {
+        derivedStateOf { (grid.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) >= grid.layoutInfo.totalItemsCount - SEARCH_NEAR_END }
+    }
+    LaunchedEffect(nearEnd, results.lists.size, results.canLoadMore) { if (nearEnd && results.canLoadMore) onLoadMore() }
     val found = matchingSections(sections, query)
     val full: androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope.() -> androidx.compose.foundation.lazy.grid.GridItemSpan =
         { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }
     LazyVerticalGrid(
         columns = GridCells.Fixed(layout.feedColumns.coerceAtLeast(2)),
+        state = grid,
         modifier = Modifier
             .fillMaxSize()
             .testTag(ExploreTestTags.SEARCH_RESULTS),
@@ -678,10 +689,13 @@ private fun SearchResultsGrid(
                         coverHeight = layout.coverHeight,
                     )
                 }
+                if (results.loadingMore) items(2) { SkeletonCard(alpha, coverHeight = layout.coverHeight) }
             }
         }
     }
 }
+
+private const val SEARCH_NEAR_END = 4
 
 /** Sections named by what was typed, in any language or by id. */
 @Composable

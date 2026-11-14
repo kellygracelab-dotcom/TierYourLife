@@ -1,12 +1,10 @@
 package com.artiuillab.tieryourlife.feature.community.domain.model
 
 /**
- * When a kept feed is still good enough to show without asking, when it is
- * old enough to say so, and how often a failed one may try again on its own.
+ * When a kept feed is old enough to say so, and how often a failed one may
+ * try again on its own. It is never good enough to skip asking the server.
  */
 object FeedFreshness {
-
-    const val STALE_AFTER_MILLIS: Long = 5 * 60 * 1000L
 
     const val OFFLINE_STRIP_AFTER_MILLIS: Long = 60 * 60 * 1000L
 
@@ -17,8 +15,6 @@ object FeedFreshness {
 
     /** How many lists of a feed are kept: the first page, which is what a screen opens on. */
     const val KEPT_LISTS: Int = 20
-
-    fun isStale(fetchedAtMillis: Long, nowMillis: Long): Boolean = nowMillis - fetchedAtMillis > STALE_AFTER_MILLIS
 
     /** Said only when the last attempt failed and what is on screen is older than an hour. */
     fun showsOfflineStrip(lastAttemptFailed: Boolean, fetchedAtMillis: Long, nowMillis: Long): Boolean =

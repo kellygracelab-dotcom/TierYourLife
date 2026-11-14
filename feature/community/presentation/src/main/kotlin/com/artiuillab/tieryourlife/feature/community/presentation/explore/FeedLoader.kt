@@ -48,8 +48,7 @@ sealed interface FeedNotice {
 
 /**
  * A feed opened from what the phone kept and refreshed by the rules of §13:
- * the kept page shows at once, the server is asked when it is missing or older
- * than five minutes, an answer that lands while the person is scrolled down is
+ * the kept page shows at once, the server is asked on every arrival, an answer that lands while the person is scrolled down is
  * held behind the New lists pill, and a failure leaves what is on screen with
  * at most a strip saying how old it is.
  */
@@ -80,9 +79,9 @@ class FeedLoader(
     private var readFor: String? = cache.reader()
 
     /**
-     * On every arrival: the kept page first, then the server when that is
-     * missing, old, or last failed. Somebody else signed in meanwhile starts
-     * from nothing: what is on screen was the last person's.
+     * On every arrival: the kept page first, then the server, every time.
+     * Somebody else signed in meanwhile starts from nothing: what is on
+     * screen was the last person's.
      */
     fun open() {
         val reader = cache.reader()
@@ -102,8 +101,7 @@ class FeedLoader(
                 readKept = true
                 cache.read(key)?.let { kept -> show(kept.page, kept.fetchedAtMillis) }
             }
-            val at = fetchedAt
-            if (at == null || lastAttemptFailed || FeedFreshness.isStale(at, clock.nowMillis())) refresh(pulled = false)
+            refresh(pulled = false)
         }
     }
 
