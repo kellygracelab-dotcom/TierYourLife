@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -54,6 +57,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
@@ -65,6 +69,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSection
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 internal object SectionTestTags {
     const val SCREEN = "section_screen"
@@ -73,6 +78,9 @@ internal object SectionTestTags {
     const val TOPICS = "section_topics"
     const val TOPIC_PICTURE = "section_topic_picture"
     const val SHOW_ALL_TOPICS = "section_show_all_topics"
+    const val SUGGEST_TOPIC = "section_suggest_topic"
+    const val SUGGEST_TOPIC_DIALOG = "section_suggest_topic_dialog"
+    const val MAKE_LIST = "section_make_list"
     const val SORT = "section_sort"
     const val LOADING = "section_loading"
     const val EMPTY = "section_empty"
@@ -153,6 +161,7 @@ internal fun TopicTiles(
     waiting: List<Topic>,
     onOpen: (Topic) -> Unit,
     onOpenWaiting: (Topic) -> Unit,
+    onSuggest: () -> Unit,
 ) = BoxWithConstraints {
     val columns = (maxWidth / TOPIC_TILE_MIN_WIDTH).toInt().coerceAtLeast(2)
     val tiles = topics.map { it to false } + waiting.map { it to true }
@@ -160,7 +169,10 @@ internal fun TopicTiles(
     val folded = tiles.size > columns * FOLDED_ROWS
     val shown = if (folded && !all) tiles.take(columns * FOLDED_ROWS) else tiles
     Column(Modifier.testTag(SectionTestTags.TOPICS)) {
-        BlockHeading(stringResource(R.string.section_topics), tiles.size.takeIf { it > 0 }, Modifier.padding(top = 8.dp, bottom = 12.dp))
+        Row(Modifier.padding(top = 4.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            BlockHeading(stringResource(R.string.section_topics), tiles.size.takeIf { it > 0 }, Modifier.weight(1f))
+            SuggestTopicButton(onSuggest)
+        }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             shown.chunked(columns).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -181,6 +193,44 @@ internal fun TopicTiles(
         }
         HorizontalDivider(Modifier.padding(top = 24.dp, bottom = 4.dp), color = MaterialTheme.colorScheme.outlineVariant)
     }
+}
+
+/** Where topics come from, said first: a tap alone makes nothing. */
+@Composable
+private fun SuggestTopicButton(onClick: () -> Unit) {
+    TextButton(
+        onClick = onClick,
+        contentPadding = PaddingValues(start = 8.dp, end = 12.dp),
+        modifier = Modifier
+            .height(SUGGEST_HEIGHT)
+            .testTag(SectionTestTags.SUGGEST_TOPIC),
+    ) {
+        PlusIcon(18.dp, MaterialTheme.colorScheme.primary)
+        Spacer(Modifier.width(6.dp))
+        Text(stringResource(R.string.section_suggest_topic), style = MaterialTheme.typography.labelLarge, maxLines = 1)
+    }
+}
+
+private val SUGGEST_HEIGHT = 32.dp
+
+/**
+ * What suggesting a topic means: a topic is named or chosen in a list's
+ * settings when it is published, so the way to one is a list in this section.
+ */
+@Composable
+internal fun SuggestTopicDialog(section: Section, onDismiss: () -> Unit, onMake: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.testTag(SectionTestTags.SUGGEST_TOPIC_DIALOG),
+        title = { Text(stringResource(R.string.section_suggest_topic)) },
+        text = { Text(stringResource(R.string.section_suggest_topic_body)) },
+        confirmButton = {
+            TextButton(onClick = onMake, modifier = Modifier.testTag(SectionTestTags.MAKE_LIST)) {
+                Text(stringResource(R.string.section_suggest_topic_make, sectionLabel(section.id)))
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(ThemeR.string.action_cancel)) } },
+    )
 }
 
 /** A block's heading in the section headings' style, with how many when that is known. */

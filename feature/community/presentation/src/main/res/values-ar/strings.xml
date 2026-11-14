@@ -337,4 +337,9 @@
     <string name="moderation_not_kept">تعذّر إبقاء القائمة: البلاغات ما زالت مفتوحة. أعد المحاولة.</string>
     <string name="moderation_not_moved">لم تُنقل: القائمة في مكانها. أعد المحاولة.</string>
     <string name="moderation_moved_not_dismissed">نُقلت، لكن بلاغاتها ما زالت مفتوحة. اضغط «إبقاء» لتفريغها.</string>
+    <string name="community_action_redo">إعادة</string>
+    <string name="section_suggest_topic">اقتراح موضوع</string>
+    <string name="section_suggest_topic_body">تُسمّى المواضيع أو تُختار تحت «الموضوع» في «إعدادات القائمة». يخرج الموضوع الجديد مع القائمة عند نشرها وينتظر مشرفًا.</string>
+    <string name="section_suggest_topic_make">أنشئ قائمة في %1$s</string>
+    <string name="section_new_list_title">قائمة بلا عنوان</string>
 </resources>

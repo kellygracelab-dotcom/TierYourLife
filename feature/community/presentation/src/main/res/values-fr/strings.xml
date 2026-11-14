@@ -316,4 +316,9 @@
     <string name="moderation_not_kept">Impossible de laisser la liste : les signalements sont toujours ouverts. Réessayez.</string>
     <string name="moderation_not_moved">Non déplacée : la liste est restée où elle était. Réessayez.</string>
     <string name="moderation_moved_not_dismissed">Déplacée, mais ses signalements sont toujours ouverts. Touchez « Laisser » pour les clore.</string>
+    <string name="community_action_redo">Rétablir</string>
+    <string name="section_suggest_topic">Proposer un thème</string>
+    <string name="section_suggest_topic_body">Les thèmes se nomment ou se choisissent sous « Thème » dans les Paramètres de la liste. Un nouveau part avec la liste à sa publication et attend un modérateur.</string>
+    <string name="section_suggest_topic_make">Créer une liste dans %1$s</string>
+    <string name="section_new_list_title">Liste sans titre</string>
 </resources>

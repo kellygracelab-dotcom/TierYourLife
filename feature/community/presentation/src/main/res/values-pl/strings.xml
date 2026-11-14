@@ -323,4 +323,9 @@
     <string name="moderation_not_kept">Nie udało się zostawić listy: zgłoszenia są nadal otwarte. Spróbuj ponownie.</string>
     <string name="moderation_not_moved">Nie przeniesiono: lista jest tam, gdzie była. Spróbuj ponownie.</string>
     <string name="moderation_moved_not_dismissed">Przeniesiono, ale zgłoszenia nadal są otwarte. Dotknij „Zostaw”, aby je zamknąć.</string>
+    <string name="community_action_redo">Przywróć</string>
+    <string name="section_suggest_topic">Zaproponuj temat</string>
+    <string name="section_suggest_topic_body">Tematy nazywa się lub wybiera w polu „Temat” w Ustawieniach listy. Nowy wychodzi razem z listą przy publikacji i czeka na moderatora.</string>
+    <string name="section_suggest_topic_make">Utwórz listę w: %1$s</string>
+    <string name="section_new_list_title">Lista bez tytułu</string>
 </resources>

@@ -25,6 +25,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowA
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.signedInFollows
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
@@ -107,6 +108,7 @@ class SectionViewModelTest {
         sectionId: String = "games",
         afterSignIn: FollowAfterSignIn = signedInFollows(),
         savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("sectionId" to sectionId)),
+        tiers: RecordingTierRepository = RecordingTierRepository(),
     ) = SectionViewModel(
         savedStateHandle = savedStateHandle,
         community = community,
@@ -117,7 +119,20 @@ class SectionViewModelTest {
         sortMemory = memory,
         catalog = sectionCatalogFor(community),
         afterSignIn = afterSignIn,
+        tiers = tiers,
     ).also { made += it }
+
+    // QA Н5: Suggest a topic leads to a new list already filed under the section, which then opens.
+    @Test
+    fun makingAList_filesItUnderTheSection_andOpensIt() = runBlocking {
+        val tiers = RecordingTierRepository()
+        val viewModel = viewModel(Community(), sectionId = "anime", tiers = tiers)
+
+        viewModel.makeList("Untitled list")
+
+        assertEquals(0L, withTimeout(5_000) { viewModel.boardMade.first() })
+        assertEquals(listOf(0L to "anime"), tiers.categories)
+    }
 
     @Test
     fun aGuestsFollow_asksForASignIn_andTheSignInFollows() = runBlocking {
