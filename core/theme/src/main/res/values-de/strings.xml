@@ -42,14 +42,11 @@
     <string name="community_return_to_pool_title">Alle Karten in den Pool zurücklegen?</string>
     <string name="community_return_to_pool_explanation">Die Anordnung in den Stufen wird zurückgesetzt.</string>
     <string name="community_return_to_pool_confirm">In den Pool zurücklegen</string>
-    <string name="ranking_choice_title">Fortschritt behalten</string>
-    <plurals name="ranking_choice_body">
-        <item quantity="one">Du hast %1$d von %2$d Karte eingeordnet. Veröffentliche deine Rangliste neben dem Original oder speichere sie privat und mache weiter.</item>
-        <item quantity="other">Du hast %1$d von %2$d Karten eingeordnet. Veröffentliche deine Rangliste neben dem Original oder speichere sie privat und mache weiter.</item>
-    </plurals>
-    <string name="ranking_choice_public">Meine Rangliste veröffentlichen</string>
     <string name="ranking_choice_sign_in">Zum Veröffentlichen anmelden</string>
-    <string name="ranking_choice_private">Für mich speichern</string>
+    <string name="ranking_offer_title">Anderen zeigen, wie du sie geordnet hast?</string>
+    <string name="ranking_offer_show">In Ranglisten zeigen</string>
+    <string name="ranking_offer_sign_in">Anmelden zum Teilen</string>
+    <string name="ranking_offer_not_now">Nicht jetzt</string>
     <string name="publication_preview_title">So wird dies veröffentlicht</string>
     <string name="publication_preview_ranking">Dies wird deine Rangliste neben der ursprünglichen Liste. Deine private Kopie bleibt bearbeitbar.</string>
     <string name="publication_preview_list">Dies wird eine eigene Liste mit Verweis auf das Original. Deine private Kopie bleibt bearbeitbar.</string>

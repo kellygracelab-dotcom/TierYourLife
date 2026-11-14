@@ -62,7 +62,7 @@ internal class BoardPublicationController(
         if (!canOffer(list)) return
         val total = list.tiers.sumOf { it.items.size }
         val placed = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
-        if (total == 0 || placed * PROGRESS_DENOMINATOR <= total * PROGRESS_NUMERATOR) return
+        if (total == 0 || placed < total) return
         offerJob?.cancel()
         val who = owner()
         val ticket = generation
@@ -141,18 +141,6 @@ internal class BoardPublicationController(
     }
     fun dismissOffer() {
         mutable.value = mutable.value.copy(offer = null)
-    }
-
-    fun keepPrivate() {
-        val offer = mutable.value.offer ?: return
-        if (mutable.value.busy) return
-        action { ticket ->
-            if (!present(offer.list, offer.owner)) return@action
-            repository.setRankingChoice(offer.list.id, RankingChoice.Private)
-            if (!active(ticket, offer.owner)) return@action
-            dismissOffer()
-            reload()
-        }
     }
 
     fun shareOffer(onSignIn: () -> Unit) {
@@ -276,10 +264,5 @@ internal class BoardPublicationController(
     private fun fail(reason: PublishError) {
         error(reason)
         mutable.value = mutable.value.copy(error = reason)
-    }
-
-    private companion object {
-        const val PROGRESS_NUMERATOR = 3
-        const val PROGRESS_DENOMINATOR = 10
     }
 }

@@ -52,16 +52,11 @@
     <string name="community_return_to_pool_title">Вернуть все карточки в пул?</string>
     <string name="community_return_to_pool_explanation">Расстановка по тирам будет сброшена.</string>
     <string name="community_return_to_pool_confirm">Вернуть в пул</string>
-    <string name="ranking_choice_title">Сохранить прогресс</string>
-    <plurals name="ranking_choice_body">
-        <item quantity="one">Расставлено %1$d из %2$d карточки. Опубликуйте свой рейтинг рядом с оригиналом или сохраните его для себя и продолжайте.</item>
-        <item quantity="few">Расставлено %1$d из %2$d карточек. Опубликуйте свой рейтинг рядом с оригиналом или сохраните его для себя и продолжайте.</item>
-        <item quantity="many">Расставлено %1$d из %2$d карточек. Опубликуйте свой рейтинг рядом с оригиналом или сохраните его для себя и продолжайте.</item>
-        <item quantity="other">Расставлено %1$d из %2$d карточек. Опубликуйте свой рейтинг рядом с оригиналом или сохраните его для себя и продолжайте.</item>
-    </plurals>
-    <string name="ranking_choice_public">Опубликовать мой рейтинг</string>
     <string name="ranking_choice_sign_in">Войти для публикации</string>
-    <string name="ranking_choice_private">Сохранить для себя</string>
+    <string name="ranking_offer_title">Показать другим, как вы его разложили?</string>
+    <string name="ranking_offer_show">Показать в рейтингах</string>
+    <string name="ranking_offer_sign_in">Войти, чтобы поделиться</string>
+    <string name="ranking_offer_not_now">Не сейчас</string>
     <string name="publication_preview_title">Как это будет опубликовано</string>
     <string name="publication_preview_ranking">Это будет ваш рейтинг рядом с оригинальным списком. Личная копия останется доступной для изменений.</string>
     <string name="publication_preview_list">Это будет отдельный список с указанием оригинала. Личная копия останется доступной для изменений.</string>

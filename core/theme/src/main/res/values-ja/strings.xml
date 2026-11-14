@@ -37,13 +37,11 @@
     <string name="community_return_to_pool_title">すべてのカードをプールに戻しますか？</string>
     <string name="community_return_to_pool_explanation">ランクの配置がリセットされます。</string>
     <string name="community_return_to_pool_confirm">プールに戻す</string>
-    <string name="ranking_choice_title">進捗を保存</string>
-    <plurals name="ranking_choice_body">
-        <item quantity="other">%2$d枚中%1$d枚を配置しました。元のリストの横にランキングを公開するか、自分用に保存して続けられます。</item>
-    </plurals>
-    <string name="ranking_choice_public">自分のランキングを公開</string>
     <string name="ranking_choice_sign_in">ログインして公開</string>
-    <string name="ranking_choice_private">自分用に保存</string>
+    <string name="ranking_offer_title">自分の並べ方をほかの人に見せますか？</string>
+    <string name="ranking_offer_show">ランキングに表示</string>
+    <string name="ranking_offer_sign_in">ログインして共有</string>
+    <string name="ranking_offer_not_now">今はしない</string>
     <string name="publication_preview_title">公開方法の確認</string>
     <string name="publication_preview_ranking">元のリストの横に自分のランキングとして公開されます。非公開のコピーは引き続き編集できます。</string>
     <string name="publication_preview_list">元のリストへの参照を付けた別のリストとして公開されます。非公開のコピーは引き続き編集できます。</string>

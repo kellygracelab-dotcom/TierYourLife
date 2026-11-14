@@ -111,7 +111,6 @@ class TierDetailViewModel @Inject constructor(
     fun dismissPublication() = publication.dismissPreview()
     fun dismissPublicationError() = publication.dismissError()
     fun dismissRankingOffer() = publication.dismissOffer()
-    fun keepRankingPrivate() = publication.keepPrivate()
     fun shareRankingOffer(onSignIn: () -> Unit) = publication.shareOffer(onSignIn)
     fun recheckOriginal() = publication.recheckOriginal()
 

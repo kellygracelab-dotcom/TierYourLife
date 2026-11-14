@@ -43,14 +43,11 @@
     <string name="community_return_to_pool_title">Return all cards to the pool?</string>
     <string name="community_return_to_pool_explanation">The tier arrangement will be reset.</string>
     <string name="community_return_to_pool_confirm">Return to pool</string>
-    <string name="ranking_choice_title">Keep your progress</string>
-    <plurals name="ranking_choice_body">
-        <item quantity="one">You have placed %1$d of %2$d card. Share your ranking next to the original, or keep it private and continue.</item>
-        <item quantity="other">You have placed %1$d of %2$d cards. Share your ranking next to the original, or keep it private and continue.</item>
-    </plurals>
-    <string name="ranking_choice_public">Publish my ranking</string>
     <string name="ranking_choice_sign_in">Sign in to publish</string>
-    <string name="ranking_choice_private">Save for myself</string>
+    <string name="ranking_offer_title">Show others how you ranked it?</string>
+    <string name="ranking_offer_show">Show in Rankings</string>
+    <string name="ranking_offer_sign_in">Sign in to share</string>
+    <string name="ranking_offer_not_now">Not now</string>
     <string name="publication_preview_title">How this will be published</string>
     <string name="publication_preview_ranking">This will be your ranking next to the original list. Your private copy stays editable.</string>
     <string name="publication_preview_list">This will be a separate list with credit to the original. Your private copy stays editable.</string>

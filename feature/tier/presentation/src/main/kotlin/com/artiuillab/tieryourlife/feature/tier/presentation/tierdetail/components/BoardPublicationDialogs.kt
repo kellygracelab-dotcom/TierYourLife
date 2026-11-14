@@ -22,7 +22,6 @@ internal fun BoardPublicationDialogs(
     signedIn: Boolean,
     onConfirm: () -> Unit,
     onDismissPreview: () -> Unit,
-    onPrivate: () -> Unit,
     onPublic: () -> Unit,
     onDismissOffer: () -> Unit,
     onDismissError: () -> Unit,
@@ -70,7 +69,7 @@ internal fun BoardPublicationDialogs(
     }
     val offer = state.offer
     if (offer != null) {
-        RankingChoiceDialog(offer.placed, offer.total, signedIn, state.busy, onPrivate, onPublic, onDismissOffer)
+        RankingChoiceDialog(signedIn = signedIn, busy = state.busy, onShow = onPublic, onNotNow = onDismissOffer)
         return
     }
     val preview = state.preview ?: return

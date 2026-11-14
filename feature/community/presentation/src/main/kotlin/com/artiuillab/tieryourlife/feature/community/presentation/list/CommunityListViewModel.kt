@@ -374,7 +374,7 @@ class CommunityListViewModel @Inject constructor(
         beforeResult = BeforeResult(current.mine, current.showing, current.arranged)
         _state.value = current.copy(mine = board.inWordsOf(current.mine, current.list), showing = Showing.Mine, arranged = true)
         progress.keep()
-        choices.offerIfNeeded()
+        choices.offerIfNeeded(afterGame = true)
     }
 
     /** A single private editor action; it never changes the author's arrangement. */

@@ -132,7 +132,6 @@ fun TierDetailScreen(
         signedIn = screen.signedIn,
         onConfirm = viewModel::confirmPublication,
         onDismissPreview = viewModel::dismissPublication,
-        onPrivate = viewModel::keepRankingPrivate,
         onPublic = { viewModel.shareRankingOffer(onSignIn) },
         onDismissOffer = viewModel::dismissRankingOffer,
         onDismissError = viewModel::dismissPublicationError,
