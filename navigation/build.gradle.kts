@@ -25,4 +25,5 @@ dependencies {
     androidTestImplementation(projects.feature.tier.domain)
     androidTestImplementation(projects.feature.community.domain)
     androidTestImplementation(projects.feature.account.domain)
+    androidTestImplementation(projects.feature.play.domain)
 }

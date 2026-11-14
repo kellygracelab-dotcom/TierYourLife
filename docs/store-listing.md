@@ -1,7 +1,8 @@
 # The phone pictures in the Play listing
 
-Drawn by `StoreListingScreenshotTest`, dark theme, five screens: a board, Settings, Your lists, a
-board with its pool, Community.
+Drawn by `StoreListingScreenshotTest`, dark theme, eight screens: a board, Settings, Your lists, a
+board with its pool, Community, a game's duel, the Food section with its topics, and a list's
+Rankings sheet.
 
 Only pictures made for the app go on a card: the fruit and vegetables in
 `navigation/src/androidTest/assets/listing/`, drawn by `docs/store-listing/draw_pictures.py`, and
