@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 
 /**
@@ -50,8 +52,8 @@ internal class ListRankings(
     /** Whether the first page was read since the list opened; this reader's own may be all that is known before it. */
     private var firstPageRead = false
 
-    /** Likes on their way to the server, by whose placing: a second tap waits for the first answer. */
-    private val liking = mutableSetOf<String>()
+    /** Likes go to the server one at a time: a second tap waits for the first answer. */
+    private val liking = Mutex()
 
     private val told = Channel<RankingNotice>(Channel.BUFFERED)
     val notices: Flow<RankingNotice> = told.receiveAsFlow()
@@ -87,28 +89,30 @@ internal class ListRankings(
     /** A thumb up on somebody else's placing, or taken back; the server says which it is now (SPEC list-flow К2). */
     fun like(ranking: Ranking) {
         val current = state.value as? CommunityListUiState.Success ?: return
-        if (!ranking.likeable || ranking.uid in liking) return
+        if (!ranking.likeable) return
         if (!current.signedIn) {
             scope.launch { told.send(RankingNotice.SignInToLike) }
             return
         }
         val wanted = !ranking.likedByMe
-        liking += ranking.uid
         setLiked(ranking.uid, wanted)
         scope.launch {
-            community.likeRanking(listId, ranking.uid, wanted).fold(
-                onSuccess = { liked -> setLiked(ranking.uid, liked) },
-                onFailure = { error ->
-                    setLiked(ranking.uid, ranking.likedByMe)
-                    when ((error as? LikeRefused)?.reason) {
-                        LikeRefusal.NotSignedIn -> told.send(RankingNotice.SignInToLike)
-                        LikeRefusal.TooMany -> told.send(RankingNotice.TooManyLikes)
-                        else -> messages.send(UserMessage.ActionFailed)
-                    }
-                },
-            )
-            liking -= ranking.uid
+            liking.withLock { send(ranking, wanted) }
         }
+    }
+
+    private suspend fun send(ranking: Ranking, wanted: Boolean) {
+        community.likeRanking(listId, ranking.uid, wanted).fold(
+            onSuccess = { liked -> setLiked(ranking.uid, liked) },
+            onFailure = { error ->
+                setLiked(ranking.uid, ranking.likedByMe)
+                when ((error as? LikeRefused)?.reason) {
+                    LikeRefusal.NotSignedIn -> told.send(RankingNotice.SignInToLike)
+                    LikeRefusal.TooMany -> told.send(RankingNotice.TooManyLikes)
+                    else -> messages.send(UserMessage.ActionFailed)
+                }
+            },
+        )
     }
 
     private fun setLiked(uid: String, liked: Boolean) {
