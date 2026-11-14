@@ -54,17 +54,9 @@ class LargeGameJourneyTest {
         }
         compose.onNodeWithTag(PlayTestTags.START).performClick()
         repeat(15) { compose.onNodeWithTag(PlayTestTags.FIRST_CARD).performClick() }
-        compose.onNodeWithTag(PlayTestTags.RESULT).assertIsDisplayed()
-        // One tier is only ordered: its unplayed cards stay behind the played ones, so there is nothing to choose.
-        compose.onNodeWithTag("play_unplayed_Keep").assertDoesNotExist()
-        compose.runOnIdle {
-            val result = (vm.state.value.stage as PlayStage.Finished).result
-            assertEquals(0, result.unplayedCount)
-            assertEquals(listOf(1L), result.tiers.map { it.tierId })
-            assertEquals(91, board.tiers.first().items.size)
-        }
-        compose.onNodeWithTag(PlayTestTags.APPLY).performClick()
-        compose.waitUntil(10_000) { board.tiers.first().items.size == 91 && games.games.isEmpty() }
+        // The last answer puts the result on the board: one tier is only ordered, its unplayed cards behind.
+        compose.waitUntil(10_000) { vm.state.value.stage == PlayStage.Closed && games.games.isEmpty() }
+        compose.onNodeWithTag(PlayTestTags.DUEL).assertDoesNotExist()
         compose.runOnIdle {
             assertEquals((1L..91L).toSet(), board.tiers.flatMap { it.items }.map { it.id }.toSet())
             assertTrue(board.tiers.first { it.isPool }.items.isEmpty())
@@ -80,11 +72,9 @@ class LargeGameJourneyTest {
         }
         compose.onNodeWithTag(PlayTestTags.START).performClick()
         repeat(90) { compose.onNodeWithTag(PlayTestTags.FIRST_CARD).performClick() }
-        compose.onNodeWithTag(PlayTestTags.RESULT).assertIsDisplayed()
+        compose.waitUntil(10_000) { vm.state.value.stage == PlayStage.Closed && board.tiers.first { it.isPool }.items.isEmpty() }
         compose.runOnIdle {
-            val result = (vm.state.value.stage as PlayStage.Finished).result
-            assertEquals(91, result.tiers.flatMap { it.cards }.size)
-            assertEquals(0, result.unplayedCount)
+            assertEquals((1L..91L).toSet(), board.tiers.flatMap { it.items }.map { it.id }.toSet())
         }
     }
 

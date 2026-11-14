@@ -92,11 +92,6 @@ class PlayScreenshotTest {
     }
 
     @Test
-    fun resultOffersDefaultKeepOrPoolForUnplayedCards() = capture("play_result_unplayed") {
-        ResultScreen(result.copy(unplayedCount = 75), ResultActions())
-    }
-
-    @Test
     fun aDuel_ofTwoCardsWithoutPictures() = capture("play_duel") {
         DuelScreen(duel = duel, onPick = {}, onSkip = {}, onUndo = {}, onQuit = {})
     }
@@ -104,21 +99,6 @@ class PlayScreenshotTest {
     @Test
     fun aDuel_whileRefining_dark() = capture("play_duel_refine_dark", dark = true) {
         DuelScreen(duel = duel.copy(refining = true, number = 4, total = 17, canUndo = true), onPick = {}, onSkip = {}, onUndo = {}, onQuit = {})
-    }
-
-    @Test
-    fun aThinResult_saysWhichPlacesAreAGuess() = capture("play_result_thin") {
-        ResultScreen(result = result, actions = ResultActions())
-    }
-
-    @Test
-    fun aResult_onSomeoneElsesList_putsItInMine() = capture("play_result_mine") {
-        ResultScreen(result = result.copy(thin = false, dashed = 0, refineDuels = 0, intoMine = true, tiers = result.tiers.map { tier -> tier.copy(cards = tier.cards.map { it.copy(dashed = false) }) }), actions = ResultActions())
-    }
-
-    @Test
-    fun aResult_withEveryDuelSkipped_hasNothingToApply() = capture("play_result_nothing_to_apply") {
-        ResultScreen(result = result.copy(duels = 0, refineDuels = 0), actions = ResultActions())
     }
 
     // A Galaxy Z Flip6 held sideways: wide, and short of height.
@@ -184,36 +164,6 @@ class PlayScreenshotTest {
         DuelScreen(duel = pictureDuel, onPick = {}, onSkip = {}, onUndo = {}, onQuit = {})
     }
 
-    @Test
-    @Config(qualifiers = FLIP_LANDSCAPE)
-    fun landscape_theResult_inTwoColumns() = capture("play_landscape_result") {
-        ResultScreen(result = result, actions = ResultActions())
-    }
-
-    @Test
-    @Config(qualifiers = FLIP_LANDSCAPE)
-    fun landscape_theResult_dark() = capture("play_landscape_result_dark", dark = true) {
-        ResultScreen(result = result, actions = ResultActions())
-    }
-
-    @Test
-    @Config(qualifiers = FLIP_LANDSCAPE)
-    fun landscape_aResultOfMoreThanSixTiers_narrowsTheBands() = capture("play_landscape_result_many_tiers") {
-        ResultScreen(result = result.copy(tiers = result.tiers + extraTiers, thin = false), actions = ResultActions())
-    }
-
-    @Test
-    @Config(qualifiers = FLIP_LANDSCAPE)
-    fun landscape_aResultOfMoreThanSixTiers_dark() = capture("play_landscape_result_many_tiers_dark", dark = true) {
-        ResultScreen(result = result.copy(tiers = result.tiers + extraTiers, thin = false), actions = ResultActions())
-    }
-
-    @Test
-    @Config(qualifiers = FLIP_LANDSCAPE)
-    fun landscape_aResultWithEveryDuelSkipped_hasNothingToApply() = capture("play_landscape_result_nothing_to_apply") {
-        ResultScreen(result = result.copy(duels = 0, refineDuels = 0), actions = ResultActions())
-    }
-
     private companion object {
         const val FLIP_LANDSCAPE = "w930dp-h411dp-land-xhdpi"
 
@@ -244,30 +194,6 @@ class PlayScreenshotTest {
             round = 1,
             rounds = 8,
             canUndo = true,
-        )
-
-        private fun cards(first: Long, vararg titles: String, dashedFrom: Int = Int.MAX_VALUE) =
-            titles.mapIndexed { at, title -> ResultCard(TierItem(first + at, title, null), dashed = at >= dashedFrom) }
-
-        val result = ResultState(
-            kind = GameKind.Hill,
-            duels = 33,
-            tiers = listOf(
-                ResultTier(1, "S", "#B03A32", "#F1948C", cards(1, "Dune", "Arrival", "Alien"), caption = "Masterpiece"),
-                ResultTier(2, "A", "#C06A25", "#E9A867", cards(10, "Solaris", "Gattaca", dashedFrom = 1), caption = "Great"),
-                ResultTier(3, "B", "#C9A227", "#E7CB6B", emptyList(), caption = "Good"),
-                ResultTier(4, "C", "#3E8E5E", "#86C9A0", cards(20, "Sunshine", "Moon", "Primer", "Tenet", dashedFrom = 0), caption = "Watchable"),
-            ),
-            dashed = 5,
-            thin = true,
-            refineDuels = 17,
-            intoMine = false,
-        )
-
-        val extraTiers = listOf(
-            ResultTier(5, "D", "#2F6FA8", "#8DB8E3", cards(30, "Paycheck"), caption = "No"),
-            ResultTier(6, "E", "#6B4FA0", "#B7A1E0", emptyList()),
-            ResultTier(7, "F", "#5E5E66", "#A9A9B3", cards(40, "Battlefield Earth", "Jupiter Ascending")),
         )
 
         val manyTiers = Picker(

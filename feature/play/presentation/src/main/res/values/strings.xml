@@ -61,30 +61,6 @@
     <string name="play_skip">Skip</string>
     <string name="play_skip_hint">Skip if you can’t choose. Nothing is recorded.</string>
     <string name="play_pick">Pick %1$s</string>
-    <string name="play_your_result">Your result</string>
-    <plurals name="play_from_duels">
-        <item quantity="one">From %1$d duel</item>
-        <item quantity="other">From %1$d duels</item>
-    </plurals>
-    <string name="play_dashed_legend">Dashed: played fewer than 2 duels.</string>
-    <string name="play_empty_tier">Empty</string>
-    <string name="play_nothing_to_apply">Every duel was skipped, so there is nothing to apply.</string>
-    <plurals name="play_thin">
-        <item quantity="one">%1$d card played fewer than 2 duels, so its place is a guess. Refine adds up to %2$d duels for it, or apply now and adjust by hand.</item>
-        <item quantity="other">%1$d cards played fewer than 2 duels, so their places are a guess. Refine adds up to %2$d duels for them, or apply now and adjust by hand.</item>
-    </plurals>
-    <plurals name="play_thin_refined">
-        <item quantity="one">%1$d card played fewer than 2 duels, so its place is a guess. Apply now and adjust by hand.</item>
-        <item quantity="other">%1$d cards played fewer than 2 duels, so their places are a guess. Apply now and adjust by hand.</item>
-    </plurals>
-    <string name="play_apply">Apply</string>
-    <string name="play_put_in_mine">Put in Mine</string>
-    <string name="play_refine">Refine</string>
-    <plurals name="play_refine_up_to">
-        <item quantity="one">Refine · %1$d duel</item>
-        <item quantity="other">Refine · up to %1$d duels</item>
-    </plurals>
-    <string name="play_again">Play again</string>
     <string name="play_snack_game_saved">Game saved · %1$d of %2$d</string>
     <string name="play_snack_discard">Discard</string>
     <plurals name="play_snack_arranged">
@@ -92,8 +68,10 @@
         <item quantity="other">Board arranged from %1$d duels</item>
     </plurals>
     <string name="play_snack_saved_discarded">Saved game discarded</string>
-    <string name="play_snack_result_discarded">Result discarded</string>
     <string name="play_snack_undo">Undo</string>
+    <string name="play_snack_game_undone">Back to the board before the game</string>
+    <string name="play_snack_redo">Redo</string>
+    <string name="play_snack_nothing_answered">No duels answered, so nothing moved</string>
     <string name="play_snack_not_saved">Couldn’t save the game</string>
     <string name="play_snack_list_updated">This list was updated during the game, so the game was dropped</string>
     <string name="play_random_sample">Random selection</string>
@@ -101,7 +79,4 @@
     <string name="play_select_candidates">Select all candidates</string>
     <string name="play_clear_selection">Clear selection</string>
     <string name="play_card_unnamed">Untitled card</string>
-    <string name="play_unplayed_options">Cards outside the game</string>
-    <string name="play_unplayed_keep">Keep in original tiers, after played cards</string>
-    <string name="play_unplayed_pool">Move to pool</string>
 </resources>

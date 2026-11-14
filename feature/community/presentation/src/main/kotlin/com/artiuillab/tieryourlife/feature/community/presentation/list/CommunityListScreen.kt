@@ -145,13 +145,12 @@ fun CommunityListScreen(
     )
     val loaded = state as? CommunityListUiState.Success
     val offer = loaded?.rankingOffer
-    LaunchedEffect(offer) { if (offer != null) viewModel.choices.recordOffer(languageTag) }
     if (offer != null) {
         RankingChoiceDialog(
-            placed = offer.placed, total = offer.total, signedIn = loaded.signedIn, busy = loaded.saving,
-            onPrivate = { viewModel.choices.choose(public = false, languageTag) },
-            onPublic = { viewModel.choices.choose(public = true, languageTag) },
-            onDismiss = viewModel.choices::dismiss,
+            signedIn = loaded.signedIn,
+            busy = loaded.saving,
+            onShow = { viewModel.choices.choose(public = true, languageTag) },
+            onNotNow = viewModel.choices::dismiss,
         )
     }
     if (playRequest != null) {

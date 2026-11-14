@@ -25,6 +25,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -714,12 +715,15 @@ class CommunityListViewModelTest {
     fun nothingArranged_nothingToShow() = runBlocking {
         val community = TestCommunity()
         val viewModel = viewModel(community = community, accounts = signedIn)
-        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        // Signed in on screen: the path that used to save a copy, mark it arranged and send it empty.
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success && it.signedIn && !it.arriving } as CommunityListUiState.Success
 
         viewModel.showMyRanking()
+        delay(200)
 
         assertFalse(loaded.canShowRanking)
         assertTrue(community.shownRankings.isEmpty())
+        assertFalse((viewModel.state.value as CommunityListUiState.Success).arranged)
     }
 
     @Test

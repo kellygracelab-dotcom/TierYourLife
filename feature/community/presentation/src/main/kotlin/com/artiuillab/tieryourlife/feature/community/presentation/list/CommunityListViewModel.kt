@@ -374,7 +374,7 @@ class CommunityListViewModel @Inject constructor(
         beforeResult = BeforeResult(current.mine, current.showing, current.arranged)
         _state.value = current.copy(mine = board.inWordsOf(current.mine, current.list), showing = Showing.Mine, arranged = true)
         progress.keep()
-        choices.offerIfNeeded()
+        choices.offerIfNeeded(afterGame = true)
     }
 
     /** A single private editor action; it never changes the author's arrangement. */
@@ -420,6 +420,8 @@ class CommunityListViewModel @Inject constructor(
 
     fun showMyRanking(languageTag: String = "") {
         val current = _state.value as? CommunityListUiState.Success ?: return
+        // Nothing placed is nothing to show: saving the copy would mark the empty board arranged and send it.
+        if (!current.canShowRanking) return
         if (current.signedIn) choices.showMine(languageTag) else rankings.showMine()
     }
 

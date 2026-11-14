@@ -33,8 +33,8 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 /**
- * Play over one screen's board: the picker, the game and its result, and the
- * game put down between sittings. Scoped to the screen beneath, so it lives
+ * Play over one screen's board: the picker, the game, its result put on the
+ * board, and the game put down between sittings. Scoped to the screen beneath, so it lives
  * exactly as long as the board it plays.
  */
 @HiltViewModel
@@ -71,12 +71,12 @@ class PlayViewModel @Inject constructor(
 
     private val shelf = GameShelf(games, boards) { clock() }
 
-    private data class Arrangement(val before: TierList, val own: Boolean)
+    /** A game's result on the board: one step, undone and redone as a whole while it stands. */
+    private data class Arrangement(val before: TierList, val after: TierList, val own: Boolean, val duels: Int)
 
     val picker = PickerControls()
     val selection = SelectionControls()
     val duel = DuelControls()
-    val result = ResultControls()
     val notices = NoticeControls()
 
     private var stage: PlayStage
@@ -90,13 +90,6 @@ class PlayViewModel @Inject constructor(
     fun offer(request: PlayRequest) {
         val before = this.request
         this.request = request
-        val finished = stage as? PlayStage.Finished
-        val current = session
-        if (finished != null && current != null && current.key == request.key) {
-            val participants = current.game.ids.toSet()
-            val count = unplayedIn(request.applyTo ?: request.board, current.game, participants)
-            stage = PlayStage.Finished(finished.result.copy(unplayedCount = count))
-        }
         val news = before?.key != request.key || before.board.play != request.board.play
         if (news && session == null) {
             viewModelScope.launch {
@@ -246,83 +239,6 @@ class PlayViewModel @Inject constructor(
         }
     }
 
-    inner class ResultControls {
-        fun unplayed(policy: UnplayedPolicy) {
-            val shown = (stage as? PlayStage.Finished)?.result ?: return
-            stage = PlayStage.Finished(shown.copy(unplayedPolicy = policy))
-        }
-
-        fun apply() {
-            val current = session ?: return
-            val request = request ?: return
-            val shown = (stage as? PlayStage.Finished)?.result?.takeIf { it.canApply } ?: return
-            val placement = shown.tiers.associate { tier -> tier.tierId to tier.cards.map { it.item.id } }
-            session = null
-            close()
-            viewModelScope.launch {
-                if (outdated(current)) return@launch
-                val into = request.applyTo
-                val area = current.game.scope
-                val after = if (into != null) intoMine(into, placement, shown.unplayedPolicy, area) else ontoBoard(request.board, placement, shown.unplayedPolicy, area)
-                if (after == null) {
-                    // Still put down, finished: Resume brings the result back to apply again.
-                    stored = current.game
-                    return@launch
-                }
-                forget(current)
-                _events.send(PlayEvent.Arranged(after))
-                say(PlayNotice.BoardArranged(shown.duels))
-            }
-        }
-
-        /** Close calls on the same screen, once per game. */
-        fun refine() {
-            val current = session ?: return
-            if (current.game.spec.refine) return
-            record(current.copy(game = current.game.copy(spec = current.game.spec.copy(refine = true))))
-        }
-
-        /** Back to the picker over the same cards; the finished game stays put down until another starts. */
-        fun playAgain() {
-            val current = session ?: return
-            val request = request ?: return
-            session = null
-            if (current.key != request.key) {
-                stored = null
-                stage = PlayStage.Closed
-                open()
-                viewModelScope.launch { outdated(current) }
-                return
-            }
-            stored = current.game.takeIf { it.history.isNotEmpty() }
-            val groups = groupsOf(request.board)
-            val scope = current.game.scope
-            stage = PlayStage.Picking(
-                Picker(
-                    title = request.board.title,
-                    groups = groups,
-                    chosen = scope?.toSet() ?: groups.map { it.tierId }.toSet(),
-                    kind = current.game.spec.kind,
-                    resume = stored?.let { offerFor(it, request.board) },
-                    intoMine = request.intoMine,
-                    cards = cardsOf(request.board),
-                    selectedIds = current.game.ids,
-                ),
-            )
-        }
-
-        fun cancel() {
-            val current = session ?: return
-            session = null
-            close()
-            viewModelScope.launch {
-                forget(current)
-                discarded = current
-                say(PlayNotice.ResultDiscarded)
-            }
-        }
-    }
-
     inner class NoticeControls {
         /** From "Game saved": the game is not wanted after all. */
         fun discardSaved() {
@@ -369,17 +285,19 @@ class PlayViewModel @Inject constructor(
             }
         }
 
-        fun undoArrange() {
-            val undo = arranged ?: return
-            arranged = null
+        /** The board as it was before the game; Redo puts the game's result back. */
+        fun undoArrange() = turn(undone = true)
+
+        fun redoArrange() = turn(undone = false)
+
+        private fun turn(undone: Boolean) {
+            val step = arranged ?: return
+            val target = if (undone) step.before else step.after
             viewModelScope.launch {
-                if (!undo.own) {
-                    _events.send(PlayEvent.Arranged(undo.before, undone = true))
-                    return@launch
-                }
-                val done = restore(undo.before)
+                val done = if (step.own) restore(target) else target
                 if (done == null) say(PlayNotice.Failed)
-                _events.send(PlayEvent.Arranged(done ?: undo.before, undone = true))
+                _events.send(PlayEvent.Arranged(done ?: target, undone))
+                if (done != null) say(if (undone) PlayNotice.GameUndone(step.duels) else PlayNotice.BoardArranged(step.duels))
             }
         }
     }
@@ -400,6 +318,7 @@ class PlayViewModel @Inject constructor(
         )
         val replaced = stored
         stored = null
+        arranged = null
         lastKind = kind
         show(Session(request.key, request.board, game, own = !request.intoMine))
         viewModelScope.launch {
@@ -413,16 +332,17 @@ class PlayViewModel @Inject constructor(
         }
     }
 
-    private fun intoMine(mine: TierList, placement: Map<Long, List<Long>>, unplayed: UnplayedPolicy, area: List<Long>?): TierList {
-        arranged = Arrangement(mine, own = false)
-        return mine.arrangedBy(placement, unplayed, area)
+    private fun intoMine(mine: TierList, placement: Map<Long, List<Long>>, unplayed: UnplayedPolicy, area: List<Long>?, duels: Int): TierList {
+        val after = mine.arrangedBy(placement, unplayed, area)
+        arranged = Arrangement(mine, after, own = false, duels)
+        return after
     }
 
     /**
      * One compare-and-apply transaction on the current board. A concurrent edit
      * or a failed commit leaves that board intact and the result available to retry.
      */
-    private suspend fun ontoBoard(board: TierList, placement: Map<Long, List<Long>>, unplayed: UnplayedPolicy, area: List<Long>?): TierList? {
+    private suspend fun ontoBoard(board: TierList, placement: Map<Long, List<Long>>, unplayed: UnplayedPolicy, area: List<Long>?, duels: Int): TierList? {
         val before = runSuspendCatching { boards.getTierListById(board.id) }.getOrNull()
         val done = before?.let {
             runSuspendCatching {
@@ -432,7 +352,7 @@ class PlayViewModel @Inject constructor(
             }.onFailure { Timber.w(it, "Arranging a board from a game failed") }.getOrNull()
         }
         if (before != null && done != null) {
-            arranged = Arrangement(before, own = true)
+            arranged = Arrangement(before, done, own = true, duels)
             return done
         }
         val back = runSuspendCatching { boards.getTierListById(board.id) }.getOrNull() ?: board
@@ -450,12 +370,48 @@ class PlayViewModel @Inject constructor(
 
     private fun show(next: Session) {
         session = next
-        stage = stageOf(next, request?.intoMine == true)
+        val duel = stageOf(next)
+        if (duel != null) stage = duel else finish(next, resultOf(next, request?.intoMine == true))
     }
 
     private fun record(next: Session) {
         show(next)
-        viewModelScope.launch { persist(next) }
+        if (session == next) viewModelScope.launch { persist(next) }
+    }
+
+    /**
+     * The last answer puts the result on the board, with no screen between:
+     * one step that Undo takes back and Redo puts again. A game of skips
+     * alone is no evidence and moves nothing.
+     */
+    private fun finish(current: Session, shown: ResultState) {
+        val request = request ?: return
+        session = null
+        close()
+        viewModelScope.launch {
+            if (outdated(current)) return@launch
+            if (!shown.canApply) {
+                forget(current)
+                say(PlayNotice.NothingAnswered)
+                return@launch
+            }
+            val placement = shown.tiers.associate { tier -> tier.tierId to tier.cards.map { it.item.id } }
+            val into = request.applyTo
+            val area = current.game.scope
+            val after = if (into != null) {
+                intoMine(into, placement, shown.unplayedPolicy, area, shown.duels)
+            } else {
+                ontoBoard(request.board, placement, shown.unplayedPolicy, area, shown.duels)
+            }
+            if (after == null) {
+                // Kept, finished: Resume puts the result on the board again.
+                if (persist(current) == Shelved.Kept) stored = current.game
+                return@launch
+            }
+            forget(current)
+            _events.send(PlayEvent.Arranged(after))
+            say(PlayNotice.BoardArranged(shown.duels))
+        }
     }
 
     private suspend fun persist(current: Session): Shelved =

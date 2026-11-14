@@ -38,20 +38,20 @@ class RankingChoiceJourneyTest {
 
     @After fun clear() = models.forEach { it.viewModelScope.cancel() }
 
-    @Test fun lookingAtTheAuthorsFinishedRankingNeverOffers_andSixIsNotSeven_andDismissalSurvivesReopen() = runBlocking {
+    @Test fun lookingAtTheAuthorsFinishedRankingNeverOffers_andNineteenIsNotTwenty_andDismissalSurvivesReopen() = runBlocking {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         assertNull(vm.loaded().rankingOffer)
         vm.show(Showing.Mine)
-        repeat(6) { vm.moveItem(it.toLong(), 0, it) }
+        repeat(19) { vm.moveItem(it.toLong(), 0, it) }
         assertNull(vm.loaded().rankingOffer)
-        vm.moveItem(6, 0, 6)
-        assertEquals(7, vm.loaded().rankingOffer?.placed)
+        vm.moveItem(19, 0, 19)
+        assertEquals(20, vm.loaded().rankingOffer?.placed)
         assertEquals(0, fixture.shown)
         vm.choices.dismiss()
         val again = open(fixture)
         assertNull(again.loaded().rankingOffer)
-        assertEquals(7, again.loaded().mine.tiers.first().items.size)
+        assertEquals(20, again.loaded().mine.tiers.first().items.size)
         assertEquals(0, fixture.shown)
     }
 
@@ -83,7 +83,7 @@ class RankingChoiceJourneyTest {
         assertEquals(7, vm.loaded().mine.tiers.first().items.size)
     }
 
-    @Test fun crossingTheThresholdAfterAnEarlierManualSaveAlsoKeepsTheOfferMemoryOnTheSharedCopy() = runBlocking {
+    @Test fun placingTheLastCardAfterAnEarlierManualSaveAlsoKeepsTheOfferMemoryOnTheSharedCopy() = runBlocking {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         vm.show(Showing.Mine)
@@ -91,7 +91,7 @@ class RankingChoiceJourneyTest {
         vm.saveToMyLists()
         vm.state.firstWithin { (it as? CommunityListUiState.Success)?.savedId != null && !it.saving }
         assertNull(fixture.boards.saved?.rankingChoice)
-        repeat(4) { vm.moveItem((it + 3).toLong(), 0, it + 3) }
+        repeat(17) { vm.moveItem((it + 3).toLong(), 0, it + 3) }
         assertEquals(RankingChoice.Offered, fixture.boards.saved?.rankingChoice)
         assertNull(open(fixture, RankingDrafts.None).loaded().rankingOffer)
         assertEquals(0, fixture.shown)
@@ -114,6 +114,23 @@ class RankingChoiceJourneyTest {
         assertNull(reopened.loaded().rankingOffer)
         assertEquals(7, reopened.loaded().mine.tiers.first().items.size)
         assertEquals(RankingChoice.Ranking, fixture.boards.saved?.rankingChoice)
+    }
+
+    // The game's result is on the board: the offer comes straight away, however many cards it placed.
+    @Test fun aGameEndingOnTheBoardOffersToShowIt_once() = runBlocking {
+        val fixture = ChoiceFixture()
+        val vm = open(fixture)
+        val played = vm.loaded().mine.let { mine ->
+            val cards = mine.tiers.flatMap { it.items }
+            mine.copy(tiers = mine.tiers.mapIndexed { i, tier -> if (i == 0) tier.copy(items = cards.take(5)) else if (tier.isPool) tier.copy(items = cards.drop(5)) else tier.copy(items = emptyList()) })
+        }
+        vm.putInMine(played)
+        assertEquals(5, vm.loaded().rankingOffer?.placed)
+        vm.choices.dismiss()
+        vm.putInMine(played, undone = true)
+        vm.putInMine(played)
+        assertNull(vm.loaded().rankingOffer)
+        assertEquals(0, fixture.shown)
     }
 
     // What is saved is what the reader sees as theirs, and once saved, the list is "Saved" and opens that one copy.
