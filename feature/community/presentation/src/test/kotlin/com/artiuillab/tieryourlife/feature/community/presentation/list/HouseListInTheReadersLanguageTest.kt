@@ -91,7 +91,6 @@ class HouseListInTheReadersLanguageTest {
 
     private fun saveTheirs() {
         compose.onNodeWithTag(CommunityListTestTags.SAVE).performClick()
-        compose.onNodeWithTag(CommunityListTestTags.SAVE_THEIRS).performClick()
         compose.waitUntil(5_000) { tiers.templates.isNotEmpty() }
     }
 

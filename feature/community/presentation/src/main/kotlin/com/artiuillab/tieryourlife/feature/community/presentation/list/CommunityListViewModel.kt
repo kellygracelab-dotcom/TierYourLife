@@ -390,11 +390,14 @@ class CommunityListViewModel @Inject constructor(
     /**
      * The copy's id lands in the state; the screen then offers to open it rather than leaving on its own.
      * It becomes the reader's own board, so it keeps the words they read it in, [languageTag]'s.
+     * The switch says which: Author saves the author's arrangement, Mine the reader's own
+     * (a template has only the reader's half).
      */
-    fun saveToMyLists(which: Showing, languageTag: String = "") {
+    fun saveToMyLists(languageTag: String = "") {
         val current = _state.value as? CommunityListUiState.Success ?: return
         if (current.own || current.arriving) return
         if (current.saving || current.savedId != null) return
+        val which = if (current.twoHalves) current.showing else Showing.Mine
         _state.update { (it as CommunityListUiState.Success).copy(saving = true) }
 
         viewModelScope.launch {

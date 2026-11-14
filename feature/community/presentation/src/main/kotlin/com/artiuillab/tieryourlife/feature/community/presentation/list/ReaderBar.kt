@@ -92,7 +92,7 @@ private fun SaveInBar(state: CommunityListUiState.Success, mode: BoardBar, onSav
     val onClick = { if (savedId != null) onOpenSaved(savedId) else onSaveClick() }
     val tag = if (savedId != null) CommunityListTestTags.OPEN_SAVED else CommunityListTestTags.SAVE
     if (mode == BoardBar.Docked && savedId == null) {
-        val description = stringResource(R.string.community_save_to_my_lists)
+        val description = stringResource(state.saveLabel)
         FilledTonalButton(
             onClick = onClick,
             enabled = !state.saving,
@@ -117,7 +117,7 @@ private fun SaveInBar(state: CommunityListUiState.Success, mode: BoardBar, onSav
                 .testTag(tag),
         ) {
             Text(
-                text = stringResource(if (savedId != null) R.string.community_action_open else R.string.community_save_to_my_lists),
+                text = stringResource(if (savedId != null) R.string.community_saved else state.saveLabel),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -150,3 +150,6 @@ internal fun AuthorAndSection(state: CommunityListUiState.Success, onOpenAuthor:
         overflow = TextOverflow.Ellipsis,
     )
 }
+
+internal val CommunityListUiState.Success.saveLabel: Int
+    get() = if (savesTheAuthors) R.string.community_save_authors_list else R.string.community_save_my_list

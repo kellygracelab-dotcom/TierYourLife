@@ -187,28 +187,25 @@ class CommunityListScreenTest {
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertIsDisplayed()
     }
 
-    // A reader who glanced at the author's half and tapped Save did not mean
-    // to throw their own away, nor the other way round: the save asks.
+    // One button and no question: what is on screen as theirs is what is kept.
     @Test
-    fun saving_asksWhoseArrangementToKeep() {
-        var chosen: Showing? = null
+    fun saving_savesStraightAway() {
+        var saved = 0
         composeRule.setContent {
             TierYourLifeTheme {
                 CommunityListScreenContent(
                     state = successState(),
                     onBack = {},
                     onMoveItem = { _, _, _ -> },
-                    onSave = { chosen = it },
+                    onSave = { saved++ },
                     onRetry = {},
                 )
             }
         }
 
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).performClick()
-        composeRule.onNodeWithTag(CommunityListTestTags.SAVE_CHOICE).assertIsDisplayed()
-        composeRule.onNodeWithTag(CommunityListTestTags.SAVE_THEIRS).performClick()
 
-        assertEquals(Showing.Theirs, chosen)
+        assertEquals(1, saved)
     }
 
     private fun openOverflow() {
