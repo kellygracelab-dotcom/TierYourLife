@@ -145,7 +145,7 @@
     <string name="moderation_moderators_unavailable">No se pudo leer la lista de moderadores.</string>
     <string name="community_rankings_title">Clasificaciones</string>
     <string name="community_rankings_body">Las mismas tarjetas, colocadas a la manera de alguien. Elige de quién mostrar las filas.</string>
-    <string name="community_ranking_author">Autor de la lista</string>
+    <string name="community_ranking_author">Autor</string>
     <string name="community_ranking_you">Tú</string>
     <string name="community_ranking_withdraw">Retirar</string>
     <string name="community_action_rankings">Clasificaciones · %1$d</string>
@@ -276,6 +276,9 @@
     </plurals>
     <string name="community_show_my_ranking">Mostrar mi ranking a los demás</string>
     <string name="community_sign_in_to_show_ranking">Inicia sesión para mostrar tu ranking</string>
+    <string name="community_ranking_like">Me gusta</string>
+    <string name="community_sign_in_to_like">Inicia sesión para dar me gusta</string>
+    <string name="community_too_many_likes">Demasiados me gusta en esta hora. Inténtalo más tarde.</string>
     <string name="community_ranking_shown">Tu ranking ya está entre los de la lista</string>
     <string name="community_action_sign_in">Iniciar sesión</string>
     <string name="community_your_list_badge">Tu lista</string>

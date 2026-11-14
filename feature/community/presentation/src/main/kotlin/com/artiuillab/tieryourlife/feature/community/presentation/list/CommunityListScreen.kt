@@ -128,6 +128,7 @@ fun CommunityListScreen(
         onChooseRanking = viewModel.rankings::choose,
         onLoadMoreRankings = viewModel.rankings::loadMore,
         onWithdrawRanking = viewModel.rankings::withdrawMine,
+        onLikeRanking = viewModel.rankings::like,
         onReturnAllToPool = viewModel.rankings::returnAllToPool,
         onPlay = { playOpen = true },
         playSaved = playRequest?.let { play.isSaved(it.key) } == true,
@@ -180,6 +181,7 @@ fun CommunityListScreenContent(
     onChooseRanking: (Ranking?) -> Unit = {},
     onLoadMoreRankings: () -> Unit = {},
     onWithdrawRanking: () -> Unit = {},
+    onLikeRanking: (Ranking) -> Unit = {},
     onReturnAllToPool: () -> Unit = {},
     /** Play from either half; its result fills Mine. */
     onPlay: (() -> Unit)? = null,
@@ -338,6 +340,7 @@ fun CommunityListScreenContent(
                     },
                     onLoadMore = onLoadMoreRankings,
                     onWithdraw = onWithdrawRanking,
+                    onLike = onLikeRanking,
                 )
             }
 
@@ -508,6 +511,14 @@ private fun ListSnackbar(
                     )
                     if (answer == SnackbarResult.ActionPerformed) signIn()
                 }
+                RankingNotice.SignInToLike -> {
+                    val answer = host.showSnackbar(
+                        message = resources.getString(R.string.community_sign_in_to_like),
+                        actionLabel = resources.getString(R.string.community_action_sign_in),
+                    )
+                    if (answer == SnackbarResult.ActionPerformed) signIn()
+                }
+                RankingNotice.TooManyLikes -> host.showSnackbar(resources.getString(R.string.community_too_many_likes))
             }
         }
     }

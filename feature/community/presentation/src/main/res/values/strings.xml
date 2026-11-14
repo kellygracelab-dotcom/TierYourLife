@@ -143,7 +143,7 @@
     <string name="moderation_moderators_unavailable">Could not read who moderates.</string>
     <string name="community_rankings_title">Rankings</string>
     <string name="community_rankings_body">The same cards, placed somebody’s way. Choose whose rows to show.</string>
-    <string name="community_ranking_author">Author of the list</string>
+    <string name="community_ranking_author">Author</string>
     <string name="community_ranking_you">You</string>
     <string name="community_ranking_withdraw">Withdraw</string>
     <string name="community_action_rankings">Rankings · %1$d</string>
@@ -270,6 +270,9 @@
     </plurals>
     <string name="community_show_my_ranking">Show my ranking to others</string>
     <string name="community_sign_in_to_show_ranking">Sign in to show your ranking</string>
+    <string name="community_ranking_like">Like</string>
+    <string name="community_sign_in_to_like">Sign in to like rankings</string>
+    <string name="community_too_many_likes">Too many likes this hour. Try again later.</string>
     <string name="community_ranking_shown">Your ranking is in the list’s rankings</string>
     <string name="community_action_sign_in">Sign in</string>
     <string name="community_your_list_badge">Your list</string>

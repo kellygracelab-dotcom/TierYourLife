@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.AppointMode
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FaceDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FollowStateDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.FollowedAuthorsDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.LikedDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModerationQueueDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ModeratorsDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.MoveListRequestDto
@@ -156,6 +157,12 @@ interface CommunityApi {
 
     @DELETE("lists/{id}/rankings/mine")
     suspend fun deleteMyRanking(@Path("id") id: String)
+
+    @PUT("lists/{id}/rankings/{uid}/like")
+    suspend fun likeRanking(@Path("id") id: String, @Path("uid") uid: String): LikedDto
+
+    @DELETE("lists/{id}/rankings/{uid}/like")
+    suspend fun unlikeRanking(@Path("id") id: String, @Path("uid") uid: String): LikedDto
 
     @PUT("lists/{id}/rankings/mine")
     suspend fun showMyRanking(@Path("id") id: String, @Body request: ShowRankingRequestDto): ShownRankingDto

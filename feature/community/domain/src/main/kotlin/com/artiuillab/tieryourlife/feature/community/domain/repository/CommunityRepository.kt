@@ -126,7 +126,7 @@ interface CommunityRepository {
     /** What the popular ordering counts. Once per person; saying it twice changes nothing. */
     suspend fun noteTaken(publishedId: String): Result<Unit>
 
-    /** Readers' own placings of this list's cards, newest first, this reader's ahead of the first page. */
+    /** Readers' own placings of this list's cards: most liked first, newer first among equals, this reader's in its place. */
     suspend fun rankings(listId: String, after: String? = null): Result<RankingsPage>
 
     /**
@@ -137,6 +137,9 @@ interface CommunityRepository {
      */
     suspend fun showBoardInRankings(board: TierList, listId: String, expectedOwnerUid: String): Result<ShownRanking> =
         Result.failure(UnsupportedOperationException("showBoardInRankings"))
+
+    /** Likes [uid]'s placing of that list, or takes the like back; answers whether it is liked now. Fails with [com.artiuillab.tieryourlife.feature.community.domain.model.LikeRefused]. */
+    suspend fun likeRanking(listId: String, uid: String, like: Boolean): Result<Boolean>
 
     /** Takes this person's ranking of that list down. */
     suspend fun withdrawRanking(listId: String): Result<Unit>

@@ -147,7 +147,7 @@
     <string name="moderation_moderators_unavailable">Не вдалося прочитати список модераторів.</string>
     <string name="community_rankings_title">Рейтинги</string>
     <string name="community_rankings_body">Ті самі картки, розставлені по-своєму. Оберіть, чиї ряди показати.</string>
-    <string name="community_ranking_author">Автор списку</string>
+    <string name="community_ranking_author">Автор</string>
     <string name="community_ranking_you">Ви</string>
     <string name="community_ranking_withdraw">Зняти</string>
     <string name="community_action_rankings">Рейтинги · %1$d</string>
@@ -282,6 +282,9 @@
     </plurals>
     <string name="community_show_my_ranking">Показати мій рейтинг іншим</string>
     <string name="community_sign_in_to_show_ranking">Увійдіть, щоб показати свій рейтинг</string>
+    <string name="community_ranking_like">Подобається</string>
+    <string name="community_sign_in_to_like">Увійдіть, щоб ставити вподобайки</string>
+    <string name="community_too_many_likes">Забагато вподобайок за годину. Спробуйте пізніше.</string>
     <string name="community_ranking_shown">Ваш рейтинг тепер серед рейтингів списку</string>
     <string name="community_action_sign_in">Увійти</string>
     <string name="community_your_list_badge">Ваш список</string>

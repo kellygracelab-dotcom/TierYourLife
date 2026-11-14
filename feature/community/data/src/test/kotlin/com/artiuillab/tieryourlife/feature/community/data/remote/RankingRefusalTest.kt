@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShowRankingRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShownRankingDto
 import com.artiuillab.tieryourlife.feature.community.data.repository.toShown
+import com.artiuillab.tieryourlife.feature.community.domain.model.LikeRefusal
 import com.artiuillab.tieryourlife.feature.community.domain.model.RankingRefusal
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -81,5 +82,34 @@ class RankingRefusalTest {
         assertTrue(answer.created)
         assertTrue(answer.ranking.mine)
         assertEquals(listOf(0, null), answer.ranking.arrangement)
+    }
+
+    // SPEC list-flow К2: each refused like as the screen is told it.
+    @Test
+    fun aRefusedLike_isNamedByItsCode() {
+        assertEquals(LikeRefusal.NotSignedIn, refusal(403, """{"code":"NOT_SIGNED_IN"}""").likeRefusal())
+        assertEquals(LikeRefusal.CannotLike, refusal(409, """{"code":"CANNOT_LIKE","detail":"own"}""").likeRefusal())
+        assertEquals(LikeRefusal.TooMany, refusal(429, """{"code":"LIKE_LIMIT","retryAt":1}""").likeRefusal())
+        assertEquals(LikeRefusal.Gone, refusal(404, """{"code":"NOT_FOUND"}""").likeRefusal())
+        assertEquals(LikeRefusal.Failed, IOException("offline").likeRefusal())
+    }
+
+    // SPEC list-flow К1/К3: whether it is liked, and the cards its reader added, where they put them.
+    @Test
+    fun aRanking_saysWhetherItIsLiked_andCarriesTheCardsItsReaderAdded() {
+        val ranking = json.decodeFromString(
+            RankingDto.serializer(),
+            """{"uid":"u","rows":[[0],[]],"likedByMe":true,"addedCards":[{"title":"Dune","imageUrl":"https://x/d.jpg"}],"allRows":[[0],[2]]}""",
+        )
+        val shown = json.decodeFromString(
+            ShownRankingDto.serializer(),
+            """{"uid":"me","rows":[[0]],"addedCards":[{"title":"Dune"}],"allRows":[[0,2]]}""",
+        ).toShown()
+
+        assertTrue(ranking.likedByMe)
+        assertEquals(listOf("Dune"), ranking.addedCards.map { it.title })
+        assertEquals(listOf(listOf(0), listOf(2)), ranking.allRows)
+        assertEquals(listOf("Dune"), shown.ranking.addedCards.map { it.title })
+        assertEquals(listOf(listOf(0, 2)), shown.ranking.allRows)
     }
 }
