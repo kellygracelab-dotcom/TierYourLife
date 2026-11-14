@@ -75,10 +75,11 @@ internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
     )
 }
 
-internal fun stageOf(session: Session, intoMine: Boolean): PlayStage {
+/** The next duel; null once the game is over. */
+internal fun stageOf(session: Session): PlayStage.Dueling? {
     val spec = session.game.spec
     val history = session.game.history
-    val pair = nextPair(spec, history) ?: return PlayStage.Finished(resultOf(session, intoMine))
+    val pair = nextPair(spec, history) ?: return null
     val progress = progress(spec, history)
     val refining = progress.mainOver
     return PlayStage.Dueling(

@@ -32,18 +32,18 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class BoardPublicationControllerTest {
     @Test
-    fun exactlyThirtyPercentDoesNotOffer_andFirstCardAboveItRemembersBeforeShowing() = runTest {
-        val h = Harness(this, copy(placed = 6))
+    fun oneCardShortDoesNotOffer_andTheLastCardRemembersBeforeShowing() = runTest {
+        val h = Harness(this, copy(placed = 19))
         h.controller.loaded(h.visible)
         advanceUntilIdle()
         assertEquals(0, h.community.classified.size)
         assertNull(h.controller.state.value.offer)
 
-        h.replace(copy(placed = 7))
+        h.replace(copy(placed = 20))
         h.controller.loaded(h.visible)
         advanceUntilIdle()
         val offer = h.controller.state.value.offer!!
-        assertEquals(7, offer.placed)
+        assertEquals(20, offer.placed)
         assertEquals(20, offer.total)
         assertEquals(RankingChoice.Offered, h.repository.board.rankingChoice)
         assertEquals(10L, h.repository.board.originVersion)
@@ -51,11 +51,19 @@ class BoardPublicationControllerTest {
     }
 
     @Test
-    fun smallListsUseTheSameStrictFraction_withoutMinimumCardCount() = runTest {
-        val h = Harness(this, copy(placed = 1, total = 3))
+    fun straightAfterAGame_anythingPlacedIsOffered() = runTest {
+        val h = Harness(this, copy(placed = 5))
+        h.controller.loaded(h.visible, afterGame = true)
+        advanceUntilIdle()
+        assertEquals(5, h.controller.state.value.offer!!.placed)
+    }
+
+    @Test
+    fun aSmallListIsOfferedOnceEveryCardIsPlaced() = runTest {
+        val h = Harness(this, copy(placed = 3, total = 3))
         h.controller.loaded(h.visible)
         advanceUntilIdle()
-        assertEquals(1, h.controller.state.value.offer!!.placed)
+        assertEquals(3, h.controller.state.value.offer!!.placed)
     }
 
     @Test
@@ -71,20 +79,6 @@ class BoardPublicationControllerTest {
         assertNull(reopened.controller.state.value.offer)
         assertEquals(arrangement, reopened.repository.board.tiers)
         assertTrue(reopened.community.classified.isEmpty())
-    }
-
-    @Test
-    fun choosingPrivatePreservesPlacementsAndBindings_andNeverPosts() = runTest {
-        val h = Harness(this)
-        val arrangement = h.visible.tiers
-        h.controller.loaded(h.visible)
-        advanceUntilIdle()
-        h.controller.keepPrivate()
-        advanceUntilIdle()
-        assertEquals(RankingChoice.Private, h.repository.board.rankingChoice)
-        assertEquals(arrangement, h.repository.board.tiers)
-        assertNull(h.controller.state.value.offer)
-        assertTrue(h.community.published.isEmpty())
     }
 
     @Test
@@ -148,7 +142,7 @@ class BoardPublicationControllerTest {
     @Test
     fun manualPublishShowsAuthoritativeTypeBeforeAnyWrite() = runTest {
         val h = Harness(this, copy().copy(rankingChoice = RankingChoice.Private))
-        h.community.classification = { Result.success(PublicationKind.NewList(BasedOn("source", "Original", "Author"))) }
+        h.community.classification = { Result.success(PublicationKind.NewList()) }
         h.controller.setPublic(true)
         advanceUntilIdle()
         assertTrue(h.controller.state.value.preview!!.kind is PublicationKind.NewList)
@@ -158,16 +152,18 @@ class BoardPublicationControllerTest {
         assertEquals(1, h.community.published.size)
     }
 
+    // SPEC 14.11 п.4: a changed copy of somebody else's list is not a separate list of one's own.
     @Test
-    fun derivativePreviewPinsSourceVersionForLegacyCopy_withoutChangingItsPublicKind() = runTest {
+    fun aCopyThatDiffersFromItsSource_isRefused_neverPublishedAsASeparateList() = runTest {
         val h = Harness(this, copy().copy(originVersion = null))
         h.community.classification = { Result.success(PublicationKind.NewList(BasedOn("source", "Original", "Author"), sourceVersion = 42)) }
         h.controller.setPublic(true)
         advanceUntilIdle()
-        assertTrue(h.community.published.isEmpty())
+        assertNull(h.controller.state.value.preview)
+        assertEquals(PublishError.RankInstead, h.controller.state.value.error)
         h.controller.confirmPreview()
         advanceUntilIdle()
-        assertEquals(42L, h.community.published.single().originVersion)
+        assertTrue(h.community.published.isEmpty())
     }
 
     @Test
@@ -388,7 +384,7 @@ class BoardPublicationControllerTest {
     }
 
     private companion object {
-        fun copy(placed: Int = 7, total: Int = 20): TierList {
+        fun copy(placed: Int = 20, total: Int = 20): TierList {
             val cards = (0 until total).map { TierItem(id = it.toLong(), title = "Card $it", imageUrl = null, sourceIndex = it) }
             return TierList(
                 id = 1, title = "Original", takenFrom = "source", category = "art", uid = "board",

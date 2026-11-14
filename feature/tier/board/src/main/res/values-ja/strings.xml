@@ -149,6 +149,7 @@
     <string name="list_settings_moves_to">承認されると「%1$s」に移ります</string>
     <string name="list_settings_public_gone">このリストはもうコミュニティにありません。取り下げられたか、削除されたか、別のアカウントから公開されたものです。もう一度公開するには「公開」をオンにしてください。</string>
     <string name="list_settings_public_section_unavailable">このリストのセクションは、もうリストを受け付けていません。別のセクションを選んでから、もう一度公開してください。</string>
+    <string name="list_settings_public_rank_instead">このリストはほかの人のものなので、別のリストとして公開できません。リストのカードだけで、そのランキングに自分の並べ方を載せられます。</string>
     <string name="list_settings_unpublish_failed">このリストの公開を取り消せませんでした。まだ公開されています。もう一度お試しください。</string>
     <string name="tier_detail_about_picture">画像について</string>
     <string name="tier_detail_picture_author">作者</string>

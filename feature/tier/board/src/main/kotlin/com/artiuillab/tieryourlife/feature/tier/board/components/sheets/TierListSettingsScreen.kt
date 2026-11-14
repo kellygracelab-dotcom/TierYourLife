@@ -692,6 +692,7 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.WebPicturesToday -> ThemeR.string.refusal_web_pictures_today
     PublishError.ListGone -> R.string.list_settings_public_gone
     PublishError.SectionUnavailable -> R.string.list_settings_public_section_unavailable
+    PublishError.RankInstead -> R.string.list_settings_public_rank_instead
     PublishError.NotTakenDown -> R.string.list_settings_unpublish_failed
     PublishError.PictureRefused -> R.string.list_settings_public_picture_refused
     is PublishError.Banned -> R.string.list_settings_public_banned_forever

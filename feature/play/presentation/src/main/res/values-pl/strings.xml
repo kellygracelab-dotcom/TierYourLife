@@ -75,38 +75,6 @@
     <string name="play_skip">Pomiń</string>
     <string name="play_skip_hint">Pomiń, jeśli nie możesz wybrać. Nic nie zostanie zapisane.</string>
     <string name="play_pick">Wybierz: %1$s</string>
-    <string name="play_your_result">Twój wynik</string>
-    <plurals name="play_from_duels">
-        <item quantity="one">Na podstawie %1$d pojedynku</item>
-        <item quantity="few">Na podstawie %1$d pojedynków</item>
-        <item quantity="many">Na podstawie %1$d pojedynków</item>
-        <item quantity="other">Na podstawie %1$d pojedynku</item>
-    </plurals>
-    <string name="play_dashed_legend">Linia przerywana: mniej niż 2 pojedynki.</string>
-    <string name="play_empty_tier">Pusto</string>
-    <string name="play_nothing_to_apply">Wszystkie pojedynki pominięto, więc nie ma czego zastosować.</string>
-    <plurals name="play_thin">
-        <item quantity="one">%1$d karta rozegrała mniej niż 2 pojedynki, więc jej miejsce to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla niej albo zastosuj teraz i popraw ręcznie.</item>
-        <item quantity="few">%1$d karty rozegrały mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla nich albo zastosuj teraz i popraw ręcznie.</item>
-        <item quantity="many">%1$d kart rozegrało mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla nich albo zastosuj teraz i popraw ręcznie.</item>
-        <item quantity="other">%1$d karty rozegrało mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Doprecyzowanie doda do %2$d pojedynków dla nich albo zastosuj teraz i popraw ręcznie.</item>
-    </plurals>
-    <plurals name="play_thin_refined">
-        <item quantity="one">%1$d karta rozegrała mniej niż 2 pojedynki, więc jej miejsce to zgadywanie. Zastosuj teraz i popraw ręcznie.</item>
-        <item quantity="few">%1$d karty rozegrały mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Zastosuj teraz i popraw ręcznie.</item>
-        <item quantity="many">%1$d kart rozegrało mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Zastosuj teraz i popraw ręcznie.</item>
-        <item quantity="other">%1$d karty rozegrało mniej niż 2 pojedynki, więc ich miejsca to zgadywanie. Zastosuj teraz i popraw ręcznie.</item>
-    </plurals>
-    <string name="play_apply">Zastosuj</string>
-    <string name="play_put_in_mine">Wstaw do „Mój”</string>
-    <string name="play_refine">Doprecyzuj</string>
-    <plurals name="play_refine_up_to">
-        <item quantity="one">Doprecyzuj · do %1$d pojedynku</item>
-        <item quantity="few">Doprecyzuj · do %1$d pojedynków</item>
-        <item quantity="many">Doprecyzuj · do %1$d pojedynków</item>
-        <item quantity="other">Doprecyzuj · do %1$d pojedynku</item>
-    </plurals>
-    <string name="play_again">Zagraj ponownie</string>
     <string name="play_snack_game_saved">Gra zapisana · %1$d z %2$d</string>
     <string name="play_snack_discard">Odrzuć</string>
     <plurals name="play_snack_arranged">
@@ -116,8 +84,10 @@
         <item quantity="other">Tablica ułożona na podstawie %1$d pojedynku</item>
     </plurals>
     <string name="play_snack_saved_discarded">Zapisana gra odrzucona</string>
-    <string name="play_snack_result_discarded">Wynik odrzucony</string>
     <string name="play_snack_undo">Cofnij</string>
+    <string name="play_snack_game_undone">Plansza sprzed gry</string>
+    <string name="play_snack_redo">Przywróć</string>
+    <string name="play_snack_nothing_answered">Żaden pojedynek nie ma odpowiedzi, nic się nie przesunęło</string>
     <string name="play_snack_not_saved">Nie udało się zapisać gry</string>
     <string name="play_snack_list_updated">Lista została zaktualizowana w trakcie gry, więc grę odrzucono</string>
     <string name="play_random_sample">Losowy wybór</string>
@@ -125,7 +95,4 @@
     <string name="play_select_candidates">Wybierz wszystkie dostępne</string>
     <string name="play_clear_selection">Wyczyść wybór</string>
     <string name="play_card_unnamed">Karta bez tytułu</string>
-    <string name="play_unplayed_options">Karty poza grą</string>
-    <string name="play_unplayed_keep">Zostaw na swoich poziomach za rozegranymi kartami</string>
-    <string name="play_unplayed_pool">Przenieś do puli</string>
 </resources>

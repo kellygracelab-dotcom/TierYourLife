@@ -26,6 +26,7 @@ internal fun Throwable.asPublishError(): PublishError = when {
             PUBLICATION_CHANGED -> PublishError.ChangedElsewhere
             "LIST_CHANGED" -> PublishError.SourceChanged
             TOO_MANY_PENDING_TOPICS -> PublishError.TooManyPendingTopics
+            RANK_INSTEAD -> PublishError.RankInstead
             TOO_MANY_LISTS -> publicationQuotaRefusal()
             else -> PublishError.TooManyLists
         }
@@ -72,6 +73,7 @@ internal fun TierList.topicToLearn(answer: PublishedIdDto): String? =
 
 private const val TOO_MANY_PENDING_TOPICS = "TOO_MANY_PENDING_TOPICS"
 private const val TOO_MANY_LISTS = "TOO_MANY_LISTS"
+private const val RANK_INSTEAD = "RANK_INSTEAD"
 private const val PUBLICATION_CHANGED = "PUBLICATION_CHANGED"
 private const val CURSOR_GONE = "CURSOR_GONE"
 private const val NOT_YOURS = "NOT_YOURS"
