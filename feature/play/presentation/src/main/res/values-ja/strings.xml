@@ -54,34 +54,16 @@
     <string name="play_skip">スキップ</string>
     <string name="play_skip_hint">選べないときはスキップ。何も記録されません。</string>
     <string name="play_pick">%1$s を選ぶ</string>
-    <string name="play_your_result">結果</string>
-    <plurals name="play_from_duels">
-        <item quantity="other">%1$d 回の対戦から</item>
-    </plurals>
-    <string name="play_dashed_legend">点線：対戦が 2 回未満のカード。</string>
-    <string name="play_empty_tier">空</string>
-    <string name="play_nothing_to_apply">すべての対戦をスキップしたため、適用するものはありません。</string>
-    <plurals name="play_thin">
-        <item quantity="other">%1$d 枚のカードは対戦が 2 回未満のため、位置は推測です。仕上げでこれらのカードに最大 %2$d 回の対戦を追加するか、今すぐ適用して手で調整してください。</item>
-    </plurals>
-    <plurals name="play_thin_refined">
-        <item quantity="other">%1$d 枚のカードは対戦が 2 回未満のため、位置は推測です。今すぐ適用して手で調整してください。</item>
-    </plurals>
-    <string name="play_apply">適用</string>
-    <string name="play_put_in_mine">「自分」に入れる</string>
-    <string name="play_refine">仕上げ</string>
-    <plurals name="play_refine_up_to">
-        <item quantity="other">仕上げ · 最大 %1$d 回の対戦</item>
-    </plurals>
-    <string name="play_again">もう一度</string>
     <string name="play_snack_game_saved">ゲームを保存しました · %1$d / %2$d</string>
     <string name="play_snack_discard">破棄</string>
     <plurals name="play_snack_arranged">
         <item quantity="other">%1$d 回の対戦からボードを並べました</item>
     </plurals>
     <string name="play_snack_saved_discarded">保存したゲームを破棄しました</string>
-    <string name="play_snack_result_discarded">結果を破棄しました</string>
     <string name="play_snack_undo">元に戻す</string>
+    <string name="play_snack_game_undone">ゲーム前のボードに戻しました</string>
+    <string name="play_snack_redo">やり直す</string>
+    <string name="play_snack_nothing_answered">対戦に1つも答えていないため、何も動いていません</string>
     <string name="play_snack_not_saved">ゲームを保存できませんでした</string>
     <string name="play_snack_list_updated">プレイ中にリストが更新されたため、ゲームを破棄しました</string>
     <string name="play_random_sample">ランダム選択</string>
@@ -89,7 +71,4 @@
     <string name="play_select_candidates">候補をすべて選択</string>
     <string name="play_clear_selection">選択を解除</string>
     <string name="play_card_unnamed">無題のカード</string>
-    <string name="play_unplayed_options">ゲームに参加しないカード</string>
-    <string name="play_unplayed_keep">元のランクでプレイしたカードの後ろに残す</string>
-    <string name="play_unplayed_pool">プールに移動</string>
 </resources>

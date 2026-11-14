@@ -13,6 +13,9 @@ sealed interface PublishError {
     data object ChangedElsewhere : PublishError
     data object SourceChanged : PublishError
 
+    /** The board came from somebody else's list and differs from it: it goes out only as a ranking in that list's Rankings. */
+    data object RankInstead : PublishError
+
     /** Three of this account's topics already wait for a moderator; a fourth must wait for one of them. */
     data object TooManyPendingTopics : PublishError
 

@@ -19,8 +19,6 @@ sealed interface PlayStage {
     data class Picking(val picker: Picker) : PlayStage
 
     data class Dueling(val duel: DuelState) : PlayStage
-
-    data class Finished(val result: ResultState) : PlayStage
 }
 
 enum class PickerPage { Games, Cards, Individual }
@@ -185,8 +183,11 @@ sealed interface PlayNotice {
     /** With Undo. */
     data object SavedGameDiscarded : PlayNotice
 
-    /** With Undo. */
-    data object ResultDiscarded : PlayNotice
+    /** The board as before the game; with Redo. */
+    data class GameUndone(val duels: Int) : PlayNotice
+
+    /** Every duel skipped: nothing moved. */
+    data object NothingAnswered : PlayNotice
 
     data object Failed : PlayNotice
 

@@ -71,7 +71,7 @@ internal fun PlayLayer(
                 is PlayEvent.Said -> launch {
                     snackbar.currentSnackbarData?.dismiss()
                     val (message, action) = noticeText(event.notice, resources)
-                    val answer = snackbar.showSnackbar(message, actionLabel = action, duration = SnackbarDuration.Short)
+                    val answer = snackbar.showSnackbar(message, actionLabel = action, duration = durationOf(event.notice))
                     if (answer == SnackbarResult.ActionPerformed) act(event.notice, viewModel)
                 }
             }
@@ -92,21 +92,6 @@ internal fun PlayLayer(
                     onSkip = viewModel.duel::skip,
                     onUndo = viewModel.duel::undo,
                     onQuit = viewModel.duel::quit,
-                )
-            }
-            is PlayStage.Finished -> {
-                FullScreenTask()
-                BackHandler(onBack = viewModel.duel::quit)
-                ResultScreen(
-                    result = stage.result,
-                    actions = ResultActions(
-                        onApply = viewModel.result::apply,
-                        onRefine = viewModel.result::refine,
-                        onPlayAgain = viewModel.result::playAgain,
-                        onCancel = viewModel.result::cancel,
-                        onQuit = viewModel.duel::quit,
-                        onUnplayed = viewModel.result::unplayed,
-                    ),
                 )
             }
         }
@@ -153,7 +138,7 @@ internal fun PlayLayer(
 @Composable
 private fun pickerOver(stage: PlayStage): Picker? {
     var before by remember { mutableStateOf(stage) }
-    val covering = stage is PlayStage.Dueling || stage is PlayStage.Finished
+    val covering = stage is PlayStage.Dueling
     LaunchedEffect(stage) {
         if (covering && before is PlayStage.Picking) repeat(FRAMES_UNDER_THE_SHEET) { withFrameNanos { } }
         before = stage
@@ -170,8 +155,8 @@ private fun noticeText(notice: PlayNotice, resources: android.content.res.Resour
         resources.getQuantityString(R.plurals.play_snack_arranged, notice.duels, notice.duels) to resources.getString(R.string.play_snack_undo)
     PlayNotice.SavedGameDiscarded ->
         resources.getString(R.string.play_snack_saved_discarded) to resources.getString(R.string.play_snack_undo)
-    PlayNotice.ResultDiscarded ->
-        resources.getString(R.string.play_snack_result_discarded) to resources.getString(R.string.play_snack_undo)
+    is PlayNotice.GameUndone -> resources.getString(R.string.play_snack_game_undone) to resources.getString(R.string.play_snack_redo)
+    PlayNotice.NothingAnswered -> resources.getString(R.string.play_snack_nothing_answered) to null
     PlayNotice.Failed -> resources.getString(ThemeR.string.snack_action_failed) to null
     PlayNotice.NotSaved -> resources.getString(R.string.play_snack_not_saved) to null
     PlayNotice.ListUpdated -> resources.getString(R.string.play_snack_list_updated) to null
@@ -181,7 +166,12 @@ private fun act(notice: PlayNotice, viewModel: PlayViewModel) {
     when (notice) {
         is PlayNotice.GameSaved -> viewModel.notices.discardSaved()
         is PlayNotice.BoardArranged -> viewModel.notices.undoArrange()
-        PlayNotice.SavedGameDiscarded, PlayNotice.ResultDiscarded -> viewModel.notices.undoDiscard()
-        PlayNotice.Failed, PlayNotice.NotSaved, PlayNotice.ListUpdated -> Unit
+        is PlayNotice.GameUndone -> viewModel.notices.redoArrange()
+        PlayNotice.SavedGameDiscarded -> viewModel.notices.undoDiscard()
+        PlayNotice.Failed, PlayNotice.NotSaved, PlayNotice.ListUpdated, PlayNotice.NothingAnswered -> Unit
     }
 }
+
+/** Long enough to go back and forth between the board before the game and after it. */
+private fun durationOf(notice: PlayNotice): SnackbarDuration =
+    if (notice is PlayNotice.BoardArranged || notice is PlayNotice.GameUndone) SnackbarDuration.Long else SnackbarDuration.Short

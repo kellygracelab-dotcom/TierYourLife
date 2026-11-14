@@ -68,34 +68,6 @@
     <string name="play_skip">Passer</string>
     <string name="play_skip_hint">Passez si vous ne pouvez pas choisir. Rien n’est enregistré.</string>
     <string name="play_pick">Choisir %1$s</string>
-    <string name="play_your_result">Votre résultat</string>
-    <plurals name="play_from_duels">
-        <item quantity="one">D’après %1$d duel</item>
-        <item quantity="many">D’après %1$d duels</item>
-        <item quantity="other">D’après %1$d duels</item>
-    </plurals>
-    <string name="play_dashed_legend">En pointillés : moins de 2 duels joués.</string>
-    <string name="play_empty_tier">Vide</string>
-    <string name="play_nothing_to_apply">Tous les duels ont été passés, il n’y a rien à appliquer.</string>
-    <plurals name="play_thin">
-        <item quantity="one">%1$d carte a joué moins de 2 duels, sa place est donc une supposition. Affiner ajoute jusqu’à %2$d duels pour elle, ou appliquez maintenant et ajustez à la main.</item>
-        <item quantity="many">%1$d cartes ont joué moins de 2 duels, leurs places sont donc une supposition. Affiner ajoute jusqu’à %2$d duels pour elles, ou appliquez maintenant et ajustez à la main.</item>
-        <item quantity="other">%1$d cartes ont joué moins de 2 duels, leurs places sont donc une supposition. Affiner ajoute jusqu’à %2$d duels pour elles, ou appliquez maintenant et ajustez à la main.</item>
-    </plurals>
-    <plurals name="play_thin_refined">
-        <item quantity="one">%1$d carte a joué moins de 2 duels, sa place est donc une supposition. Appliquez maintenant et ajustez à la main.</item>
-        <item quantity="many">%1$d cartes ont joué moins de 2 duels, leurs places sont donc une supposition. Appliquez maintenant et ajustez à la main.</item>
-        <item quantity="other">%1$d cartes ont joué moins de 2 duels, leurs places sont donc une supposition. Appliquez maintenant et ajustez à la main.</item>
-    </plurals>
-    <string name="play_apply">Appliquer</string>
-    <string name="play_put_in_mine">Mettre dans « Le mien »</string>
-    <string name="play_refine">Affiner</string>
-    <plurals name="play_refine_up_to">
-        <item quantity="one">Affiner · %1$d duel</item>
-        <item quantity="many">Affiner · jusqu’à %1$d duels</item>
-        <item quantity="other">Affiner · jusqu’à %1$d duels</item>
-    </plurals>
-    <string name="play_again">Rejouer</string>
     <string name="play_snack_game_saved">Partie enregistrée · %1$d sur %2$d</string>
     <string name="play_snack_discard">Supprimer</string>
     <plurals name="play_snack_arranged">
@@ -104,8 +76,10 @@
         <item quantity="other">Tableau classé d’après %1$d duels</item>
     </plurals>
     <string name="play_snack_saved_discarded">Partie enregistrée supprimée</string>
-    <string name="play_snack_result_discarded">Résultat abandonné</string>
     <string name="play_snack_undo">Annuler</string>
+    <string name="play_snack_game_undone">Retour au tableau d’avant la partie</string>
+    <string name="play_snack_redo">Rétablir</string>
+    <string name="play_snack_nothing_answered">Aucun duel répondu, rien n’a bougé</string>
     <string name="play_snack_not_saved">Impossible d’enregistrer la partie</string>
     <string name="play_snack_list_updated">La liste a été mise à jour pendant la partie, la partie a donc été abandonnée</string>
     <string name="play_random_sample">Sélection aléatoire</string>
@@ -113,7 +87,4 @@
     <string name="play_select_candidates">Tout sélectionner parmi les candidates</string>
     <string name="play_clear_selection">Effacer la sélection</string>
     <string name="play_card_unnamed">Carte sans titre</string>
-    <string name="play_unplayed_options">Cartes hors de la partie</string>
-    <string name="play_unplayed_keep">Garder dans les niveaux actuels après les cartes jouées</string>
-    <string name="play_unplayed_pool">Déplacer dans la réserve</string>
 </resources>

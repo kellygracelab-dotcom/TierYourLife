@@ -42,17 +42,13 @@
     <string name="community_return_to_pool_title">Tüm kartlar havuza döndürülsün mü?</string>
     <string name="community_return_to_pool_explanation">Seviye yerleşimi sıfırlanacak.</string>
     <string name="community_return_to_pool_confirm">Havuza döndür</string>
-    <string name="ranking_choice_title">İlerlemeni kaydet</string>
-    <plurals name="ranking_choice_body">
-        <item quantity="one">%2$d karttan %1$d tanesini yerleştirdin. Sıralamanı orijinalin yanında yayımla veya kendine saklayıp devam et.</item>
-        <item quantity="other">%2$d karttan %1$d tanesini yerleştirdin. Sıralamanı orijinalin yanında yayımla veya kendine saklayıp devam et.</item>
-    </plurals>
-    <string name="ranking_choice_public">Sıralamamı yayımla</string>
     <string name="ranking_choice_sign_in">Yayımlamak için giriş yap</string>
-    <string name="ranking_choice_private">Kendim için kaydet</string>
+    <string name="ranking_offer_title">Nasıl sıraladığını başkalarına göstermek ister misin?</string>
+    <string name="ranking_offer_show">Sıralamalarda göster</string>
+    <string name="ranking_offer_sign_in">Paylaşmak için giriş yap</string>
+    <string name="ranking_offer_not_now">Şimdi değil</string>
     <string name="publication_preview_title">Nasıl yayımlanacak</string>
     <string name="publication_preview_ranking">Bu, orijinal listenin yanında senin sıralaman olacak. Özel kopyan düzenlenebilir kalacak.</string>
-    <string name="publication_preview_list">Bu, orijinale atıf yapan ayrı bir liste olacak. Özel kopyan düzenlenebilir kalacak.</string>
     <string name="publication_preview_confirm">Yayımla</string>
     <string name="source_changed">Orijinal liste değişti. Sıralamanı yayımlamadan önce listeyi yeniden aç.</string>
     <string name="ranking_choice_storage_account">Özel kopyan kitaplığına kaydedilir ve hesabınla eşitlenir.</string>
