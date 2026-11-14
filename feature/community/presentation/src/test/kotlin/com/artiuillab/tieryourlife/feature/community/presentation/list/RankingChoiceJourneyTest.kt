@@ -27,6 +27,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
@@ -345,7 +346,10 @@ private class SyncRuns : BoardSync {
     private val runs = MutableSharedFlow<SyncReport>(extraBufferCapacity = 4)
     override val finished: Flow<SyncReport> = runs
     override suspend fun sync() = SyncReport(signedIn = false)
-    fun finish() {
-        runs.tryEmit(SyncReport(signedIn = true))
+
+    /** Once the page listens: a run that ends before anyone listens is not told to anyone. */
+    suspend fun finish() {
+        withTimeout(5_000) { runs.subscriptionCount.first { it > 0 } }
+        runs.emit(SyncReport(signedIn = true))
     }
 }
