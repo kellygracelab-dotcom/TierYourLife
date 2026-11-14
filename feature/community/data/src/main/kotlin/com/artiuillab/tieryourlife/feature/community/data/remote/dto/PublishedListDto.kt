@@ -230,6 +230,8 @@ data class ShowRankingRequestDto(
     val rows: List<List<Int>>,
     val tierLabels: List<String>,
     val version: Long? = null,
+    /** Cards the reader added, at N+k in [rows]; absent when there are none. */
+    val addedCards: List<PublishedItemDto>? = null,
 )
 
 @Serializable

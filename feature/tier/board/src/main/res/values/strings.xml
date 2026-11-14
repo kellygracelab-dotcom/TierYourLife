@@ -160,7 +160,7 @@
     <string name="list_settings_moves_to">Moves to %1$s once it’s approved</string>
     <string name="list_settings_public_gone">This list is no longer in the community: it was taken down, deleted or published from another account. Turn Public on to publish it again.</string>
     <string name="list_settings_public_section_unavailable">This list’s section no longer takes lists. Choose another section, then publish again.</string>
-    <string name="list_settings_public_rank_instead">This list came from someone else, so it can’t go out as a separate list. Your ranking can go in its Rankings with the list’s own cards.</string>
+    <string name="list_settings_public_rank_instead">This is someone else’s list, so it can’t go out as a list of yours. Only your ranking can, in its Rankings.</string>
     <string name="list_settings_unpublish_failed">Could not take this list down; it is still public. Try again.</string>
     <string name="tier_detail_about_picture">About the picture</string>
     <string name="tier_detail_picture_author">Author</string>

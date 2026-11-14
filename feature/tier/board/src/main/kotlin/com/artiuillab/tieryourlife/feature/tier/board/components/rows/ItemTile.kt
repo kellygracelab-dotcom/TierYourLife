@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +29,10 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 
 @Composable
 fun ItemTile(item: TierItem, width: Dp, height: Dp) {
-    if (item.imageUrl == null && width >= TEXT_CARD_MIN_WIDTH) {
+    // A picture its source took away (404/403) leaves the card's name, as on the website, not an empty tile.
+    var broken by remember(item.imageUrl) { mutableStateOf(false) }
+    val picture = item.imageUrl.takeUnless { broken }
+    if (picture == null && width >= TEXT_CARD_MIN_WIDTH) {
         TextCard(title = item.title, width = width, height = height, bordered = width == COMPACT_TILE_WIDTH || width == ROOMY_TILE_WIDTH)
         return
     }
@@ -39,17 +45,18 @@ fun ItemTile(item: TierItem, width: Dp, height: Dp) {
             .background(media.tilePlaceholder),
         contentAlignment = Alignment.Center,
     ) {
-        if (item.imageUrl != null) {
+        if (picture != null) {
             val context = LocalPlatformContext.current
             // Each poster fades in on its own; one already in memory is simply there.
-            val request = remember(item.imageUrl) {
-                ImageRequest.Builder(context).data(item.imageUrl).crossfade(POSTER_FADE_MILLIS).build()
+            val request = remember(picture) {
+                ImageRequest.Builder(context).data(picture).crossfade(POSTER_FADE_MILLIS).build()
             }
             AsyncImage(
                 model = request,
                 contentDescription = item.title,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
+                onError = { broken = true },
             )
         } else {
             CardLabel(

@@ -9,6 +9,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
+import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
@@ -164,6 +166,34 @@ class BoardPublicationControllerTest {
         h.controller.confirmPreview()
         advanceUntilIdle()
         assertTrue(h.community.published.isEmpty())
+    }
+
+    // SPEC list-flow К3–К4: what a changed copy can do instead is offered, and goes as the reader's version with their cards.
+    @Test
+    fun aCopyWithCardsOfOnesOwn_isOfferedToRankings_andGoesThereWithThem() = runTest {
+        val h = Harness(this, copy().copy(originVersion = 42))
+        h.community.classification = { Result.success(PublicationKind.NewList(BasedOn("source", "Original", "Author"), sourceVersion = 42)) }
+        h.controller.setPublic(true)
+        advanceUntilIdle()
+        val offer = h.controller.state.value.offer!!
+        assertEquals(PublicationKind.Ranking("source", 42, ownCards = true), offer.kind)
+
+        h.controller.shareOffer {}
+        advanceUntilIdle()
+
+        assertTrue(h.community.published.isEmpty())
+        assertEquals(listOf("source"), h.community.shownBoards)
+        assertEquals("source", h.repository.board.rankingOf)
+        assertEquals(RankingChoice.Ranking, h.repository.board.rankingChoice)
+    }
+
+    @Test
+    fun aCopyWithCardsOfOnesOwn_isOfferedOnceAllArePlaced() = runTest {
+        val h = Harness(this, copy().copy(originVersion = 42))
+        h.community.classification = { Result.success(PublicationKind.NewList(BasedOn("source", "Original", "Author"), sourceVersion = 42)) }
+        h.controller.loaded(h.visible)
+        advanceUntilIdle()
+        assertEquals(PublicationKind.Ranking("source", 42, ownCards = true), h.controller.state.value.offer!!.kind)
     }
 
     @Test
@@ -351,6 +381,9 @@ class BoardPublicationControllerTest {
             check(!failChoice)
             board = board.copy(rankingChoice = choice)
         }
+        override suspend fun setRankingOf(id: Long, listId: String?) {
+            board = board.copy(rankingOf = listId)
+        }
         override suspend fun setRankingOrigin(id: Long, sourceVersion: Long) {
             val changedVersion = board.originVersion != null && board.originVersion != sourceVersion
             board = board.copy(
@@ -380,6 +413,11 @@ class BoardPublicationControllerTest {
         override suspend fun open(id: String): Result<PublishedList> {
             opened += id
             return opening()
+        }
+        val shownBoards = mutableListOf<String>()
+        override suspend fun showBoardInRankings(board: TierList, listId: String, expectedOwnerUid: String): Result<ShownRanking> {
+            shownBoards += listId
+            return Result.success(ShownRanking(Ranking("me", "Ann", null, emptyList(), emptyList(), 0, mine = true), created = true))
         }
     }
 

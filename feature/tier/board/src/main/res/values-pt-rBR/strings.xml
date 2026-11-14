@@ -169,7 +169,7 @@
     <string name="list_settings_moves_to">Vai para %1$s quando for aprovada</string>
     <string name="list_settings_public_gone">Esta lista não está mais na comunidade: foi removida, apagada ou publicada por outra conta. Ative Pública para publicá-la de novo.</string>
     <string name="list_settings_public_section_unavailable">A seção desta lista não aceita mais listas. Escolha outra seção e publique de novo.</string>
-    <string name="list_settings_public_rank_instead">Esta lista veio de outra pessoa, então não pode ser publicada como uma lista separada. Seu ranking pode entrar nas Classificações dela com as cartas da lista.</string>
+    <string name="list_settings_public_rank_instead">Esta lista é de outra pessoa, então não pode sair como sua. Só o seu ranking pode, nas Classificações dela.</string>
     <string name="list_settings_unpublish_failed">Não foi possível retirar esta lista; ela continua pública. Tente de novo.</string>
     <string name="tier_detail_about_picture">Sobre a imagem</string>
     <string name="tier_detail_picture_author">Autor</string>

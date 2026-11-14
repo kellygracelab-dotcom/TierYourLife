@@ -179,7 +179,7 @@
     <string name="list_settings_moves_to">Trafi do działu %1$s, gdy zostanie zatwierdzony</string>
     <string name="list_settings_public_gone">Tej listy nie ma już w społeczności: usunięto ją z publikacji, skasowano albo opublikowano z innego konta. Włącz Publiczna, aby opublikować ją ponownie.</string>
     <string name="list_settings_public_section_unavailable">Dział tej listy nie przyjmuje już list. Wybierz inny dział i opublikuj ponownie.</string>
-    <string name="list_settings_public_rank_instead">Ta lista pochodzi od kogoś innego, więc nie można jej opublikować jako osobnej listy. Twój ranking może trafić do jej Rankingów z kartami tej listy.</string>
+    <string name="list_settings_public_rank_instead">To lista kogoś innego, więc nie może wyjść jako twoja. Może tylko twój ranking, w jej Rankingach.</string>
     <string name="list_settings_unpublish_failed">Nie udało się wycofać listy z publikacji; nadal jest publiczna. Spróbuj ponownie.</string>
     <string name="tier_detail_about_picture">O obrazie</string>
     <string name="tier_detail_picture_author">Autor</string>
