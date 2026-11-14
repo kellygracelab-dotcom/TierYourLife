@@ -8,8 +8,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
-import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
-import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.model.matchesSearch
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
@@ -21,12 +19,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowR
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowTarget
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFollows
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -36,18 +30,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-/** What a search shows instead of the tabs: the server's answer to what was typed. */
-data class SearchResults(
-    val lists: List<PublishedListSummary> = emptyList(),
-    /** Approved topics whose name starts with what was typed. */
-    val topics: List<Topic> = emptyList(),
-    val loading: Boolean = false,
-    val failed: Boolean = false,
-) {
-    /** An answer, and an empty one: not a search still asked or one that failed. */
-    val foundNothing: Boolean get() = !loading && !failed && lists.isEmpty() && topics.isEmpty()
-}
 
 /** Explore (§2): the sections in the server's order, and the popular feed under them. */
 data class ExploreUiState(
@@ -59,8 +41,6 @@ data class ExploreUiState(
     val results: SearchResults = SearchResults(),
     val nowMillis: Long = 0L,
 )
-
-private const val SEARCH_DELAY_MILLIS = 300L
 
 @HiltViewModel
 class ExploreViewModel @Inject constructor(
@@ -83,11 +63,11 @@ class ExploreViewModel @Inject constructor(
 
     val picturesOnWifiOnly: () -> Boolean = preferences::picturesOnWifiOnly
 
-    private val query = MutableStateFlow<String?>(null)
-    private val results = MutableStateFlow(SearchResults())
-    private var searchJob: Job? = null
+    val search = ExploreSearch(community, viewModelScope, menu::isVisible) { typed ->
+        catalog.directory.value.shown.any { it.matchesSearch(typed) }
+    }
 
-    val state: StateFlow<ExploreUiState> = combine(catalog.directory, feed.pane, query, results) { directory, pane, q, found ->
+    val state: StateFlow<ExploreUiState> = combine(catalog.directory, feed.pane, search.query, search.results) { directory, pane, q, found ->
         ExploreUiState(
             sections = directory.shown,
             feed = pane,
@@ -117,7 +97,7 @@ class ExploreViewModel @Inject constructor(
         }
     }
 
-    /** Every arrival: the kept feed first, the server when that is old. */
+    /** Every arrival: the kept feed first, then the server, every time. */
     fun open() {
         feed.open()
         loadSections()
@@ -143,48 +123,6 @@ class ExploreViewModel @Inject constructor(
                 onFailure = { notes.send(CommunityNotice.FollowFailed(FollowRefusal.of(now, it))) },
             )
         }
-    }
-
-    fun enterSearch() {
-        query.value = ""
-        results.value = SearchResults()
-    }
-
-    /** A request, not a filter over what is on screen: it waits for the typing to settle. */
-    fun updateQuery(typed: String) {
-        query.value = typed
-        searchJob?.cancel()
-        if (typed.isBlank()) {
-            results.value = SearchResults()
-            return
-        }
-        results.value = results.value.copy(loading = true, failed = false)
-        searchJob = viewModelScope.launch {
-            delay(SEARCH_DELAY_MILLIS)
-            val topics = async {
-                community.topics(query = typed).getOrDefault(emptyList()).filter { it.status == TopicStatus.Approved }
-            }
-            val lists = community.feed(query = typed)
-            val found = topics.await()
-            results.value = lists.fold(
-                onSuccess = { page -> SearchResults(lists = page.lists.filter(menu::isVisible), topics = found) },
-                // Topics found are still an answer when the lists could not be read.
-                onFailure = { if (found.isEmpty()) SearchResults(failed = true) else SearchResults(topics = found) },
-            )
-            if (results.value.foundNothing && catalog.directory.value.shown.none { it.matchesSearch(typed) }) {
-                community.reportSearchMiss(typed)
-            }
-        }
-    }
-
-    fun retrySearch() {
-        query.value?.let(::updateQuery)
-    }
-
-    fun exitSearch() {
-        searchJob?.cancel()
-        query.value = null
-        results.value = SearchResults()
     }
 
     fun hideList(summary: PublishedListSummary) = menu.hideList(feed, summary)

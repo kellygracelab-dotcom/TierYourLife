@@ -50,6 +50,13 @@ internal suspend fun SectionCatalog.withdrawTelling(sectionId: String, tell: sus
 }
 
 /**
+ * Out of sight for either reason, as on the website: the list itself, or
+ * everything from its author. An editorial list has no author to hide.
+ */
+internal fun AppPreferences.hides(summary: PublishedListSummary): Boolean =
+    summary.id in hiddenListIds() || (!summary.editorial && summary.authorUid in hiddenAuthorUids())
+
+/**
  * Hiding and reporting from a feed's long-press menu, the same on every feed:
  * local and silent, with a note where the card was, and a report put back on
  * screen if it could not be sent.
@@ -60,8 +67,7 @@ internal class ListMenuActions(
     private val scope: CoroutineScope,
     private val failed: suspend (CommunityNotice) -> Unit,
 ) {
-    fun isVisible(summary: PublishedListSummary): Boolean =
-        summary.id !in preferences.hiddenListIds() && summary.authorUid !in preferences.hiddenAuthorUids()
+    fun isVisible(summary: PublishedListSummary): Boolean = !preferences.hides(summary)
 
     fun hideList(loader: FeedLoader, summary: PublishedListSummary) {
         preferences.hideList(summary.id, summary.title)

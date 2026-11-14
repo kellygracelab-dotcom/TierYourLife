@@ -447,7 +447,7 @@ Before approving an image: put all nine into the 2-column phone grid at 173 × 9
 4. Images: Coil with memory and disk cache (disk 150 MB). Placeholder flat surfaceContainerHighest with a 150 ms fade-in; no per-image shimmer. Prefetch the next page's covers while scrolling.
 5. Warm-up at app start: in the background (expedited, network-constrained), fetch the App Check token and make one cheap request to the feed function.
 6. First open ever: real tiles plus 6 skeleton cards; data replaces them in place with a 150 ms cross-fade; tile "new" lines appear when counts arrive.
-7. Coming back to the tab or a section: show the cache immediately. If fetchedAt is more than 5 min old, refresh silently. Not scrolled: apply in place. Scrolled: hold and show the New lists pill.
+7. Coming back to the tab or a section: show the cache immediately. Then ask the server every time, silently (SPEC list-flow 14.11, К6). Not scrolled: apply in place. Scrolled: hold and show the New lists pill.
 8. Pull to refresh: PullToRefreshBox, cached content kept visible. Success replaces the content. Failure: snackbar **Couldn't refresh. Showing lists from 14:20. · Retry**.
 9. Failure with cache: content stays; the offline strip (2.6) only when the cache is older than 1 h; it clears on success.
 10. Failure without cache: the error block (2.7); tiles still work.
