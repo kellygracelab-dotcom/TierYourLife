@@ -60,7 +60,7 @@ class PublicationPreviewUiTest {
     // SPEC 14.11 п.4: somebody else's list does not go out as a separate list.
     @Test fun aChangedCopyIsNotPublishedAsASeparateList() {
         val boards = show(PublicationKind.NewList(BasedOn("original", "Original", "Author"), sourceVersion = 123))
-        askToPublish()
+        compose.runOnIdle { vm.setPublic(true) }
         compose.onNodeWithTag("publication_error").assertIsDisplayed()
         compose.onNodeWithTag("publication_preview").assertDoesNotExist()
         compose.runOnIdle {
