@@ -144,7 +144,7 @@ fun TierDetailScreen(
             request = playRequest,
             open = playOpen,
             // The moves went through the board's own repository; it only has to read itself again.
-            onArranged = { _, _ -> viewModel.loadTierList() },
+            onArranged = { _, undone -> viewModel.arrangedByGame(undone) },
             onClose = { playOpen = false },
         )
     }

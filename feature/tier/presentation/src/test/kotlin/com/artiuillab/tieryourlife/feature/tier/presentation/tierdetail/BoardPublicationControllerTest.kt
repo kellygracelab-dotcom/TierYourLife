@@ -51,6 +51,14 @@ class BoardPublicationControllerTest {
     }
 
     @Test
+    fun straightAfterAGame_anythingPlacedIsOffered() = runTest {
+        val h = Harness(this, copy(placed = 5))
+        h.controller.loaded(h.visible, afterGame = true)
+        advanceUntilIdle()
+        assertEquals(5, h.controller.state.value.offer!!.placed)
+    }
+
+    @Test
     fun aSmallListIsOfferedOnceEveryCardIsPlaced() = runTest {
         val h = Harness(this, copy(placed = 3, total = 3))
         h.controller.loaded(h.visible)

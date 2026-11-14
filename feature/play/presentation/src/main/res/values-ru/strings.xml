@@ -75,38 +75,6 @@
     <string name="play_skip">Пропустить</string>
     <string name="play_skip_hint">Пропустите, если не можете выбрать. Ничего не засчитается.</string>
     <string name="play_pick">Выбрать %1$s</string>
-    <string name="play_your_result">Ваш результат</string>
-    <plurals name="play_from_duels">
-        <item quantity="one">По итогам %1$d дуэли</item>
-        <item quantity="few">По итогам %1$d дуэлей</item>
-        <item quantity="many">По итогам %1$d дуэлей</item>
-        <item quantity="other">По итогам %1$d дуэли</item>
-    </plurals>
-    <string name="play_dashed_legend">Пунктир: сыграли меньше 2 дуэлей.</string>
-    <string name="play_empty_tier">Пусто</string>
-    <string name="play_nothing_to_apply">Все дуэли пропущены, применять нечего.</string>
-    <plurals name="play_thin">
-        <item quantity="one">%1$d карточка сыграла меньше 2 дуэлей, так что её место — догадка. Уточнение добавит до %2$d дуэлей для неё, или примените сейчас и поправьте вручную.</item>
-        <item quantity="few">%1$d карточки сыграли меньше 2 дуэлей, так что их места — догадка. Уточнение добавит до %2$d дуэлей для них, или примените сейчас и поправьте вручную.</item>
-        <item quantity="many">%1$d карточек сыграли меньше 2 дуэлей, так что их места — догадка. Уточнение добавит до %2$d дуэлей для них, или примените сейчас и поправьте вручную.</item>
-        <item quantity="other">%1$d карточки сыграли меньше 2 дуэлей, так что их места — догадка. Уточнение добавит до %2$d дуэлей для них, или примените сейчас и поправьте вручную.</item>
-    </plurals>
-    <plurals name="play_thin_refined">
-        <item quantity="one">%1$d карточка сыграла меньше 2 дуэлей, так что её место — догадка. Примените сейчас и поправьте вручную.</item>
-        <item quantity="few">%1$d карточки сыграли меньше 2 дуэлей, так что их места — догадка. Примените сейчас и поправьте вручную.</item>
-        <item quantity="many">%1$d карточек сыграли меньше 2 дуэлей, так что их места — догадка. Примените сейчас и поправьте вручную.</item>
-        <item quantity="other">%1$d карточки сыграли меньше 2 дуэлей, так что их места — догадка. Примените сейчас и поправьте вручную.</item>
-    </plurals>
-    <string name="play_apply">Применить</string>
-    <string name="play_put_in_mine">Положить в «Моя»</string>
-    <string name="play_refine">Уточнить</string>
-    <plurals name="play_refine_up_to">
-        <item quantity="one">Уточнить · до %1$d дуэли</item>
-        <item quantity="few">Уточнить · до %1$d дуэлей</item>
-        <item quantity="many">Уточнить · до %1$d дуэлей</item>
-        <item quantity="other">Уточнить · до %1$d дуэли</item>
-    </plurals>
-    <string name="play_again">Сыграть ещё</string>
     <string name="play_snack_game_saved">Игра сохранена · %1$d из %2$d</string>
     <string name="play_snack_discard">Удалить</string>
     <plurals name="play_snack_arranged">
@@ -116,8 +84,10 @@
         <item quantity="other">Доска расставлена по итогам %1$d дуэли</item>
     </plurals>
     <string name="play_snack_saved_discarded">Сохранённая игра удалена</string>
-    <string name="play_snack_result_discarded">Результат отброшен</string>
     <string name="play_snack_undo">Отменить</string>
+    <string name="play_snack_game_undone">Доска как до игры</string>
+    <string name="play_snack_redo">Вернуть</string>
+    <string name="play_snack_nothing_answered">Ни одной дуэли не отвечено, ничего не сдвинулось</string>
     <string name="play_snack_not_saved">Не удалось сохранить игру</string>
     <string name="play_snack_list_updated">Список обновился во время игры, поэтому игра отброшена</string>
     <string name="play_random_sample">Случайная выборка</string>
@@ -125,7 +95,4 @@
     <string name="play_select_candidates">Выбрать всех кандидатов</string>
     <string name="play_clear_selection">Снять выбор</string>
     <string name="play_card_unnamed">Карточка без названия</string>
-    <string name="play_unplayed_options">Карточки вне игры</string>
-    <string name="play_unplayed_keep">Оставить в своих тирах после сыгранных</string>
-    <string name="play_unplayed_pool">Переместить в пул</string>
 </resources>

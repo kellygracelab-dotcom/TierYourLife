@@ -56,13 +56,14 @@ internal class BoardPublicationController(
         busy(false, null)
     }
 
-    fun loaded(list: TierList) {
+    /** Offered once: with every card placed, or straight after a game with anything placed. */
+    fun loaded(list: TierList, afterGame: Boolean = false) {
         if (mutable.value.preview?.let { !same(it.list, list) } == true) dismissPreview()
         if (mutable.value.offer?.let { !same(it.list, list) } == true) dismissOffer()
         if (!canOffer(list)) return
         val total = list.tiers.sumOf { it.items.size }
         val placed = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
-        if (total == 0 || placed < total) return
+        if (placed == 0 || (placed < total && !afterGame)) return
         offerJob?.cancel()
         val who = owner()
         val ticket = generation

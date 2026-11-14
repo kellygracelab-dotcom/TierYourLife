@@ -61,30 +61,6 @@
     <string name="play_skip">Überspringen</string>
     <string name="play_skip_hint">Überspringe, wenn du dich nicht entscheiden kannst. Es wird nichts gewertet.</string>
     <string name="play_pick">%1$s wählen</string>
-    <string name="play_your_result">Dein Ergebnis</string>
-    <plurals name="play_from_duels">
-        <item quantity="one">Aus %1$d Duell</item>
-        <item quantity="other">Aus %1$d Duellen</item>
-    </plurals>
-    <string name="play_dashed_legend">Gestrichelt: weniger als 2 Duelle gespielt.</string>
-    <string name="play_empty_tier">Leer</string>
-    <string name="play_nothing_to_apply">Alle Duelle wurden übersprungen, es gibt nichts zu übernehmen.</string>
-    <plurals name="play_thin">
-        <item quantity="one">%1$d Karte hat weniger als 2 Duelle gespielt, ihr Platz ist also geraten. Verfeinern fügt bis zu %2$d Duelle für sie hinzu – oder jetzt übernehmen und von Hand anpassen.</item>
-        <item quantity="other">%1$d Karten haben weniger als 2 Duelle gespielt, ihre Plätze sind also geraten. Verfeinern fügt bis zu %2$d Duelle für sie hinzu – oder jetzt übernehmen und von Hand anpassen.</item>
-    </plurals>
-    <plurals name="play_thin_refined">
-        <item quantity="one">%1$d Karte hat weniger als 2 Duelle gespielt, ihr Platz ist also geraten. Jetzt übernehmen und von Hand anpassen.</item>
-        <item quantity="other">%1$d Karten haben weniger als 2 Duelle gespielt, ihre Plätze sind also geraten. Jetzt übernehmen und von Hand anpassen.</item>
-    </plurals>
-    <string name="play_apply">Übernehmen</string>
-    <string name="play_put_in_mine">In „Meine“ legen</string>
-    <string name="play_refine">Verfeinern</string>
-    <plurals name="play_refine_up_to">
-        <item quantity="one">Verfeinern · %1$d Duell</item>
-        <item quantity="other">Verfeinern · bis zu %1$d Duelle</item>
-    </plurals>
-    <string name="play_again">Noch mal spielen</string>
     <string name="play_snack_game_saved">Spiel gespeichert · %1$d von %2$d</string>
     <string name="play_snack_discard">Verwerfen</string>
     <plurals name="play_snack_arranged">
@@ -92,8 +68,10 @@
         <item quantity="other">Board aus %1$d Duellen geordnet</item>
     </plurals>
     <string name="play_snack_saved_discarded">Gespeichertes Spiel verworfen</string>
-    <string name="play_snack_result_discarded">Ergebnis verworfen</string>
     <string name="play_snack_undo">Rückgängig</string>
+    <string name="play_snack_game_undone">Zurück zum Board vor dem Spiel</string>
+    <string name="play_snack_redo">Wiederholen</string>
+    <string name="play_snack_nothing_answered">Kein Duell beantwortet, nichts wurde verschoben</string>
     <string name="play_snack_not_saved">Spiel konnte nicht gespeichert werden</string>
     <string name="play_snack_list_updated">Die Liste wurde während des Spiels aktualisiert, daher wurde das Spiel verworfen</string>
     <string name="play_random_sample">Zufällige Auswahl</string>
@@ -101,7 +79,4 @@
     <string name="play_select_candidates">Alle verfügbaren auswählen</string>
     <string name="play_clear_selection">Auswahl aufheben</string>
     <string name="play_card_unnamed">Karte ohne Titel</string>
-    <string name="play_unplayed_options">Karten außerhalb des Spiels</string>
-    <string name="play_unplayed_keep">In ursprünglichen Stufen hinter gespielten Karten behalten</string>
-    <string name="play_unplayed_pool">In den Pool verschieben</string>
 </resources>

@@ -10,7 +10,6 @@ import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGames
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
-import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -53,7 +52,7 @@ class PlayViewModelTest {
     }
 
     @Test
-    fun aSampleFromSingleS_keepsTheSameSixteenForResumeAndPlayAgain() = runBlocking {
+    fun aSampleFromSingleS_ordersThoseSixteen_atTheTopOfS_andTheRestStayBehind() = runBlocking {
         val whole = board(1L to (1L..91L).toList(), 2L to emptyList(), POOL to emptyList())
         val games = FakeSavedGames()
         val vm = viewModel(games, MovingTierRepository(whole), PlayRequest.ownBoard(whole))
@@ -65,22 +64,11 @@ class PlayViewModelTest {
         vm.picker.choose(GameKind.Hill)
         vm.picker.start()
         vm.playToTheEnd()
-        val result = (vm.state.value.stage as PlayStage.Finished).result
-        assertEquals(listOf(1L), result.tiers.map { it.tierId })
-        assertEquals(chosen.toSet(), result.tiers.single().cards.map { it.item.id }.toSet())
-        // One tier is only ordered: its unplayed cards stay behind the played ones, so there is nothing to choose.
-        assertEquals(0, result.unplayedCount)
-        val moved = whole.withItemMoved(chosen.first(), 2L, 0)
-        vm.offer(PlayRequest.ownBoard(moved))
-        vm.result.playAgain()
-        assertEquals(chosen, picker(vm.state.value)!!.selectedIds)
-        assertEquals(chosen, picker(vm.state.value)!!.selectedCards.map { it.item.id })
-        vm.offer(PlayRequest.ownBoard(whole.copy(tiers = whole.tiers.map { if (it.isPool) it.copy(items = listOf(com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem(999, "New", null))) else it })))
-        vm.picker.start()
-        vm.duel.pick(true)
-        eventually { games.games[KEY]?.history?.size == 1 }
-        assertEquals(chosen, games.games.getValue(KEY).ids)
-        assertEquals(listOf(1L), games.games.getValue(KEY).scope)
+        val arranged = vm.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
+        val s = arranged.board.tiers.first { it.id == 1L }.items.map { it.id }
+        assertEquals(91, s.size)
+        assertEquals(chosen.toSet(), s.take(16).toSet())
+        assertTrue(arranged.board.tiers.first { it.id == 2L }.items.isEmpty())
     }
 
     @Test
@@ -141,38 +129,20 @@ class PlayViewModelTest {
     }
 
     @Test
-    fun aWholeGame_endsInAResult_thatPlacesEveryCard() = runBlocking {
-        val viewModel = viewModel()
+    fun aWholeGame_endsOnTheBoard_withEveryCardPlaced_andIsNotKept() = runBlocking {
+        val games = FakeSavedGames()
+        val viewModel = viewModel(games = games)
         viewModel.open()
         viewModel.picker.start()
 
         viewModel.playToTheEnd()
 
-        val result = (viewModel.state.value.stage as PlayStage.Finished).result
-        assertEquals((1L..6L).toSet(), result.tiers.flatMap { tier -> tier.cards.map { it.item.id } }.toSet())
-        assertEquals(listOf(1L, 2L, 3L), result.tiers.map { it.tierId })
-    }
-
-    // The preview draws each band as the board does, its name under the letter; a blank name is no name.
-    @Test
-    fun theResult_namesEachTier_asItsBandDoes() = runBlocking {
-        val named = unranked.copy(
-            tiers = unranked.tiers.map { tier ->
-                when (tier.id) {
-                    1L -> tier.copy(caption = "Masterpiece")
-                    2L -> tier.copy(caption = " ")
-                    else -> tier
-                }
-            },
-        )
-        val viewModel = viewModel(boards = MovingTierRepository(named), request = PlayRequest.ownBoard(named))
-        viewModel.open()
-        viewModel.picker.start()
-
-        viewModel.playToTheEnd()
-
-        val result = (viewModel.state.value.stage as PlayStage.Finished).result
-        assertEquals(listOf("Masterpiece", null, null), result.tiers.map { it.caption })
+        assertEquals(PlayStage.Closed, viewModel.state.value.stage)
+        val arranged = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
+        val placed = arranged.board.tiers.filterNot { it.isPool }
+        assertEquals((1L..6L).toSet(), placed.flatMap { tier -> tier.items.map { it.id } }.toSet())
+        assertEquals(listOf(1L, 2L, 3L), placed.map { it.id })
+        eventually { KEY !in games.games }
     }
 
     @Test
@@ -377,44 +347,49 @@ class PlayViewModelTest {
         assertEquals(3, duel.number)
     }
 
+    // SPEC 14.11 п.1: the result is one step, Undo and Redo go between the board before the game and after it.
     @Test
-    fun applyingOnOwnBoard_movesThePlayedCardsThroughTheRepository_andUndoPutsThemBack() = runBlocking {
+    fun theLastAnswer_putsTheResultOnTheBoard_andUndoAndRedoToggleIt() = runBlocking {
         val repository = MovingTierRepository(unranked)
         val viewModel = viewModel(boards = repository)
         viewModel.open()
         viewModel.picker.start()
         viewModel.playToTheEnd()
-        val result = (viewModel.state.value.stage as PlayStage.Finished).result
-
-        viewModel.result.apply()
 
         val arranged = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
-        val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
-        assertEquals(PlayNotice.BoardArranged(result.duels), said.notice)
-        val expected = result.tiers.map { tier -> tier.tierId to tier.cards.map { it.item.id } } + (POOL to emptyList())
-        assertEquals(expected, repository.board.ids())
-        assertEquals(expected, arranged.board.ids())
+        val said = (viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said).notice as PlayNotice.BoardArranged
+        assertTrue(said.duels > 0)
+        val after = arranged.board.ids()
+        assertEquals(after, repository.board.ids())
+        assertEquals(POOL to emptyList<Long>(), after.last())
 
         viewModel.notices.undoArrange()
+        val undone = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
+        assertTrue(undone.undone)
+        assertEquals(PlayNotice.GameUndone(said.duels), (viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said).notice)
+        assertEquals(unranked.ids(), repository.board.ids())
 
+        viewModel.notices.redoArrange()
+        val redone = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
+        assertFalse(redone.undone)
+        assertEquals(said, (viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said).notice)
+        assertEquals(after, repository.board.ids())
+
+        viewModel.notices.undoArrange()
         viewModel.events.firstWithin { it is PlayEvent.Arranged }
         assertEquals(unranked.ids(), repository.board.ids())
     }
 
     @Test
-    fun everyDuelSkipped_leavesNothingToApply_andApplyMovesNoCard() = runBlocking {
+    fun everyDuelSkipped_movesNoCard_andSaysSo() = runBlocking {
         val repository = MovingTierRepository(unranked)
         val viewModel = viewModel(boards = repository)
         viewModel.open()
         viewModel.picker.start()
         while (viewModel.state.value.stage is PlayStage.Dueling) viewModel.duel.skip()
-        val result = (viewModel.state.value.stage as PlayStage.Finished).result
-        assertEquals(0, result.duels)
-        assertFalse(result.canApply)
 
-        viewModel.result.apply()
-
-        assertTrue(viewModel.state.value.stage is PlayStage.Finished)
+        assertEquals(PlayNotice.NothingAnswered, (viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said).notice)
+        assertEquals(PlayStage.Closed, viewModel.state.value.stage)
         assertTrue(repository.moves.isEmpty())
         assertEquals(unranked.ids(), repository.board.ids())
     }
@@ -431,10 +406,9 @@ class PlayViewModelTest {
         viewModel.picker.start()
 
         viewModel.playToTheEnd(first = false)
-        val order = (viewModel.state.value.stage as PlayStage.Finished).result.tiers.single().cards.map { it.item.id }
-        viewModel.result.apply()
 
         viewModel.events.firstWithin { it is PlayEvent.Arranged }
+        val order = repository.board.tiers.first { it.id == 1L }.items.map { it.id }
         assertEquals(listOf(1L to order, 2L to listOf(5L), POOL to listOf(6L)), repository.board.ids())
         assertEquals((1L..4L).toSet(), order.toSet())
     }
@@ -449,9 +423,6 @@ class PlayViewModelTest {
         assertTrue(picker(viewModel.state.value)!!.intoMine)
         viewModel.picker.start()
         viewModel.playToTheEnd()
-        assertTrue((viewModel.state.value.stage as PlayStage.Finished).result.intoMine)
-
-        viewModel.result.apply()
 
         val arranged = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
         assertTrue(arranged.board.tiers.first { it.isPool }.items.isEmpty())
@@ -467,7 +438,6 @@ class PlayViewModelTest {
         viewModel.open()
         viewModel.picker.start()
         viewModel.playToTheEnd()
-        viewModel.result.apply()
         val applied = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
 
         viewModel.notices.undoArrange()
@@ -476,43 +446,12 @@ class PlayViewModelTest {
         assertFalse(applied.undone)
         assertTrue(undone.undone)
         assertEquals(mine, undone.board)
-    }
 
-    @Test
-    fun cancellingAResult_discardsIt_andUndoKeepsItAgain() = runBlocking {
-        val games = FakeSavedGames()
-        val viewModel = viewModel(games = games)
-        viewModel.open()
-        viewModel.picker.start()
-        viewModel.playToTheEnd()
+        viewModel.notices.redoArrange()
 
-        viewModel.result.cancel()
-
-        val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
-        assertEquals(PlayNotice.ResultDiscarded, said.notice)
-        eventually { KEY !in games.games }
-        viewModel.notices.undoDiscard()
-        eventually { KEY in games.games }
-    }
-
-    @Test
-    fun refine_asksTheCloseCallsOnce() = runBlocking {
-        val viewModel = viewModel()
-        viewModel.open()
-        viewModel.picker.choose(GameKind.Hill)
-        viewModel.picker.start()
-        viewModel.playToTheEnd()
-        val offered = (viewModel.state.value.stage as PlayStage.Finished).result
-        assertTrue(offered.canRefine)
-
-        viewModel.result.refine()
-
-        val duel = (viewModel.state.value.stage as PlayStage.Dueling).duel
-        assertTrue(duel.refining)
-        assertEquals(1, duel.number)
-        assertEquals(offered.refineDuels, duel.total)
-        viewModel.playToTheEnd()
-        assertFalse((viewModel.state.value.stage as PlayStage.Finished).result.canRefine)
+        val redone = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
+        assertFalse(redone.undone)
+        assertEquals(applied.board, redone.board)
     }
 
     @Test
@@ -526,23 +465,6 @@ class PlayViewModelTest {
         viewModel.duel.undo()
 
         assertEquals(first, (viewModel.state.value.stage as PlayStage.Dueling).duel)
-    }
-
-    @Test
-    fun playingAgain_reopensThePickerOverTheSameCards() = runBlocking {
-        val ranked = board(1L to listOf(1L, 2L, 3L), 2L to listOf(4L), POOL to listOf(5L))
-        val viewModel = viewModel(boards = MovingTierRepository(ranked), request = PlayRequest.ownBoard(ranked))
-        viewModel.open()
-        viewModel.picker.toggle(2L)
-        viewModel.picker.start()
-        viewModel.playToTheEnd()
-
-        viewModel.result.playAgain()
-
-        val picker = picker(viewModel.state.value)!!
-        assertEquals(setOf(1L, POOL), picker.chosen)
-        assertEquals(4, picker.count)
-        assertTrue(picker.resume != null)
     }
 
     private fun viewModel(

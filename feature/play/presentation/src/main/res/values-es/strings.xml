@@ -68,34 +68,6 @@
     <string name="play_skip">Saltar</string>
     <string name="play_skip_hint">Salta si no puedes elegir. No se registra nada.</string>
     <string name="play_pick">Elegir %1$s</string>
-    <string name="play_your_result">Tu resultado</string>
-    <plurals name="play_from_duels">
-        <item quantity="one">A partir de %1$d duelo</item>
-        <item quantity="many">A partir de %1$d duelos</item>
-        <item quantity="other">A partir de %1$d duelos</item>
-    </plurals>
-    <string name="play_dashed_legend">Borde discontinuo: jugaron menos de 2 duelos.</string>
-    <string name="play_empty_tier">Vacío</string>
-    <string name="play_nothing_to_apply">Se saltaron todos los duelos, así que no hay nada que aplicar.</string>
-    <plurals name="play_thin">
-        <item quantity="one">%1$d tarjeta jugó menos de 2 duelos, así que su puesto es una suposición. Afinar añade hasta %2$d duelos para ella, o aplica ahora y ajusta a mano.</item>
-        <item quantity="many">%1$d tarjetas jugaron menos de 2 duelos, así que sus puestos son una suposición. Afinar añade hasta %2$d duelos para ellas, o aplica ahora y ajusta a mano.</item>
-        <item quantity="other">%1$d tarjetas jugaron menos de 2 duelos, así que sus puestos son una suposición. Afinar añade hasta %2$d duelos para ellas, o aplica ahora y ajusta a mano.</item>
-    </plurals>
-    <plurals name="play_thin_refined">
-        <item quantity="one">%1$d tarjeta jugó menos de 2 duelos, así que su puesto es una suposición. Aplica ahora y ajusta a mano.</item>
-        <item quantity="many">%1$d tarjetas jugaron menos de 2 duelos, así que sus puestos son una suposición. Aplica ahora y ajusta a mano.</item>
-        <item quantity="other">%1$d tarjetas jugaron menos de 2 duelos, así que sus puestos son una suposición. Aplica ahora y ajusta a mano.</item>
-    </plurals>
-    <string name="play_apply">Aplicar</string>
-    <string name="play_put_in_mine">Poner en «Mío»</string>
-    <string name="play_refine">Afinar</string>
-    <plurals name="play_refine_up_to">
-        <item quantity="one">Afinar · %1$d duelo</item>
-        <item quantity="many">Afinar · hasta %1$d duelos</item>
-        <item quantity="other">Afinar · hasta %1$d duelos</item>
-    </plurals>
-    <string name="play_again">Jugar otra vez</string>
     <string name="play_snack_game_saved">Partida guardada · %1$d de %2$d</string>
     <string name="play_snack_discard">Descartar</string>
     <plurals name="play_snack_arranged">
@@ -104,8 +76,10 @@
         <item quantity="other">Tablero ordenado a partir de %1$d duelos</item>
     </plurals>
     <string name="play_snack_saved_discarded">Partida guardada descartada</string>
-    <string name="play_snack_result_discarded">Resultado descartado</string>
     <string name="play_snack_undo">Deshacer</string>
+    <string name="play_snack_game_undone">De vuelta al tablero de antes del juego</string>
+    <string name="play_snack_redo">Rehacer</string>
+    <string name="play_snack_nothing_answered">No respondiste ningún duelo, así que nada se movió</string>
     <string name="play_snack_not_saved">No se pudo guardar la partida</string>
     <string name="play_snack_list_updated">La lista se actualizó durante la partida, así que la partida se descartó</string>
     <string name="play_random_sample">Selección aleatoria</string>
@@ -113,7 +87,4 @@
     <string name="play_select_candidates">Seleccionar todas las disponibles</string>
     <string name="play_clear_selection">Borrar selección</string>
     <string name="play_card_unnamed">Tarjeta sin título</string>
-    <string name="play_unplayed_options">Tarjetas fuera de la partida</string>
-    <string name="play_unplayed_keep">Mantener en sus niveles, detrás de las jugadas</string>
-    <string name="play_unplayed_pool">Mover a la reserva</string>
 </resources>
