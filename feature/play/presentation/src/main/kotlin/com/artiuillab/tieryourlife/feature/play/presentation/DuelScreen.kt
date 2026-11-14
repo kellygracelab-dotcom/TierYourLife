@@ -81,9 +81,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/** The duels themselves: two cards, tap the better one. Nothing else on screen asks for a decision. */
+/** The duels themselves: two cards, tap the better one. Nothing else on screen asks for a decision. Public for the store listing's pictures. */
 @Composable
-internal fun DuelScreen(
+fun DuelScreen(
     duel: DuelState,
     onPick: (first: Boolean) -> Unit,
     onSkip: () -> Unit,
