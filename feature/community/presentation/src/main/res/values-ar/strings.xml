@@ -186,6 +186,16 @@
     <string name="search_sections">الأقسام</string>
     <string name="search_lists">القوائم</string>
     <string name="section_topics">المواضيع</string>
+    <string name="section_tier_lists">قوائم التصنيف</string>
+    <string name="section_show_fewer">عرض أقل</string>
+    <plurals name="section_show_all_topics">
+        <item quantity="zero">عرض كل المواضيع (%1$d)</item>
+        <item quantity="one">عرض كل المواضيع (%1$d)</item>
+        <item quantity="two">عرض كل المواضيع (%1$d)</item>
+        <item quantity="few">عرض كل المواضيع الـ%1$d</item>
+        <item quantity="many">عرض كل المواضيع الـ%1$d</item>
+        <item quantity="other">عرض كل المواضيع الـ%1$d</item>
+    </plurals>
     <string name="section_sort_popular">الأكثر رواجًا</string>
     <string name="section_sort_newest">الأحدث</string>
     <string name="section_share">مشاركة القسم</string>

@@ -5,7 +5,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
@@ -26,6 +29,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.following.Foll
 import com.artiuillab.tieryourlife.feature.community.presentation.following.FollowingScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.following.FollowingUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionScreenContent
+import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionUiState
 import com.artiuillab.tieryourlife.feature.tier.board.common.KnownSections
 import com.artiuillab.tieryourlife.feature.tier.board.common.LocalSections
@@ -239,6 +243,26 @@ class CommunityScreenshotTest {
     @Test
     @Config(qualifiers = "w891dp-h411dp-land-xhdpi")
     fun section_phoneLandscape() = capture("section_landscape") { SectionScreenContent(games, onBack = {}) }
+
+    private val manyTopics = games.copy(
+        topics = listOf("Pokémon", "Zelda", "Souls-likes", "Metroidvanias", "Roguelikes", "Mario", "Final Fantasy").mapIndexed { at, name ->
+            Topic("m$at", name, ListCategory.Games.id, TopicStatus.Approved)
+        },
+    )
+
+    // SPEC section-layout п. 5: two rows of topics at most until Show all, and then all of them with Show fewer.
+    @Test
+    fun section_manyTopics_twoRowsUntilShowAll() = capture("section_many_topics") { SectionScreenContent(manyTopics, onBack = {}) }
+
+    @Test
+    fun section_manyTopics_showAll_opensTheRest() {
+        composeRule.setContent { TierYourLifeTheme { SectionScreenContent(manyTopics, onBack = {}) } }
+        composeRule.onNodeWithTag(SectionTestTags.topic("m4")).assertDoesNotExist()
+        composeRule.onNodeWithText("Show all 8 topics").performClick()
+        composeRule.onNodeWithTag(SectionTestTags.topic("m6")).assertExists()
+        composeRule.onNodeWithText("Show fewer").assertExists()
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/section_many_topics_open.png", roborazziOptions = OPTIONS)
+    }
 
     private val manage = FollowingUiState.Ready(
         authors = listOf(FollowedAuthor("u-mariia", "mariia", null), FollowedAuthor("u-kyle", "kyle", null)),

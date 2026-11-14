@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +20,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +37,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -47,8 +50,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
+import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
@@ -66,6 +72,7 @@ internal object SectionTestTags {
     const val BAR = "section_bar"
     const val TOPICS = "section_topics"
     const val TOPIC_PICTURE = "section_topic_picture"
+    const val SHOW_ALL_TOPICS = "section_show_all_topics"
     const val SORT = "section_sort"
     const val LOADING = "section_loading"
     const val EMPTY = "section_empty"
@@ -134,9 +141,10 @@ internal fun SectionHeader(
 private const val COLLAGE_COVERS = 4
 
 /**
- * The section's topics as tiles, like the sections on Home: the topic's own
- * picture, or the section's art until it has one, under its name. This
- * person's waiting ones come last, dimmed, and open what is known about them.
+ * The section's topics, apart from its lists: a heading with how many, low
+ * tiles that read as a way in rather than as one more list, two rows at most
+ * until Show all. This person's waiting ones come last, dimmed, and open what
+ * is known about them. A line under the block parts it from the lists.
  */
 @Composable
 internal fun TopicTiles(
@@ -147,26 +155,41 @@ internal fun TopicTiles(
     onOpenWaiting: (Topic) -> Unit,
 ) = BoxWithConstraints {
     val columns = (maxWidth / TOPIC_TILE_MIN_WIDTH).toInt().coerceAtLeast(2)
-    Column(Modifier.testTag(SectionTestTags.TOPICS), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(
-            stringResource(R.string.section_topics),
-            modifier = Modifier.padding(top = 16.dp),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        val tiles = topics.map { it to false } + waiting.map { it to true }
-        tiles.chunked(columns).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                row.forEach { (topic, isWaiting) ->
-                    TopicTile(section, topic, isWaiting, Modifier.weight(1f)) { if (isWaiting) onOpenWaiting(topic) else onOpen(topic) }
+    val tiles = topics.map { it to false } + waiting.map { it to true }
+    var all by rememberSaveable(section.id) { mutableStateOf(false) }
+    val folded = tiles.size > columns * FOLDED_ROWS
+    val shown = if (folded && !all) tiles.take(columns * FOLDED_ROWS) else tiles
+    Column(Modifier.testTag(SectionTestTags.TOPICS)) {
+        BlockHeading(stringResource(R.string.section_topics), tiles.size.takeIf { it > 0 }, Modifier.padding(top = 8.dp, bottom = 12.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            shown.chunked(columns).forEach { row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    row.forEach { (topic, isWaiting) ->
+                        TopicTile(section, topic, isWaiting, Modifier.weight(1f)) { if (isWaiting) onOpenWaiting(topic) else onOpen(topic) }
+                    }
+                    repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
                 }
-                repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
+        if (folded) {
+            TextButton(onClick = { all = !all }, modifier = Modifier.padding(top = 4.dp).testTag(SectionTestTags.SHOW_ALL_TOPICS)) {
+                Text(
+                    if (all) stringResource(R.string.section_show_fewer) else pluralStringResource(R.plurals.section_show_all_topics, tiles.size, tiles.size),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
+        }
+        HorizontalDivider(Modifier.padding(top = 24.dp, bottom = 4.dp), color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 
-/** Topics a search found, from any section: each over its own section's art. */
+/** A block's heading in the section headings' style, with how many when that is known. */
+@Composable
+private fun BlockHeading(label: String, count: Int?, modifier: Modifier = Modifier) {
+    SectionLabel(if (count == null) label else "$label · $count", modifier)
+}
+
+/** Topics a search found, from any section: each over its own section's tone. */
 @Composable
 internal fun FoundTopicTiles(topics: List<Topic>, onOpen: (Topic) -> Unit) = BoxWithConstraints {
     val columns = (maxWidth / TOPIC_TILE_MIN_WIDTH).toInt().coerceAtLeast(2)
@@ -182,32 +205,39 @@ internal fun FoundTopicTiles(topics: List<Topic>, onOpen: (Topic) -> Unit) = Box
     }
 }
 
+/**
+ * A topic with a picture of its own shows only the section's tone until the
+ * picture fades in, never the section's art first; one without wears the art.
+ */
 @Composable
 private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier: Modifier, onClick: () -> Unit) {
     Box(
         modifier
-            .aspectRatio(TOPIC_TILE_RATIO)
-            .clip(RoundedCornerShape(16.dp))
+            .height(TOPIC_TILE_HEIGHT)
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .semantics { contentDescription = topic.name }
             .testTag(SectionTestTags.topic(topic.id)),
     ) {
-        SectionArt(section, Modifier.fillMaxSize(), scrim = false)
         val picture = topic.pictureUrl
         if (picture != null) {
+            val context = LocalContext.current
+            Box(Modifier.fillMaxSize().background(lookOf(section).tintNow))
             AsyncImage(
-                model = picture,
+                model = remember(picture) { ImageRequest.Builder(context).data(picture).crossfade(TOPIC_FADE_MILLIS).build() },
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize().testTag(SectionTestTags.TOPIC_PICTURE),
             )
+        } else {
+            SectionArt(section, Modifier.fillMaxSize(), scrim = false)
         }
         Box(
             Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        0.3f to Color.Black.copy(alpha = if (waiting) 0.45f else 0f),
+                        0f to Color.Black.copy(alpha = if (waiting) 0.45f else 0f),
                         1f to Color.Black.copy(alpha = 0.7f),
                     ),
                 ),
@@ -215,8 +245,8 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
         if (waiting) {
             Row(
                 Modifier
-                    .align(Alignment.TopStart)
-                    .padding(8.dp)
+                    .align(Alignment.TopEnd)
+                    .padding(6.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.Black.copy(alpha = 0.55f))
                     .padding(horizontal = 8.dp, vertical = 3.dp),
@@ -231,7 +261,7 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
             topic.name,
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 12.dp, end = 10.dp, bottom = 10.dp),
+                .padding(start = 12.dp, end = 10.dp, bottom = 8.dp),
             style = TileName,
             color = Color.White,
             maxLines = 1,
@@ -240,7 +270,9 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
     }
 }
 
-private const val TOPIC_TILE_RATIO = 2f
+private val TOPIC_TILE_HEIGHT = 64.dp
+private const val FOLDED_ROWS = 2
+private const val TOPIC_FADE_MILLIS = 150
 private val TOPIC_TILE_MIN_WIDTH = 170.dp
 private val TileName = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
 
@@ -283,17 +315,18 @@ internal fun SectionEmpty() {
     }
 }
 
+/** The lists' heading, with how many when known, and their sort at the end of the row: it sorts only them. */
 @Composable
-internal fun SortRow(sort: FeedSort, onSort: (FeedSort) -> Unit) {
+internal fun SortRow(sort: FeedSort, onSort: (FeedSort) -> Unit, modifier: Modifier = Modifier, count: Int? = null) {
     var open by remember { mutableStateOf(false) }
     Row(
-        Modifier
+        modifier
             .fillMaxWidth()
             .height(44.dp)
             .testTag(SectionTestTags.SORT),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Spacer(Modifier.weight(1f))
+        BlockHeading(stringResource(R.string.section_tier_lists), count, Modifier.weight(1f))
         Box {
             TextButton(onClick = { open = true }) {
                 Text(stringResource(sort.labelRes), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface)
