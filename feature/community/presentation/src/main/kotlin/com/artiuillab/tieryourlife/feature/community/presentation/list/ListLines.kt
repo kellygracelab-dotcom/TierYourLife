@@ -12,14 +12,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
+import com.artiuillab.tieryourlife.feature.community.domain.model.ListSource
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import timber.log.Timber
 
 private val RANK_IT_LINE_HEIGHT = 44.dp
 
@@ -37,6 +41,26 @@ internal fun BasedOnLine(basedOn: BasedOn, onOpen: () -> Unit, modifier: Modifie
             .clickable(onClick = onOpen)
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .testTag(CommunityListTestTags.BASED_ON),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.primary,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+/** A house list's source as its editor named it, opened in the browser. */
+@Composable
+internal fun SourceLine(source: ListSource, modifier: Modifier = Modifier) {
+    val links = LocalUriHandler.current
+    Text(
+        text = stringResource(R.string.community_list_source, source.label),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(role = Role.Button) {
+                runCatching { links.openUri(source.url) }.onFailure { Timber.w(it, "No browser to open a list's source") }
+            }
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .testTag(CommunityListTestTags.SOURCE),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.primary,
         maxLines = 2,

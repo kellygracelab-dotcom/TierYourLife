@@ -75,7 +75,12 @@ data class PublishedList(
     val translations: ListTranslations = ListTranslations(),
     /** Who made [PublishedListSummary.coverImageUrl], when the house editor said so. */
     val coverAttribution: PictureAttribution? = null,
+    /** Where a house list's ranking came from, as its editor named it. */
+    val source: ListSource? = null,
 )
+
+/** A house list's source: what the page calls it, and the https address a tap opens. */
+data class ListSource(val label: String, val url: String)
 
 /** A list a copy was changed from: named on the copy's page, and a tap away. Its author is empty when the original is anonymous. */
 data class BasedOn(val id: String, val title: String, val authorName: String, val authorUid: String = "")

@@ -625,6 +625,7 @@ private fun UnderTheTitle(
     if (basedOn != null) {
         BasedOnLine(basedOn = basedOn, onOpen = { onOpenList(basedOn.id) })
     }
+    loaded.source?.let { SourceLine(it) }
 }
 
 /**

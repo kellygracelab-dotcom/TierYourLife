@@ -150,6 +150,7 @@
     <string name="community_rank_it_yourself">Selbst ordnen</string>
     <string name="community_drag_any_card">Zieh eine Karte</string>
     <string name="community_based_on">Nach „%1$s“ von %2$s</string>
+    <string name="community_list_source">Quelle: %1$s</string>
     <string name="explore_tab_explore">Entdecken</string>
     <string name="explore_tab_following">Gefolgt</string>
     <string name="explore_title_community">Community</string>
