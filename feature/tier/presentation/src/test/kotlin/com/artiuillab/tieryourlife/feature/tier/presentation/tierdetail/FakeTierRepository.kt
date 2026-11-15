@@ -151,7 +151,19 @@ internal class FakeTierRepository(
     override suspend fun getAllTierLists(): List<TierList> = unsupported()
     override suspend fun createTierList(title: String, captions: List<String>): Long = unsupported()
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = unsupported()
-    override suspend fun renameTierList(id: Long, title: String) = unsupported()
+    override suspend fun renameTierList(id: Long, title: String) {
+        list = list.copy(title = title)
+    }
+
+    val drafts = mutableListOf<String>()
+
+    override suspend fun keepDraft(id: Long) {
+        drafts += "kept $id"
+    }
+
+    override suspend fun discardDraft(id: Long) {
+        drafts += "discarded $id"
+    }
     override suspend fun addItemsToPool(tierListId: Long, items: List<PoolItemDraft>) = unsupported()
     private val movesGate = CompletableDeferred<Unit>()
 

@@ -10,8 +10,8 @@ sealed interface Route {
     data class TierLists(val community: Boolean = false, val makeBoard: Boolean = false) : Route
 
     @Serializable
-    /** [focusTierId] is the tier the board opens on, when the cover handed it over. */
-    data class TierDetail(val tierListId: Long, val focusTierId: Long? = null) : Route
+    /** [focusTierId] is the tier the board opens on, when the cover handed it over; [fresh] when New list just made it. */
+    data class TierDetail(val tierListId: Long, val focusTierId: Long? = null, val fresh: Boolean = false) : Route
 
     @Serializable
     data class CoverPicker(val tierListId: Long) : Route
@@ -35,6 +35,7 @@ sealed interface Route {
 internal fun SavedStateHandle.tierDetailRoute() = Route.TierDetail(
     tierListId = required(Route.TierDetail::tierListId.name),
     focusTierId = get<Long>(Route.TierDetail::focusTierId.name),
+    fresh = get<Boolean>(Route.TierDetail::fresh.name) ?: false,
 )
 
 internal fun SavedStateHandle.coverPickerRoute() = Route.CoverPicker(tierListId = required(Route.CoverPicker::tierListId.name))

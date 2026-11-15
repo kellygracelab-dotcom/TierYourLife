@@ -359,10 +359,13 @@ class TierListsViewModel @Inject constructor(
         mutate("Restoring lists") { repository.restoreTierLists(ids) }
     }
 
-    fun createTierList(title: String, captions: List<String>, onCreated: (Long) -> Unit) {
+    /** A [draft] stays out of every list and the account until something is done on it. */
+    fun createTierList(title: String, captions: List<String>, onCreated: (Long) -> Unit, draft: Boolean = false) {
         viewModelScope.launch {
             var createdId: Long? = null
-            messages.guard("Creating a list") { createdId = repository.createTierList(title, captions) }
+            messages.guard("Creating a list") {
+                createdId = if (draft) repository.createDraft(title, captions) else repository.createTierList(title, captions)
+            }
             loadTierListsInternal()
             createdId?.let(onCreated)
         }

@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,6 +54,8 @@ fun TierDetailScreen(
 ) {
     val screen by viewModel.screen.collectAsStateWithLifecycle()
     val publication by viewModel.publicationState.collectAsStateWithLifecycle()
+    val back = { viewModel.leave(onBack) }
+    BackHandler(enabled = screen.untouchedDraft, onBack = back)
     val state = screen.board
     val publish = screen.publish
     var addSheetVisible by rememberSaveable { mutableStateOf(false) }
@@ -86,7 +89,7 @@ fun TierDetailScreen(
         userMessages = viewModel.userMessages,
         belowTopBar = originalLink,
         actions = TierDetailActions(
-            onBack = onBack,
+            onBack = back,
             signedIn = screen.signedIn,
             publishing = publish.publishing,
             publishError = publish.error,

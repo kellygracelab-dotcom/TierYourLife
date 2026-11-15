@@ -188,7 +188,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController, openLis
                     onTierListClick = { id -> navController.navigateToTierDetail(id) },
                     onSettingsClick = { navController.navigateToSettings() },
                     onSignInClick = { navController.navigateToAccount() },
-                    onNewListCreated = { id -> navController.navigateToTierDetail(id) },
+                    onNewListCreated = { id -> navController.navigateToTierDetail(id, fresh = true) },
                     tabs = tabs,
                     arrival = arrival,
                 )

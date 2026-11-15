@@ -93,8 +93,8 @@ interface BoardSyncDao {
     @Query("SELECT * FROM tier_lists")
     suspend fun allBoards(): List<TierListEntity>
 
-    /** One account's boards, trash included. Another's are never sent, whoever is signed in. */
-    @Query("SELECT * FROM tier_lists WHERE ownerUid = :owner")
+    /** One account's boards, trash included, but no draft. Another's are never sent, whoever is signed in. */
+    @Query("SELECT * FROM tier_lists WHERE ownerUid = :owner AND draft = 0")
     suspend fun boardsOf(owner: String): List<TierListEntity>
 
     /** Not touching editedAt: nothing about the board changed, and stamping it would make every phone re-send an identical board. */
