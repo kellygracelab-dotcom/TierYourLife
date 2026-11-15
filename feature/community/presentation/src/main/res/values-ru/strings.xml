@@ -179,6 +179,9 @@
     <string name="explore_follow">Подписаться</string>
     <string name="explore_following">Вы подписаны</string>
     <string name="explore_search_hint">Поиск по сообществу</string>
+    <string name="section_search">Поиск</string>
+    <string name="search_within">В «%1$s»</string>
+    <string name="search_everywhere">Искать везде</string>
     <string name="explore_search_nothing">Ничего не нашлось.</string>
     <string name="search_sections">Разделы</string>
     <string name="search_lists">Списки</string>

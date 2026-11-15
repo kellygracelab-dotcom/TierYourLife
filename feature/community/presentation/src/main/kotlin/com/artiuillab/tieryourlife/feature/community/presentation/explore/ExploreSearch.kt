@@ -32,6 +32,15 @@ data class SearchResults(
 
 private const val SEARCH_DELAY_MILLIS = 300L
 
+/** Where a search looks when it is not everywhere. */
+sealed interface SearchScope {
+    /** The section's topics and lists. */
+    data class Section(val id: String) : SearchScope
+
+    /** The topic's lists. */
+    data class Topic(val id: String) : SearchScope
+}
+
 /** Explore's search: the server's answer to what was typed, paged on like the website's (SPEC list-flow К6). */
 class ExploreSearch(
     private val community: CommunityRepository,
@@ -47,11 +56,24 @@ class ExploreSearch(
     private val _results = MutableStateFlow(SearchResults())
     val results: StateFlow<SearchResults> = _results.asStateFlow()
 
+    private val _within = MutableStateFlow<SearchScope?>(null)
+
+    /** Where the search looks; null for everywhere. */
+    val within: StateFlow<SearchScope?> = _within.asStateFlow()
+
     private var job: Job? = null
 
-    fun enter() {
+    fun enter(within: SearchScope? = null) {
+        _within.value = within
         _query.value = ""
         _results.value = SearchResults()
+    }
+
+    /** From one section or topic to everywhere, asking again for what is typed. */
+    fun widen() {
+        if (_within.value == null) return
+        _within.value = null
+        retry()
     }
 
     /** A request, not a filter over what is on screen: it waits for the typing to settle. */
@@ -63,19 +85,21 @@ class ExploreSearch(
             return
         }
         _results.value = _results.value.copy(loading = true, failed = false)
+        val within = _within.value
         job = scope.launch {
             delay(SEARCH_DELAY_MILLIS)
             val topics = async {
-                community.topics(query = typed).getOrDefault(emptyList()).filter { it.status == TopicStatus.Approved }
+                if (within is SearchScope.Topic) return@async emptyList()
+                community.topics(query = typed, section = within.section).getOrDefault(emptyList()).filter { it.status == TopicStatus.Approved }
             }
-            val lists = community.feed(query = typed)
+            val lists = community.feed(category = within.section, topic = within.topic, query = typed)
             val found = topics.await()
             _results.value = lists.fold(
                 onSuccess = { page -> SearchResults(lists = page.lists.filter(visible), topics = found, cursor = page.nextCursor) },
                 // Topics found are still an answer when the lists could not be read.
                 onFailure = { if (found.isEmpty()) SearchResults(failed = true) else SearchResults(topics = found) },
             )
-            if (_results.value.foundNothing && !sectionMatches(typed)) community.reportSearchMiss(typed)
+            if (within == null && _results.value.foundNothing && !sectionMatches(typed)) community.reportSearchMiss(typed)
         }
     }
 
@@ -86,8 +110,9 @@ class ExploreSearch(
         val after = now.cursor ?: return
         if (!now.canLoadMore || now.loadingMore || job?.isActive == true) return
         _results.value = now.copy(loadingMore = true)
+        val within = _within.value
         job = scope.launch {
-            community.feed(query = typed, after = after).fold(
+            community.feed(category = within.section, topic = within.topic, query = typed, after = after).fold(
                 onSuccess = { page ->
                     val known = _results.value.lists.mapTo(mutableSetOf()) { it.id }
                     val more = page.lists.filter { it.id !in known && visible(it) }
@@ -105,6 +130,11 @@ class ExploreSearch(
     fun exit() {
         job?.cancel()
         _query.value = null
+        _within.value = null
         _results.value = SearchResults()
     }
 }
+
+private val SearchScope?.section: String? get() = (this as? SearchScope.Section)?.id
+
+private val SearchScope?.topic: String? get() = (this as? SearchScope.Topic)?.id

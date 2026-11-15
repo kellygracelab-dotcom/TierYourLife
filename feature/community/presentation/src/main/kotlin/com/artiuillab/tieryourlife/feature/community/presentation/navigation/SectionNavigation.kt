@@ -13,6 +13,7 @@ fun NavGraphBuilder.sectionScreen(
     onOpenTopic: (CommunityRoute.Topic) -> Unit,
     onSignIn: () -> Unit = {},
     onOpenBoard: (Long) -> Unit = {},
+    onOpenSection: (CommunityRoute.Section) -> Unit = {},
 ) {
     composable<CommunityRoute.Section> {
         SectionScreen(
@@ -22,6 +23,7 @@ fun NavGraphBuilder.sectionScreen(
             onOpenTopic = onOpenTopic,
             onSignIn = onSignIn,
             onOpenBoard = onOpenBoard,
+            onOpenSection = { onOpenSection(CommunityRoute.Section(it)) },
         )
     }
 }

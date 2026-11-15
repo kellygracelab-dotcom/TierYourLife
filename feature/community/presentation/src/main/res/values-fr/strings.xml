@@ -177,6 +177,9 @@
     <string name="explore_follow">Suivre</string>
     <string name="explore_following">Abonné</string>
     <string name="explore_search_hint">Rechercher dans la communauté</string>
+    <string name="section_search">Rechercher</string>
+    <string name="search_within">Dans %1$s</string>
+    <string name="search_everywhere">Rechercher partout</string>
     <string name="explore_search_nothing">Aucun résultat.</string>
     <string name="search_sections">Rubriques</string>
     <string name="search_lists">Listes</string>

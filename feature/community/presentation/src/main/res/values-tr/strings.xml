@@ -175,6 +175,9 @@
     <string name="explore_follow">Takip et</string>
     <string name="explore_following">Takip ediliyor</string>
     <string name="explore_search_hint">Toplulukta ara</string>
+    <string name="section_search">Ara</string>
+    <string name="search_within">%1$s içinde</string>
+    <string name="search_everywhere">Her yerde ara</string>
     <string name="explore_search_nothing">Eşleşen bir şey yok.</string>
     <string name="search_sections">Bölümler</string>
     <string name="search_lists">Listeler</string>

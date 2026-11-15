@@ -179,6 +179,9 @@
     <string name="explore_follow">Obserwuj</string>
     <string name="explore_following">Obserwujesz</string>
     <string name="explore_search_hint">Szukaj w społeczności</string>
+    <string name="section_search">Szukaj</string>
+    <string name="search_within">W: %1$s</string>
+    <string name="search_everywhere">Szukaj wszędzie</string>
     <string name="explore_search_nothing">Nic nie pasuje.</string>
     <string name="search_sections">Działy</string>
     <string name="search_lists">Listy</string>

@@ -175,6 +175,9 @@
     <string name="explore_follow">Folgen</string>
     <string name="explore_following">Gefolgt</string>
     <string name="explore_search_hint">In der Community suchen</string>
+    <string name="section_search">Suchen</string>
+    <string name="search_within">In %1$s</string>
+    <string name="search_everywhere">Überall suchen</string>
     <string name="explore_search_nothing">Nichts gefunden.</string>
     <string name="search_sections">Rubriken</string>
     <string name="search_lists">Listen</string>

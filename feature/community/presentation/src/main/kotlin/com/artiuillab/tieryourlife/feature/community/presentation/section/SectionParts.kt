@@ -73,6 +73,9 @@ import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 internal object SectionTestTags {
     const val SCREEN = "section_screen"
+    const val SEARCH_BUTTON = "section_search_button"
+    const val SEARCH = "section_search"
+    const val SEARCH_SCOPE = "section_search_scope"
     const val HEADER = "section_header"
     const val BAR = "section_bar"
     const val TOPICS = "section_topics"

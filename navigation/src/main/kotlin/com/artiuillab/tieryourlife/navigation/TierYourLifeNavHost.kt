@@ -366,6 +366,7 @@ private fun NavContent(
             onOpenTopic = { route -> navController.navigateToTopic(route) },
             onSignIn = { navController.navigateToAccount() },
             onOpenBoard = { id -> navController.navigateToTierDetail(id) },
+            onOpenSection = { route -> navController.navigateToSection(route) },
         )
         allSectionsScreen(
             onBack = { navController.popBackStack() },
@@ -396,6 +397,8 @@ private fun NavContent(
             onOpenList = openList,
             onAuthorClick = { uid, name, photoUrl -> navController.navigateToAuthor(uid, name, photoUrl) },
             onSignIn = { navController.navigateToAccount() },
+            onOpenTopic = { route -> navController.navigateToTopic(route) },
+            onOpenSection = { route -> navController.navigateToSection(route) },
         )
         communityListScreen(
             onBack = { navController.popBackStack() },
