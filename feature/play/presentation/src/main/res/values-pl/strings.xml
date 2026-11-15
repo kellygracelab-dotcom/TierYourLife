@@ -8,9 +8,11 @@
         <item quantity="other">%1$d karty z listy %2$s</item>
     </plurals>
     <string name="play_choose_cards">Wybierz karty</string>
+    <string name="play_game_smart">Sprytny wybór</string>
     <string name="play_game_swiss">Przegrani zostają</string>
     <string name="play_game_hill">Król wzgórza</string>
     <string name="play_game_bracket">Drabinka</string>
+    <string name="play_game_smart_line">Pyta tylko o karty, które mogą jeszcze zmienić poziom. Prawie te same poziomy przy znacznie mniejszej liczbie pojedynków.</string>
     <string name="play_game_swiss_line">Każdy gra w każdej rundzie. Wolniej, ale najlepiej wypełnia poziomy.</string>
     <string name="play_game_hill_line">Zwycięzca zostaje i spotyka następną kartę. Szybko; poziomy wychodzą przybliżone.</string>
     <string name="play_game_bracket_line">Grają pary, zwycięzcy idą dalej, aż zostanie jedna. Szybko; poziomy wychodzą przybliżone.</string>

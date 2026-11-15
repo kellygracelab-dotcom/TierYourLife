@@ -6,9 +6,11 @@
         <item quantity="other">%1$d cards from %2$s</item>
     </plurals>
     <string name="play_choose_cards">Choose cards</string>
+    <string name="play_game_smart">Smart</string>
     <string name="play_game_swiss">Losers stay</string>
     <string name="play_game_hill">King of the hill</string>
     <string name="play_game_bracket">Bracket</string>
+    <string name="play_game_smart_line">Asks only about cards that could still change tier. Nearly the same tiers in far fewer duels.</string>
     <string name="play_game_swiss_line">Everyone plays every round. Slower, best for filling tiers.</string>
     <string name="play_game_hill_line">The winner stays and meets the next card. Quick; tiers come out rough.</string>
     <string name="play_game_bracket_line">Pairs play, winners go on until one is left. Quick; tiers come out rough.</string>

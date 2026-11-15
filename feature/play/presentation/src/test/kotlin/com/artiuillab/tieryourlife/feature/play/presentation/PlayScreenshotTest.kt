@@ -130,7 +130,7 @@ class PlayScreenshotTest {
 
     @Test
     @Config(qualifiers = FLIP_LANDSCAPE)
-    fun landscape_thePicker_threeGamesSideBySide() = capture("play_landscape_picker") {
+    fun landscape_thePicker_theGamesSideBySide() = capture("play_landscape_picker") {
         WideDialog(picker.copy(resume = savedGame))
     }
 

@@ -66,6 +66,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedMinutes
+import com.artiuillab.tieryourlife.feature.play.domain.isRough
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import java.time.Instant
 import java.time.ZoneId
@@ -403,12 +404,12 @@ private fun GameOption(kind: GameKind, count: Int, selected: Boolean, onSelect: 
     }
 }
 
-/** "≈ 136 duels · about 5 min": Swiss may stop early, so its count is only roughly. */
+/** "≈ 136 duels · about 5 min": Swiss and smart may stop early, so their counts are only roughly. */
 @Composable
 private fun estimateText(kind: GameKind, count: Int): String {
     val duels = estimatedDuels(kind, count)
     val minutes = estimatedMinutes(duels)
-    val prefix = if (kind == GameKind.Swiss) "≈ " else ""
+    val prefix = if (kind.isRough) "≈ " else ""
     return prefix + pluralStringResource(R.plurals.play_estimate_duels, duels, duels) + " · " +
         pluralStringResource(R.plurals.play_estimate_minutes, minutes, minutes)
 }
@@ -558,6 +559,7 @@ private fun CheckRow(
 @get:StringRes
 internal val GameKind.nameRes: Int
     get() = when (this) {
+        GameKind.Smart -> R.string.play_game_smart
         GameKind.Swiss -> R.string.play_game_swiss
         GameKind.Hill -> R.string.play_game_hill
         GameKind.Bracket -> R.string.play_game_bracket
@@ -566,6 +568,7 @@ internal val GameKind.nameRes: Int
 @get:StringRes
 private val GameKind.lineRes: Int
     get() = when (this) {
+        GameKind.Smart -> R.string.play_game_smart_line
         GameKind.Swiss -> R.string.play_game_swiss_line
         GameKind.Hill -> R.string.play_game_hill_line
         GameKind.Bracket -> R.string.play_game_bracket_line
@@ -649,14 +652,15 @@ private fun GameColumn(kind: GameKind, count: Int, selected: Boolean, onSelect: 
         modifier
             .heightIn(min = 146.dp)
             .gameOption(kind, selected, onSelect)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            // Four games abreast on a phone held sideways: the spacing gives way so the row still fits.
+            .padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             RadioButton(selected = selected, onClick = null)
             Spacer(Modifier.width(10.dp))
             GameIcon(kind, 20.dp, colors.content)
         }
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(6.dp))
         Text(stringResource(kind.nameRes), style = COLUMN_NAME, color = colors.content)
         Text(
             text = stringResource(kind.lineRes),
@@ -667,7 +671,7 @@ private fun GameColumn(kind: GameKind, count: Int, selected: Boolean, onSelect: 
         Spacer(
             Modifier
                 .weight(1f)
-                .heightIn(min = 10.dp),
+                .heightIn(min = 6.dp),
         )
         Text(estimateText(kind, count), style = COLUMN_ESTIMATE, color = colors.quiet)
     }

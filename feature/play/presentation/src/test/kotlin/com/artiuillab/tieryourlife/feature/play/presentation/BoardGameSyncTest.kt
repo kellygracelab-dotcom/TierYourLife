@@ -56,7 +56,9 @@ class BoardGameSyncTest {
         assertEquals(answer.first, answer.winner)
         assertEquals(NOW, shared.startedAt)
         assertNull(shared.scope)
-        assertEquals(1, shared.round)
+        assertEquals(GameKind.Smart, shared.spec.kind)
+        assertEquals("smart keeps no rounds on the board", 0, shared.round)
+        assertEquals(unranked.tiers.count { !it.isPool }.coerceIn(1, shared.ids.size), shared.spec.tiers)
     }
 
     @Test

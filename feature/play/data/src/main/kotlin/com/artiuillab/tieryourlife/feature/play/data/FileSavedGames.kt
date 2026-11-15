@@ -42,10 +42,10 @@ class FileSavedGames(
 
     override suspend fun keys(): Set<String> = lock.withLock { current() }.games.keys
 
-    override suspend fun lastKind(): GameKind? = lock.withLock { current() }.last?.let(::kindNamed)
+    override suspend fun lastKind(): GameKind? = lock.withLock { current() }.lastKind?.let(::kindNamed)
 
     override suspend fun rememberKind(kind: GameKind) {
-        change { it.copy(last = kind.name) }
+        change { it.copy(lastKind = kind.name) }
     }
 
     /** Every game and the last one chosen: they were played on somebody's boards. */
@@ -96,9 +96,14 @@ class FileSavedGames(
     }
 }
 
+/**
+ * [last] is the choice from before smart, left unread: smart came in as
+ * everyone's choice once, and [lastKind] remembers a person's own from then on.
+ */
 @Serializable
 private data class Shelf(
     val last: String? = null,
+    val lastKind: String? = null,
     val games: Map<String, GameRecord> = emptyMap(),
 )
 
@@ -118,14 +123,16 @@ private data class GameRecord(
     val uids: List<String>? = null,
     val scopeUids: List<String>? = null,
     val touchedAt: Long? = null,
+    val tiers: Int? = null,
 ) {
     /** Null for a record this version cannot read: a game from a newer one is dropped, not guessed at. */
     fun toGame(): SavedGame? {
         val kind = kindNamed(kind) ?: return null
         if (count < 2 || count != ids.size || ids.toSet().size != count) return null
         val outcomes = history.map { readOutcome(it, count) ?: return null }
+        val smartTiers = if (kind == GameKind.Smart) tiers?.takeIf { it in 1..count } ?: return null else null
         return SavedGame(
-            spec = GameSpec(kind, count, seed, refine),
+            spec = GameSpec(kind, count, seed, refine, smartTiers),
             ids = ids,
             history = outcomes,
             round = round,
@@ -155,6 +162,7 @@ private data class GameRecord(
             uids = game.uids,
             scopeUids = game.scopeUids,
             touchedAt = game.touchedAt,
+            tiers = game.spec.tiers,
         )
     }
 }

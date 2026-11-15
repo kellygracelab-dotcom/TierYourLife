@@ -73,7 +73,31 @@ internal val gameCases = listOf(
     GameCase("swiss of twelve fills seven tiers", GameSpec(GameKind.Swiss, 12, seed = 12), 7, "lowerWins"),
     GameCase("swiss of sixty-four fills twenty tiers", GameSpec(GameKind.Swiss, 64, seed = 64), 20, "lowerWins"),
     GameCase("swiss of sixty-four into two tiers", GameSpec(GameKind.Swiss, 64, seed = 64), 2, "lowerWins"),
+    smartCase("smart of two asks one duel", 2, seed = 2, tierCount = 2, "lowerWins"),
+    smartCase("smart of ten, earlier card wins, five tiers", 10, seed = 10, tierCount = 5, "lowerWins"),
+    smartCase(
+        "smart of twelve with skips into four tiers",
+        12,
+        seed = 12,
+        tierCount = 4,
+        "script",
+        listOf("first", "second", "first", "skip", "second"),
+    ),
+    smartCase("smart of eight in one tier orders it", 8, seed = 8, tierCount = 8, "higherWins"),
+    smartCase(
+        "smart of twenty, answers that disagree, six tiers",
+        20,
+        seed = -7,
+        tierCount = 6,
+        "script",
+        listOf("first", "first", "second", "first", "second", "second", "skip"),
+    ),
+    smartCase("smart of forty, later card wins, five tiers", 40, seed = 40, tierCount = 5, "higherWins"),
 )
+
+/** A smart game's tiers are the case's tier count, as the website's specOf gives them. */
+private fun smartCase(name: String, count: Int, seed: Int, tierCount: Int, answers: String, script: List<String> = emptyList()) =
+    GameCase(name, GameSpec(GameKind.Smart, count, seed, tiers = tierCount), tierCount, answers, script)
 
 internal data class RefineCase(val name: String, val count: Int, val history: List<Outcome>)
 
@@ -107,7 +131,7 @@ internal fun play(case: GameCase): List<Outcome> {
 }
 
 internal fun buildVectors(): JsonObject = buildJsonObject {
-    put("version", 1)
+    put("version", 2)
     put("mulberry32", randomVectors())
     put("shuffle", shuffleVectors())
     put("standings", standingVectors())

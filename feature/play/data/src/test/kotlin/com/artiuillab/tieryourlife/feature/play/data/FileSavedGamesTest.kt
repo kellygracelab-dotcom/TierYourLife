@@ -137,6 +137,30 @@ class FileSavedGamesTest {
     }
 
     @Test
+    fun aSmartGame_keepsItsTiers_andIsNoGameWithoutThem() = runBlocking {
+        val smart = game.copy(spec = GameSpec(GameKind.Smart, 4, seed = 3, tiers = 2), round = 0)
+        store().save("board:4", smart)
+
+        assertEquals(smart, store().load("board:4"))
+        val file = File(folder.root, "untiered.json").apply {
+            writeText(
+                """{"games":{"board:3":{"kind":"Smart","count":3,"seed":1,"refine":false,"ids":[1,2,3],""" +
+                    """"history":[],"round":0,"startedAt":0}}}""",
+            )
+        }
+        assertNull(store(file).load("board:3"))
+    }
+
+    @Test
+    fun theChoiceFromBeforeSmart_isNotRead_soSmartComesFirstOnce() = runBlocking {
+        val file = File(folder.root, "chosen.json").apply { writeText("""{"last":"Hill","games":{}}""") }
+
+        assertNull(store(file).lastKind())
+        store(file).rememberKind(GameKind.Bracket)
+        assertEquals(GameKind.Bracket, store(file).lastKind())
+    }
+
+    @Test
     fun aGameOfAKindThisVersionDoesNotKnow_isDropped() = runBlocking {
         val file = File(folder.root, "future.json").apply {
             writeText(

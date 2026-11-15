@@ -255,6 +255,14 @@ class BoardFingerprintTest {
         )
     }
 
+    // Agreed with the site and the proxy, 16.11.2026: apps already out hash a smart game without its tiers.
+    @Test
+    fun `a smart game's tiers stay out of the fingerprint`() {
+        val plain = """{"kind":"smart","count":2,"seed":1,"refine":false,"ids":["a","b"],"history":[],"round":0,"startedAt":5}"""
+
+        assertEquals(plain, BoardFingerprint.canonicalPlay(plain.replace("}", ""","tiers":2}""")))
+    }
+
     // The website's canonicalPlay leaves an empty scope out; written here, the board's fingerprint would never settle.
     @Test
     fun `an empty scope is no scope`() {
