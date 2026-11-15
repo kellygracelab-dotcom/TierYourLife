@@ -328,6 +328,7 @@ private fun CommunityCard(
                 coverImageUrl = summary.coverImageUrl,
                 coverFocus = summary.coverFocus,
                 previewImages = summary.previewImages,
+                pictureFocus = summary.previewFocus,
                 tierColors = summary.tierColors,
                 modifier = Modifier.fillMaxSize(),
             )

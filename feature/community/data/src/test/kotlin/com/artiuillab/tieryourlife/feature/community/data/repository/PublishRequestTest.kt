@@ -9,6 +9,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIt
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedListSummaryDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toFocus
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toJson
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
@@ -62,6 +64,56 @@ class PublishRequestTest {
 
         assertEquals(CoverFocusDto(0.5f, 0.15f, 2f), moved.coverFocus)
         assertEquals(JsonNull, centred.jsonObject["coverFocus"])
+    }
+
+    @Test
+    fun `a moved card goes out with its focus, the rest as an explicit null`() {
+        val moved = board.copy(
+            tiers = listOf(
+                tier(
+                    10, "S",
+                    TierItem(1, "Alien", poster, focus = CoverFocus(0.3f, 0.15f, 2f)),
+                    TierItem(2, "Heat", poster),
+                    TierItem(3, "Up", null, focus = CoverFocus(0.3f, 0.15f, 2f)),
+                ),
+            ),
+        )
+
+        val body = networkJson.encodeToJsonElement(PublishListRequestDto.serializer(), moved.toRequest(Pictures, uploaded = emptySet())).jsonObject
+        val items = body.getValue("items").jsonArray.map { it.jsonObject }
+
+        assertEquals(CoverFocus(0.3f, 0.15f, 2f), items[0]["pictureFocus"].toFocus())
+        assertEquals(JsonNull, items[1]["pictureFocus"])
+        assertEquals("a card without a picture has no part to show", JsonNull, items[2]["pictureFocus"])
+    }
+
+    @Test
+    fun `a card's focus comes back on the list and stays through the kept copy`() {
+        val focus = CoverFocus(0.3f, 0.15f, 2f).toJson()
+        val published = PublishedListDto(
+            id = "p1",
+            title = "Films",
+            authorName = "Ann",
+            items = listOf(PublishedItemDto("Alien", poster, pictureFocus = focus), PublishedItemDto("Heat", poster), PublishedItemDto("Up", pictureFocus = focus)),
+        ).toDomain()
+
+        val expected = listOf(CoverFocus(0.3f, 0.15f, 2f), null, null)
+        assertEquals(expected, published.items.map { it.focus })
+        assertEquals(expected, published.toDto().toDomain().items.map { it.focus })
+    }
+
+    @Test
+    fun `a feed collage cuts each picture by its first card's focus, and a kept page keeps it`() {
+        val kiwi = "https://i/kiwi.jpg"
+        val summary = PublishedListSummaryDto(
+            id = "l1", title = "Fruit", authorName = "a", itemCount = 4,
+            previewImages = listOf(poster, kiwi, "null", poster),
+            previewFocus = listOf(CoverFocusDto(0.3f, 0.15f, 2f), null, CoverFocusDto(0.1f, 0.1f, 1f), CoverFocusDto(0.9f, 0.9f, 1f)),
+        ).toSummary()
+
+        assertEquals(mapOf(poster to CoverFocus(0.3f, 0.15f, 2f)), summary.previewFocus)
+        assertEquals(summary, summary.toDto().toSummary())
+        assertEquals(emptyMap<String, CoverFocus>(), PublishedListSummaryDto(id = "l2", title = "T", authorName = "a", itemCount = 1, previewImages = listOf(kiwi)).toSummary().previewFocus)
     }
 
     @Test

@@ -31,8 +31,6 @@ data class CoverFocus(
             Math.round(zoom.toDouble() * ZOOM_STEPS),
         ).map(Long::toString)
 
-    val isCentred: Boolean get() = this == CENTRED
-
     companion object {
         const val CENTRE = 0.5f
         const val MIN_ZOOM = 1f

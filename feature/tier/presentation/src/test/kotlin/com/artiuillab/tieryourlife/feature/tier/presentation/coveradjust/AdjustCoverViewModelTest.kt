@@ -45,6 +45,25 @@ class AdjustCoverViewModelTest {
     }
 
     @Test
+    fun done_onThePicturesOwnDefault_keepsNoFocus_butACentreChosenOnATallPictureStays() = runBlocking {
+        val repository = RecordingTierRepository(boards = listOf(TierList(1, "Films", emptyList(), coverImageUrl = picture)))
+        val viewModel = adjusting(repository)
+        viewModel.state.firstWithin { it.loaded }
+
+        viewModel.move(CoverFocus(0.50001f, 0.35f, 1f))
+        viewModel.save(pictureDefault = CoverFocus.TALL)
+        viewModel.state.firstWithin { it.saved }
+
+        val again = adjusting(repository)
+        again.state.firstWithin { it.loaded }
+        again.move(CoverFocus.CENTRED)
+        again.save(pictureDefault = CoverFocus.TALL)
+        again.state.firstWithin { it.saved }
+
+        assertEquals(listOf(1L to null, 1L to CoverFocus.CENTRED), repository.coverFocuses)
+    }
+
+    @Test
     fun reset_andDone_leaveTheCoverToItsDefault() = runBlocking {
         val repository = RecordingTierRepository(
             boards = listOf(TierList(1, "Films", emptyList(), coverImageUrl = picture, coverFocus = CoverFocus(0.2f, 0.2f, 3f))),

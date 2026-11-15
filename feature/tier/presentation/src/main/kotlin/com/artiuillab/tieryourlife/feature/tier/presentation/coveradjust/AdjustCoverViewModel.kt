@@ -60,11 +60,12 @@ class AdjustCoverViewModel @Inject constructor(
         _state.update { it.copy(focus = null) }
     }
 
-    fun save() {
+    /** The picture's own default is kept as no focus at all, so a later change to the default reaches it. */
+    fun save(pictureDefault: CoverFocus = CoverFocus.CENTRED) {
         if (_state.value.saving) return
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
-            val focus = _state.value.focus?.inRange()?.takeUnless { it.isCentred }
+            val focus = _state.value.focus?.inRange()?.takeUnless { it == pictureDefault.inRange() }
             val saved = messages.guard("Saving the picture's focus") {
                 if (itemId != null) repository.setItemFocus(itemId, focus) else repository.setCoverFocus(tierListId, focus)
             }

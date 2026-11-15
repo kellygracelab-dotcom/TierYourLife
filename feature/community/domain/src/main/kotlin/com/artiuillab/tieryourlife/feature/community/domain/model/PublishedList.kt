@@ -15,10 +15,12 @@ data class PublishedListSummary(
     val category: String,
     val itemCount: Int,
     val coverImageUrl: String? = null,
-    /** Which part of [coverImageUrl] shows; null for the centre. */
+    /** Which part of [coverImageUrl] shows; null for the picture's default. */
     val coverFocus: CoverFocus? = null,
     /** Card art the feed draws a mosaic from when there is no cover. */
     val previewImages: List<String> = emptyList(),
+    /** Which part of each of [previewImages] a mosaic cell shows, by picture; a picture left out shows its default. */
+    val previewFocus: Map<String, CoverFocus> = emptyMap(),
     /** The author's palette, for a card with neither a cover nor card art. */
     val tierColors: List<String> = emptyList(),
     val updatedAtMillis: Long,

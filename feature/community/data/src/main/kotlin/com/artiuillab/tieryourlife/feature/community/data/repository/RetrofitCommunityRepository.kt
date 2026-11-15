@@ -26,6 +26,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicNameRe
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.TopicSectionRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDomain
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toFocus
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toJson
 import com.artiuillab.tieryourlife.feature.community.data.remote.likeRefusal
 import com.artiuillab.tieryourlife.feature.community.data.remote.proposalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
@@ -519,6 +521,7 @@ internal fun PublishedListSummaryDto.toSummary(me: String? = null) = PublishedLi
     coverImageUrl = coverImageUrl.webPictureOrNull(),
     coverFocus = coverFocus.toDomain(),
     previewImages = previewImages.mapNotNull { it.webPictureOrNull() },
+    previewFocus = previewFocusOf(previewImages, previewFocus),
     tierColors = tierColors,
     updatedAtMillis = updatedAt,
     anonymous = anonymous,
@@ -576,6 +579,7 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
         TierItem(
             id = index.toLong(), title = item.title, imageUrl = item.imageUrl, credit = item.credit,
             attribution = item.attribution?.toDomain(), sourceIndex = index,
+            focus = item.pictureFocus.toFocus()?.takeIf { item.imageUrl != null },
         )
     },
     // Null on snapshots published before this was remembered: "arrangement
@@ -638,6 +642,7 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     coverImageUrl = coverImageUrl,
     coverFocus = coverFocus.toDto(),
     previewImages = previewImages,
+    previewFocus = previewImages.map { previewFocus[it].toDto() }.takeIf { focus -> focus.any { it != null } },
     tierColors = tierColors,
     updatedAt = updatedAtMillis,
     anonymous = anonymous,
@@ -672,7 +677,7 @@ internal fun PublishedList.toDto() = PublishedListDto(
     items = items.mapIndexed { index, item ->
         PublishedItemDto(
             title = item.title, imageUrl = item.imageUrl, tierIndex = arrangement.getOrNull(index), credit = item.credit,
-            attribution = item.attribution?.toDto(),
+            attribution = item.attribution?.toDto(), pictureFocus = item.focus?.toJson(),
         )
     },
     anonymous = summary.anonymous,

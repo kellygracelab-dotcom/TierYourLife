@@ -177,7 +177,7 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun setCoverFocus(id: Long, focus: CoverFocus?) {
-        val kept = focus?.inRange()?.takeUnless { it.isCentred }
+        val kept = focus?.inRange()
         dao.setCoverFocus(id, kept?.x, kept?.y, kept?.zoom)
     }
 
@@ -233,7 +233,7 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun setItemFocus(itemId: Long, focus: CoverFocus?) {
-        val kept = focus?.inRange()?.takeUnless { it.isCentred }
+        val kept = focus?.inRange()
         dao.setItemFocus(itemId, kept?.x, kept?.y, kept?.zoom)
     }
 

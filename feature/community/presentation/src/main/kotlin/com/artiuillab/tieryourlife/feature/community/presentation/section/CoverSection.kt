@@ -99,6 +99,7 @@ private fun CoverRow(summary: PublishedListSummary, onClick: () -> Unit) {
             coverImageUrl = summary.coverImageUrl,
             coverFocus = summary.coverFocus,
             previewImages = summary.previewImages,
+            pictureFocus = summary.previewFocus,
             tierColors = summary.tierColors,
             modifier = Modifier
                 .size(width = 36.dp, height = 48.dp)

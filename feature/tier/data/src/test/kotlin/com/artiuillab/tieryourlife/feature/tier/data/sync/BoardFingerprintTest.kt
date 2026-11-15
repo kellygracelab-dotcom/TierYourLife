@@ -288,6 +288,38 @@ class BoardFingerprintTest {
         )
     }
 
+    // Web's vector of 15.11: each card with a picture and a focus after the cover, by uid.
+    @Test
+    fun `a moved card's picture comes after the cover, written the way the site writes it`() {
+        val cards = listOf(
+            TierItemEntity(id = 2, tierId = 9, position = 0, title = "B", imageUrl = "https://p/2", uid = "item-2", focusX = 0.3f, focusY = 0.15f, focusZoom = 2f),
+            TierItemEntity(id = 1, tierId = 9, position = 1, title = "A", imageUrl = "https://p/1", uid = "item-1", focusX = 0.5f, focusY = 0.5f, focusZoom = 1f),
+            TierItemEntity(id = 3, tierId = 9, position = 2, title = "C", imageUrl = null, uid = "item-3", focusX = 0.3f, focusY = 0.15f, focusZoom = 2f),
+        )
+
+        assertEquals(
+            sha256("1:u|1:T|4:WRAP|~|~|~|~|~|12:pictureFocus|6:item-1|4:5000|4:5000|3:100|12:pictureFocus|6:item-2|4:3000|4:1500|3:200|"),
+            BoardFingerprint.of(bare, emptyList(), cards, ::pictureIdOf),
+        )
+    }
+
+    @Test
+    fun `a card without a focus keeps the fingerprint it always had`() {
+        val plain = TierItemEntity(id = 1, tierId = 9, position = 0, title = "A", imageUrl = "https://p/1", uid = "item-1")
+
+        assertEquals(sha256("1:u|1:T|4:WRAP|~|~|~|~|~|"), BoardFingerprint.of(bare, emptyList(), listOf(plain), ::pictureIdOf))
+    }
+
+    @Test
+    fun `a centre chosen on purpose is still written`() {
+        val centred = bare.copy(coverImageUrl = "https://c", coverFocusX = 0.5f, coverFocusY = 0.5f, coverFocusZoom = 1f)
+
+        assertEquals(
+            sha256("1:u|1:T|4:WRAP|~|9:https://c|~|~|~|10:coverFocus|4:5000|4:5000|3:100|"),
+            BoardFingerprint.of(centred, emptyList(), emptyList(), ::pictureIdOf),
+        )
+    }
+
     private fun sha256(text: String): String =
         java.security.MessageDigest.getInstance("SHA-256").digest(text.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
 }

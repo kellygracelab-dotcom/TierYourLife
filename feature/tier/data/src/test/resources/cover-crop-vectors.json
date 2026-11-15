@@ -1,7 +1,21 @@
 {
-  "about": "Shared test vectors for the cover crop (TierYourLife cover focus, 15.11.2026, _coordination/cover-focus-2026-11-15/SPEC.md). The Proxy checks its own cropOf against this file (functions/src/coverFocus.ts); Web and Android copy it into their tests unchanged and check their own crop against every case.",
-  "formula": "For a picture width x height, a frame aspect (frame width / frame height) and a focus {x, y, zoom} (none = {0.5, 0.5, 1}): if width/height > aspect then cropHeight = height, cropWidth = height*aspect, else cropWidth = width, cropHeight = width/aspect; cropWidth /= zoom; cropHeight /= zoom; crop.x = clamp(x*width - cropWidth/2, 0, width - cropWidth); crop.y = clamp(y*height - cropHeight/2, 0, height - cropHeight). The crop is in the picture's own pixels and is scaled to fill the frame.",
+  "about": "Shared test vectors for the cover and card picture crop (TierYourLife cover focus, 15.11.2026, second round included; _coordination/cover-focus-2026-11-15/SPEC.md). The Proxy checks its own cropOf against this file (functions/src/coverFocus.ts); Web and Android copy it into their tests unchanged and check their own crop against every case.",
+  "formula": "For a picture width x height, a frame aspect (frame width / frame height) and a focus {x, y, zoom} (none = {0.5, 0.35, 1} when height/width > 1.2, a tall picture, else {0.5, 0.5, 1}): if width/height > aspect then cropHeight = height, cropWidth = height*aspect, else cropWidth = width, cropHeight = width/aspect; cropWidth /= zoom; cropHeight /= zoom; crop.x = clamp(x*width - cropWidth/2, 0, width - cropWidth); crop.y = clamp(y*height - cropHeight/2, 0, height - cropHeight). The crop is in the picture's own pixels and is scaled to fill the frame.",
   "tolerance": 1e-06,
+  "defaults": {
+    "about": "The focus a picture without one is shown with: tall (height/width strictly over 1.2) or not.",
+    "tallRatio": 1.2,
+    "tall": {
+      "x": 0.5,
+      "y": 0.35,
+      "zoom": 1
+    },
+    "other": {
+      "x": 0.5,
+      "y": 0.5,
+      "zoom": 1
+    }
+  },
   "cases": [
     {
       "name": "no focus: a wide picture in a square tile shows its middle",
@@ -17,14 +31,14 @@
       }
     },
     {
-      "name": "no focus: a tall picture in a 16:9 header shows its middle",
+      "name": "no focus: a tall picture (height/width over 1.2) in a 16:9 header is cut around y 0.35",
       "width": 900,
       "height": 1600,
       "aspect": 1.7777777777777777,
       "focus": null,
       "crop": {
         "x": 0.0,
-        "y": 546.875,
+        "y": 306.875,
         "width": 900.0,
         "height": 506.25
       }
@@ -278,6 +292,118 @@
         "y": 589.375,
         "width": 180.0,
         "height": 101.25
+      }
+    },
+    {
+      "name": "no focus: a poster in a square tile is cut around y 0.35",
+      "width": 1000,
+      "height": 1500,
+      "aspect": 1,
+      "focus": null,
+      "crop": {
+        "x": 0.0,
+        "y": 25.0,
+        "width": 1000.0,
+        "height": 1000.0
+      }
+    },
+    {
+      "name": "no focus: a poster in a 0.71 card tile is cut around y 0.35",
+      "width": 680,
+      "height": 1000,
+      "aspect": 0.71,
+      "focus": null,
+      "crop": {
+        "x": 0.0,
+        "y": 0,
+        "width": 680.0,
+        "height": 957.7464788732395
+      }
+    },
+    {
+      "name": "no focus: a portrait in a 2.05 header is cut around y 0.35",
+      "width": 1200,
+      "height": 1800,
+      "aspect": 2.05,
+      "focus": null,
+      "crop": {
+        "x": 0.0,
+        "y": 337.3170731707317,
+        "width": 1200.0,
+        "height": 585.3658536585366
+      }
+    },
+    {
+      "name": "no focus: height/width exactly 1.2 is not tall, the centre",
+      "width": 1000,
+      "height": 1200,
+      "aspect": 1.7777777777777777,
+      "focus": null,
+      "crop": {
+        "x": 0.0,
+        "y": 318.75,
+        "width": 1000.0,
+        "height": 562.5
+      }
+    },
+    {
+      "name": "no focus: height/width just over 1.2 is tall, y 0.35",
+      "width": 1000,
+      "height": 1201,
+      "aspect": 1.7777777777777777,
+      "focus": null,
+      "crop": {
+        "x": 0.0,
+        "y": 139.09999999999997,
+        "width": 1000.0,
+        "height": 562.5
+      }
+    },
+    {
+      "name": "no focus: a square picture in a wide header, the centre",
+      "width": 1000,
+      "height": 1000,
+      "aspect": 2.05,
+      "focus": null,
+      "crop": {
+        "x": 0.0,
+        "y": 256.0975609756097,
+        "width": 1000.0,
+        "height": 487.80487804878055
+      }
+    },
+    {
+      "name": "a tall picture with the centre sent shows the centre",
+      "width": 900,
+      "height": 1600,
+      "aspect": 1.7777777777777777,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5,
+        "zoom": 1
+      },
+      "crop": {
+        "x": 0.0,
+        "y": 546.875,
+        "width": 900.0,
+        "height": 506.25
+      }
+    },
+    {
+      "name": "a card picture with its own focus in a 0.71 tile",
+      "width": 1600,
+      "height": 900,
+      "aspect": 0.71,
+      "focus": {
+        "x": 0.8,
+        "y": 0.4,
+        "zoom": 1.25
+      },
+      "crop": {
+        "x": 1024.4,
+        "y": 0.0,
+        "width": 511.2,
+        "height": 720.0
       }
     }
   ],

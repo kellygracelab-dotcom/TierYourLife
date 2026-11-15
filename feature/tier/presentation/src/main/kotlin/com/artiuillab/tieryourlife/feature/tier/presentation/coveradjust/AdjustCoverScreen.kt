@@ -125,12 +125,13 @@ fun AdjustCoverScreen(
     val request = remember(state.picture) {
         ImageRequest.Builder(context).data(state.picture).size(DECODE_PX).scale(Scale.FIT).build()
     }
+    val painter = rememberAsyncImagePainter(request)
     AdjustCoverContent(
         state = state,
-        painter = rememberAsyncImagePainter(request),
+        painter = painter,
         onMove = viewModel::move,
         onReset = viewModel::reset,
-        onDone = viewModel::save,
+        onDone = { viewModel.save(painter.defaultFocus()) },
         onClose = onClose,
         userMessages = viewModel.userMessages,
     )
@@ -316,9 +317,11 @@ private fun Controls(
 }
 
 /** The chosen focus, or the picture's own default once its size is known. */
-private fun CoverFocus?.resolvedFor(painter: Painter): CoverFocus {
-    val picture = painter.intrinsicSize
-    return this ?: if (picture.isKnown) CoverFocus.defaultFor(picture.width.toDouble(), picture.height.toDouble()) else CoverFocus.CENTRED
+private fun CoverFocus?.resolvedFor(painter: Painter): CoverFocus = this ?: painter.defaultFocus()
+
+private fun Painter.defaultFocus(): CoverFocus {
+    val picture = intrinsicSize
+    return if (picture.isKnown) CoverFocus.defaultFor(picture.width.toDouble(), picture.height.toDouble()) else CoverFocus.CENTRED
 }
 
 /**

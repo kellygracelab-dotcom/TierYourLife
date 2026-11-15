@@ -5,7 +5,6 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 
-/** Which part of the cover shows. Every board keeps the centre it always had until someone moves it. */
 /** Which part of each card's picture shows: none yet, so every card keeps its picture's default. */
 val MIGRATION_21_22 = object : Migration(21, 22) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -15,6 +14,7 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
     }
 }
 
+/** Which part of the cover shows. Every board keeps the centre it always had until someone moves it. */
 val MIGRATION_20_21 = object : Migration(20, 21) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE tier_lists ADD COLUMN coverFocusX REAL")

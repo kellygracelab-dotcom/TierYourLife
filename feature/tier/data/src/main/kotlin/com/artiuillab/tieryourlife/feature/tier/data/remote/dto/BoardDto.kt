@@ -28,7 +28,7 @@ data class KeptBoardDto(
     val coverImageUrls: List<String> = emptyList(),
     /** The person's own photo as the whole cover, by the file's name; absent when there is none. */
     val coverPictureId: String? = null,
-    /** Which part of the single cover shows; absent for the centre. */
+    /** Which part of the single cover shows; absent for the picture's default. */
     val coverFocus: CoverFocusDto? = null,
     val authorName: String? = null,
     val publishedId: String? = null,
@@ -75,6 +75,10 @@ data class KeptItemDto(
     val sourceIndex: Int? = null,
     /** Not in the fingerprint either: it changes only with the picture, which is. */
     val attribution: PictureAttributionDto? = null,
+    /** Always sent, null for the picture's default: left out, the account keeps the focus it has. */
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val pictureFocus: CoverFocusDto? = null,
 )
 
 /** What a board looks like in the index: enough to decide whether to fetch it. */
@@ -133,7 +137,7 @@ data class KeepBoardRequestDto(
      * or left out (null here) to keep the one it has.
      */
     val coverPictureId: JsonElement? = null,
-    /** Always sent, null for the centre: left out, the account keeps the focus it has. */
+    /** Always sent, null for the picture's default: left out, the account keeps the focus it has. */
     @OptIn(ExperimentalSerializationApi::class)
     @EncodeDefault(EncodeDefault.Mode.ALWAYS)
     val coverFocus: CoverFocusDto? = null,

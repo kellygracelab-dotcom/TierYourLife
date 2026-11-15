@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.data.remote.dto
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class PublishedListSummaryDto(
@@ -16,6 +17,8 @@ data class PublishedListSummaryDto(
     val coverImageUrl: String? = null,
     val coverFocus: CoverFocusDto? = null,
     val previewImages: List<String> = emptyList(),
+    /** Beside [previewImages], one for one: the focus of the first card with that picture, or null. Absent when none has one. */
+    val previewFocus: List<CoverFocusDto?>? = null,
     val tierColors: List<String> = emptyList(),
     val updatedAt: Long = 0,
     val anonymous: Boolean = false,
@@ -102,6 +105,12 @@ data class PublishedItemDto(
     val sourceIndex: Int? = null,
     /** Of what is sent, the server reads only `link` and `originalUrl`; it works out the rest. */
     val attribution: PublishedAttributionDto? = null,
+    /**
+     * Which part of the card's picture shows. A publish always sends it, a
+     * JsonNull for the picture's default; left out (null here) the list keeps
+     * the one it had, as a ranking's added cards do.
+     */
+    val pictureFocus: JsonElement? = null,
 )
 
 @Serializable

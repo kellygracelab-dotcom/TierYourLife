@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.coverFocus
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.focus
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
@@ -76,14 +77,25 @@ object BoardFingerprint {
         }
         if (board.anonymous) digest.write(ANONYMOUS)
         board.play?.let(::canonicalPlay)?.let { digest.write(it) }
-        // Last, and only on a cover moved off its centre, in whole steps as the site writes it.
+        // Last, and only on a cover with a focus chosen, in whole steps as the site writes it.
         board.coverFocus()?.let { focus -> digest.write(COVER_FOCUS, *focus.fingerprintParts.toTypedArray()) }
+        digest.writePictureFocus(items, pictureIdOf)
 
         return digest.digest().joinToString("") { byte -> "%02x".format(byte) }
     }
 
+    /** Then each card with a picture and a focus, trash included, by uid as the site writes it. */
+    private fun MessageDigest.writePictureFocus(items: List<TierItemEntity>, pictureIdOf: (String?) -> String?) {
+        items.sortedBy { it.uid }.forEach { item ->
+            val picture = pictureIdOf(item.imageUrl) ?: item.imageUrl?.takeIf { it.startsWith("http") }
+            val focus = item.focus()?.takeIf { picture != null } ?: return@forEach
+            write(PICTURE_FOCUS, item.uid, *focus.fingerprintParts.toTypedArray())
+        }
+    }
+
     private const val ANONYMOUS = "anonymous"
     private const val COVER_FOCUS = "coverFocus"
+    private const val PICTURE_FOCUS = "pictureFocus"
 
     /**
      * The saved game as both clients write it, not as the server's bytes
