@@ -8,13 +8,13 @@ import com.artiuillab.tieryourlife.feature.play.domain.SharedGame
 import com.artiuillab.tieryourlife.feature.play.domain.SharedGameJson
 import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.play.domain.progress
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardRemoval
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -207,7 +207,7 @@ class SyncTest {
     }
 
     @Test
-    fun aBoardThrownAwayOnOnePhone_goesToTheTrashOnTheOther() = runBlocking<Unit> {
+    fun aBoardDeletedForGoodOnOnePhone_isGoneFromTheOther() = runBlocking<Unit> {
         val id = first.newBoard("Sport")
         val uid = first.board(id).uid
         first.sync.sync()
@@ -219,12 +219,14 @@ class SyncTest {
 
         assertEquals(listOf(204), first.answersTo("DELETE", "/boards/$uid").map { it.status })
         assertNull(second.boardByUid(uid))
-        assertEquals(listOf("Sport"), second.boards.getTrashEntries().map { it.title })
-        assertNotEquals(0, second.boardsApi.index().boards.count { it.uid == uid && it.deleted })
+        assertTrue(second.boards.getTrashEntries().isEmpty())
+        val marker = second.boardsApi.index().boards.single { it.uid == uid }
+        assertTrue(marker.deleted)
+        assertEquals(BoardRemoval.FOREVER, marker.removal)
     }
 
-    // 15.11: a library deleted for good somewhere else landed in this phone's
-    // trash. Taking a board back out has to put it in the account again.
+    // 15.11: deleted for good elsewhere, a board with an edit of this phone's
+    // waits in its trash; taken back out, it is in the account again.
     @Test
     fun aBoardTakenBackOutOfTheTrash_afterADeleteElsewhere_returnsToTheAccountAndTheOtherPhone() = runBlocking<Unit> {
         val id = first.newBoard("Pixar", ranked = mapOf("S" to listOf("Up")))
@@ -233,7 +235,9 @@ class SyncTest {
         second.sync.sync()
         second.boards.deleteTierListPermanently(second.boardByUid(uid)!!.id)
         second.sync.sync()
+        first.boards.moveItem(first.board(id).tiers.single { it.label == "S" }.items.single().id, first.board(id).tiers.single { it.label == "A" }.id, 0)
         first.sync.sync()
+        assertTrue(first.boardsApi.index().boards.single { it.uid == uid }.deleted)
         val trashed = first.boards.getTrashEntries().filterIsInstance<TrashEntry.DeletedList>().single { it.title == "Pixar" }
 
         first.boards.restoreTierLists(listOf(trashed.id))
@@ -243,7 +247,7 @@ class SyncTest {
 
         assertFalse(first.boardsApi.index().boards.single { it.uid == uid }.deleted)
         assertNull(first.boardsApi.board(uid).deletedAt)
-        assertEquals(listOf("Up"), second.cardsIn(second.boardByUid(uid)!!, "S"))
+        assertEquals(listOf("Up"), second.cardsIn(second.boardByUid(uid)!!, "A"))
         assertNotNull(first.boardByUid(uid))
         assertTrue(first.boards.getTrashEntries().none { it.title == "Pixar" })
     }
