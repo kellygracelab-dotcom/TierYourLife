@@ -18,6 +18,17 @@ class CoverFrameTest {
     }
 
     @Test
+    fun `without a focus a tall picture is cut a little above the middle, where faces and titles are`() {
+        // 1000x2000, a 2:1 header: 1000x500 around 35% down, so its top at 450.
+        assertFrame(CoverFrame(0.0, 450.0, 1000.0, 500.0), coverFrame(1000f, 2000f, aspect = 2f, focus = null))
+        // Just 1.2 high to 1 wide is not tall yet; just past it is.
+        assertEquals(CoverFocus.CENTRED, CoverFocus.defaultFor(1000.0, 1200.0))
+        assertEquals(CoverFocus.TALL, CoverFocus.defaultFor(1000.0, 1201.0))
+        // A focus somebody chose wins over the default.
+        assertFrame(CoverFrame(0.0, 750.0, 1000.0, 500.0), coverFrame(1000f, 2000f, aspect = 2f, focus = CoverFocus.CENTRED))
+    }
+
+    @Test
     fun `a tall picture keeps a head near the top`() {
         // 1000x2000 portrait, a 2:1 header: 1000x500, centred on the face at 15% down.
         assertFrame(CoverFrame(0.0, 50.0, 1000.0, 500.0), coverFrame(1000f, 2000f, aspect = 2f, focus = CoverFocus(0.5f, 0.15f)))

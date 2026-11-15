@@ -28,6 +28,7 @@ fun NavGraphBuilder.tierDetailScreen(
     onOpenAiStudio: (tierListId: Long, listTitle: String) -> Unit,
     onChooseCover: (tierListId: Long) -> Unit = {},
     onAdjustCover: (tierListId: Long) -> Unit = {},
+    onAdjustPicture: (tierListId: Long, itemId: Long) -> Unit = { _, _ -> },
     onChooseTopic: (tierListId: Long) -> Unit = {},
     onOpenPublishedList: (String) -> Unit = {},
     onSeeInCommunity: ((String) -> Unit)? = null,
@@ -52,6 +53,7 @@ fun NavGraphBuilder.tierDetailScreen(
             onOpenList = onOpenList,
             onChooseCover = { onChooseCover(route.tierListId) },
             onAdjustCover = { onAdjustCover(route.tierListId) },
+            onAdjustPicture = { itemId -> onAdjustPicture(route.tierListId, itemId) },
             addedItemIds = addedItemIds,
             onAddedItemConsumed = { backStackEntry.savedStateHandle[ADDED_ITEMS_RESULT_KEY] = ArrayList<Long>() },
             coverChanged = coverChanged,
@@ -103,9 +105,9 @@ fun NavController.navigateToCoverPicker(tierListId: Long) {
     navigate(Route.CoverPicker(tierListId))
 }
 
-/** In place of the picker when it hands over, so Back from here returns to the board. */
-fun NavController.navigateToAdjustCover(tierListId: Long, replacingPicker: Boolean = false) {
-    navigate(Route.AdjustCover(tierListId)) {
+/** In place of the picker when it hands over, so Back from here returns to the board. With [itemId], a card's picture. */
+fun NavController.navigateToAdjustCover(tierListId: Long, replacingPicker: Boolean = false, itemId: Long? = null) {
+    navigate(Route.AdjustCover(tierListId, itemId)) {
         if (replacingPicker) popUpTo<Route.CoverPicker> { inclusive = true }
     }
 }

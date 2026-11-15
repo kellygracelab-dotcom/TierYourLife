@@ -89,6 +89,8 @@
     <string name="tier_detail_move_sheet_pool_subtitle">Nieocenione, pozostaje na liście</string>
     <string name="tier_detail_move_sheet_pool_title">Wróć do puli</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Można cofnąć zaraz potem</string>
+    <string name="tier_detail_move_sheet_adjust_title">Dopasuj obraz</string>
+    <string name="tier_detail_move_sheet_adjust_subtitle">Wybierz, która część jest widoczna</string>
     <string name="tier_detail_move_sheet_remove_title">Usuń z listy</string>
     <string name="tier_detail_move_sheet_subtitle">Przenieś do poziomu</string>
     <string name="tier_detail_move_sheet_photo_credit">Zdjęcie: %1$s</string>

@@ -73,6 +73,7 @@ internal fun BoardTile(
             ListArt(
                 coverImageUrl = art.coverImageUrl,
                 coverFocus = art.coverFocus,
+                pictureFocus = art.pictureFocus,
                 previewImages = art.previewImages,
                 tierColors = list.tiers.filterNot { it.isPool }.map { it.colorLight }.take(TIER_COLOURS),
                 modifier = Modifier.fillMaxWidth().aspectRatio(ART_RATIO),

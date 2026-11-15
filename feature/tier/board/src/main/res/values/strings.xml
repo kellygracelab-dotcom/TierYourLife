@@ -81,6 +81,8 @@
     <string name="tier_detail_move_sheet_pool_subtitle">Unranked, stays in the list</string>
     <string name="tier_detail_move_sheet_pool_title">Back to the pool</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Can be undone right after</string>
+    <string name="tier_detail_move_sheet_adjust_title">Adjust picture</string>
+    <string name="tier_detail_move_sheet_adjust_subtitle">Choose which part of it shows</string>
     <string name="tier_detail_move_sheet_remove_title">Remove from list</string>
     <string name="tier_detail_move_sheet_subtitle">Move to a tier</string>
     <string name="tier_detail_move_sheet_photo_credit">Photo: %1$s</string>

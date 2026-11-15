@@ -100,6 +100,7 @@ class RecordingTierRepository(
 
     val covers = mutableListOf<Pair<Long, List<String>>>()
     val coverFocuses = mutableListOf<Pair<Long, CoverFocus?>>()
+    val itemFocuses = mutableListOf<Pair<Long, CoverFocus?>>()
 
     /** Every topic set, as (id, topicId, topicName, newTopicName). */
     val topics = mutableListOf<List<Any?>>()
@@ -110,6 +111,10 @@ class RecordingTierRepository(
 
     override suspend fun setCover(id: Long, pictures: List<String>) {
         covers += id to pictures
+    }
+
+    override suspend fun setItemFocus(itemId: Long, focus: CoverFocus?) {
+        itemFocuses += itemId to focus
     }
 
     override suspend fun setCoverFocus(id: Long, focus: CoverFocus?) {

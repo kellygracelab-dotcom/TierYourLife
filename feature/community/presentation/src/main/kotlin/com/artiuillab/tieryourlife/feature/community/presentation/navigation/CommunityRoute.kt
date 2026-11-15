@@ -143,11 +143,10 @@ sealed interface CommunityRoute {
             )
         }
 
-        /** Null for the centre, or for anything that does not read as three numbers. */
+        /** Null for anything that does not read as three numbers; a centre chosen on purpose stays. */
         val focus: CoverFocus?
             get() = pictureFocus?.split(',')?.mapNotNull(String::toFloatOrNull)?.takeIf { it.size == 3 }
                 ?.let { (x, y, zoom) -> CoverFocus(x, y, zoom).inRange() }
-                ?.takeUnless { it.isCentred }
     }
 }
 

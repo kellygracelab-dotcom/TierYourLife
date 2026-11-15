@@ -45,4 +45,8 @@ data class TierItemEntity(
     /** Stored as JSON, see [com.artiuillab.tieryourlife.feature.tier.data.local.database.AttributionConverter]. */
     val attribution: PictureAttribution? = null,
     val sourceIndex: Int? = null,
+    /** Which part of the picture shows; all three or none, and none when the picture changes. */
+    val focusX: Float? = null,
+    val focusY: Float? = null,
+    val focusZoom: Float? = null,
 )

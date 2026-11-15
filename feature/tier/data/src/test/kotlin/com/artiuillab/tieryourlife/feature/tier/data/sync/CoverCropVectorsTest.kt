@@ -15,8 +15,9 @@ import kotlin.math.abs
 
 /**
  * Backend's shared vectors (`cover-crop-vectors.json`, copied unchanged from
- * the proxy): every platform cuts a cover by the same formula, so the same
- * focus shows the same part of a picture on the phone, the site and the server.
+ * the proxy): every platform cuts a cover or a card's picture by the same
+ * formula and starts a picture without a focus at the same default, so the
+ * same picture shows the same part on the phone, the site and the server.
  */
 class CoverCropVectorsTest {
 
@@ -34,13 +35,14 @@ class CoverCropVectorsTest {
     fun everyCase_cutsTheSameFrame() {
         cases.forEach { case ->
             val focus = case["focus"].takeUnless { it == null || it == JsonNull }?.jsonObject
+            val default = CoverFocus.defaultFor(case.number("width"), case.number("height"))
             val frame = coverFrame(
                 width = case.number("width"),
                 height = case.number("height"),
                 aspect = case.number("aspect"),
-                x = focus?.number("x") ?: CoverFocus.CENTRE.toDouble(),
-                y = focus?.number("y") ?: CoverFocus.CENTRE.toDouble(),
-                zoom = focus?.number("zoom") ?: CoverFocus.MIN_ZOOM.toDouble(),
+                x = focus?.number("x") ?: default.x.exactly(),
+                y = focus?.number("y") ?: default.y.exactly(),
+                zoom = focus?.number("zoom") ?: default.zoom.exactly(),
             )
             val crop = case.getValue("crop").jsonObject
             val name = case.getValue("name").jsonPrimitive.content
@@ -72,6 +74,21 @@ class CoverCropVectorsTest {
             assert(abs(crop.number("height") - frame.height) < close) { "$name: height ${frame.height} for ${crop.number("height")}" }
         }
     }
+
+    @Test
+    fun aPictureWithoutAFocus_startsWhereTheVectorsSay() {
+        val defaults = vectors.getValue("defaults").jsonObject
+        val ratio = defaults.number("tallRatio")
+
+        assertEquals(defaults.getValue("tall").jsonObject.focus(), CoverFocus.defaultFor(1000.0, 1000.0 * ratio + 1))
+        assertEquals(defaults.getValue("other").jsonObject.focus(), CoverFocus.defaultFor(1000.0, 1000.0 * ratio))
+        assertEquals(defaults.getValue("other").jsonObject.focus(), CoverFocus.defaultFor(1600.0, 900.0))
+    }
+
+    private fun JsonObject.focus() = CoverFocus(number("x").toFloat(), number("y").toFloat(), number("zoom").toFloat())
+
+    /** The float as written, 0.35 rather than 0.3499999940…, as the server reads it from the file. */
+    private fun Float.exactly() = toString().toDouble()
 
     private companion object {
         const val FLOAT_SHARE = 1e-4

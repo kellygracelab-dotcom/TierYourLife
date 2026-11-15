@@ -225,7 +225,11 @@
     <string name="cover_adjust_zoom">ズーム</string>
     <string name="cover_adjust_preview">プレビュー</string>
     <string name="cover_adjust_feed">フィード</string>
+    <string name="cover_adjust_square">正方形</string>
+    <string name="cover_adjust_picture_title">画像を調整</string>
+    <string name="cover_adjust_card">カード</string>
+    <string name="cover_adjust_collage">コラージュ</string>
     <string name="cover_adjust_header">ページヘッダー</string>
     <string name="cover_adjust_close">閉じる</string>
-    <string name="cover_adjust_hint">ドラッグで移動、ピンチで拡大</string>
+    <string name="cover_adjust_hint">ドラッグまたはタップで位置を選び、ピンチで拡大</string>
 </resources>

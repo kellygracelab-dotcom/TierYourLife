@@ -49,6 +49,29 @@ class TierDatabaseMigrationTest {
     }
 
     // No cover had a part chosen before: every board keeps its cover and shows it from the centre.
+    // Cards gained a focus like covers: every card comes through as it was, its picture at its default.
+    @Test
+    fun migration21To22_keepsEveryCard_withoutAFocus() {
+        helper.createDatabase(TEST_DB, 21).apply {
+            execSQL("INSERT INTO tier_lists (id, title, uid, ownerUid) VALUES (1, 'Animals', 'board-1', 'alice')")
+            execSQL("INSERT INTO tiers (id, tierListId, position, label, colorLight, colorDark, isPool, uid) VALUES (1, 1, 0, 'S', '#111111', '#EEEEEE', 0, 'tier-1')")
+            execSQL(
+                "INSERT INTO tier_items (id, tierId, position, title, imageUrl, source, uid) " +
+                    "VALUES (1, 1, 0, 'Red fox', 'https://i/fox.jpg', 'MANUAL', 'card-1')",
+            )
+            close()
+        }
+
+        val migrated = helper.runMigrationsAndValidate(TEST_DB, 22, true, MIGRATION_21_22)
+
+        migrated.query("SELECT title, imageUrl, focusX, focusY, focusZoom FROM tier_items").use {
+            check(it.moveToFirst())
+            assertEquals("Red fox", it.getString(0))
+            assertEquals("https://i/fox.jpg", it.getString(1))
+            assertTrue("no focus", it.isNull(2) && it.isNull(3) && it.isNull(4))
+        }
+    }
+
     @Test
     fun migration20To21_keepsEveryCover_centred() {
         helper.createDatabase(TEST_DB, 20).apply {

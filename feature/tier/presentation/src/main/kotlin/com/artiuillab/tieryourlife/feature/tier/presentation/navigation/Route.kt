@@ -16,8 +16,9 @@ sealed interface Route {
     @Serializable
     data class CoverPicker(val tierListId: Long) : Route
 
+    /** The board's cover, or with [itemId] one card's picture. */
     @Serializable
-    data class AdjustCover(val tierListId: Long) : Route
+    data class AdjustCover(val tierListId: Long, val itemId: Long? = null) : Route
 
     @Serializable
     data class TopicPicker(val tierListId: Long) : Route
@@ -38,7 +39,10 @@ internal fun SavedStateHandle.tierDetailRoute() = Route.TierDetail(
 
 internal fun SavedStateHandle.coverPickerRoute() = Route.CoverPicker(tierListId = required(Route.CoverPicker::tierListId.name))
 
-internal fun SavedStateHandle.adjustCoverRoute() = Route.AdjustCover(tierListId = required(Route.AdjustCover::tierListId.name))
+internal fun SavedStateHandle.adjustCoverRoute() = Route.AdjustCover(
+    tierListId = required(Route.AdjustCover::tierListId.name),
+    itemId = get<Long>(Route.AdjustCover::itemId.name),
+)
 
 internal fun SavedStateHandle.topicPickerRoute() = Route.TopicPicker(tierListId = required(Route.TopicPicker::tierListId.name))
 

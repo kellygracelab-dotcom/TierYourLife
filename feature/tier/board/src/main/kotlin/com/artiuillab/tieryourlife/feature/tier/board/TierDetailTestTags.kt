@@ -15,6 +15,7 @@ object TierDetailTestTags {
     const val POOL_TOGGLE = "tier_detail_pool_toggle"
     const val MOVE_SHEET = "tier_detail_move_sheet"
     const val MOVE_SHEET_REMOVE = "tier_detail_move_sheet_remove"
+    const val MOVE_SHEET_ADJUST = "tier_detail_move_sheet_adjust"
     const val MOVE_SHEET_POOL = "tier_detail_move_sheet_pool"
     const val MOVE_SHEET_ABOUT_PICTURE = "tier_detail_move_sheet_about_picture"
     const val IMAGE_CREDITS_TEXT = "tier_detail_image_credits_text"

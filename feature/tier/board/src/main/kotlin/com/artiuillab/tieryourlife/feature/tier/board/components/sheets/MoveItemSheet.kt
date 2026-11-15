@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -27,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
@@ -44,9 +43,11 @@ import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.DeleteOutlineIcon
 import com.artiuillab.tieryourlife.core.theme.ui.SouthIcon
+import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
+import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.BandText
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -75,6 +76,7 @@ fun MoveItemSheet(
     onMoveToTier: (tierId: Long, toPosition: Int) -> Unit,
     onRemove: () -> Unit,
     onDismiss: () -> Unit,
+    onAdjustPicture: (() -> Unit)? = null,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -88,6 +90,7 @@ fun MoveItemSheet(
             pool = pool,
             onMoveToTier = onMoveToTier,
             onRemove = onRemove,
+            onAdjustPicture = onAdjustPicture,
         )
     }
 }
@@ -100,6 +103,7 @@ fun MoveItemSheetContent(
     pool: Tier?,
     onMoveToTier: (tierId: Long, toPosition: Int) -> Unit,
     onRemove: () -> Unit,
+    onAdjustPicture: (() -> Unit)? = null,
 ) {
     var aboutVisible by rememberSaveable(item.id) { mutableStateOf(false) }
     if (aboutVisible && item.hasAboutThePicture()) {
@@ -120,6 +124,19 @@ fun MoveItemSheetContent(
             }
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
+
+            if (onAdjustPicture != null && item.imageUrl != null) {
+                MoveSheetActionRow(
+                    testTag = TierDetailTestTags.MOVE_SHEET_ADJUST,
+                    iconCircleColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    icon = { TuneIcon(22.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+                    title = stringResource(R.string.tier_detail_move_sheet_adjust_title),
+                    titleColor = MaterialTheme.colorScheme.onSurface,
+                    subtitle = stringResource(R.string.tier_detail_move_sheet_adjust_subtitle),
+                    onClick = onAdjustPicture,
+                    bottomPadding = 10.dp,
+                )
+            }
 
             val isDark = TierYourLifeMedia.current.isDark
             MoveSheetActionRow(
@@ -192,12 +209,7 @@ private fun MoveSheetThumbnail(item: TierItem) {
             .background(media.tilePlaceholder),
     ) {
         if (item.imageUrl != null) {
-            AsyncImage(
-                model = item.imageUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop,
-            )
+            FocusedImage(model = item.imageUrl, focus = item.focus, modifier = Modifier.fillMaxSize())
         }
     }
 }

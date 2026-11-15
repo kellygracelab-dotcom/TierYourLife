@@ -13,10 +13,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
+import com.artiuillab.tieryourlife.feature.tier.domain.model.orDefaultFor
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -25,7 +27,7 @@ import kotlin.math.roundToInt
  * A cover picture cut to whatever frame it is given by the one formula every
  * platform uses ([com.artiuillab.tieryourlife.feature.tier.domain.model.coverFrame]):
  * the chosen point in the middle, as far in as chosen, never past an edge.
- * Without a focus it is the plain centre crop it always was.
+ * Without a focus it is the centre, or a little above it on a tall picture.
  */
 @Composable
 fun FocusedImage(
@@ -34,10 +36,27 @@ fun FocusedImage(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     crossfadeMillis: Int = 0,
+    onError: (() -> Unit)? = null,
 ) {
+    val zoom = focus?.zoom ?: CoverFocus.MIN_ZOOM
+    val context = LocalContext.current
+    val error = onError?.let { { _: AsyncImagePainter.State.Error -> it() } }
+    // A board draws hundreds of cards at their picture's own size: measuring each first is kept for a close crop.
+    if (zoom <= CoverFocus.MIN_ZOOM) {
+        val request = remember(model, crossfadeMillis) {
+            ImageRequest.Builder(context).data(model).apply { if (crossfadeMillis > 0) crossfade(crossfadeMillis) }.build()
+        }
+        AsyncImage(
+            model = request,
+            contentDescription = contentDescription,
+            contentScale = focusScale(focus),
+            alignment = focusAlignment(focus),
+            modifier = modifier,
+            onError = error,
+        )
+        return
+    }
     BoxWithConstraints(modifier) {
-        val zoom = focus?.zoom ?: CoverFocus.MIN_ZOOM
-        val context = LocalContext.current
         val width = constraints.maxWidth
         val height = constraints.maxHeight
         val request = remember(model, zoom, width, height, crossfadeMillis) {
@@ -45,7 +64,7 @@ fun FocusedImage(
                 .data(model)
                 .apply {
                     // Decoded as large as the zoom shows it, or a close crop would be a blur.
-                    if (zoom > CoverFocus.MIN_ZOOM && constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+                    if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
                         size(ceil(width * zoom).toInt(), ceil(height * zoom).toInt())
                         scale(Scale.FILL)
                     }
@@ -59,6 +78,7 @@ fun FocusedImage(
             contentScale = focusScale(focus),
             alignment = focusAlignment(focus),
             modifier = Modifier.fillMaxSize(),
+            onError = error,
         )
     }
 }
@@ -73,7 +93,7 @@ fun focusScale(focus: CoverFocus?): ContentScale = object : ContentScale {
 
 /** The focus point in the middle of the frame, held back from showing past an edge. */
 fun focusAlignment(focus: CoverFocus?): Alignment = Alignment { size, space, _: LayoutDirection ->
-    val (x, y) = focus ?: CoverFocus.CENTRED
+    val (x, y) = focus.orDefaultFor(size.width.toDouble(), size.height.toDouble())
     IntOffset(
         x = -(x * size.width - space.width / 2f).coerceIn(0f, max(0, size.width - space.width).toFloat()).roundToInt(),
         y = -(y * size.height - space.height / 2f).coerceIn(0f, max(0, size.height - space.height).toFloat()).roundToInt(),

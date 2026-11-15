@@ -27,6 +27,8 @@ data class TierDetailActions(
     val onProposeSection: ((String?) -> Unit)? = null,
     val onChooseCover: () -> Unit = {},
     val onAdjustCover: () -> Unit = {},
+    /** Null where a card's picture cannot be adjusted, as on someone else's list. */
+    val onAdjustPicture: ((itemId: Long) -> Unit)? = null,
     val onChooseTopic: () -> Unit = {},
     /** Null where cards cannot be added, as on someone else's list: no Add then. */
     val onAddClick: (() -> Unit)? = {},

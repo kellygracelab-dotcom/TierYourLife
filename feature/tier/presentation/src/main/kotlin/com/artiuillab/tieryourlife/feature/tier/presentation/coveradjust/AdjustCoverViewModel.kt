@@ -26,7 +26,9 @@ class AdjustCoverViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val tierListId = savedStateHandle.adjustCoverRoute().tierListId
+    private val route = savedStateHandle.adjustCoverRoute()
+    private val tierListId = route.tierListId
+    private val itemId = route.itemId
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
@@ -39,8 +41,13 @@ class AdjustCoverViewModel @Inject constructor(
             val list = runSuspendCatching { repository.getTierListById(tierListId) }
                 .onFailure { Timber.w(it, "Reading the board for its cover failed") }
                 .getOrNull()
+            val item = itemId?.let { id -> list?.tiers?.firstNotNullOfOrNull { tier -> tier.items.firstOrNull { it.id == id } } }
             _state.update {
-                it.copy(picture = list?.coverImageUrl, focus = list?.coverFocus ?: CoverFocus.CENTRED, loaded = true)
+                if (itemId != null) {
+                    it.copy(picture = item?.imageUrl, focus = item?.focus, card = true, loaded = true)
+                } else {
+                    it.copy(picture = list?.coverImageUrl, focus = list?.coverFocus, loaded = true)
+                }
             }
         }
     }
@@ -50,15 +57,17 @@ class AdjustCoverViewModel @Inject constructor(
     }
 
     fun reset() {
-        _state.update { it.copy(focus = CoverFocus.CENTRED) }
+        _state.update { it.copy(focus = null) }
     }
 
-    fun save() {
+    /** The picture's own default is kept as no focus at all, so a later change to the default reaches it. */
+    fun save(pictureDefault: CoverFocus = CoverFocus.CENTRED) {
         if (_state.value.saving) return
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
-            val saved = messages.guard("Saving the cover's focus") {
-                repository.setCoverFocus(tierListId, _state.value.focus.inRange().takeUnless { it.isCentred })
+            val focus = _state.value.focus?.inRange()?.takeUnless { it == pictureDefault.inRange() }
+            val saved = messages.guard("Saving the picture's focus") {
+                if (itemId != null) repository.setItemFocus(itemId, focus) else repository.setCoverFocus(tierListId, focus)
             }
             _state.update { it.copy(saving = false, saved = saved) }
         }

@@ -2,10 +2,16 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.coveradjust
 
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 
-/** The board's single cover and the part of it chosen so far; nothing is kept until Done. */
+/**
+ * The board's single cover and the part of it chosen so far; nothing is kept
+ * until Done. A null [focus] is the picture's own default: the centre, or a
+ * little above it on a tall picture.
+ */
 data class AdjustCoverUiState(
     val picture: String? = null,
-    val focus: CoverFocus = CoverFocus.CENTRED,
+    val focus: CoverFocus? = null,
+    /** A card's picture rather than the board's cover: its own title, frame and previews. */
+    val card: Boolean = false,
     val loaded: Boolean = false,
     val saving: Boolean = false,
     val saved: Boolean = false,

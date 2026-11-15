@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.coverFocus
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.focus
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardRemoval
@@ -665,6 +666,7 @@ class BoardSyncEngine @Inject constructor(
                     credit = item.credit,
                     sourceIndex = item.sourceIndex?.takeIf { it in 0 until MAX_SOURCE_CARDS },
                     attribution = item.attribution?.toDto(),
+                    pictureFocus = item.focus()?.let { CoverFocusDto(it.x, it.y, it.zoom) },
                 )
             },
         )
@@ -732,7 +734,6 @@ internal fun TierListEntity.keepingLocalFieldsOf(here: TierListEntity) = copy(
 private val KeptBoardDto.keptFocus: CoverFocus?
     get() = coverFocus?.takeIf { coverPictureId != null || coverImageUrl != null }
         ?.let { CoverFocus(it.x, it.y, it.zoom).inRange() }
-        ?.takeUnless { it.isCentred }
 
 internal fun KeptBoardDto.toEntity(id: Long, uid: String, pathFor: (String) -> String) = TierListEntity(
     id = id,
@@ -782,6 +783,8 @@ private fun KeptBoardDto.tiers(
                 uid = renamed?.tiers?.get(tier.uid) ?: tier.uid,
             ),
             items = itemsByTierUid[tier.uid].orEmpty().sortedBy { it.position }.map { item ->
+                val imageUrl = item.pictureId?.let(pathFor) ?: item.imageUrl
+                val focus = item.pictureFocus?.takeIf { imageUrl != null }?.let { CoverFocus(it.x, it.y, it.zoom).inRange() }
                 TierItemEntity(
                     tierId = index.toLong(),
                     position = item.position,
@@ -789,13 +792,16 @@ private fun KeptBoardDto.tiers(
                     title = item.title.takeUnless { it == KeptText.UNTITLED_CARD && KeptText.isKeptPicture(item.pictureId, item.imageUrl) }.orEmpty(),
                     // Written as the path it will live at once fetched; until
                     // then the tile shows the title, like any card without one.
-                    imageUrl = item.pictureId?.let(pathFor) ?: item.imageUrl,
+                    imageUrl = imageUrl,
                     source = item.source,
                     deletedAt = item.deletedAt,
                     uid = renamed?.items?.get(item.uid) ?: item.uid,
                     credit = item.credit,
                     sourceIndex = item.sourceIndex?.takeIf { it in 0 until MAX_SOURCE_CARDS },
                     attribution = item.attribution?.toDomain(),
+                    focusX = focus?.x,
+                    focusY = focus?.y,
+                    focusZoom = focus?.zoom,
                 )
             },
         )

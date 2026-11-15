@@ -55,6 +55,7 @@ internal fun SearchResultRow(list: TierListSummary, onClick: () -> Unit) {
         ListArt(
             coverImageUrl = list.coverImageUrl,
             coverFocus = list.coverFocus,
+            pictureFocus = list.pictureFocus,
             previewImages = list.coverImageUrls,
             tierColors = list.tiers.filterNot { it.isPool }.map { it.colorLight },
             modifier = Modifier

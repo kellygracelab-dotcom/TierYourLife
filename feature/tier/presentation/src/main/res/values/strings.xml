@@ -240,7 +240,11 @@
     <string name="cover_adjust_zoom">Zoom</string>
     <string name="cover_adjust_preview">Preview</string>
     <string name="cover_adjust_feed">Feed</string>
+    <string name="cover_adjust_square">Square</string>
+    <string name="cover_adjust_picture_title">Adjust picture</string>
+    <string name="cover_adjust_card">Card</string>
+    <string name="cover_adjust_collage">Collage</string>
     <string name="cover_adjust_header">Page header</string>
     <string name="cover_adjust_close">Close</string>
-    <string name="cover_adjust_hint">Drag to move, pinch to zoom</string>
+    <string name="cover_adjust_hint">Drag or tap to place the point, pinch to zoom</string>
 </resources>

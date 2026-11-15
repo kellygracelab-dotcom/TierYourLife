@@ -44,6 +44,14 @@ class CoverCreditTest {
     }
 
     @Test
+    fun `a catalogue's credit names the catalogue, as a topic's does`() {
+        val list = opened("\"https://image.tmdb.org/t/p/w780/frame.jpg\"", """{"source":"tmdb","link":"https://www.themoviedb.org/tv/1429"}""")
+
+        assertEquals("tmdb", list.coverAttribution?.source)
+        assertEquals("https://www.themoviedb.org/tv/1429", list.coverAttribution?.link)
+    }
+
+    @Test
     fun `no cover picture, nothing to credit`() {
         val list = opened("\"null\"", """{"license":"CC0 1.0","link":"https://example.com/fox","manual":true}""")
 

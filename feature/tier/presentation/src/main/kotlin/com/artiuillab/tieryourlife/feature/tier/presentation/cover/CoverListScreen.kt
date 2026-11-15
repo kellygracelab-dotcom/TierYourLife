@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -49,7 +48,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.ui.CardLabel
 import com.artiuillab.tieryourlife.core.theme.ui.CoverHeader
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIconButton
@@ -58,6 +56,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.CoverTarget
 import com.artiuillab.tieryourlife.core.theme.ui.CoverType
 import com.artiuillab.tieryourlife.core.theme.ui.ExpandLessIcon
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
+import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -238,7 +237,7 @@ internal fun CoverCard(
         contentAlignment = Alignment.Center,
     ) {
         if (item.imageUrl != null) {
-            AsyncImage(model = item.imageUrl, contentDescription = item.title, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            FocusedImage(model = item.imageUrl, focus = item.focus, contentDescription = item.title, modifier = Modifier.fillMaxSize())
         } else {
             CardLabel(
                 text = item.title,

@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishList
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedItemDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toJson
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
@@ -62,14 +63,17 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
         tiers.flatMap { tier ->
             val where = ranked.indexOfFirst { it.id == tier.id }.takeIf { it >= 0 }
             tier.items.map { item ->
+                val imageUrl = webPictureOf(item.imageUrl)
+                val pictureId = (images.pictureIdOf(item.imageUrl) ?: privatePictureIdOf(item.imageUrl))?.takeIf { it in uploaded }
                 PublishedItemDto(
                     title = item.title,
-                    imageUrl = webPictureOf(item.imageUrl),
-                    pictureId = (images.pictureIdOf(item.imageUrl) ?: privatePictureIdOf(item.imageUrl))?.takeIf { it in uploaded },
+                    imageUrl = imageUrl,
+                    pictureId = pictureId,
                     tierIndex = where,
                     credit = item.credit,
                     attribution = item.attribution?.toDto(),
                     sourceIndex = item.sourceIndex?.takeIf { it in 0 until MAX_SOURCE_CARDS },
+                    pictureFocus = item.focus.takeIf { imageUrl != null || pictureId != null }.toJson(),
                 )
             }
         }

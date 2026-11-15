@@ -96,6 +96,7 @@ internal fun SummaryRows.toSummaries(): List<TierListSummary> {
             coverImageUrl = board.coverImageUrl,
             coverImageUrls = board.coverImageUrls.toCoverImageUrls(),
             coverFocus = board.coverFocus(),
+            pictureFocus = focuses[board.id].orEmpty(),
             arrivedFrom = board.arrivedFrom,
             editedAt = board.editedAt,
             favouritedAt = board.favouritedAt,
@@ -128,7 +129,17 @@ private fun TierItemEntity.toDomain(): TierItem = TierItem(
     credit = credit,
     attribution = attribution,
     sourceIndex = sourceIndex,
+    focus = focus(),
 )
+
+/** A card's focus as kept: none without a picture or with a column missing. */
+internal fun TierItemEntity.focus(): CoverFocus? {
+    if (imageUrl == null) return null
+    val x = focusX ?: return null
+    val y = focusY ?: return null
+    val zoom = focusZoom ?: return null
+    return CoverFocus(x, y, zoom).inRange()
+}
 
 internal fun String.toTierItemSource(): TierItemSource =
     TierItemSource.entries.firstOrNull { it.name == this } ?: TierItemSource.MANUAL
@@ -147,5 +158,5 @@ internal fun TierListEntity.coverFocus(): CoverFocus? {
     val x = coverFocusX ?: return null
     val y = coverFocusY ?: return null
     val zoom = coverFocusZoom ?: return null
-    return CoverFocus(x, y, zoom).inRange().takeUnless { it.isCentred }
+    return CoverFocus(x, y, zoom).inRange()
 }

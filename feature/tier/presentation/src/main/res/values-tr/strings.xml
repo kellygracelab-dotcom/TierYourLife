@@ -239,7 +239,11 @@
     <string name="cover_adjust_zoom">Yakınlaştırma</string>
     <string name="cover_adjust_preview">Önizleme</string>
     <string name="cover_adjust_feed">Akış</string>
+    <string name="cover_adjust_square">Kare</string>
+    <string name="cover_adjust_picture_title">Resmi ayarla</string>
+    <string name="cover_adjust_card">Kart</string>
+    <string name="cover_adjust_collage">Kolaj</string>
     <string name="cover_adjust_header">Sayfa başlığı</string>
     <string name="cover_adjust_close">Kapat</string>
-    <string name="cover_adjust_hint">Taşımak için sürükleyin, yakınlaştırmak için iki parmak kullanın</string>
+    <string name="cover_adjust_hint">Noktayı seçmek için sürükleyin veya dokunun, yakınlaştırmak için iki parmak kullanın</string>
 </resources>

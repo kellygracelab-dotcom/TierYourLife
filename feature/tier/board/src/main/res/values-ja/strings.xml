@@ -77,6 +77,8 @@
     <string name="tier_detail_move_sheet_pool_subtitle">未評価のまま、リストには残ります</string>
     <string name="tier_detail_move_sheet_pool_title">プールに戻す</string>
     <string name="tier_detail_move_sheet_remove_subtitle">直後なら元に戻せます</string>
+    <string name="tier_detail_move_sheet_adjust_title">画像を調整</string>
+    <string name="tier_detail_move_sheet_adjust_subtitle">表示する部分を選ぶ</string>
     <string name="tier_detail_move_sheet_remove_title">リストから削除</string>
     <string name="tier_detail_move_sheet_subtitle">ティアに移動</string>
     <string name="tier_detail_move_sheet_photo_credit">写真：%1$s</string>

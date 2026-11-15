@@ -69,7 +69,7 @@ class TopicViewModelTest {
         )
 
         assertEquals(CoverFocus(0.5f, 0.2f, 1.5f), viewModel.state.value.pictureFocus)
-        assertNull(CommunityRoute.Topic(topicId = "t1", pictureFocus = "0.5,0.5,1.0").focus)
+        assertEquals("a centre chosen on purpose stays", CoverFocus.CENTRED, CommunityRoute.Topic(topicId = "t1", pictureFocus = "0.5,0.5,1.0").focus)
         assertNull(CommunityRoute.Topic(topicId = "t1", pictureFocus = "nonsense").focus)
     }
 

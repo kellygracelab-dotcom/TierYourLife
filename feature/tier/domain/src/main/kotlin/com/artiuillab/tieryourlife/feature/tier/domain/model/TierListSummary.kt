@@ -20,6 +20,8 @@ data class TierListSummary(
     val coverImageUrl: String? = null,
     val coverImageUrls: List<String> = emptyList(),
     val coverFocus: CoverFocus? = null,
+    /** Which part of each card's picture a collage cell shows, by picture; a picture left out shows its default. */
+    val pictureFocus: Map<String, CoverFocus> = emptyMap(),
     val arrivedFrom: String? = null,
     val editedAt: Long? = null,
     val favouritedAt: Long? = null,
@@ -62,8 +64,15 @@ fun TierList.summary(): TierListSummary = TierListSummary(
     coverImageUrl = coverImageUrl,
     coverImageUrls = coverImageUrls,
     coverFocus = coverFocus,
+    pictureFocus = pictureFocus(),
     arrivedFrom = arrivedFrom,
     editedAt = editedAt,
     favouritedAt = favouritedAt,
     hasTwin = hasTwin,
 )
+
+/** Each card picture somebody moved, by its address, as a collage cell looks it up. */
+fun TierList.pictureFocus(): Map<String, CoverFocus> = tiers.asSequence()
+    .flatMap { it.items }
+    .mapNotNull { item -> item.focus?.let { focus -> item.imageUrl?.let { it to focus } } }
+    .toMap()

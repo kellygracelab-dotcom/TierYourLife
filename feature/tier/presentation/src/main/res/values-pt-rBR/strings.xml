@@ -253,7 +253,11 @@
     <string name="cover_adjust_zoom">Zoom</string>
     <string name="cover_adjust_preview">Prévia</string>
     <string name="cover_adjust_feed">Feed</string>
+    <string name="cover_adjust_square">Quadrado</string>
+    <string name="cover_adjust_picture_title">Ajustar imagem</string>
+    <string name="cover_adjust_card">Carta</string>
+    <string name="cover_adjust_collage">Colagem</string>
     <string name="cover_adjust_header">Cabeçalho</string>
     <string name="cover_adjust_close">Fechar</string>
-    <string name="cover_adjust_hint">Arraste para mover, pince para ampliar</string>
+    <string name="cover_adjust_hint">Arraste ou toque para escolher o ponto, use dois dedos para zoom</string>
 </resources>

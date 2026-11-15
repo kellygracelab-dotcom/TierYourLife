@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.data.local.dao
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 
 data class NewPoolItem(
@@ -8,6 +9,7 @@ data class NewPoolItem(
     val credit: String? = null,
     val sourceIndex: Int? = null,
     val attribution: PictureAttribution? = null,
+    val focus: CoverFocus? = null,
 )
 
 data class NewTemplateTier(

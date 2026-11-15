@@ -112,6 +112,7 @@ internal fun CoverThumbnail(list: TierListSummary) {
     ListArt(
         coverImageUrl = list.coverImageUrl,
         coverFocus = list.coverFocus,
+        pictureFocus = list.pictureFocus,
         previewImages = list.coverImageUrls,
         tierColors = list.tiers.filterNot { it.isPool }.map { it.colorLight },
         modifier = Modifier.size(36.dp).clip(RoundedCornerShape(8.dp)),

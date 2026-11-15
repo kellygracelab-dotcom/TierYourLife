@@ -13,7 +13,7 @@ import kotlin.math.ceil
 private const val TILES_AHEAD = 6
 
 /** What a [BoardTile] draws: a local photograph as it is on the board, since only publishing needs a picture to have travelled. */
-internal fun TierListSummary.art() = ArtPictures(coverImageUrl, coverImageUrls.ifEmpty { previewImages }, coverFocus)
+internal fun TierListSummary.art() = ArtPictures(coverImageUrl, coverImageUrls.ifEmpty { previewImages }, coverFocus, pictureFocus)
 
 /**
  * The tiles just under the last one on screen, fetched once the first frame

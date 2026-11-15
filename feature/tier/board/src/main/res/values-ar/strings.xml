@@ -97,6 +97,8 @@
     <string name="tier_detail_move_sheet_pool_subtitle">غير مصنَّف، يبقى في القائمة</string>
     <string name="tier_detail_move_sheet_pool_title">الإعادة إلى المجمّع</string>
     <string name="tier_detail_move_sheet_remove_subtitle">يمكن التراجع عنه فورًا بعد ذلك</string>
+    <string name="tier_detail_move_sheet_adjust_title">ضبط الصورة</string>
+    <string name="tier_detail_move_sheet_adjust_subtitle">اختر الجزء الظاهر منها</string>
     <string name="tier_detail_move_sheet_remove_title">إزالة من القائمة</string>
     <string name="tier_detail_move_sheet_subtitle">النقل إلى مستوى</string>
     <string name="tier_detail_move_sheet_photo_credit">الصورة: %1$s</string>
