@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 
 /**
  * One topic and its lists. The name and section arrive with the route, so
@@ -14,6 +15,8 @@ data class TopicUiState(
     val section: String?,
     /** The topic's own picture: the route's at first, the server's once it answers. */
     val picture: String? = null,
+    /** Which part of [picture] shows; null for the centre. */
+    val pictureFocus: CoverFocus? = null,
     val topic: Topic? = null,
     val feed: CommunityFeed = CommunityFeed.Loading,
     val sort: FeedSort = FeedSort.Popular,

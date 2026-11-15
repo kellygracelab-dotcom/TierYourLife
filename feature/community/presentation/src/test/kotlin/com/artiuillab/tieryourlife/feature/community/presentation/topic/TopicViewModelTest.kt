@@ -18,6 +18,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.feed.Community
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.signedInFollows
+import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
@@ -55,6 +57,20 @@ class TopicViewModelTest {
         assertEquals("Pokémon", state.name)
         assertEquals(ListCategory.Games.id, state.section)
         assertNull(state.topic)
+    }
+
+    @Test
+    fun thePartOfThePictureTheTileShowed_isThePartTheHeaderOpensOn() = runBlocking {
+        val tile = pokemon.copy(pictureUrl = "https://i/pikachu.jpg", pictureFocus = CoverFocus(0.5f, 0.2f, 1.5f))
+        val route = CommunityRoute.Topic.of(tile)
+        val viewModel = topicFor(
+            TopicFake(answers = false),
+            route = mapOf("topicId" to route.topicId, "picture" to route.picture, "pictureFocus" to route.pictureFocus),
+        )
+
+        assertEquals(CoverFocus(0.5f, 0.2f, 1.5f), viewModel.state.value.pictureFocus)
+        assertNull(CommunityRoute.Topic(topicId = "t1", pictureFocus = "0.5,0.5,1.0").focus)
+        assertNull(CommunityRoute.Topic(topicId = "t1", pictureFocus = "nonsense").focus)
     }
 
     @Test
@@ -188,11 +204,12 @@ class TopicViewModelTest {
         community: TopicFake,
         preferences: FakeAppPreferences = FakeAppPreferences(),
         afterSignIn: FollowAfterSignIn = signedInFollows(),
+        route: Map<String, Any?> = mapOf("topicId" to "t1", "name" to "Pokémon", "section" to "games"),
     ) = TopicViewModel(
         community = community,
         preferences = preferences,
         afterSignIn = afterSignIn,
-        savedStateHandle = SavedStateHandle(mapOf("topicId" to "t1", "name" to "Pokémon", "section" to "games")),
+        savedStateHandle = SavedStateHandle(route),
     )
 
     private fun published(id: String) = PublishedListSummary(

@@ -14,16 +14,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
@@ -60,6 +55,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.section.tintNo
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSection
+import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -144,7 +141,7 @@ fun TopicScreenContent(
         // Only an approved word can be followed; the server refuses the rest.
         onToggleFollow = actions.onToggleFollow.takeIf { topic?.status == TopicStatus.Approved },
         overline = if (topic?.pending == true) stringResource(R.string.topic_waiting) else section.label(),
-        backdrop = { TopicBackdrop(section, state.picture, answered = topic != null || state.headerFailed, it) },
+        backdrop = { TopicBackdrop(section, state.picture, state.pictureFocus, answered = topic != null || state.headerFailed, it) },
     )
     val feed = state.feed.asPane()
     val cards = CardActions(open) { actionsFor = it }
@@ -235,16 +232,10 @@ private fun LazyGridScope.topicBody(
  * first: the art stands in only once the server has said there is no picture.
  */
 @Composable
-private fun TopicBackdrop(section: Section, picture: String?, answered: Boolean, modifier: Modifier) {
+private fun TopicBackdrop(section: Section, picture: String?, focus: CoverFocus?, answered: Boolean, modifier: Modifier) {
     when {
         picture != null -> Box(modifier.background(lookOf(section).tintNow)) {
-            val context = LocalContext.current
-            AsyncImage(
-                model = remember(picture) { ImageRequest.Builder(context).data(picture).crossfade(PICTURE_FADE_MILLIS).build() },
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
-            )
+            FocusedImage(model = picture, focus = focus, crossfadeMillis = PICTURE_FADE_MILLIS, modifier = Modifier.fillMaxSize())
         }
 
         answered -> SectionArt(section, modifier, scrim = false)

@@ -277,6 +277,17 @@ class BoardFingerprintTest {
         assertEquals(fingerprint(), fingerprint(board = board.copy(play = "not a game")))
     }
 
+    // Web's vector of 15.11: a moved cover adds one field after everything else, in whole steps.
+    @Test
+    fun `a moved cover comes last, written the way the site writes it`() {
+        val moved = bare.copy(coverImageUrl = "https://c", coverFocusX = 0.3f, coverFocusY = 0.15f, coverFocusZoom = 2f)
+
+        assertEquals(
+            sha256("1:u|1:T|4:WRAP|~|9:https://c|~|~|~|10:coverFocus|4:3000|4:1500|3:200|"),
+            BoardFingerprint.of(moved, emptyList(), emptyList(), ::pictureIdOf),
+        )
+    }
+
     private fun sha256(text: String): String =
         java.security.MessageDigest.getInstance("SHA-256").digest(text.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
 }
