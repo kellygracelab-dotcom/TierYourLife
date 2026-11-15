@@ -173,6 +173,9 @@
     <string name="explore_follow">フォロー</string>
     <string name="explore_following">フォロー中</string>
     <string name="explore_search_hint">コミュニティを検索</string>
+    <string name="section_search">検索</string>
+    <string name="search_within">%1$s 内</string>
+    <string name="search_everywhere">すべてを検索</string>
     <string name="explore_search_nothing">一致するものがありません。</string>
     <string name="search_sections">セクション</string>
     <string name="search_lists">リスト</string>

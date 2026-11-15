@@ -59,9 +59,14 @@ fun SectionScreen(
     onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
     onSignIn: () -> Unit = {},
     onOpenBoard: (Long) -> Unit = {},
+    onOpenSection: (String) -> Unit = {},
     viewModel: SectionViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val query by viewModel.search.query.collectAsStateWithLifecycle()
+    val results by viewModel.search.results.collectAsStateWithLifecycle()
+    val within by viewModel.search.within.collectAsStateWithLifecycle()
+    val allSections by viewModel.allSections.collectAsStateWithLifecycle()
     SignInToFollow(viewModel.signInRequests, onSignIn)
     LaunchedEffect(Unit) { viewModel.open() }
     val openTopic by rememberUpdatedState(onOpenTopic)
@@ -92,6 +97,22 @@ fun SectionScreen(
         onOpenList = { onOpenList(CommunityRoute.CommunityList.of(it, languageTag)) },
         onOpenAuthor = onAuthorClick,
         notices = viewModel.notices,
+        search = PageSearch(
+            query = query,
+            results = results,
+            within = within?.let { state.section.label() },
+            sections = allSections,
+            calls = PageSearchCalls(
+                onEnter = viewModel::enterSearch,
+                onQueryChange = viewModel.search::update,
+                onExit = viewModel.search::exit,
+                onWiden = viewModel.search::widen,
+                onRetry = viewModel.search::retry,
+                onLoadMore = viewModel.search::loadMore,
+                onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
+                onOpenSection = onOpenSection,
+            ),
+        ),
     )
 }
 
@@ -105,6 +126,7 @@ fun SectionScreenContent(
     onOpenList: (PublishedListSummary) -> Unit = {},
     onOpenAuthor: (uid: String, name: String, photoUrl: String?) -> Unit = { _, _, _ -> },
     notices: Flow<CommunityNotice> = emptyFlow(),
+    search: PageSearch? = null,
 ) {
     val snackbar = remember { SnackbarHostState() }
     var menuFor by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -118,6 +140,7 @@ fun SectionScreenContent(
         following = state.stats?.following == true,
         onToggleFollow = calls.onToggleSectionFollow,
         backdrop = { SectionBackdrop(state.section, state.stats, it) },
+        onSearch = search?.calls?.onEnter,
     )
     val cards = CardActions(onOpenList) { menuFor = it }
     val body = PageBody(
@@ -127,7 +150,7 @@ fun SectionScreenContent(
         onOpenList = onOpenList,
         items = { layout, alpha -> sectionBody(state, layout, alpha, feed, calls, cards, topicCalls) },
     )
-    ListsPage(head, body, onBack, snackbar, SectionTestTags.SCREEN)
+    ListsPage(head, body, onBack, snackbar, SectionTestTags.SCREEN, search, cards)
     FeedListMenus(menuFor, { menuFor = null }, feed, onOpenAuthor)
     waitingTopic?.let { WaitingTopicSheet(it) { waitingTopic = null } }
     if (suggesting) {

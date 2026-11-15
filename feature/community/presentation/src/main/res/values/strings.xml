@@ -175,6 +175,9 @@
     <string name="explore_follow">Follow</string>
     <string name="explore_following">Following</string>
     <string name="explore_search_hint">Search community lists</string>
+    <string name="section_search">Search</string>
+    <string name="search_within">In %1$s</string>
+    <string name="search_everywhere">Search everywhere</string>
     <string name="explore_search_nothing">Nothing matches that.</string>
     <string name="search_sections">Sections</string>
     <string name="search_lists">Lists</string>

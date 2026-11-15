@@ -183,6 +183,9 @@
     <string name="explore_follow">متابعة</string>
     <string name="explore_following">تتابعه</string>
     <string name="explore_search_hint">البحث في المجتمع</string>
+    <string name="section_search">بحث</string>
+    <string name="search_within">في %1$s</string>
+    <string name="search_everywhere">البحث في كل مكان</string>
     <string name="explore_search_nothing">لا شيء يطابق ذلك.</string>
     <string name="search_sections">الأقسام</string>
     <string name="search_lists">القوائم</string>

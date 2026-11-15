@@ -15,8 +15,9 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.cos
 import kotlin.math.sin
 
+/** [color] for over a picture, where the theme's colour would not show. */
 @Composable
-fun SearchIcon() = SearchVectorIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+fun SearchIcon(color: Color = MaterialTheme.colorScheme.onSurfaceVariant) = SearchVectorIcon(24.dp, color)
 
 /** Four panes: what the boards would become. Shown while they are rows. */
 @Composable

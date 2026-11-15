@@ -10,9 +10,18 @@ fun NavGraphBuilder.topicScreen(
     onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onSignIn: () -> Unit = {},
+    onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
+    onOpenSection: (CommunityRoute.Section) -> Unit = {},
 ) {
     composable<CommunityRoute.Topic> {
-        TopicScreen(onBack = onBack, onOpenList = onOpenList, onAuthorClick = onAuthorClick, onSignIn = onSignIn)
+        TopicScreen(
+            onBack = onBack,
+            onOpenList = onOpenList,
+            onAuthorClick = onAuthorClick,
+            onSignIn = onSignIn,
+            onOpenTopic = onOpenTopic,
+            onOpenSection = onOpenSection,
+        )
     }
 }
 
