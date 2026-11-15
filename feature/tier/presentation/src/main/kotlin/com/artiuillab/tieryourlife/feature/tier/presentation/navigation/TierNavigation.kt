@@ -97,8 +97,8 @@ fun NavGraphBuilder.trashScreen(onBack: () -> Unit) {
     }
 }
 
-fun NavController.navigateToTierDetail(id: Long, focusTierId: Long? = null) {
-    navigate(Route.TierDetail(id, focusTierId))
+fun NavController.navigateToTierDetail(id: Long, focusTierId: Long? = null, fresh: Boolean = false) {
+    navigate(Route.TierDetail(id, focusTierId, fresh))
 }
 
 fun NavController.navigateToCoverPicker(tierListId: Long) {

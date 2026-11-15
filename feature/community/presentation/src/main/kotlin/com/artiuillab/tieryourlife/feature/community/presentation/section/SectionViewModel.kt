@@ -13,15 +13,18 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SectionDirecto
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionWasMerged
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.model.matchesSearch
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreSearch
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedLoader
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ListMenuActions
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.SearchScope
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.toCommunityNotice
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
@@ -138,6 +141,18 @@ class SectionViewModel @Inject constructor(
     val mergedIntoTopic: Flow<CommunityRoute.Topic> = toTopic.receiveAsFlow()
 
     private val menu = ListMenuActions(preferences, community, viewModelScope) { notes.send(it) }
+
+    /** Opens on this section's topics and lists; its chip widens it to everything. */
+    val search = ExploreSearch(community, viewModelScope, menu::isVisible) { typed ->
+        catalog.directory.value.shown.any { it.matchesSearch(typed) }
+    }
+
+    /** Every section, for a search widened to everything. */
+    val allSections: StateFlow<List<Section>> = catalog.directory
+        .map { it.shown }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, catalog.directory.value.shown)
+
+    fun enterSearch() = search.enter(SearchScope.Section(sectionId.value))
 
     private val topics = MutableStateFlow<List<Topic>?>(null)
     private val waiting = MutableStateFlow<List<Topic>>(emptyList())

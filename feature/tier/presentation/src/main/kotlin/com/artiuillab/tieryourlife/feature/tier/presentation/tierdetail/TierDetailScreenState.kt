@@ -15,6 +15,8 @@ data class TierDetailScreenState(
     val allLists: List<TierListSummary> = emptyList(),
     val signedIn: Boolean = false,
     val publish: PublishState = PublishState(),
+    /** Made by New list with nothing done on it yet: Back leaves nothing behind. */
+    val untouchedDraft: Boolean = false,
 )
 
 data class PublishState(

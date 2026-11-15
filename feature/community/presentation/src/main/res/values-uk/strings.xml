@@ -179,6 +179,9 @@
     <string name="explore_follow">Підписатися</string>
     <string name="explore_following">Ви підписані</string>
     <string name="explore_search_hint">Пошук у спільноті</string>
+    <string name="section_search">Пошук</string>
+    <string name="search_within">У «%1$s»</string>
+    <string name="search_everywhere">Шукати всюди</string>
     <string name="explore_search_nothing">Нічого не знайдено.</string>
     <string name="search_sections">Розділи</string>
     <string name="search_lists">Списки</string>

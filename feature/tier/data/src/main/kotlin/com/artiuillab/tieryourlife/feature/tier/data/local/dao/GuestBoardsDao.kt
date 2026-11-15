@@ -13,7 +13,7 @@ private const val UIDS_PER_STATEMENT = 500
 interface GuestBoardsDao {
 
     /** Trash left out: what the question about them counts. Held boards are among them; the caller leaves those out. */
-    @Query("SELECT * FROM tier_lists WHERE ownerUid IS NULL AND deletedAt IS NULL")
+    @Query("SELECT * FROM tier_lists WHERE ownerUid IS NULL AND deletedAt IS NULL AND draft = 0")
     suspend fun guestBoardsInUse(): List<TierListEntity>
 
     @Query("SELECT uid FROM tier_lists WHERE ownerUid IS NULL")

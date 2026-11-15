@@ -14,6 +14,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.TargetIsStaff
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreSearch
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.SearchScope
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.hides
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowAfterSignIn
@@ -60,6 +62,11 @@ class TopicViewModel @Inject constructor(
         TopicUiState(name = route.name.orEmpty(), section = route.section, picture = route.picture, pictureFocus = route.focus),
     )
     val state: StateFlow<TopicUiState> = _state.asStateFlow()
+
+    /** Opens on this topic's lists; its chip widens it to everything. */
+    val search = ExploreSearch(community, viewModelScope, visible = { !preferences.hides(it) }) { false }
+
+    fun enterSearch() = search.enter(SearchScope.Topic(route.topicId))
 
     private var cursor: String? = null
     private var loadJob: Job? = null

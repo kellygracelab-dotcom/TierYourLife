@@ -29,6 +29,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.componen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,7 +54,14 @@ class TierDetailViewModel @Inject constructor(
 
     private val tierListId = savedStateHandle.tierDetailRoute().tierListId
 
-    private val _screen = MutableStateFlow(TierDetailScreenState())
+    private val _screen = MutableStateFlow(TierDetailScreenState(untouchedDraft = savedStateHandle.tierDetailRoute().fresh))
+
+    /** A fresh board as New list made it, to tell the first real change by. */
+    private var asMade: TierList? = null
+
+    /** Waited for on the way out: a board left before it was kept would stay a draft and go with the next New list. */
+    private var keeping: Job? = null
+
     val screen: StateFlow<TierDetailScreenState> = _screen.asStateFlow()
 
     // Views onto one value, so a write is seen at once and the screen gets one frame per change.
@@ -61,6 +69,7 @@ class TierDetailViewModel @Inject constructor(
         get() = _screen.value.board
         set(value) {
             _screen.update { it.copy(board = value) }
+            (value as? TierDetailUiState.Success)?.list?.let(::keepOnceChanged)
         }
     private var allLists: List<TierListSummary>
         get() = _screen.value.allLists
@@ -380,6 +389,35 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    /** Back from the board: a New list left as it came is removed first, so no empty list stays behind or reaches the account. */
+    fun leave(then: () -> Unit) {
+        val keeping = keeping
+        if (!_screen.value.untouchedDraft && keeping?.isActive != true) return then()
+        viewModelScope.launch {
+            keeping?.join()
+            if (_screen.value.untouchedDraft) {
+                runSuspendCatching {
+                    val now = repository.getTierListById(tierListId)
+                    val made = asMade
+                    if (now != null && made != null && now.asEdited() != made.asEdited()) keep()?.join() else repository.discardDraft(tierListId)
+                }.onFailure { Timber.w(it, "Leaving a new list") }
+            }
+            then()
+        }
+    }
+
+    private fun keepOnceChanged(list: TierList) {
+        if (!_screen.value.untouchedDraft) return
+        val made = asMade ?: return run { asMade = list }
+        if (list.asEdited() != made.asEdited()) keep()
+    }
+
+    private fun keep(): Job? {
+        if (!_screen.value.untouchedDraft) return keeping
+        _screen.update { it.copy(untouchedDraft = false) }
+        return viewModelScope.launch { runSuspendCatching { repository.keepDraft(tierListId) } }.also { keeping = it }
+    }
+
     fun renameTierList(title: String) {
         mutate("Renaming the list") {
             repository.renameTierList(tierListId, title)
@@ -497,6 +535,9 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 }
+
+/** What the person made, without the time the database stamped on it. */
+private fun TierList.asEdited() = copy(editedAt = null)
 
 /** Taking a list down fails in words of its own: "could not publish" would say the opposite of what was asked. */
 internal fun publishErrorOf(failure: Throwable, public: Boolean): PublishError = when {

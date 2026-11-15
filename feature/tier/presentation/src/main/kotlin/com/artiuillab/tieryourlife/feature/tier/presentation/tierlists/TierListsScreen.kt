@@ -130,7 +130,7 @@ fun TierListsScreen(
     LaunchedEffect(Unit) {
         if (makeBoard && !boardMade) {
             boardMade = true
-            viewModel.createTierList(defaultListTitle, defaultTierCaptions, onNewListCreated)
+            viewModel.createTierList(defaultListTitle, defaultTierCaptions, onNewListCreated, draft = true)
         }
     }
 
@@ -149,7 +149,7 @@ fun TierListsScreen(
         onCloseSelection = viewModel::exitSelection,
         onDeleteLists = viewModel::deleteTierLists,
         onUndoDelete = viewModel::restoreTierLists,
-        onCreateList = { viewModel.createTierList(defaultListTitle, defaultTierCaptions, onNewListCreated) },
+        onCreateList = { viewModel.createTierList(defaultListTitle, defaultTierCaptions, onNewListCreated, draft = true) },
         onCreateNamedList = { title -> viewModel.createTierList(title, defaultTierCaptions, onNewListCreated) },
         onToggleView = viewModel::toggleBoardsAsPictures,
         onSelectBoardSort = viewModel::selectBoardSort,
