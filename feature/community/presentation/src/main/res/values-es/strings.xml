@@ -152,6 +152,7 @@
     <string name="community_rank_it_yourself">Ordénala tú</string>
     <string name="community_drag_any_card">Arrastra una tarjeta</string>
     <string name="community_based_on">Basada en «%1$s» de %2$s</string>
+    <string name="community_list_source">Fuente: %1$s</string>
     <string name="explore_tab_explore">Explorar</string>
     <string name="explore_tab_following">Siguiendo</string>
     <string name="explore_title_community">Comunidad</string>

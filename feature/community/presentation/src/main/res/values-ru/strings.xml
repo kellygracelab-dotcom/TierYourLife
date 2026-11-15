@@ -154,6 +154,7 @@
     <string name="community_rank_it_yourself">Разложите сами</string>
     <string name="community_drag_any_card">Перетащите карточку</string>
     <string name="community_based_on">По мотивам «%1$s» от %2$s</string>
+    <string name="community_list_source">Источник: %1$s</string>
     <string name="explore_tab_explore">Обзор</string>
     <string name="explore_tab_following">Подписки</string>
     <string name="explore_title_community">Сообщество</string>

@@ -154,6 +154,7 @@
     <string name="community_rank_it_yourself">Ułóż sam</string>
     <string name="community_drag_any_card">Przeciągnij kartę</string>
     <string name="community_based_on">Na podstawie „%1$s” od %2$s</string>
+    <string name="community_list_source">Źródło: %1$s</string>
     <string name="explore_tab_explore">Odkrywaj</string>
     <string name="explore_tab_following">Obserwowane</string>
     <string name="explore_title_community">Społeczność</string>

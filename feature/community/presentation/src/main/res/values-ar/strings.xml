@@ -158,6 +158,7 @@
     <string name="community_rank_it_yourself">رتّبها بنفسك</string>
     <string name="community_drag_any_card">اسحب أي بطاقة</string>
     <string name="community_based_on">مبني على «%1$s» لـ %2$s</string>
+    <string name="community_list_source">المصدر: %1$s</string>
     <string name="explore_tab_explore">استكشاف</string>
     <string name="explore_tab_following">المتابَعة</string>
     <string name="explore_title_community">المجتمع</string>

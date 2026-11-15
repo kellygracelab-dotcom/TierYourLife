@@ -296,6 +296,7 @@ class CommunityListViewModel @Inject constructor(
                 ?: before?.follow,
             rankingCount = answer.summary.rankingCount,
             basedOn = answer.summary.basedOn,
+            source = answer.source?.takeIf { answer.summary.editorial },
             section = answer.summary.category,
             own = own,
             anonymous = answer.summary.anonymous,
