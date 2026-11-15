@@ -40,6 +40,15 @@ class RouteFromHandleTest {
     }
 
     @Test
+    fun theBoardRouteFromNewList_saysItIsFresh() {
+        val route = Route.TierDetail(tierListId = 42L, fresh = true)
+        val entry = entryFor(route)
+
+        assertEquals(entry.toRoute<Route.TierDetail>(), entry.savedStateHandle.tierDetailRoute())
+        assertEquals(route, entry.savedStateHandle.tierDetailRoute())
+    }
+
+    @Test
     fun theBoardRouteFromTheCover_keepsItsTier() {
         val route = Route.TierDetail(tierListId = 42L, focusTierId = 9L)
         val entry = entryFor(route)

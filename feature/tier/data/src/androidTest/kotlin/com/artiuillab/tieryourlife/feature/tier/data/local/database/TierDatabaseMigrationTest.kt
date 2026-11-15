@@ -73,6 +73,22 @@ class TierDatabaseMigrationTest {
     }
 
     @Test
+    fun migration22To23_keepsEveryBoard_noneADraft() {
+        helper.createDatabase(TEST_DB, 22).apply {
+            execSQL("INSERT INTO tier_lists (id, title, uid, ownerUid) VALUES (1, 'Untitled', 'board-1', 'alice')")
+            close()
+        }
+
+        val migrated = helper.runMigrationsAndValidate(TEST_DB, 23, true, MIGRATION_22_23)
+
+        migrated.query("SELECT title, draft FROM tier_lists").use {
+            check(it.moveToFirst())
+            assertEquals("Untitled", it.getString(0))
+            assertEquals(0, it.getInt(1))
+        }
+    }
+
+    @Test
     fun migration20To21_keepsEveryCover_centred() {
         helper.createDatabase(TEST_DB, 20).apply {
             execSQL("INSERT INTO tier_lists (id, title, uid, ownerUid, coverImageUrl) VALUES (1, 'Animals', 'board-1', 'alice', 'https://i/fox.jpg')")

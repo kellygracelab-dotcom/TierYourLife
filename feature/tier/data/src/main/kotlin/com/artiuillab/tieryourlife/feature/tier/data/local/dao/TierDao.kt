@@ -216,8 +216,8 @@ interface TierDao {
     // The captions come from the caller: they are shown to the reader, so they
     // belong to a screen's resources and follow the language it is drawn in.
     @Transaction
-    suspend fun createTierListWithDefaultTier(title: String, captions: List<String>, owner: String?): Long {
-        val tierListId = insertTierList(TierListEntity(title = title, ownerUid = owner))
+    suspend fun createTierListWithDefaultTier(title: String, captions: List<String>, owner: String?, draft: Boolean = false): Long {
+        val tierListId = insertTierList(TierListEntity(title = title, ownerUid = owner, draft = draft))
 
         val defaultTiers = listOf(
             TierEntity(
@@ -261,12 +261,29 @@ interface TierDao {
     @Query("SELECT * FROM active_tier_lists WHERE id = :id")
     suspend fun getTierListById(id: Long): TierListEntity?
 
-    @Query("SELECT * FROM active_tier_lists WHERE ownerUid IS :owner ORDER BY id ASC")
+    @Query("SELECT * FROM active_tier_lists WHERE ownerUid IS :owner AND draft = 0 ORDER BY id ASC")
     suspend fun getAllTierLists(owner: String?): List<TierListEntity>
 
     @Transaction
-    @Query("SELECT * FROM active_tier_lists WHERE ownerUid IS :owner ORDER BY id ASC")
+    @Query("SELECT * FROM active_tier_lists WHERE ownerUid IS :owner AND draft = 0 ORDER BY id ASC")
     suspend fun getAllTierListsWithTiers(owner: String?): List<TierListWithTiers>
+
+    /** Only one New list is ever open; a draft left by a closed app is nothing anyone made. */
+    @Query("DELETE FROM tier_lists WHERE draft = 1")
+    suspend fun dropDrafts()
+
+    /** A draft with something done on it becomes a board like any other. Not watched by the edited-at trigger. */
+    @Query("UPDATE tier_lists SET draft = 0 WHERE id = :id")
+    suspend fun keepDraft(id: Long)
+
+    @Query("DELETE FROM tier_lists WHERE id = :id AND draft = 1")
+    suspend fun discardDraft(id: Long): Int
+
+    @Transaction
+    suspend fun createDraft(title: String, captions: List<String>, owner: String?): Long {
+        dropDrafts()
+        return createTierListWithDefaultTier(title, captions, owner, draft = true)
+    }
 
     @Query(
         """
