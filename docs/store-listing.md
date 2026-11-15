@@ -2,7 +2,9 @@
 
 Drawn by `StoreListingScreenshotTest`. In the light theme: a new board's five tiers, all full; the
 same board with a card held up over the top row; a game's duel; a list's Rankings sheet; the Food
-section with its topics; then a board, a board with its pool, Your lists, Community and Settings.
+section with its topics; one list as its author placed it and as a reader did (`rankings-a`,
+`rankings-b`, with the bar naming whose rows, and `-rows` without it, all five tiers in frame); then a
+board, a board with its pool, Your lists, Community and Settings.
 The dark theme repeats the last eight for comparison. Files are named `light-N-…` and `dark-N-…`.
 
 Only pictures made for the app go on a card: the fruit and vegetables in
@@ -31,4 +33,5 @@ They are not kept in the repository; the copy uploaded to Play Console lives wit
 materials outside it.
 
 To change a picture, edit the script and run `python draw_pictures.py <folder>`; it writes 400×600
-PNGs.
+PNGs, and for the topics 1280×800 ones (`topic-*.png`) with three whole drawings each, since a topic's
+tile is 16:10 and crops a single drawing to a slice.

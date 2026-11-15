@@ -210,18 +210,48 @@ class StoreListingScreenshotTest {
         "section" -> SectionScreenContent(
             state = SectionUiState(
                 sectionId = ListCategory.Food.id,
-                section = Section.builtIn(ListCategory.Food).copy(listCount = 36),
+                section = Section.builtIn(ListCategory.Food).copy(listCount = foodLists().size),
                 countsKnown = true,
                 topicsKnown = true,
-                topics = listOf(
-                    topic("fruit", "Fruit", "mango"),
-                    topic("vegetables", "Vegetables", "carrot"),
-                    topic("soup", "Soup", "tomato"),
-                    topic("picnic", "Picnic", "watermelon"),
-                ),
+                topics = listOf("Fruit", "Vegetables", "Soup", "Picnic", "Berries", "Breakfast").map { name ->
+                    val id = name.lowercase()
+                    topic(id, name, "topic-$id")
+                },
                 feed = FeedPane(phase = FeedPhase.Ready, lists = foodLists()),
             ),
             onBack = {},
+        )
+
+        "rankings-a", "rankings-a-rows" -> CommunityListScreenContent(
+            state = CommunityListUiState.Success(
+                list = olenasFruit(withPool = !name.endsWith("-rows")),
+                authorName = "Olena M.",
+                authorUid = "u1",
+                listId = "1",
+                signedIn = true,
+                rankingCount = 4,
+            ),
+            onBack = {},
+            onMoveItem = { _, _, _ -> },
+            onSave = {},
+            onRetry = {},
+        )
+
+        "rankings-b", "rankings-b-rows" -> CommunityListScreenContent(
+            state = CommunityListUiState.Success(
+                list = olenasFruit(withPool = !name.endsWith("-rows")),
+                authorName = "Olena M.",
+                authorUid = "u1",
+                listId = "1",
+                signedIn = true,
+                rankingCount = 4,
+                chosenRanking = ranking("taras", "Taras", daysAgo = 1, liked = true),
+                theirs = tarasFruit(withPool = !name.endsWith("-rows")),
+            ),
+            onBack = {},
+            onMoveItem = { _, _, _ -> },
+            onSave = {},
+            onRetry = {},
         )
 
         "rankings" -> CommunityListScreenContent(
@@ -349,6 +379,37 @@ class StoreListingScreenshotTest {
         ),
     )
 
+    /** Ten fruit in five full tiers, as their author placed them; an empty pool brings the bar that says whose rows these are. */
+    private fun olenasFruit(withPool: Boolean) = fruitRows(
+        withPool,
+        listOf("Mango", "Strawberry"), listOf("Cherries", "Peach"), listOf("Watermelon", "Kiwi"),
+        listOf("Banana", "Orange"), listOf("Grapes", "Lemon"),
+    )
+
+    /** The same ten as a reader placed them: mango and banana swap ends, and most move. */
+    private fun tarasFruit(withPool: Boolean) = fruitRows(
+        withPool,
+        listOf("Banana", "Grapes"), listOf("Kiwi", "Lemon"), listOf("Strawberry", "Peach"),
+        listOf("Mango", "Cherries"), listOf("Orange", "Watermelon"),
+    )
+
+    private fun fruitRows(withPool: Boolean, vararg rows: List<String>): TierList {
+        val bands = listOf(
+            listOf("S", "#B03A32", "#F1948C", "Perfect"), listOf("A", "#C06A25", "#E9A867", "Great"),
+            listOf("B", "#A98B1F", "#D8C05A", "Good"), listOf("C", "#3F7F55", "#7FC393", "Fine"),
+            listOf("D", "#3C6E99", "#86B8DE", "Meh"),
+        )
+        val ids = rows.flatMap { it }.sorted().withIndex().associate { (i, name) -> name to 71L + i }
+        return TierList(
+            id = 6,
+            title = "Fruit, ranked honestly",
+            tiers = rows.mapIndexed { index, names ->
+                val (label, light, dark, caption) = bands[index]
+                tier(index + 1L, label, light, dark, caption, names.map { item(ids.getValue(it), it, it.lowercase()) })
+            } + listOfNotNull(pool(emptyList()).takeIf { withPool }),
+        )
+    }
+
     private fun soupBoard() = TierList(
         id = 2,
         title = "What goes in the soup",
@@ -425,7 +486,7 @@ class StoreListingScreenshotTest {
         const val HOLD_MILLIS = 600L
         const val STEP_MILLIS = 16L
         const val DRAG_STEPS = 20
-        val SCREENS = listOf("hero-board", "drag", "game", "rankings", "section", "board", "pool", "lists", "community", "settings")
+        val SCREENS = listOf("hero-board", "drag", "game", "rankings", "section", "rankings-a", "rankings-b", "rankings-a-rows", "rankings-b-rows", "board", "pool", "lists", "community", "settings")
             .map { Shot(it, dark = false) } +
             listOf("board", "settings", "lists", "pool", "community", "game", "section", "rankings").map { Shot(it, dark = true) }
     }
