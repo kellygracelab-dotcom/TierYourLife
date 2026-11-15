@@ -288,6 +288,16 @@ class PublishRequestTest {
     }
 
     @Test
+    fun `the pool goes out in the order its owner put it in`() {
+        val pool = listOf(TierItem(7, "Up", null), TierItem(5, "Dune", null), TierItem(6, "Heat", null))
+        val reordered = board.copy(tiers = board.tiers.dropLast(1) + tier(30, "Pool", *pool.toTypedArray(), pool = true))
+
+        val request = reordered.toRequest(Pictures, uploaded = emptySet())
+
+        assertEquals(listOf("Up", "Dune", "Heat"), request.items.filter { it.tierIndex == null }.map { it.title })
+    }
+
+    @Test
     fun `a published list comes back with its tiers, cards and the author's arrangement`() {
         val dto = PublishedListDto(
             id = "p1",

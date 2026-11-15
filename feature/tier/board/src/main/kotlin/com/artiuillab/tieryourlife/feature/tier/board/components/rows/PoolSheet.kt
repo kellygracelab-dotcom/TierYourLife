@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,10 +21,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,19 +34,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -52,6 +60,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -68,6 +77,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TileScroll
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import kotlinx.coroutines.isActive
 
 /** A pull past this on the handle changes the sheet's state; less is a wobble. */
 private val SHEET_PULL_THRESHOLD = 24.dp
@@ -77,6 +87,9 @@ private val POOL_TILE_WIDTH = 52.dp
 private val POOL_TILE_HEIGHT = 76.dp
 private val DOCKED_GAP = 10.dp
 private val DOCKED_ADD_FIELD_WIDTH = 300.dp
+private val STRIP_GAP = 10.dp
+private val STRIP_SCROLL_EDGE = 48.dp
+private const val STRIP_SCROLL_SPEED_DP_PER_SEC = 600
 
 /**
  * The pool as a sheet docked under the rows: folded, a strip with the count,
@@ -251,10 +264,18 @@ private fun PoolCards(
     onDoubleTap: (itemId: Long) -> Unit,
 ) {
     val listState = rememberLazyListState()
+    val slot = if (dragController.isDragging && dragController.hoveredTierId == pool.id) dragController.hoverIndex else null
+    val liftedId = dragController.draggedPayload?.itemId
+    val entries = poolEntries(pool.items, slot, liftedId, last = false)
+    var rowBounds by remember { mutableStateOf(Rect.Zero) }
 
     SideEffect {
         dragController.registerItemsRowMeta(pool.id, listState, pool.items.map { it.id })
     }
+    HoldPlaceWhileReordering(entries) {
+        listState.requestScrollToItem(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset)
+    }
+    ScrollStripNearItsEnds(listState, rowBounds, dragController, pool.id)
 
     // Folded, the row is gone and a drop goes to the front of the pool by the
     // grid rule; open, it lands where the finger points along the row.
@@ -262,31 +283,86 @@ private fun PoolCards(
         onDispose { dragController.unregisterItemsRow(pool.id) }
     }
 
-    ProvideTextCardRoom(pool.items, POOL_TILE_WIDTH, POOL_TILE_HEIGHT, 10.dp) {
+    ProvideTextCardRoom(pool.items, POOL_TILE_WIDTH, POOL_TILE_HEIGHT, STRIP_GAP) {
         LazyRow(
             state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .onGloballyPositioned { coordinates -> dragController.registerItemsRowBounds(pool.id, coordinates.boundsInRoot()) }
+                .onGloballyPositioned { coordinates ->
+                    rowBounds = coordinates.boundsInRoot()
+                    dragController.registerItemsRowBounds(pool.id, rowBounds)
+                }
                 .testTag(TierDetailTestTags.POOL_ITEMS),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            // Each card brings its own gap, so the lifted one, which takes no room, leaves none.
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp - STRIP_GAP),
         ) {
-            items(pool.items, key = { it.id }) { item ->
-                DraggableTile(
-                    item = item,
-                    sourceTierId = pool.id,
-                    width = POOL_TILE_WIDTH,
-                    height = POOL_TILE_HEIGHT,
-                    dragController = dragController,
-                    onMoveItem = onMoveItem,
-                    onDeleteItem = onDeleteItem,
-                    onDoubleTap = onDoubleTap,
-                    scroll = TileScroll.Sideways,
-                )
+            items(entries, key = { it.key }) { entry ->
+                when (entry) {
+                    PoolEntry.Slot -> CardSlot(POOL_TILE_WIDTH, POOL_TILE_HEIGHT, Modifier.padding(end = STRIP_GAP))
+                    is PoolEntry.Card -> DraggableTile(
+                        item = entry.item,
+                        sourceTierId = pool.id,
+                        width = POOL_TILE_WIDTH,
+                        height = POOL_TILE_HEIGHT,
+                        dragController = dragController,
+                        onMoveItem = onMoveItem,
+                        onDeleteItem = onDeleteItem,
+                        modifier = Modifier.padding(end = if (slot != null && entry.item.id == liftedId) 0.dp else STRIP_GAP),
+                        onDoubleTap = onDoubleTap,
+                        collapseWhileLifted = slot != null,
+                        scroll = TileScroll.Sideways,
+                    )
+                }
             }
         }
     }
+}
+
+/** A card held near either end of the strip scrolls it, faster toward the edge, as the board does near its top and bottom. */
+@Composable
+private fun ScrollStripNearItsEnds(listState: LazyListState, rowBounds: Rect, dragController: TierDragController, poolId: Long) {
+    val density = LocalDensity.current
+    val edge = with(density) { STRIP_SCROLL_EDGE.toPx() }
+    val fastest = with(density) { STRIP_SCROLL_SPEED_DP_PER_SEC.dp.toPx() }
+    val rightToLeft = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val speed = {
+        val pointer = dragController.pointerPositionInRoot
+        val held = dragController.draggedPayload != null && dragController.hoveredTierId == poolId
+        if (!held || pointer.y !in rowBounds.top..rowBounds.bottom) {
+            0f
+        } else {
+            val toRight = stripEdgeSpeed(pointer.x - rowBounds.left, rowBounds.right - pointer.x, edge, fastest)
+            val forward = if (rightToLeft) -toRight else toRight
+            when {
+                forward < 0f && !listState.canScrollBackward -> 0f
+                forward > 0f && !listState.canScrollForward -> 0f
+                else -> forward
+            }
+        }
+    }
+    val scrolling by remember(listState, rowBounds) { derivedStateOf { speed() != 0f } }
+    LaunchedEffect(scrolling) {
+        if (!scrolling) return@LaunchedEffect
+        var last = -1L
+        while (isActive) {
+            val delta = withFrameNanos { now ->
+                val seconds = if (last < 0L) 0f else (now - last) / 1_000_000_000f
+                last = now
+                speed() * seconds
+            }
+            if (delta != 0f) {
+                listState.scrollBy(delta)
+                dragController.refreshHover()
+            }
+        }
+    }
+}
+
+/** Toward the right is positive; nothing outside [edge] of either end. */
+internal fun stripEdgeSpeed(fromLeft: Float, fromRight: Float, edge: Float, fastest: Float): Float = when {
+    fromLeft < edge -> -fastest * (1f - fromLeft / edge).coerceIn(0f, 1f)
+    fromRight < edge -> fastest * (1f - fromRight / edge).coerceIn(0f, 1f)
+    else -> 0f
 }
 
 /** The phone's strip under the handle: the count, a glimpse while folded, Add. */
@@ -401,9 +477,16 @@ private fun PoolCardsWrapped(
     onDeleteItem: (itemId: Long) -> Unit,
     onDoubleTap: (itemId: Long) -> Unit,
 ) {
+    val gridState = rememberLazyGridState()
+    val slot = if (dragController.isDragging && dragController.hoveredTierId == pool.id) dragController.hoverIndex else null
+    val entries = poolEntries(pool.items, slot, dragController.draggedPayload?.itemId)
     SideEffect { dragController.unregisterItemsRow(pool.id) }
+    HoldPlaceWhileReordering(entries) {
+        gridState.requestScrollToItem(gridState.firstVisibleItemIndex, gridState.firstVisibleItemScrollOffset)
+    }
     ProvideTextCardRoom(pool.items, POOL_TILE_WIDTH, POOL_TILE_HEIGHT, DOCKED_GAP) {
         LazyVerticalGrid(
+            state = gridState,
             columns = GridCells.FixedSize(POOL_TILE_WIDTH),
             modifier = Modifier
                 .fillMaxWidth()
@@ -413,18 +496,22 @@ private fun PoolCardsWrapped(
             horizontalArrangement = Arrangement.spacedBy(DOCKED_GAP),
             verticalArrangement = Arrangement.spacedBy(DOCKED_GAP),
         ) {
-            itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
-                DraggableTile(
-                    item = item,
-                    sourceTierId = pool.id,
-                    width = POOL_TILE_WIDTH,
-                    height = POOL_TILE_HEIGHT,
-                    dragController = dragController,
-                    onMoveItem = onMoveItem,
-                    onDeleteItem = onDeleteItem,
-                    onPositioned = { bounds -> dragController.registerTileBounds(pool.id, item.id, index, bounds) },
-                    onDoubleTap = onDoubleTap,
-                )
+            items(entries, key = { it.key }) { entry ->
+                when (entry) {
+                    PoolEntry.Slot -> CardSlot(POOL_TILE_WIDTH, POOL_TILE_HEIGHT)
+                    is PoolEntry.Card -> DraggableTile(
+                        item = entry.item,
+                        sourceTierId = pool.id,
+                        width = POOL_TILE_WIDTH,
+                        height = POOL_TILE_HEIGHT,
+                        dragController = dragController,
+                        onMoveItem = onMoveItem,
+                        onDeleteItem = onDeleteItem,
+                        onPositioned = { bounds -> dragController.registerTileBounds(pool.id, entry.item.id, entry.index, bounds) },
+                        onDoubleTap = onDoubleTap,
+                        collapseWhileLifted = slot != null,
+                    )
+                }
             }
         }
     }

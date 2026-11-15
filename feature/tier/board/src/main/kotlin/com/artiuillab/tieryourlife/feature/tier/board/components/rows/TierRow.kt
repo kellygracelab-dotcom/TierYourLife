@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
@@ -58,7 +57,6 @@ import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.ROW_HOVER_TINT_ALPHA
-import com.artiuillab.tieryourlife.feature.tier.board.common.dashedBorder
 import com.artiuillab.tieryourlife.feature.tier.board.common.rowTintFor
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.DRAG_LONG_PRESS_TIMEOUT_MILLIS
@@ -293,7 +291,7 @@ fun TierRow(
                     } else {
                         null
                     },
-                    slotContent = { DropSlot(rowDensity) },
+                    slotContent = { CardSlot(rowDensity.tileWidth, rowDensity.tileHeight) },
                     modifier = Modifier
                         .weight(1f)
                         .padding(rowDensity.padding)
@@ -344,16 +342,5 @@ private fun TierRowDarkPreview() = TierYourLifeTheme(true) {
         onDeleteItem = {},
         onReorderTiers = {},
         onDeleteTier = {},
-    )
-}
-
-/** The place a lifted card would land: its own size, dashed. */
-@Composable
-private fun DropSlot(rowDensity: TierRowDensity) {
-    Box(
-        Modifier
-            .size(rowDensity.tileWidth, rowDensity.tileHeight)
-            .dashedBorder(width = 2.dp, color = MaterialTheme.colorScheme.primary, cornerRadius = 6.dp)
-            .testTag(TierDetailTestTags.DROP_SLOT),
     )
 }

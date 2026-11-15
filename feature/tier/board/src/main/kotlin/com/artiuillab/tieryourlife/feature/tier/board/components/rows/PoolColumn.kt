@@ -18,7 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
@@ -138,7 +139,6 @@ fun PoolColumn(
     val collapsed = choice ?: (count == 0)
     val choose: (Boolean) -> Unit = { fold -> if (side != null) sideChoice = fold else memory.poolColumnCollapsed = fold }
     val openWidth = openColumnWidth(roomy, indexBeside)
-    val gap = if (roomy) 10.dp else 8.dp
     val width by animateDpAsState(if (collapsed) POOL_STRIP_WIDTH else openWidth, tween(WIDTH_MILLIS), label = "pool column width")
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
     val lifting = dragController.draggedPayload != null && !readOnly
@@ -188,29 +188,63 @@ fun PoolColumn(
             onAddClick = onAddClick,
             onGenerateClick = onGenerateClick,
         )
-        ProvideTextCardRoom(pool.items, POOL_TILE_WIDTH, POOL_TILE_HEIGHT, gap) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(if (roomy) 4 else 3),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f, fill = false)
-                    .testTag(TierDetailTestTags.POOL_ITEMS),
-                contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(gap, Alignment.CenterHorizontally),
-                verticalArrangement = Arrangement.spacedBy(gap),
-            ) {
-                itemsIndexed(pool.items, key = { _, item -> item.id }) { index, item ->
-                    Box(contentAlignment = Alignment.Center) {
-                        DraggableTile(
-                            item = item,
+        PoolColumnCards(
+            pool = pool,
+            roomy = roomy,
+            slot = if (isHovered) dragController.hoverIndex else null,
+            dragController = dragController,
+            onMoveItem = onMoveItem,
+            onDeleteItem = onDeleteItem,
+            onDoubleTap = onDoubleTap,
+            modifier = Modifier.weight(1f, fill = false),
+        )
+    }
+}
+
+/** The open column's cards, three or four abreast; while a card hovers, its slot takes a cell and the lifted card goes last. */
+@Composable
+private fun PoolColumnCards(
+    pool: Tier,
+    roomy: Boolean,
+    slot: Int?,
+    dragController: TierDragController,
+    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDeleteItem: (itemId: Long) -> Unit,
+    onDoubleTap: (itemId: Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val gap = if (roomy) 10.dp else 8.dp
+    val gridState = rememberLazyGridState()
+    val entries = poolEntries(pool.items, slot, dragController.draggedPayload?.itemId)
+    HoldPlaceWhileReordering(entries) {
+        gridState.requestScrollToItem(gridState.firstVisibleItemIndex, gridState.firstVisibleItemScrollOffset)
+    }
+    ProvideTextCardRoom(pool.items, POOL_TILE_WIDTH, POOL_TILE_HEIGHT, gap) {
+        LazyVerticalGrid(
+            state = gridState,
+            columns = GridCells.Fixed(if (roomy) 4 else 3),
+            modifier = modifier
+                .fillMaxWidth()
+                .testTag(TierDetailTestTags.POOL_ITEMS),
+            contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(gap, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(gap),
+        ) {
+            items(entries, key = { it.key }) { entry ->
+                Box(contentAlignment = Alignment.Center) {
+                    when (entry) {
+                        PoolEntry.Slot -> CardSlot(POOL_TILE_WIDTH, POOL_TILE_HEIGHT)
+                        is PoolEntry.Card -> DraggableTile(
+                            item = entry.item,
                             sourceTierId = pool.id,
                             width = POOL_TILE_WIDTH,
                             height = POOL_TILE_HEIGHT,
                             dragController = dragController,
                             onMoveItem = onMoveItem,
                             onDeleteItem = onDeleteItem,
-                            onPositioned = { bounds -> dragController.registerTileBounds(pool.id, item.id, index, bounds) },
+                            onPositioned = { bounds -> dragController.registerTileBounds(pool.id, entry.item.id, entry.index, bounds) },
                             onDoubleTap = onDoubleTap,
+                            collapseWhileLifted = slot != null,
                         )
                     }
                 }
