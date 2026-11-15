@@ -85,11 +85,14 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUM
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PlayButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolColumn
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PublishButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.everyCardPlaced
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishingOf
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
@@ -301,6 +304,8 @@ private fun TierScreenBody(
     var listSettingsVisible by rememberSaveable { mutableStateOf(false) }
 
     BackHandler(enabled = listSettingsVisible) { listSettingsVisible = false }
+    // A publish from the bar that needs a section asks for it where it is chosen.
+    LaunchedEffect(actions.categoryWanted) { if (actions.categoryWanted) listSettingsVisible = true }
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -333,6 +338,7 @@ private fun TierScreenBody(
             onSetAnonymous = actions.onSetAnonymous,
             publishedIsBehind = actions.publishedIsBehind,
             onUpdatePublished = actions.onUpdatePublished,
+            onPublish = actions.onPublish,
             onSetCategory = actions.onSetCategory,
             onCategoryNotChosen = actions.onCategoryNotChosen,
             onProposeSection = actions.onProposeSection,
@@ -550,6 +556,7 @@ private fun TierScreenBody(
                 play = actions.onPlay?.takeUnless { glanceable }?.let { onPlay ->
                     PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
                 },
+                publish = publishButton(list, actions, labelled = maxWidth >= WindowShape.MediumFrom)?.takeUnless { glanceable || readOnly },
             )
         }
         val board: @Composable (Modifier) -> Unit = { boardModifier ->
@@ -873,4 +880,16 @@ private fun RowChangeTick(dragController: TierDragController) {
         }
         last[0] = if (lifted) hovered else null
     }
+}
+
+private fun publishButton(list: TierList, actions: TierDetailActions, labelled: Boolean): PublishButton? {
+    val onPublish = actions.onPublish ?: return null
+    val kind = publishingOf(list, actions.publishedIsBehind) ?: return null
+    return PublishButton(
+        kind = kind,
+        primary = everyCardPlaced(list),
+        labelled = labelled,
+        busy = actions.publishing,
+        onClick = { onPublish(kind) },
+    )
 }

@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.board
 object TierDetailTestTags {
     const val MORE = "community_list_more"
     const val PLAY = "tier_detail_play"
+    const val PUBLISH = "tier_detail_publish"
     const val LOADING = "tier_detail_loading"
     const val HEADER_TITLE = "tier_detail_header_title"
     const val ADD_CHIP = "tier_detail_add_chip"
@@ -28,7 +29,8 @@ object TierDetailTestTags {
     const val RANKED_POOL_COLLAPSED = "tier_detail_ranked_pool_collapsed"
     const val RANKED_POOL_ITEMS = "tier_detail_ranked_pool_items"
     const val UPDATE_PUBLISHED = "tier_detail_update_published"
-    const val PUBLIC_SWITCH = "tier_detail_public_switch"
+    const val SETTINGS_PUBLISH = "tier_detail_settings_publish"
+    const val SETTINGS_TAKE_DOWN = "tier_detail_settings_take_down"
     const val ANONYMOUS_SWITCH = "tier_detail_anonymous_switch"
     const val PROPOSE_SECTION = "tier_detail_propose_section"
     const val PUBLISH_ERROR = "tier_detail_publish_error"

@@ -192,4 +192,10 @@
     <string name="list_settings_public_changed_elsewhere">Список изменился на другом устройстве. Повторите публикацию.</string>
     <string name="list_settings_cover_adjust">Настроить положение</string>
     <string name="list_settings_cover_adjust_sub">Какая часть картинки видна</string>
+    <string name="board_publish">Опубликовать</string>
+    <string name="board_publish_update">Обновить</string>
+    <string name="board_publish_ranking">Показать в рейтингах</string>
+    <string name="list_settings_published_status">Опубликован ✓</string>
+    <string name="list_settings_ranked_status">В рейтингах ✓</string>
+    <string name="list_settings_take_down">Снять</string>
 </resources>

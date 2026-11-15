@@ -124,19 +124,18 @@ class TierDetailViewModelTest {
         assertEquals("published-1", repository.publishedIds.single().second)
     }
 
+    // Danylo 16.11: the button explains beforehand, so a new list goes out on the tap, with no panel to confirm.
     @Test
-    fun newPublicationWaitsForExplicitServerPreviewConfirmation() = runBlocking {
+    fun aNewPublicationGoesOutOnTheTap() = runBlocking {
         val community = FakeCommunityRepositoryForDetail()
         val viewModel = TierDetailViewModel(FakeTierRepository(listWithOneCard()), community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
 
         viewModel.setPublic(true)
-        val preview = viewModel.publicationState.firstWithin { it.preview != null && !it.busy }.preview!!
-        assertEquals(PublicationKind.NewList(), preview.kind)
-        assertTrue(community.published.isEmpty())
-        viewModel.confirmPublication()
         community.sent.firstWithin { it.isNotEmpty() }
+
         assertEquals(1, community.published.size)
+        assertNull(viewModel.publicationState.value.preview)
     }
 
     @Test
@@ -491,9 +490,9 @@ class TierDetailViewModelTest {
         assertEquals("street-food", community.published.single().category)
     }
 
-    // A category edit changes the snapshot: the new server preview still needs its own confirmation.
+    // The button said what would happen, so the section it asked for finishes the publish with nothing more to confirm.
     @Test
-    fun choosingTheCategoryItAskedFor_requiresFreshPreviewConfirmation() = runBlocking {
+    fun choosingTheCategoryItAskedFor_publishesWithIt() = runBlocking {
         val community = FakeCommunityRepositoryForDetail()
         val viewModel = TierDetailViewModel(
             FakeTierRepository(listWithOneCard().copy(category = null)),
@@ -504,11 +503,10 @@ class TierDetailViewModelTest {
         viewModel.board.firstWithin { it is TierDetailUiState.Success }
         viewModel.publishAfterPreview()
 
-        viewModel.setCategory(ListCategory.Food.id)
-        // The preview of the board with its category: the one asked for before it is stale, and confirming it publishes nothing.
-        viewModel.publicationState.firstWithin { it.preview?.list?.category == ListCategory.Food.id }
+        assertTrue(viewModel.screen.value.publish.categoryWanted)
         assertTrue(community.published.isEmpty())
-        viewModel.confirmPublication()
+
+        viewModel.setCategory(ListCategory.Food.id)
         // Waiting for the published id rather than for the pending flag to
         // clear: the flag has not been raised yet when setCategory returns.
         viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.publishedId != null }
