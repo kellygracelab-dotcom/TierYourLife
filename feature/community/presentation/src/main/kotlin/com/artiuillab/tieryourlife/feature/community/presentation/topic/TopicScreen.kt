@@ -46,6 +46,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.navigation.Com
 import com.artiuillab.tieryourlife.feature.community.presentation.section.ListsPage
 import com.artiuillab.tieryourlife.feature.community.presentation.section.PageBody
 import com.artiuillab.tieryourlife.feature.community.presentation.section.PageHead
+import com.artiuillab.tieryourlife.feature.community.presentation.section.PageSearch
+import com.artiuillab.tieryourlife.feature.community.presentation.section.PageSearchCalls
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionArt
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionLoading
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SortRow
@@ -72,9 +74,14 @@ fun TopicScreen(
     onOpenList: (CommunityRoute.CommunityList) -> Unit,
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onSignIn: () -> Unit = {},
+    onOpenTopic: (CommunityRoute.Topic) -> Unit = {},
+    onOpenSection: (CommunityRoute.Section) -> Unit = {},
     viewModel: TopicViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val query by viewModel.search.query.collectAsStateWithLifecycle()
+    val results by viewModel.search.results.collectAsStateWithLifecycle()
+    val within by viewModel.search.within.collectAsStateWithLifecycle()
     SignInToFollow(viewModel.signInRequests, onSignIn)
     TopicScreenContent(
         state = state,
@@ -92,6 +99,21 @@ fun TopicScreen(
         ),
         userMessages = viewModel.userMessages,
         followRefusals = viewModel.followRefusals,
+        search = PageSearch(
+            query = query,
+            results = results,
+            within = within?.let { state.name },
+            calls = PageSearchCalls(
+                onEnter = viewModel::enterSearch,
+                onQueryChange = viewModel.search::update,
+                onExit = viewModel.search::exit,
+                onWiden = viewModel.search::widen,
+                onRetry = viewModel.search::retry,
+                onLoadMore = viewModel.search::loadMore,
+                onOpenTopic = { onOpenTopic(CommunityRoute.Topic.of(it)) },
+                onOpenSection = { onOpenSection(CommunityRoute.Section(it)) },
+            ),
+        ),
     )
 }
 
@@ -115,6 +137,7 @@ fun TopicScreenContent(
     actions: TopicActions = TopicActions(),
     userMessages: Flow<UserMessage> = emptyFlow(),
     followRefusals: Flow<FollowRefusal> = emptyFlow(),
+    search: PageSearch? = null,
 ) {
     var actionsFor by remember { mutableStateOf<PublishedListSummary?>(null) }
     var reportFor by remember { mutableStateOf<PublishedListSummary?>(null) }
@@ -142,6 +165,7 @@ fun TopicScreenContent(
         onToggleFollow = actions.onToggleFollow.takeIf { topic?.status == TopicStatus.Approved },
         overline = if (topic?.pending == true) stringResource(R.string.topic_waiting) else section.label(),
         backdrop = { TopicBackdrop(section, state.picture, state.pictureFocus, answered = topic != null || state.headerFailed, it) },
+        onSearch = search?.calls?.onEnter,
     )
     val feed = state.feed.asPane()
     val cards = CardActions(open) { actionsFor = it }
@@ -157,7 +181,7 @@ fun TopicScreenContent(
         },
     )
     Box(Modifier.fillMaxSize()) {
-        ListsPage(head, body, onBack, snackbar, TopicTestTags.SCREEN)
+        ListsPage(head, body, onBack, snackbar, TopicTestTags.SCREEN, search, cards)
         ActionFailedSnackbar(userMessages)
     }
 

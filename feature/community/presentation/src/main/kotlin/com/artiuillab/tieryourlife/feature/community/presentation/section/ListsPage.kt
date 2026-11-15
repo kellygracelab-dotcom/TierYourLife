@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +40,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -47,7 +51,9 @@ import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.SearchIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
+import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.BackArrowIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CardActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.EnterAlwaysColumn
@@ -79,6 +85,7 @@ internal class PageHead(
     val onToggleFollow: (() -> Unit)?,
     val overline: String? = null,
     val backdrop: @Composable (Modifier) -> Unit,
+    val onSearch: (() -> Unit)? = null,
 )
 
 /** A page's own lists, below its header and under their heading. */
@@ -95,10 +102,29 @@ internal class PageBody(
  * a collapsing header, one short bar, or the cover's rows.
  */
 @Composable
-internal fun ListsPage(head: PageHead, body: PageBody, onBack: () -> Unit, snackbar: SnackbarHostState, screenTag: String) {
+internal fun ListsPage(
+    head: PageHead,
+    body: PageBody,
+    onBack: () -> Unit,
+    snackbar: SnackbarHostState,
+    screenTag: String,
+    search: PageSearch? = null,
+    cards: CardActions = CardActions(body.onOpenList) {},
+) {
     Surface(Modifier.fillMaxSize().testTag(screenTag), color = MaterialTheme.colorScheme.surface) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
             val layout = homeLayoutFor(currentWindowShape, maxHeight)
+            when {
+                search?.query != null -> PageSearchPane(search, layout, cards)
+                else -> PageLayout(head, body, layout, onBack)
+            }
+            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
+        }
+    }
+}
+
+@Composable
+private fun PageLayout(head: PageHead, body: PageBody, layout: HomeLayout, onBack: () -> Unit) {
             when (layout) {
                 HomeLayout.Cover -> CoverSection(head.title, body.feed, onBack, body.onOpenList, body.callbacks.onRetry, body.callbacks.onLoadMore)
                 HomeLayout.CompactHeight -> EnterAlwaysColumn(
@@ -110,9 +136,6 @@ internal fun ListsPage(head: PageHead, body: PageBody, onBack: () -> Unit, snack
 
                 else -> PageFeed(head, body, layout, headerShown = true, onBack = onBack)
             }
-            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
-        }
-    }
 }
 
 /** The grid: the header where there is one, then the page's own items. */
@@ -240,8 +263,22 @@ private fun CollapsingBar(head: PageHead, grid: LazyGridState, onBack: () -> Uni
                 overflow = TextOverflow.Ellipsis,
             )
             head.onToggleFollow?.let { FollowToggle(following = head.following, onClick = it, size = FollowSize.Compact) }
+        } else {
+            Spacer(Modifier.weight(1f))
         }
+        head.onSearch?.let { SearchButton(it, if (onImage) Color.White else MaterialTheme.colorScheme.onSurfaceVariant) }
     }
+}
+
+@Composable
+private fun SearchButton(onClick: () -> Unit, color: Color) {
+    val description = stringResource(R.string.section_search)
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .semantics { contentDescription = description }
+            .testTag(SectionTestTags.SEARCH_BUTTON),
+    ) { SearchIcon(color) }
 }
 
 /** A short window's one bar: back, the name, and Follow. It scrolls away with the lists. */
@@ -266,6 +303,7 @@ private fun CompactBar(head: PageHead, onBack: () -> Unit) {
                 overflow = TextOverflow.Ellipsis,
             )
             head.onToggleFollow?.let { FollowToggle(following = head.following, onClick = it, size = FollowSize.Compact) }
+            head.onSearch?.let { SearchButton(it, MaterialTheme.colorScheme.onSurfaceVariant) }
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }

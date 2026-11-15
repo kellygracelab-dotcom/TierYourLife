@@ -614,7 +614,7 @@ private fun SearchButton(onSearch: () -> Unit) {
 
 /** What was typed, answered by the server: cards, or a line saying there is nothing. */
 @Composable
-private fun SearchResultsGrid(
+internal fun SearchResultsGrid(
     results: SearchResults,
     query: String,
     layout: HomeLayout,
