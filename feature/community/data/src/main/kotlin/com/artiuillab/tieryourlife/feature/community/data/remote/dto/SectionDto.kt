@@ -14,6 +14,7 @@ data class SectionDto(
     val names: Map<String, String> = emptyMap(),
     val icon: String? = null,
     val pictureUrl: String? = null,
+    val pictureFocus: CoverFocusDto? = null,
     val tint: ThemePairDto? = null,
     val topicBg: ThemePairDto? = null,
     val topicIcon: ThemePairDto? = null,

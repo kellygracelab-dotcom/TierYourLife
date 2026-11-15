@@ -12,11 +12,13 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.coverFocus
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardRemoval
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.BoardConflictDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.CoverFocusDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptBoardRevisionDto
@@ -26,6 +28,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.toDomain
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.toDto
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupRefusal
@@ -628,6 +631,7 @@ class BoardSyncEngine @Inject constructor(
             coverImageUrl = board.coverImageUrl.takeIf { coverPictureId == null },
             coverImageUrls = board.coverImageUrls.toCoverImageUrls(),
             coverPictureId = coverPictureId?.let { JsonPrimitive(it) } ?: JsonNull,
+            coverFocus = board.coverFocus()?.let { CoverFocusDto(it.x, it.y, it.zoom) },
             authorName = board.authorName,
             publishedId = board.publishedId,
             takenFrom = board.takenFrom,
@@ -725,6 +729,11 @@ internal fun TierListEntity.keepingLocalFieldsOf(here: TierListEntity) = copy(
     ownerUid = here.ownerUid,
 )
 
+private val KeptBoardDto.keptFocus: CoverFocus?
+    get() = coverFocus?.takeIf { coverPictureId != null || coverImageUrl != null }
+        ?.let { CoverFocus(it.x, it.y, it.zoom).inRange() }
+        ?.takeUnless { it.isCentred }
+
 internal fun KeptBoardDto.toEntity(id: Long, uid: String, pathFor: (String) -> String) = TierListEntity(
     id = id,
     title = title,
@@ -736,6 +745,9 @@ internal fun KeptBoardDto.toEntity(id: Long, uid: String, pathFor: (String) -> S
     // As a card's picture: the path it will live at once fetched.
     coverImageUrl = coverPictureId?.let(pathFor) ?: coverImageUrl,
     coverImageUrls = coverImageUrls.toStoredCoverImageUrls(),
+    coverFocusX = keptFocus?.x,
+    coverFocusY = keptFocus?.y,
+    coverFocusZoom = keptFocus?.zoom,
     uid = uid,
     anonymous = anonymous,
     play = play?.toString(),

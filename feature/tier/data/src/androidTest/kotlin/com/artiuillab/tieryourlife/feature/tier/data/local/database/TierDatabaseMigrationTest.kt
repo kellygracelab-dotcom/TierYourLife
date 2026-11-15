@@ -48,6 +48,24 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // No cover had a part chosen before: every board keeps its cover and shows it from the centre.
+    @Test
+    fun migration20To21_keepsEveryCover_centred() {
+        helper.createDatabase(TEST_DB, 20).apply {
+            execSQL("INSERT INTO tier_lists (id, title, uid, ownerUid, coverImageUrl) VALUES (1, 'Animals', 'board-1', 'alice', 'https://i/fox.jpg')")
+            close()
+        }
+
+        val migrated = helper.runMigrationsAndValidate(TEST_DB, 21, true, MIGRATION_20_21)
+
+        migrated.query("SELECT title, coverImageUrl, coverFocusX, coverFocusY, coverFocusZoom FROM tier_lists").use {
+            check(it.moveToFirst())
+            assertEquals("Animals", it.getString(0))
+            assertEquals("https://i/fox.jpg", it.getString(1))
+            assertTrue("no focus", it.isNull(2) && it.isNull(3) && it.isNull(4))
+        }
+    }
+
     // Nothing said where a picture came from before: every card comes through as it was, without an attribution.
     @Test
     fun migration19To20_keepsEveryCard_withoutAnAttribution() {

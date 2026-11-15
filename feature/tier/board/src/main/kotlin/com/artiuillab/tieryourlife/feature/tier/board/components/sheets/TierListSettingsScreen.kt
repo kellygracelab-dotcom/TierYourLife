@@ -72,6 +72,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ReturnToPoolDialog
 import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
+import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.board.R
@@ -109,6 +110,7 @@ fun TierListSettingsScreenContent(
     /** Opens the proposal form, filing lists under the board's own section meanwhile; null where there is none. */
     onProposeSection: ((String?) -> Unit)? = null,
     onChooseCover: () -> Unit = {},
+    onAdjustCover: () -> Unit = {},
     onChooseTopic: () -> Unit = {},
     onAddCards: () -> Unit = {},
     onShare: () -> Unit = {},
@@ -175,7 +177,7 @@ fun TierListSettingsScreenContent(
                     // own art, so it stays available to a guest.
                     CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
                     TopicRow(topicName = list.topicName, newTopicName = list.newTopicName, onClick = onChooseTopic)
-                    CoverRow(chosen = list.coverImageUrl != null || list.coverImageUrls.isNotEmpty(), onClick = onChooseCover)
+                    CoverRows(list, onChooseCover = onChooseCover, onAdjustCover = onAdjustCover)
                     // Beside the cover: sharing is not publishing and needs no account.
                     ShareRow(onClick = onShare)
                     if (onReturnAllToPool != null) {
@@ -447,6 +449,24 @@ private fun CoverRow(chosen: Boolean, onClick: () -> Unit) {
         ),
         onClick = onClick,
         testTag = TierDetailTestTags.COVER_ROW,
+    )
+}
+
+@Composable
+private fun CoverRows(list: TierList, onChooseCover: () -> Unit, onAdjustCover: () -> Unit) {
+    CoverRow(chosen = list.coverImageUrl != null || list.coverImageUrls.isNotEmpty(), onClick = onChooseCover)
+    // Only a single picture has a part to choose; a collage and the cards' art have none.
+    if (list.coverImageUrl != null) AdjustCoverRow(onClick = onAdjustCover)
+}
+
+@Composable
+private fun AdjustCoverRow(onClick: () -> Unit) {
+    SettingsActionRow(
+        icon = { TuneIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+        title = stringResource(R.string.list_settings_cover_adjust),
+        subtitle = stringResource(R.string.list_settings_cover_adjust_sub),
+        onClick = onClick,
+        testTag = TierDetailTestTags.ADJUST_COVER_ROW,
     )
 }
 

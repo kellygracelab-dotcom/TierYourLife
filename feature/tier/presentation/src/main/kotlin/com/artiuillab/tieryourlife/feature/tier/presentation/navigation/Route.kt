@@ -17,6 +17,9 @@ sealed interface Route {
     data class CoverPicker(val tierListId: Long) : Route
 
     @Serializable
+    data class AdjustCover(val tierListId: Long) : Route
+
+    @Serializable
     data class TopicPicker(val tierListId: Long) : Route
 
     @Serializable
@@ -34,6 +37,8 @@ internal fun SavedStateHandle.tierDetailRoute() = Route.TierDetail(
 )
 
 internal fun SavedStateHandle.coverPickerRoute() = Route.CoverPicker(tierListId = required(Route.CoverPicker::tierListId.name))
+
+internal fun SavedStateHandle.adjustCoverRoute() = Route.AdjustCover(tierListId = required(Route.AdjustCover::tierListId.name))
 
 internal fun SavedStateHandle.topicPickerRoute() = Route.TopicPicker(tierListId = required(Route.TopicPicker::tierListId.name))
 

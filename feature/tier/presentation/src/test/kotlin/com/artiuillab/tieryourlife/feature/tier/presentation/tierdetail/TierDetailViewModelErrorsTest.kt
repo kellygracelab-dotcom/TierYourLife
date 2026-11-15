@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -137,6 +138,7 @@ private class FailingTierRepository(
     override suspend fun setPlay(id: Long, play: String?) = Unit
 
     override suspend fun setCover(id: Long, pictures: List<String>) = Unit
+    override suspend fun setCoverFocus(id: Long, focus: CoverFocus?) = Unit
     override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) = Unit
 
     override suspend fun getTierListById(id: Long): TierList? {

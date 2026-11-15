@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.domain
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
@@ -98,6 +99,7 @@ class RecordingTierRepository(
     }
 
     val covers = mutableListOf<Pair<Long, List<String>>>()
+    val coverFocuses = mutableListOf<Pair<Long, CoverFocus?>>()
 
     /** Every topic set, as (id, topicId, topicName, newTopicName). */
     val topics = mutableListOf<List<Any?>>()
@@ -108,6 +110,10 @@ class RecordingTierRepository(
 
     override suspend fun setCover(id: Long, pictures: List<String>) {
         covers += id to pictures
+    }
+
+    override suspend fun setCoverFocus(id: Long, focus: CoverFocus?) {
+        coverFocuses += id to focus
     }
 
     override suspend fun getTierListById(id: Long): TierList? = boards.firstOrNull { it.id == id }

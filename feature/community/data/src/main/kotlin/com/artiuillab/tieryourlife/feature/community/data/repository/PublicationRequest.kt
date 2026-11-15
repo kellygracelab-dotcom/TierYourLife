@@ -40,6 +40,7 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     category = category ?: ListCategory.Other.id,
     coverImageUrl = webPictureOf(coverImageUrl),
     coverPictureId = coverPictureIdOf(images)?.takeIf { it in uploaded },
+    coverFocus = coverFocus.takeIf { webPictureOf(coverImageUrl) != null || coverPictureIdOf(images) in uploaded }.toDto(),
     coverImageUrls = coverImageUrls.mapNotNull(::webPictureOf),
     topicId = topicId,
     // A name the server has not seen yet; once it has, the id above is what travels.

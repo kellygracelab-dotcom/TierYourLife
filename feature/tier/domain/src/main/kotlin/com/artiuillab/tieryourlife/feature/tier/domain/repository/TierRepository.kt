@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.domain.repository
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
@@ -84,6 +85,9 @@ interface TierRepository {
 
     /** No pictures leave the cover to the cards, one is the cover itself, two to six make a collage. */
     suspend fun setCover(id: Long, pictures: List<String>)
+
+    /** Which part of the single cover shows; null for the centre. A new cover starts from the centre again. */
+    suspend fun setCoverFocus(id: Long, focus: CoverFocus?)
 
     /** A known topic by id and name, a new one by name alone, or none; a known one leaves no draft behind. */
     suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?)

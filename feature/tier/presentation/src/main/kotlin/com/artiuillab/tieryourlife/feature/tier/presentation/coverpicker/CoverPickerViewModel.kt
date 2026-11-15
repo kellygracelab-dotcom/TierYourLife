@@ -88,7 +88,7 @@ class CoverPickerViewModel @Inject constructor(
                 val chosen = _state.value.chosen.map { picture -> if (fromGallery(picture)) repository.keepPicture(picture) else picture }
                 repository.setCover(tierListId, chosen)
             }
-            _state.update { it.copy(saving = false, saved = saved) }
+            _state.update { it.copy(saving = false, saved = saved, adjustNext = saved && it.chosen.size == 1) }
         }
     }
 }

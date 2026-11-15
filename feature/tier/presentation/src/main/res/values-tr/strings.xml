@@ -235,4 +235,11 @@
     <string name="add_to_list_to_pool">Havuza</string>
     <string name="add_to_list_added">“%1$s” listesine eklendi</string>
     <string name="add_to_list_sign_in">Bağlantıdan gelen görseller hesabında saklanır. Eklemek için TierYourLife’ta giriş yap ya da kartı görselsiz ekle.</string>
+    <string name="cover_adjust_title">Kapağı ayarla</string>
+    <string name="cover_adjust_zoom">Yakınlaştırma</string>
+    <string name="cover_adjust_preview">Önizleme</string>
+    <string name="cover_adjust_feed">Akış</string>
+    <string name="cover_adjust_header">Sayfa başlığı</string>
+    <string name="cover_adjust_close">Kapat</string>
+    <string name="cover_adjust_hint">Taşımak için sürükleyin, yakınlaştırmak için iki parmak kullanın</string>
 </resources>

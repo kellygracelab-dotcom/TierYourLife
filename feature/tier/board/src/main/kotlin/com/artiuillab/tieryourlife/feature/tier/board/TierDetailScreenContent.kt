@@ -337,6 +337,7 @@ private fun TierScreenBody(
             onCategoryNotChosen = actions.onCategoryNotChosen,
             onProposeSection = actions.onProposeSection,
             onChooseCover = actions.onChooseCover,
+            onAdjustCover = actions.onAdjustCover,
             onChooseTopic = actions.onChooseTopic,
             onAddCards = {
                 listSettingsVisible = false

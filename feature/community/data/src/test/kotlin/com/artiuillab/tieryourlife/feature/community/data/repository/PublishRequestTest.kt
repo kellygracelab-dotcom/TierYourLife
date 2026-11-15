@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.data.repository
 
 import com.artiuillab.tieryourlife.core.network.networkJson
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.CoverFocusDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedAttributionDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
@@ -10,12 +11,14 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedLi
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedTierDto
 import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.OwnPictures
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -51,6 +54,32 @@ class PublishRequestTest {
             tier(30, "Pool", TierItem(3, "Up", "file:///pictures/photo-3"), pool = true),
         ),
     )
+
+    @Test
+    fun `a moved cover goes out with its focus, a centred one as an explicit null`() {
+        val moved = board.copy(coverFocus = CoverFocus(0.5f, 0.15f, 2f)).toRequest(Pictures, uploaded = setOf("cover-1"))
+        val centred = networkJson.encodeToJsonElement(PublishListRequestDto.serializer(), board.toRequest(Pictures, uploaded = setOf("cover-1")))
+
+        assertEquals(CoverFocusDto(0.5f, 0.15f, 2f), moved.coverFocus)
+        assertEquals(JsonNull, centred.jsonObject["coverFocus"])
+    }
+
+    @Test
+    fun `a focus does not go out with a cover that did not`() {
+        val request = board.copy(coverFocus = CoverFocus(0.5f, 0.15f, 2f)).toRequest(Pictures, uploaded = emptySet())
+
+        assertNull(request.coverFocus)
+    }
+
+    @Test
+    fun `a list's focus comes back with its cover`() {
+        val summary = PublishedListSummaryDto(
+            id = "l1", title = "Films", authorName = "a", itemCount = 1,
+            coverImageUrl = poster, coverFocus = CoverFocusDto(0.25f, 0.8f, 2.75f),
+        ).toSummary()
+
+        assertEquals(CoverFocus(0.25f, 0.8f, 2.75f), summary.coverFocus)
+    }
 
     @Test
     fun `the pool is not published as a tier`() {

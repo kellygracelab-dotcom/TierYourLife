@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
@@ -73,6 +74,10 @@ internal class FakeTierRepository(
 
     override suspend fun setCover(id: Long, pictures: List<String>) {
         list = list.copy(coverImageUrl = pictures.singleOrNull(), coverImageUrls = pictures.takeIf { it.size > 1 }.orEmpty())
+    }
+
+    override suspend fun setCoverFocus(id: Long, focus: CoverFocus?) {
+        list = list.copy(coverFocus = focus)
     }
 
     val topicsSet = mutableListOf<List<Any?>>()

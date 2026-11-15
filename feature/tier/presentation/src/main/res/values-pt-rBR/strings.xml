@@ -249,4 +249,11 @@
     <string name="add_to_list_to_pool">Para o pool</string>
     <string name="add_to_list_added">Adicionado a “%1$s”</string>
     <string name="add_to_list_sign_in">Imagens de links ficam na sua conta. Entre no TierYourLife para adicioná-las, ou adicione o card sem imagem.</string>
+    <string name="cover_adjust_title">Ajustar capa</string>
+    <string name="cover_adjust_zoom">Zoom</string>
+    <string name="cover_adjust_preview">Prévia</string>
+    <string name="cover_adjust_feed">Feed</string>
+    <string name="cover_adjust_header">Cabeçalho</string>
+    <string name="cover_adjust_close">Fechar</string>
+    <string name="cover_adjust_hint">Arraste para mover, pince para ampliar</string>
 </resources>

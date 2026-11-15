@@ -1,0 +1,355 @@
+{
+  "about": "Shared test vectors for the cover crop (TierYourLife cover focus, 15.11.2026, _coordination/cover-focus-2026-11-15/SPEC.md). The Proxy checks its own cropOf against this file (functions/src/coverFocus.ts); Web and Android copy it into their tests unchanged and check their own crop against every case.",
+  "formula": "For a picture width x height, a frame aspect (frame width / frame height) and a focus {x, y, zoom} (none = {0.5, 0.5, 1}): if width/height > aspect then cropHeight = height, cropWidth = height*aspect, else cropWidth = width, cropHeight = width/aspect; cropWidth /= zoom; cropHeight /= zoom; crop.x = clamp(x*width - cropWidth/2, 0, width - cropWidth); crop.y = clamp(y*height - cropHeight/2, 0, height - cropHeight). The crop is in the picture's own pixels and is scaled to fill the frame.",
+  "tolerance": 1e-06,
+  "cases": [
+    {
+      "name": "no focus: a wide picture in a square tile shows its middle",
+      "width": 1600,
+      "height": 900,
+      "aspect": 1,
+      "focus": null,
+      "crop": {
+        "x": 350.0,
+        "y": 0.0,
+        "width": 900.0,
+        "height": 900.0
+      }
+    },
+    {
+      "name": "no focus: a tall picture in a 16:9 header shows its middle",
+      "width": 900,
+      "height": 1600,
+      "aspect": 1.7777777777777777,
+      "focus": null,
+      "crop": {
+        "x": 0.0,
+        "y": 546.875,
+        "width": 900.0,
+        "height": 506.25
+      }
+    },
+    {
+      "name": "no focus: the same shape shows all of it",
+      "width": 1200,
+      "height": 800,
+      "aspect": 1.5,
+      "focus": null,
+      "crop": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1200.0,
+        "height": 800.0
+      }
+    },
+    {
+      "name": "the centre sent is the same as none",
+      "width": 1600,
+      "height": 900,
+      "aspect": 1,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5,
+        "zoom": 1
+      },
+      "crop": {
+        "x": 350.0,
+        "y": 0.0,
+        "width": 900.0,
+        "height": 900.0
+      }
+    },
+    {
+      "name": "a head near the top of a portrait in a 16:9 header: stops at the top edge",
+      "width": 1000,
+      "height": 1500,
+      "aspect": 1.7777777777777777,
+      "focus": {
+        "x": 0.5,
+        "y": 0.15,
+        "zoom": 1
+      },
+      "crop": {
+        "x": 0.0,
+        "y": 0,
+        "width": 1000.0,
+        "height": 562.5
+      }
+    },
+    {
+      "name": "a point a third down a portrait in a 16:9 header",
+      "width": 1000,
+      "height": 1500,
+      "aspect": 1.7777777777777777,
+      "focus": {
+        "x": 0.5,
+        "y": 0.3,
+        "zoom": 1
+      },
+      "crop": {
+        "x": 0.0,
+        "y": 168.75,
+        "width": 1000.0,
+        "height": 562.5
+      }
+    },
+    {
+      "name": "focus on the right edge stops at the right edge",
+      "width": 1600,
+      "height": 900,
+      "aspect": 1,
+      "focus": {
+        "x": 1,
+        "y": 0.5,
+        "zoom": 1
+      },
+      "crop": {
+        "x": 700.0,
+        "y": 0.0,
+        "width": 900.0,
+        "height": 900.0
+      }
+    },
+    {
+      "name": "focus on the left edge stops at the left edge",
+      "width": 1600,
+      "height": 900,
+      "aspect": 1,
+      "focus": {
+        "x": 0,
+        "y": 0.5,
+        "zoom": 1
+      },
+      "crop": {
+        "x": 0,
+        "y": 0.0,
+        "width": 900.0,
+        "height": 900.0
+      }
+    },
+    {
+      "name": "focus on the bottom edge stops at the bottom edge",
+      "width": 800,
+      "height": 1200,
+      "aspect": 1,
+      "focus": {
+        "x": 0.5,
+        "y": 1,
+        "zoom": 1
+      },
+      "crop": {
+        "x": 0.0,
+        "y": 400.0,
+        "width": 800.0,
+        "height": 800.0
+      }
+    },
+    {
+      "name": "unzoomed, the same shape ignores the focus",
+      "width": 1000,
+      "height": 1000,
+      "aspect": 1,
+      "focus": {
+        "x": 0.9,
+        "y": 0.1,
+        "zoom": 1
+      },
+      "crop": {
+        "x": 0.0,
+        "y": 0,
+        "width": 1000.0,
+        "height": 1000.0
+      }
+    },
+    {
+      "name": "zoom 2 near the top left",
+      "width": 1600,
+      "height": 900,
+      "aspect": 1,
+      "focus": {
+        "x": 0.25,
+        "y": 0.25,
+        "zoom": 2
+      },
+      "crop": {
+        "x": 175.0,
+        "y": 0.0,
+        "width": 450.0,
+        "height": 450.0
+      }
+    },
+    {
+      "name": "zoom 4 in the bottom right corner",
+      "width": 1000,
+      "height": 1000,
+      "aspect": 1,
+      "focus": {
+        "x": 1,
+        "y": 1,
+        "zoom": 4
+      },
+      "crop": {
+        "x": 750.0,
+        "y": 750.0,
+        "width": 250.0,
+        "height": 250.0
+      }
+    },
+    {
+      "name": "zoom 4 in a 3:4 portrait frame",
+      "width": 4000,
+      "height": 3000,
+      "aspect": 0.75,
+      "focus": {
+        "x": 0.3,
+        "y": 0.7,
+        "zoom": 4
+      },
+      "crop": {
+        "x": 918.75,
+        "y": 1725.0,
+        "width": 562.5,
+        "height": 750.0
+      }
+    },
+    {
+      "name": "zoom 1.5 in a 5:2 banner",
+      "width": 1080,
+      "height": 1350,
+      "aspect": 2.5,
+      "focus": {
+        "x": 0.6,
+        "y": 0.2,
+        "zoom": 1.5
+      },
+      "crop": {
+        "x": 288.0,
+        "y": 126.0,
+        "width": 720.0,
+        "height": 288.0
+      }
+    },
+    {
+      "name": "zoom 3 on a small picture",
+      "width": 64,
+      "height": 48,
+      "aspect": 1,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5,
+        "zoom": 3
+      },
+      "crop": {
+        "x": 24.0,
+        "y": 16.0,
+        "width": 16.0,
+        "height": 16.0
+      }
+    },
+    {
+      "name": "fractions all round",
+      "width": 1000,
+      "height": 700,
+      "aspect": 1.3333333333333333,
+      "focus": {
+        "x": 0.37,
+        "y": 0.62,
+        "zoom": 1.7
+      },
+      "crop": {
+        "x": 95.49019607843138,
+        "y": 228.11764705882354,
+        "width": 549.0196078431372,
+        "height": 411.7647058823529
+      }
+    },
+    {
+      "name": "zoom 4 near the left edge of a tall picture in a wide frame",
+      "width": 720,
+      "height": 1280,
+      "aspect": 1.7777777777777777,
+      "focus": {
+        "x": 0.02,
+        "y": 0.5,
+        "zoom": 4
+      },
+      "crop": {
+        "x": 0,
+        "y": 589.375,
+        "width": 180.0,
+        "height": 101.25
+      }
+    }
+  ],
+  "focusValues": {
+    "about": "What the server takes as a focus. null or no field is the centre. Anything refused answers 400 INVALID.",
+    "accepted": [
+      null,
+      {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "zoom": 4
+      },
+      {
+        "x": 0.5,
+        "y": 0.5,
+        "zoom": 1
+      },
+      {
+        "x": 0.25,
+        "y": 0.8,
+        "zoom": 2.75
+      },
+      {
+        "x": 0.5,
+        "y": 0.5,
+        "zoom": 2,
+        "other": "ignored"
+      }
+    ],
+    "refused": [
+      {
+        "x": -0.01,
+        "y": 0.5,
+        "zoom": 1
+      },
+      {
+        "x": 0.5,
+        "y": 1.01,
+        "zoom": 1
+      },
+      {
+        "x": 0.5,
+        "y": 0.5,
+        "zoom": 0.99
+      },
+      {
+        "x": 0.5,
+        "y": 0.5,
+        "zoom": 4.01
+      },
+      {
+        "x": 0.5,
+        "y": 0.5
+      },
+      {
+        "x": "0.5",
+        "y": 0.5,
+        "zoom": 1
+      },
+      [
+        0.5,
+        0.5,
+        1
+      ],
+      0.5,
+      "centre",
+      {}
+    ]
+  }
+}

@@ -43,7 +43,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -56,8 +55,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
@@ -70,6 +67,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Schedu
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSection
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
+import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
@@ -237,12 +235,11 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
     ) {
         val picture = topic.pictureUrl
         if (picture != null) {
-            val context = LocalContext.current
             Box(Modifier.fillMaxSize().background(lookOf(section).tintNow))
-            AsyncImage(
-                model = remember(picture) { ImageRequest.Builder(context).data(picture).crossfade(TOPIC_FADE_MILLIS).build() },
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+            FocusedImage(
+                model = picture,
+                focus = topic.pictureFocus,
+                crossfadeMillis = TOPIC_FADE_MILLIS,
                 modifier = Modifier.fillMaxSize().testTag(SectionTestTags.TOPIC_PICTURE),
             )
         } else {

@@ -313,6 +313,10 @@ private class RecordingTierDao : TierDao {
         lists.computeIfPresent(id) { _, list -> list.copy(coverImageUrl = coverImageUrl, coverImageUrls = coverImageUrls) }
     }
 
+    override suspend fun setCoverFocus(id: Long, x: Float?, y: Float?, zoom: Float?) {
+        lists.computeIfPresent(id) { _, list -> list.copy(coverFocusX = x, coverFocusY = y, coverFocusZoom = zoom) }
+    }
+
     override suspend fun countPublishedLists(owner: String?): Int = 0
 
     override suspend fun countBoards(owner: String?): Int = 0

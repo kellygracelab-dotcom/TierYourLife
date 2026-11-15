@@ -26,6 +26,7 @@ data class TierDetailActions(
     /** The proposal form, with the board's section to file lists under meanwhile; null where it cannot open. */
     val onProposeSection: ((String?) -> Unit)? = null,
     val onChooseCover: () -> Unit = {},
+    val onAdjustCover: () -> Unit = {},
     val onChooseTopic: () -> Unit = {},
     /** Null where cards cannot be added, as on someone else's list: no Add then. */
     val onAddClick: (() -> Unit)? = {},

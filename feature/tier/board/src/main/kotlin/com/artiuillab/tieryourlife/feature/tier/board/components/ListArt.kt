@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 
 private const val MOSAIC_COLUMNS = 3
 
@@ -43,14 +44,14 @@ fun ListArt(
     tierColors: List<String>,
     modifier: Modifier = Modifier,
     testTag: String? = null,
+    coverFocus: CoverFocus? = null,
 ) {
     val tagged = if (testTag == null) modifier else modifier.testTag(testTag)
     Box(tagged.background(MaterialTheme.colorScheme.surfaceContainerHighest)) {
         when {
-            coverImageUrl != null -> AsyncImage(
+            coverImageUrl != null -> FocusedImage(
                 model = coverImageUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+                focus = coverFocus,
                 modifier = Modifier.fillMaxSize(),
             )
 

@@ -263,4 +263,11 @@
     <string name="add_to_list_to_pool">В пул</string>
     <string name="add_to_list_added">Добавлено в «%1$s»</string>
     <string name="add_to_list_sign_in">Картинки по ссылкам хранятся в аккаунте. Войдите в TierYourLife, чтобы их добавлять, или добавьте карточку без картинки.</string>
+    <string name="cover_adjust_title">Настроить обложку</string>
+    <string name="cover_adjust_zoom">Масштаб</string>
+    <string name="cover_adjust_preview">Предпросмотр</string>
+    <string name="cover_adjust_feed">Лента</string>
+    <string name="cover_adjust_header">Шапка страницы</string>
+    <string name="cover_adjust_close">Закрыть</string>
+    <string name="cover_adjust_hint">Двигайте пальцем, масштаб — двумя пальцами</string>
 </resources>

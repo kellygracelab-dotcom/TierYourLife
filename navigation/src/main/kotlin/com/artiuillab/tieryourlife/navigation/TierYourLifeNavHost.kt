@@ -67,7 +67,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.ADDED_IT
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.COVER_CHANGED_RESULT_KEY
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.Route
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.TOPIC_CHANGED_RESULT_KEY
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.adjustCoverScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.coverPickerScreen
+import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToAdjustCover
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToCoverPicker
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTierDetail
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.navigateToTopicPicker
@@ -296,6 +298,7 @@ private fun NavContent(
             },
             onOpenAiStudio = { tierListId, listTitle -> navController.navigateToAiStudio(tierListId, listTitle) },
             onChooseCover = { id -> navController.navigateToCoverPicker(id) },
+            onAdjustCover = { id -> navController.navigateToAdjustCover(id) },
             onChooseTopic = { id -> navController.navigateToTopicPicker(id) },
             onOpenPublishedList = { id -> navController.navigateToCommunityList(id) },
             // As others see it, without handing straight back to this board.
@@ -308,6 +311,17 @@ private fun NavContent(
         coverPickerScreen(
             onBack = { navController.popBackStack() },
             // The board behind it reads its own row again rather than being told what changed.
+            onSaved = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(COVER_CHANGED_RESULT_KEY, true)
+                navController.popBackStack()
+            },
+            onAdjust = { id ->
+                navController.previousBackStackEntry?.savedStateHandle?.set(COVER_CHANGED_RESULT_KEY, true)
+                navController.navigateToAdjustCover(id, replacingPicker = true)
+            },
+        )
+        adjustCoverScreen(
+            onClose = { navController.popBackStack() },
             onSaved = {
                 navController.previousBackStackEntry?.savedStateHandle?.set(COVER_CHANGED_RESULT_KEY, true)
                 navController.popBackStack()

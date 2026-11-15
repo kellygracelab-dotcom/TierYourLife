@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -44,7 +43,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
@@ -53,6 +51,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Schedu
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.TileStyle
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
+import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 internal object WaitingSectionTags {
@@ -116,7 +115,7 @@ private const val ICON_SHARE = 0.4f
 private fun WaitingArt(section: Section, modifier: Modifier) {
     Box(modifier.background(lookOf(section).tintNow)) {
         section.pictureUrl?.let { url ->
-            AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().alpha(PICTURE_ALPHA))
+            FocusedImage(model = url, focus = section.pictureFocus, modifier = Modifier.fillMaxSize().alpha(PICTURE_ALPHA))
         }
         Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(TileScrimTop, TileScrimBottom))))
     }

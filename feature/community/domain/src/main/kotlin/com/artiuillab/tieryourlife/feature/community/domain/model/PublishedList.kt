@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.domain.model
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -14,6 +15,8 @@ data class PublishedListSummary(
     val category: String,
     val itemCount: Int,
     val coverImageUrl: String? = null,
+    /** Which part of [coverImageUrl] shows; null for the centre. */
+    val coverFocus: CoverFocus? = null,
     /** Card art the feed draws a mosaic from when there is no cover. */
     val previewImages: List<String> = emptyList(),
     /** The author's palette, for a card with neither a cover nor card art. */

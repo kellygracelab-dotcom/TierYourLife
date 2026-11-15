@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -119,6 +120,18 @@ class CoverPickerViewModelTest {
         viewModel.state.firstWithin { it.saved }
 
         assertEquals(listOf(1L to listOf(web[0], web[2])), repository.covers)
+        assertFalse("a collage has no part to choose", viewModel.state.value.adjustNext)
+    }
+
+    @Test
+    fun onePictureSaved_goesOnToChoosingWhichPartShows() = runBlocking {
+        val viewModel = pickerFor(board(pictures = web.take(3)))
+        viewModel.state.firstWithin { it.title == "Films" }
+        viewModel.toggle(web[1])
+
+        viewModel.save()
+
+        assertTrue(viewModel.state.firstWithin { it.saved }.adjustNext)
     }
 
     private fun pickerFor(board: TierList) = pickerFor(RecordingTierRepository(boards = listOf(board)))

@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.BasedOn
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.titleIn
 import com.artiuillab.tieryourlife.feature.community.presentation.list.ListPreview
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import kotlinx.serialization.Serializable
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic as TopicModel
 
@@ -129,10 +130,24 @@ sealed interface CommunityRoute {
         val section: String? = null,
         /** Its own picture, as the tile showed it, so the page opens on it rather than on the section's art. */
         val picture: String? = null,
+        /** Which part of it shows, as "x,y,zoom", so the page opens on the same part the tile did. */
+        val pictureFocus: String? = null,
     ) : CommunityRoute {
         companion object {
-            fun of(topic: TopicModel) = Topic(topicId = topic.id, name = topic.name, section = topic.section, picture = topic.pictureUrl)
+            fun of(topic: TopicModel) = Topic(
+                topicId = topic.id,
+                name = topic.name,
+                section = topic.section,
+                picture = topic.pictureUrl,
+                pictureFocus = topic.pictureFocus?.let { "${it.x},${it.y},${it.zoom}" },
+            )
         }
+
+        /** Null for the centre, or for anything that does not read as three numbers. */
+        val focus: CoverFocus?
+            get() = pictureFocus?.split(',')?.mapNotNull(String::toFloatOrNull)?.takeIf { it.size == 3 }
+                ?.let { (x, y, zoom) -> CoverFocus(x, y, zoom).inRange() }
+                ?.takeUnless { it.isCentred }
     }
 }
 
@@ -174,6 +189,7 @@ internal fun SavedStateHandle.topicRoute() = CommunityRoute.Topic(
     name = get<String>(CommunityRoute.Topic::name.name),
     section = get<String>(CommunityRoute.Topic::section.name),
     picture = get<String>(CommunityRoute.Topic::picture.name),
+    pictureFocus = get<String>(CommunityRoute.Topic::pictureFocus.name),
 )
 
 internal fun SavedStateHandle.proposeSectionRoute() = CommunityRoute.ProposeSection(

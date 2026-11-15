@@ -5,6 +5,15 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 
+/** Which part of the cover shows. Every board keeps the centre it always had until someone moves it. */
+val MIGRATION_20_21 = object : Migration(20, 21) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN coverFocusX REAL")
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN coverFocusY REAL")
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN coverFocusZoom REAL")
+    }
+}
+
 /**
  * Where each card's picture came from and whom it names, beside the old credit
  * text. Every card made before has none until its picture is found again.

@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
+import com.artiuillab.tieryourlife.feature.tier.presentation.coveradjust.AdjustCoverScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.coverpicker.CoverPickerScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.TierDetailScreen
 import com.artiuillab.tieryourlife.feature.tier.presentation.topicpicker.TopicPickerScreen
@@ -26,6 +27,7 @@ fun NavGraphBuilder.tierDetailScreen(
     onOpenList: (Long) -> Unit = {},
     onOpenAiStudio: (tierListId: Long, listTitle: String) -> Unit,
     onChooseCover: (tierListId: Long) -> Unit = {},
+    onAdjustCover: (tierListId: Long) -> Unit = {},
     onChooseTopic: (tierListId: Long) -> Unit = {},
     onOpenPublishedList: (String) -> Unit = {},
     onSeeInCommunity: ((String) -> Unit)? = null,
@@ -49,6 +51,7 @@ fun NavGraphBuilder.tierDetailScreen(
             onOpenAiStudio = { listTitle -> onOpenAiStudio(route.tierListId, listTitle) },
             onOpenList = onOpenList,
             onChooseCover = { onChooseCover(route.tierListId) },
+            onAdjustCover = { onAdjustCover(route.tierListId) },
             addedItemIds = addedItemIds,
             onAddedItemConsumed = { backStackEntry.savedStateHandle[ADDED_ITEMS_RESULT_KEY] = ArrayList<Long>() },
             coverChanged = coverChanged,
@@ -66,9 +69,17 @@ fun NavGraphBuilder.tierDetailScreen(
     }
 }
 
-fun NavGraphBuilder.coverPickerScreen(onBack: () -> Unit, onSaved: () -> Unit) {
-    composable<Route.CoverPicker> {
-        CoverPickerScreen(onBack = onBack, onSaved = onSaved)
+/** [onAdjust]: saved as a single picture, which goes straight on to choosing the part of it that shows. */
+fun NavGraphBuilder.coverPickerScreen(onBack: () -> Unit, onSaved: () -> Unit, onAdjust: (tierListId: Long) -> Unit = {}) {
+    composable<Route.CoverPicker> { backStackEntry ->
+        val route = backStackEntry.toRoute<Route.CoverPicker>()
+        CoverPickerScreen(onBack = onBack, onSaved = onSaved, onAdjust = { onAdjust(route.tierListId) })
+    }
+}
+
+fun NavGraphBuilder.adjustCoverScreen(onClose: () -> Unit, onSaved: () -> Unit) {
+    composable<Route.AdjustCover> {
+        AdjustCoverScreen(onClose = onClose, onSaved = onSaved)
     }
 }
 
@@ -90,6 +101,13 @@ fun NavController.navigateToTierDetail(id: Long, focusTierId: Long? = null) {
 
 fun NavController.navigateToCoverPicker(tierListId: Long) {
     navigate(Route.CoverPicker(tierListId))
+}
+
+/** In place of the picker when it hands over, so Back from here returns to the board. */
+fun NavController.navigateToAdjustCover(tierListId: Long, replacingPicker: Boolean = false) {
+    navigate(Route.AdjustCover(tierListId)) {
+        if (replacingPicker) popUpTo<Route.CoverPicker> { inclusive = true }
+    }
 }
 
 fun NavController.navigateToTopicPicker(tierListId: Long) {

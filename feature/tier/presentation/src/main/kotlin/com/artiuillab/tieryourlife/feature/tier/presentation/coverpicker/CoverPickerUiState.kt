@@ -21,6 +21,8 @@ data class CoverPickerUiState(
     val tab: CoverPickerTab = CoverPickerTab.Cards,
     val saving: Boolean = false,
     val saved: Boolean = false,
+    /** Saved as one picture, whose part to show is chosen next. */
+    val adjustNext: Boolean = false,
 ) {
     val coverImageUrl: String? get() = chosen.singleOrNull()
 
