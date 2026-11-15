@@ -15,6 +15,7 @@ internal fun TierItemEntity.toRemoved(tierListId: Long): RemovedTierItem = Remov
     credit = credit,
     attribution = attribution,
     sourceIndex = sourceIndex,
+    focus = focus(),
 )
 
 /** The same id and uid as before: a synced board, a saved game and the web all know the card by them. */
@@ -29,4 +30,7 @@ internal fun RemovedTierItem.toEntity(): TierItemEntity = TierItemEntity(
     credit = credit,
     sourceIndex = sourceIndex,
     attribution = attribution,
+    focusX = focus?.x,
+    focusY = focus?.y,
+    focusZoom = focus?.zoom,
 )

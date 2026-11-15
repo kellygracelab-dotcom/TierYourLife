@@ -790,6 +790,12 @@ private fun TierScreenBody(
                 chooserItemId = null
             },
             onDismiss = { chooserItemId = null },
+            onAdjustPicture = actions.onAdjustPicture?.let { adjust ->
+                {
+                    adjust(chosenId)
+                    chooserItemId = null
+                }
+            },
         )
     }
 

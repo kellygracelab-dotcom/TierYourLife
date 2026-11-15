@@ -85,6 +85,8 @@
     <string name="tier_detail_move_sheet_pool_subtitle">Sem classificação, permanece na lista</string>
     <string name="tier_detail_move_sheet_pool_title">Voltar para a reserva</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Dá para desfazer logo em seguida</string>
+    <string name="tier_detail_move_sheet_adjust_title">Ajustar imagem</string>
+    <string name="tier_detail_move_sheet_adjust_subtitle">Escolha qual parte aparece</string>
     <string name="tier_detail_move_sheet_remove_title">Remover da lista</string>
     <string name="tier_detail_move_sheet_subtitle">Mover para um nível</string>
     <string name="tier_detail_move_sheet_photo_credit">Foto: %1$s</string>

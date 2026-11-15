@@ -80,10 +80,10 @@ class RoomTierRepository internal constructor(
             tiers = board.tiers.filterNot { it.isPool }.map { tier ->
                 NewTemplateTier(
                     tier.label, tier.caption, tier.colorLight, tier.colorDark,
-                    tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution) },
+                    tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution, it.focus) },
                 )
             },
-            items = board.tiers.filter { it.isPool }.flatMap { it.items }.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution) },
+            items = board.tiers.filter { it.isPool }.flatMap { it.items }.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution, it.focus) },
         )
     }
 
@@ -118,10 +118,10 @@ class RoomTierRepository internal constructor(
                 caption = tier.caption,
                 colorLight = tier.colorLight,
                 colorDark = tier.colorDark,
-                items = tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution) },
+                items = tier.items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution, it.focus) },
             )
         },
-        items = items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution) },
+        items = items.map { NewPoolItem(it.title, it.imageUrl, it.credit, it.sourceIndex, it.attribution, it.focus) },
     )
 
     override suspend fun setPublished(id: Long, publishedId: String?, fingerprint: String?) {
@@ -230,6 +230,11 @@ class RoomTierRepository internal constructor(
         val previousImage = dao.getTierItemImageById(itemId)
         dao.updateTierItemImage(itemId, copyPath)
         if (previousImage != null) letGoOfPicture(previousImage)
+    }
+
+    override suspend fun setItemFocus(itemId: Long, focus: CoverFocus?) {
+        val kept = focus?.inRange()?.takeUnless { it.isCentred }
+        dao.setItemFocus(itemId, kept?.x, kept?.y, kept?.zoom)
     }
 
     override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {

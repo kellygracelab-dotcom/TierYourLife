@@ -5,6 +5,8 @@ import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -56,6 +58,34 @@ class AdjustCoverViewModelTest {
 
         viewModel.state.firstWithin { it.saved }
         assertEquals(listOf(1L to null), repository.coverFocuses)
+    }
+
+    @Test
+    fun aCardsPicture_opensOnItsFocus_andDoneKeepsItOnTheCard() = runBlocking {
+        val card = TierItem(7, "Mango", picture, focus = CoverFocus(0.3f, 0.2f, 1.5f))
+        val board = TierList(1, "Fruit", listOf(Tier(1, "S", "#B03A32", "#F1948C", items = listOf(card))), coverImageUrl = "https://a/cover.jpg")
+        val repository = RecordingTierRepository(boards = listOf(board))
+        val viewModel = AdjustCoverViewModel(repository, SavedStateHandle(mapOf("tierListId" to 1L, "itemId" to 7L)))
+
+        val state = viewModel.state.firstWithin { it.loaded }
+        assertTrue(state.card)
+        assertEquals(picture, state.picture)
+        assertEquals(CoverFocus(0.3f, 0.2f, 1.5f), state.focus)
+
+        viewModel.move(CoverFocus(0.4f, 0.25f, 1f))
+        viewModel.save()
+
+        viewModel.state.firstWithin { it.saved }
+        assertEquals(listOf(7L to CoverFocus(0.4f, 0.25f, 1f)), repository.itemFocuses)
+        assertTrue("the cover is left alone", repository.coverFocuses.isEmpty())
+    }
+
+    @Test
+    fun aCardWithoutAPicture_hasNothingToAdjust() = runBlocking {
+        val board = TierList(1, "Fruit", listOf(Tier(1, "S", "#B03A32", "#F1948C", items = listOf(TierItem(7, "Mango", null)))))
+        val viewModel = AdjustCoverViewModel(RecordingTierRepository(boards = listOf(board)), SavedStateHandle(mapOf("tierListId" to 1L, "itemId" to 7L)))
+
+        assertTrue(viewModel.state.firstWithin { it.loaded }.nothingToAdjust)
     }
 
     @Test

@@ -89,6 +89,9 @@ class AdjustCoverScreenshotTest {
     fun dark() = capture("adjust_cover_dark", dark = true)
 
     @Test
+    fun aCardsPicture() = capture("adjust_picture_card", raised.copy(card = true, focus = CoverFocus(0.5f, 0.18f, 1f)))
+
+    @Test
     fun untouched_hasNothingToReset_andATallPictureStartsAboveTheMiddle() {
         capture("adjust_cover_centred", raised.copy(focus = null))
 

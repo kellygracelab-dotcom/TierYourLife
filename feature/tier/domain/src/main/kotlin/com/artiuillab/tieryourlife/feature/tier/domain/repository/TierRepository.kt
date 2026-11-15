@@ -113,6 +113,9 @@ interface TierRepository {
 
     suspend fun attachImageToItem(itemId: Long, sourceUri: String)
 
+    /** Which part of a card's picture shows; null for the picture's default. Changes nothing on a card without one. */
+    suspend fun setItemFocus(itemId: Long, focus: CoverFocus?) = Unit
+
     /**
      * A picture from the gallery copied into the app's own, where it outlives
      * the picker's permission and publishes as this person's photo. Answers

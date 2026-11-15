@@ -13,4 +13,6 @@ data class TierItem(
     val attribution: PictureAttribution? = null,
     /** Position in the original public snapshot, independent of local ids and placement. */
     val sourceIndex: Int? = null,
+    /** Which part of the picture the card shows, by the covers' formula; null for the picture's default. */
+    val focus: CoverFocus? = null,
 )

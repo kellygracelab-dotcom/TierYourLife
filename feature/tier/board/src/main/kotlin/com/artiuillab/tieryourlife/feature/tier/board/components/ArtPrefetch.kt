@@ -17,7 +17,12 @@ import kotlinx.coroutines.withContext
 import kotlin.math.ceil
 
 /** What [ListArt] draws for one tile: its cover, or else its first pictures. */
-data class ArtPictures(val coverImageUrl: String?, val previewImages: List<String>, val coverFocus: CoverFocus? = null)
+data class ArtPictures(
+    val coverImageUrl: String?,
+    val previewImages: List<String>,
+    val coverFocus: CoverFocus? = null,
+    val pictureFocus: Map<String, CoverFocus> = emptyMap(),
+)
 
 /** One picture as [ListArt] asks Coil for it in a tile of [width] by [height] pixels. */
 data class ArtRequest(val url: String, val width: Int, val height: Int)

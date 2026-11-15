@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
@@ -35,10 +36,27 @@ fun FocusedImage(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     crossfadeMillis: Int = 0,
+    onError: (() -> Unit)? = null,
 ) {
+    val zoom = focus?.zoom ?: CoverFocus.MIN_ZOOM
+    val context = LocalContext.current
+    val error = onError?.let { { _: AsyncImagePainter.State.Error -> it() } }
+    // A board draws hundreds of cards at their picture's own size: measuring each first is kept for a close crop.
+    if (zoom <= CoverFocus.MIN_ZOOM) {
+        val request = remember(model, crossfadeMillis) {
+            ImageRequest.Builder(context).data(model).apply { if (crossfadeMillis > 0) crossfade(crossfadeMillis) }.build()
+        }
+        AsyncImage(
+            model = request,
+            contentDescription = contentDescription,
+            contentScale = focusScale(focus),
+            alignment = focusAlignment(focus),
+            modifier = modifier,
+            onError = error,
+        )
+        return
+    }
     BoxWithConstraints(modifier) {
-        val zoom = focus?.zoom ?: CoverFocus.MIN_ZOOM
-        val context = LocalContext.current
         val width = constraints.maxWidth
         val height = constraints.maxHeight
         val request = remember(model, zoom, width, height, crossfadeMillis) {
@@ -46,7 +64,7 @@ fun FocusedImage(
                 .data(model)
                 .apply {
                     // Decoded as large as the zoom shows it, or a close crop would be a blur.
-                    if (zoom > CoverFocus.MIN_ZOOM && constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+                    if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
                         size(ceil(width * zoom).toInt(), ceil(height * zoom).toInt())
                         scale(Scale.FILL)
                     }
@@ -60,6 +78,7 @@ fun FocusedImage(
             contentScale = focusScale(focus),
             alignment = focusAlignment(focus),
             modifier = Modifier.fillMaxSize(),
+            onError = error,
         )
     }
 }

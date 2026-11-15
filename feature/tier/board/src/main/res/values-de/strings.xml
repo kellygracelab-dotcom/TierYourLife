@@ -81,6 +81,8 @@
     <string name="tier_detail_move_sheet_pool_subtitle">Nicht eingestuft, bleibt in der Liste</string>
     <string name="tier_detail_move_sheet_pool_title">Zurück in den Pool</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Lässt sich gleich danach rückgängig machen</string>
+    <string name="tier_detail_move_sheet_adjust_title">Bild anpassen</string>
+    <string name="tier_detail_move_sheet_adjust_subtitle">Wählen, welcher Teil zu sehen ist</string>
     <string name="tier_detail_move_sheet_remove_title">Aus der Liste entfernen</string>
     <string name="tier_detail_move_sheet_subtitle">In eine Stufe verschieben</string>
     <string name="tier_detail_move_sheet_photo_credit">Foto: %1$s</string>

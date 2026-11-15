@@ -268,6 +268,9 @@
     <string name="cover_adjust_preview">Podgląd</string>
     <string name="cover_adjust_feed">Kanał</string>
     <string name="cover_adjust_square">Kwadrat</string>
+    <string name="cover_adjust_picture_title">Dopasuj obraz</string>
+    <string name="cover_adjust_card">Karta</string>
+    <string name="cover_adjust_collage">Kolaż</string>
     <string name="cover_adjust_header">Nagłówek strony</string>
     <string name="cover_adjust_close">Zamknij</string>
     <string name="cover_adjust_hint">Przeciągnij lub dotknij, by wybrać punkt, zbliż dwoma palcami</string>

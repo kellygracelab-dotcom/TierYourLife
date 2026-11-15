@@ -240,6 +240,9 @@
     <string name="cover_adjust_preview">Vorschau</string>
     <string name="cover_adjust_feed">Feed</string>
     <string name="cover_adjust_square">Quadrat</string>
+    <string name="cover_adjust_picture_title">Bild anpassen</string>
+    <string name="cover_adjust_card">Karte</string>
+    <string name="cover_adjust_collage">Collage</string>
     <string name="cover_adjust_header">Seitenkopf</string>
     <string name="cover_adjust_close">Schließen</string>
     <string name="cover_adjust_hint">Ziehen oder tippen, um den Punkt zu setzen, mit zwei Fingern zoomen</string>

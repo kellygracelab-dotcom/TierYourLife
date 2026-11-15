@@ -254,6 +254,9 @@
     <string name="cover_adjust_preview">Vista previa</string>
     <string name="cover_adjust_feed">Feed</string>
     <string name="cover_adjust_square">Cuadrado</string>
+    <string name="cover_adjust_picture_title">Ajustar imagen</string>
+    <string name="cover_adjust_card">Tarjeta</string>
+    <string name="cover_adjust_collage">Collage</string>
     <string name="cover_adjust_header">Cabecera</string>
     <string name="cover_adjust_close">Cerrar</string>
     <string name="cover_adjust_hint">Arrastra o toca para elegir el punto, pellizca para hacer zoom</string>

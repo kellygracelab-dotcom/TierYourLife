@@ -102,6 +102,7 @@ internal fun TierListCard(
                 ListArt(
                     coverImageUrl = list.coverImageUrl,
                     coverFocus = list.coverFocus,
+                    pictureFocus = list.pictureFocus,
                     previewImages = list.coverImageUrls,
                     tierColors = emptyList(),
                     modifier = Modifier

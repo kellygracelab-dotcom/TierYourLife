@@ -15,4 +15,5 @@ data class RemovedTierItem(
     /** The board's cover before this card took its picture off it; null where the cover did not change. */
     val coverBefore: List<String>? = null,
     val sourceIndex: Int? = null,
+    val focus: CoverFocus? = null,
 )

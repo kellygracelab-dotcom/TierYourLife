@@ -296,6 +296,9 @@
     <string name="cover_adjust_preview">معاينة</string>
     <string name="cover_adjust_feed">الخلاصة</string>
     <string name="cover_adjust_square">مربع</string>
+    <string name="cover_adjust_picture_title">ضبط الصورة</string>
+    <string name="cover_adjust_card">البطاقة</string>
+    <string name="cover_adjust_collage">مجمّع الصور</string>
     <string name="cover_adjust_header">رأس الصفحة</string>
     <string name="cover_adjust_close">إغلاق</string>
     <string name="cover_adjust_hint">اسحب أو انقر لاختيار النقطة، واقرص للتكبير</string>

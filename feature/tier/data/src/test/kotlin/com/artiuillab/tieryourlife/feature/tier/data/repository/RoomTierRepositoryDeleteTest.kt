@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.DeletedTierListRow
+import com.artiuillab.tieryourlife.feature.tier.data.local.dao.FocusedPictureRow
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierCountRow
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.TierDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
@@ -432,7 +433,10 @@ private class RecordingTierDao : TierDao {
     }
 
     override suspend fun updateTierItemImage(id: Long, imageUrl: String?) =
-        update(id) { it.copy(imageUrl = imageUrl, credit = null, attribution = null) }
+        update(id) { it.copy(imageUrl = imageUrl, credit = null, attribution = null, focusX = null, focusY = null, focusZoom = null) }
+    override suspend fun getFocusedPictures(owner: String?): List<FocusedPictureRow> = emptyList()
+    override suspend fun setItemFocus(id: Long, x: Float?, y: Float?, zoom: Float?) =
+        update(id) { if (it.imageUrl == null) it else it.copy(focusX = x, focusY = y, focusZoom = zoom) }
     override suspend fun getTierItemImageById(id: Long): String? = items.firstOrNull { it.id == id }?.imageUrl
     override suspend fun getAllImageRefs(): List<String> = items.mapNotNull { it.imageUrl }
     override suspend fun getAllCoverRefs(): List<String> = lists.values.mapNotNull { it.coverImageUrl }

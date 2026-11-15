@@ -89,6 +89,8 @@
     <string name="tier_detail_move_sheet_pool_subtitle">Без оценки, остаётся в списке</string>
     <string name="tier_detail_move_sheet_pool_title">Вернуть в пул</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Сразу после можно отменить</string>
+    <string name="tier_detail_move_sheet_adjust_title">Настроить картинку</string>
+    <string name="tier_detail_move_sheet_adjust_subtitle">Выбрать, какая часть видна</string>
     <string name="tier_detail_move_sheet_remove_title">Удалить из списка</string>
     <string name="tier_detail_move_sheet_subtitle">Переместить на уровень</string>
     <string name="tier_detail_move_sheet_photo_credit">Фото: %1$s</string>

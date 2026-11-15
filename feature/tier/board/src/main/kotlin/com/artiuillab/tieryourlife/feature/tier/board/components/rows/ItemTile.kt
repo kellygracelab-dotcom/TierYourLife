@@ -16,15 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.ui.CardLabel
+import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 
 @Composable
@@ -46,16 +42,13 @@ fun ItemTile(item: TierItem, width: Dp, height: Dp) {
         contentAlignment = Alignment.Center,
     ) {
         if (picture != null) {
-            val context = LocalPlatformContext.current
             // Each poster fades in on its own; one already in memory is simply there.
-            val request = remember(picture) {
-                ImageRequest.Builder(context).data(picture).crossfade(POSTER_FADE_MILLIS).build()
-            }
-            AsyncImage(
-                model = request,
+            FocusedImage(
+                model = picture,
+                focus = item.focus,
                 contentDescription = item.title,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
+                crossfadeMillis = POSTER_FADE_MILLIS,
                 onError = { broken = true },
             )
         } else {

@@ -299,6 +299,7 @@ private fun NavContent(
             onOpenAiStudio = { tierListId, listTitle -> navController.navigateToAiStudio(tierListId, listTitle) },
             onChooseCover = { id -> navController.navigateToCoverPicker(id) },
             onAdjustCover = { id -> navController.navigateToAdjustCover(id) },
+            onAdjustPicture = { id, itemId -> navController.navigateToAdjustCover(id, itemId = itemId) },
             onChooseTopic = { id -> navController.navigateToTopicPicker(id) },
             onOpenPublishedList = { id -> navController.navigateToCommunityList(id) },
             // As others see it, without handing straight back to this board.

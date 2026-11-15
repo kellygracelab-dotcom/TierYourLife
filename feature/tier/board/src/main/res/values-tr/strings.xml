@@ -81,6 +81,8 @@
     <string name="tier_detail_move_sheet_pool_subtitle">Sıralanmadı, listede kalır</string>
     <string name="tier_detail_move_sheet_pool_title">Havuza geri gönder</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Hemen ardından geri alınabilir</string>
+    <string name="tier_detail_move_sheet_adjust_title">Resmi ayarla</string>
+    <string name="tier_detail_move_sheet_adjust_subtitle">Hangi kısmın görüneceğini seçin</string>
     <string name="tier_detail_move_sheet_remove_title">Listeden sil</string>
     <string name="tier_detail_move_sheet_subtitle">Bir seviyeye taşı</string>
     <string name="tier_detail_move_sheet_photo_credit">Fotoğraf: %1$s</string>

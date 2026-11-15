@@ -11,11 +11,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 
 private const val MOSAIC_COLUMNS = 3
@@ -45,6 +43,7 @@ fun ListArt(
     modifier: Modifier = Modifier,
     testTag: String? = null,
     coverFocus: CoverFocus? = null,
+    pictureFocus: Map<String, CoverFocus> = emptyMap(),
 ) {
     val tagged = if (testTag == null) modifier else modifier.testTag(testTag)
     Box(tagged.background(MaterialTheme.colorScheme.surfaceContainerHighest)) {
@@ -55,24 +54,28 @@ fun ListArt(
                 modifier = Modifier.fillMaxSize(),
             )
 
-            previewImages.isNotEmpty() -> Mosaic(previewImages.distinct().take(MOSAIC_CELLS))
+            previewImages.isNotEmpty() -> Mosaic(previewImages.distinct().take(MOSAIC_CELLS), pictureFocus)
             else -> TierBands(tierColors)
         }
     }
 }
 
-/** Each picture once: a grid padded out with repeats read as a list of six copies of one film. */
+/**
+ * Each picture once: a grid padded out with repeats read as a list of six
+ * copies of one film. Each cell cut by the covers' formula, at the part of the
+ * card's picture somebody chose, or its default: a poster's title near the top stays in.
+ */
 @Composable
-private fun Mosaic(images: List<String>) {
+private fun Mosaic(images: List<String>, pictureFocus: Map<String, CoverFocus>) {
     var next = 0
     Column(Modifier.fillMaxSize()) {
         mosaicRows(images.size).forEach { perRow ->
             Row(Modifier.fillMaxWidth().weight(1f)) {
                 repeat(perRow) {
-                    AsyncImage(
-                        model = images[next++],
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
+                    val image = images[next++]
+                    FocusedImage(
+                        model = image,
+                        focus = pictureFocus[image],
                         modifier = Modifier.fillMaxSize().weight(1f),
                     )
                 }

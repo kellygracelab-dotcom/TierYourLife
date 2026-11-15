@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.coveradjust
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -85,6 +86,9 @@ internal const val PAGE_HEADER_ASPECT = 411f / 200f
 internal const val FEED_TILE_ASPECT = 183f / 132f
 internal const val SQUARE_ASPECT = 1f
 
+/** A card on a board, about 5 wide to 7 high: a card's picture is previewed there and in a square collage cell. */
+internal const val CARD_TILE_ASPECT = 5f / 7f
+
 /** The whole picture is laid out in this shape, with room around it for a tall one. */
 private const val EDITOR_AREA_ASPECT = 4f / 3f
 private val EditorPadding = 12.dp
@@ -145,7 +149,7 @@ fun AdjustCoverContent(
     Surface(Modifier.fillMaxSize().testTag(AdjustCoverTestTags.SCREEN), color = MaterialTheme.colorScheme.surface) {
         Box {
             Column(Modifier.fillMaxSize().statusBarsPadding()) {
-                TopBar(onClose)
+                TopBar(if (state.card) R.string.cover_adjust_picture_title else R.string.cover_adjust_title, onClose)
                 BoxWithConstraints(Modifier.fillMaxSize()) {
                     // Side by side wherever height is the short side: a phone sideways, a Flip's cover, a tablet.
                     if (isShortWindow || (maxWidth >= SIDE_BY_SIDE_FROM && maxWidth > maxHeight)) {
@@ -176,7 +180,7 @@ private fun SideBySide(
                 .padding(systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = 12.dp)),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            CoverEditor(painter, state.focus, onMove, Modifier.weight(EDITOR_SHARE).fillMaxSize())
+            CoverEditor(painter, state.focus, state.card, onMove, Modifier.weight(EDITOR_SHARE).fillMaxSize())
             Column(
                 Modifier.weight(CONTROLS_SHARE).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -207,7 +211,7 @@ private fun Stacked(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                CoverEditor(painter, state.focus, onMove, Modifier.widthIn(max = EditorMaxWidth).fillMaxWidth().aspectRatio(EDITOR_AREA_ASPECT))
+                CoverEditor(painter, state.focus, state.card, onMove, Modifier.widthIn(max = EditorMaxWidth).fillMaxWidth().aspectRatio(EDITOR_AREA_ASPECT))
                 Controls(state, painter, onMove, onReset, onDone)
             }
         }
@@ -215,7 +219,7 @@ private fun Stacked(
 }
 
 @Composable
-private fun TopBar(onClose: () -> Unit) {
+private fun TopBar(@StringRes title: Int, onClose: () -> Unit) {
     val closeDescription = stringResource(R.string.cover_adjust_close)
     Row(
         Modifier
@@ -232,7 +236,7 @@ private fun TopBar(onClose: () -> Unit) {
                 .testTag(AdjustCoverTestTags.CLOSE),
         ) { CloseMark(24.dp, MaterialTheme.colorScheme.onSurface) }
         Text(
-            text = stringResource(R.string.cover_adjust_title),
+            text = stringResource(title),
             modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
             style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
@@ -276,12 +280,13 @@ private fun Controls(
         modifier = Modifier.fillMaxWidth(),
     )
     Row(Modifier.widthIn(max = PreviewsMaxWidth).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Bottom) {
+        val first = if (state.card) CARD_TILE_ASPECT else FEED_TILE_ASPECT
         Preview(
             painter = painter,
             focus = focus,
-            aspect = FEED_TILE_ASPECT,
-            label = stringResource(R.string.cover_adjust_feed),
-            modifier = Modifier.weight(FEED_TILE_ASPECT).testTag(AdjustCoverTestTags.FEED_PREVIEW),
+            aspect = first,
+            label = stringResource(if (state.card) R.string.cover_adjust_card else R.string.cover_adjust_feed),
+            modifier = Modifier.weight(first).testTag(AdjustCoverTestTags.FEED_PREVIEW),
         )
         Preview(
             painter = painter,
@@ -324,7 +329,7 @@ private fun CoverFocus?.resolvedFor(painter: Painter): CoverFocus {
  * shape, so what fits under this frame fits every other.
  */
 @Composable
-private fun CoverEditor(painter: Painter, focus: CoverFocus?, onMove: (CoverFocus) -> Unit, modifier: Modifier) {
+private fun CoverEditor(painter: Painter, focus: CoverFocus?, card: Boolean, onMove: (CoverFocus) -> Unit, modifier: Modifier) {
     val current by rememberUpdatedState(focus.resolvedFor(painter))
     val move by rememberUpdatedState(onMove)
     val dim = Color.Black.copy(alpha = DIM_ALPHA)
@@ -351,7 +356,7 @@ private fun CoverEditor(painter: Painter, focus: CoverFocus?, onMove: (CoverFocu
             val picture = painter.intrinsicSize
             val placed = placedIn(size, picture, EditorPadding.toPx())
             if (placed.isEmpty) return@Canvas
-            val frame = frameOn(placed, picture, PAGE_HEADER_ASPECT, current)
+            val frame = frameOn(placed, picture, if (card) FEED_TILE_ASPECT else PAGE_HEADER_ASPECT, current)
             val corner = CornerRadius(FrameCorner.toPx())
             drawCover(painter, CoverFocus.CENTRED, placed)
             clipPath(Path().apply { addRoundRect(RoundRect(frame, corner)) }, ClipOp.Difference) {
@@ -363,7 +368,7 @@ private fun CoverEditor(painter: Painter, focus: CoverFocus?, onMove: (CoverFocu
             drawCircle(Color.White, PointRadius.toPx(), point)
         }
         Text(
-            text = stringResource(R.string.cover_adjust_header),
+            text = stringResource(if (card) R.string.cover_adjust_collage else R.string.cover_adjust_header),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

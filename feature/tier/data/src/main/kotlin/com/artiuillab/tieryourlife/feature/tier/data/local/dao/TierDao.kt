@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
@@ -113,6 +114,9 @@ interface TierDao {
         credit = item.credit,
         sourceIndex = item.sourceIndex,
         attribution = item.attribution,
+        focusX = item.focus?.x,
+        focusY = item.focus?.y,
+        focusZoom = item.focus?.zoom,
     )
 
     private fun sourceOf(item: NewPoolItem) =
@@ -285,6 +289,16 @@ interface TierDao {
     )
     suspend fun getPreviewImages(tierListId: Long, limit: Int): List<String>
 
+    @Query(
+        """
+        SELECT t.tierListId AS tierListId, i.imageUrl AS imageUrl, i.focusX AS focusX, i.focusY AS focusY, i.focusZoom AS focusZoom
+        FROM tier_items i JOIN tiers t ON i.tierId = t.id JOIN tier_lists l ON t.tierListId = l.id
+        WHERE l.ownerUid IS :owner AND i.deletedAt IS NULL AND i.imageUrl IS NOT NULL
+            AND i.focusX IS NOT NULL AND i.focusY IS NOT NULL AND i.focusZoom IS NOT NULL
+        """,
+    )
+    suspend fun getFocusedPictures(owner: String?): List<FocusedPictureRow>
+
     /** A board under a collage draws the collage, so its cards' pictures are not looked for. */
     @Transaction
     suspend fun getSummaryRows(owner: String?, previewLimit: Int): SummaryRows {
@@ -292,7 +306,10 @@ interface TierDao {
         val previews = boards
             .filter { it.coverImageUrls.isNullOrBlank() }
             .associate { board -> board.id to getPreviewImages(board.id, previewLimit) }
-        return SummaryRows(boards = boards, tiers = getTierCounts(owner), previews = previews)
+        val focuses = getFocusedPictures(owner)
+            .groupBy { it.tierListId }
+            .mapValues { (_, rows) -> rows.associate { it.imageUrl to CoverFocus(it.focusX, it.focusY, it.focusZoom).inRange() } }
+        return SummaryRows(boards = boards, tiers = getTierCounts(owner), previews = previews, focuses = focuses)
     }
 
     @Transaction
@@ -548,8 +565,14 @@ interface TierDao {
     }
 
     /** Someone's own picture in place of the one a search found: what named the old one says nothing of this. */
-    @Query("UPDATE tier_items SET imageUrl = :imageUrl, credit = NULL, attribution = NULL WHERE id = :id")
+    @Query(
+        "UPDATE tier_items SET imageUrl = :imageUrl, credit = NULL, attribution = NULL, " +
+            "focusX = NULL, focusY = NULL, focusZoom = NULL WHERE id = :id",
+    )
     suspend fun updateTierItemImage(id: Long, imageUrl: String?)
+
+    @Query("UPDATE tier_items SET focusX = :x, focusY = :y, focusZoom = :zoom WHERE id = :id AND imageUrl IS NOT NULL")
+    suspend fun setItemFocus(id: Long, x: Float?, y: Float?, zoom: Float?)
 
     @Query("SELECT imageUrl FROM tier_items WHERE id = :id")
     suspend fun getTierItemImageById(id: Long): String?

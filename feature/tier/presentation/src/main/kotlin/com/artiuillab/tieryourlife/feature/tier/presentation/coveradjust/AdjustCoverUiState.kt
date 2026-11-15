@@ -10,6 +10,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 data class AdjustCoverUiState(
     val picture: String? = null,
     val focus: CoverFocus? = null,
+    /** A card's picture rather than the board's cover: its own title, frame and previews. */
+    val card: Boolean = false,
     val loaded: Boolean = false,
     val saving: Boolean = false,
     val saved: Boolean = false,
