@@ -206,6 +206,11 @@ class TierDragController {
         home = null
     }
 
+    /** The cards moved under a finger that did not: a strip scrolled on its own. */
+    fun refreshHover() {
+        if (draggedPayload != null) recomputeHover()
+    }
+
     private fun recomputeHover() {
         val position = pointerPositionInRoot
         hoveredTarget = if (rowBounds[DragTarget.Trash]?.contains(position) == true) {
@@ -331,13 +336,12 @@ class TierDragController {
             val bounds = pool.bounds
             val state = pool.state
             if (bounds == null || state == null) return null
-            val excludedIndex = pool.itemIds.indexOf(payload.itemId).takeIf { it >= 0 }
             val fromStart = if (rightToLeft) {
                 bounds.right - pointerPositionInRoot.x
             } else {
                 pointerPositionInRoot.x - bounds.left
             }
-            insertionIndexInRow(state, fromStart, excludedIndex)
+            insertionIndexInRow(state, fromStart, pool.itemIds.filter { it != payload.itemId })
         } else {
             val tiles = tileBounds.entries
                 .filter { (itemId, record) -> record.tierId == tierId && itemId in validItemIds }
@@ -349,18 +353,23 @@ class TierDragController {
     }
 }
 
-private fun insertionIndexInRow(state: LazyListState, localX: Float, excludedFullIndex: Int?): Int {
-    val visible = state.layoutInfo.visibleItemsInfo.filter { it.index != excludedFullIndex }
-    if (visible.isEmpty()) return 0
-
-    for (info in visible) {
-        val midpoint = info.offset + info.size / 2f
-        if (localX < midpoint) {
-            return translate(info.index, excludedFullIndex)
-        }
+/**
+ * Goes by the cards' keys, so the row may draw a slot and the lifted card where
+ * it likes; [others] are the row's cards without the lifted one, in order.
+ */
+private fun insertionIndexInRow(state: LazyListState, fromStart: Float, others: List<Long>): Int {
+    val info = state.layoutInfo
+    val visible = info.visibleItemsInfo.mapNotNull { item ->
+        val at = (item.key as? Long)?.let(others::indexOf) ?: -1
+        if (at < 0) null else at to item
     }
-
-    return translate(visible.last().index + 1, excludedFullIndex)
+    if (visible.isEmpty()) return 0
+    // Offsets start after the padding before the first card; the finger is measured from the row's edge.
+    val x = fromStart + info.viewportStartOffset
+    for ((at, item) in visible) {
+        if (x < item.offset + item.size / 2f) return at
+    }
+    return visible.last().first + 1
 }
 
 private fun insertionIndexInGrid(

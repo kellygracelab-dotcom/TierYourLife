@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performTouchInput
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
@@ -59,7 +60,6 @@ class TileLiftTest {
     @Test
     fun inThePool_anUpwardPull_liftsTheCardAtOnce() {
         setBoard(TierListDisplayMode.WRAP)
-        val source = bounds(TierDetailTestTags.tile(POOL_FIRST))
         val target = bounds(TierDetailTestTags.tierRow(2))
 
         composeRule.onNodeWithTag(TierDetailTestTags.tile(POOL_FIRST)).performTouchInput {
@@ -69,8 +69,9 @@ class TileLiftTest {
             advanceEventTime(16)
         }
         composeRule.onNodeWithTag(TierDetailTestTags.FLOATING_DRAG_TILE).assertExists()
-        composeRule.onNodeWithTag(TierDetailTestTags.tile(POOL_FIRST)).performTouchInput {
-            moveTo(Offset(target.left + target.width * 0.5f, target.center.y) - source.topLeft)
+        // The lifted card takes no room in the strip now: the finger is carried from the window.
+        composeRule.onRoot().performTouchInput {
+            moveTo(Offset(target.left + target.width * 0.5f, target.center.y))
             advanceEventTime(16)
             up()
         }
