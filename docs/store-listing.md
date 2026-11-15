@@ -1,8 +1,9 @@
 # The phone pictures in the Play listing
 
-Drawn by `StoreListingScreenshotTest`, dark theme, eight screens: a board, Settings, Your lists, a
-board with its pool, Community, a game's duel, the Food section with its topics, and a list's
-Rankings sheet.
+Drawn by `StoreListingScreenshotTest`. In the light theme: a new board's five tiers, all full; the
+same board with a card held up over the top row; a game's duel; a list's Rankings sheet; the Food
+section with its topics; then a board, a board with its pool, Your lists, Community and Settings.
+The dark theme repeats the last eight for comparison. Files are named `light-N-…` and `dark-N-…`.
 
 Only pictures made for the app go on a card: the fruit and vegetables in
 `navigation/src/androidTest/assets/listing/`, drawn by `docs/store-listing/draw_pictures.py`, and
@@ -12,13 +13,16 @@ artwork.
 
 ## Redrawing them
 
-Play wants 9:16, so set the emulator's window to 1080×1920 first and put it back afterwards:
+Play wants 9:16. For pictures that can be cropped, set the emulator to 1440×2560 at density 640
+(the same 360 dp as 1080×1920 at 480) and put it back afterwards:
 
 ```bash
-adb -s <emulator> shell wm size 1080x1920
+adb -s <emulator> shell wm size 1440x2560
+adb -s <emulator> shell wm density 640
 ANDROID_SERIAL=<emulator> ./gradlew :navigation:connectedDebugAndroidTest \
   -Pandroid.testInstrumentationRunnerArguments.class=com.artiuillab.tieryourlife.navigation.StoreListingScreenshotTest
 adb -s <emulator> shell wm size reset
+adb -s <emulator> shell wm density reset
 ```
 
 The files land under
