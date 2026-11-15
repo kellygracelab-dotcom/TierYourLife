@@ -16,6 +16,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardRemoval
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.BoardConflictDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
@@ -162,7 +163,7 @@ abstract class SyncEngineBench {
 
         override suspend fun index(after: String?): KeptBoardIndexDto {
             onIndex()
-            val all = server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint, title = it.title) }
+            val all = server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint, title = it.title, removal = it.removal) }
             val from = after?.let { last -> all.indexOfFirst { it.uid == last } + 1 } ?: 0
             val page = all.drop(from).take(pageSize)
             return KeptBoardIndexDto(page, next = page.lastOrNull()?.uid?.takeIf { from + page.size < all.size })
@@ -195,8 +196,21 @@ abstract class SyncEngineBench {
         }
 
         // As the proxy: a marker, not nothing, so the other phone hears of it.
-        override suspend fun forget(uid: String) {
+        val removals = mutableListOf<Pair<String, String>>()
+
+        /** Another phone's delete, with no reason given: an older app, or only the account's copy taken away. */
+        suspend fun forget(uid: String) {
             server[uid]?.let { stored -> server[uid] = stored.copy(revision = stored.revision + 1, deleted = true) }
+        }
+
+        /** The person deleted it for good on another phone or the website. */
+        fun forgetForever(uid: String) {
+            server[uid]?.let { stored -> server[uid] = stored.copy(revision = stored.revision + 1, deleted = true, removal = BoardRemoval.FOREVER) }
+        }
+
+        override suspend fun forget(uid: String, removal: String) {
+            removals += uid to removal
+            server[uid]?.let { stored -> server[uid] = stored.copy(revision = stored.revision + 1, deleted = true, removal = removal) }
         }
     }
 

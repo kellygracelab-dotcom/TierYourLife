@@ -13,7 +13,8 @@ class BoardSyncPlanTest {
         revision: Int = 1,
         deleted: Boolean = false,
         fingerprint: String? = null,
-    ) = listOf(RemoteBoard(board, revision, deleted, fingerprint))
+        forever: Boolean = false,
+    ) = listOf(RemoteBoard(board, revision, deleted, fingerprint, forever))
 
     private fun synced(revision: Int = 1, fingerprint: String = "aaa") =
         listOf(SyncedBoard(board, revision, fingerprint))
@@ -275,5 +276,51 @@ class BoardSyncPlanTest {
             ),
             steps,
         )
+    }
+
+    @Test
+    fun `a board deleted for good elsewhere and untouched here goes here too`() {
+        val steps = planSync(local(), remote(revision = 2, deleted = true, forever = true), synced(revision = 1))
+
+        assertEquals(listOf(SyncStep.DeleteLocal(board)), steps)
+    }
+
+    @Test
+    fun `a board in the trash here goes for good with a delete for good elsewhere`() {
+        val inTrash = listOf(LocalBoard(board, "trashed", inTrash = true))
+
+        val steps = planSync(inTrash, remote(revision = 2, deleted = true, forever = true), synced(revision = 1, fingerprint = "aaa"))
+
+        assertEquals(listOf(SyncStep.DeleteLocal(board)), steps)
+    }
+
+    @Test
+    fun `an edit here waits in the trash rather than outweighing a delete for good`() {
+        val steps = planSync(local("bbb"), remote(revision = 2, deleted = true, forever = true), synced(revision = 1, fingerprint = "aaa"))
+
+        assertEquals(listOf(SyncStep.TrashLocal(board, revision = 2)), steps)
+    }
+
+    @Test
+    fun `a board taken out of the trash after a delete for good was heard goes back up`() {
+        val steps = planSync(local("restored"), remote(revision = 2, deleted = true, forever = true), synced(revision = 2, fingerprint = "trashed"))
+
+        assertEquals(listOf(SyncStep.Revive(board, basedOn = 2)), steps)
+    }
+
+    @Test
+    fun `a board never agreed on waits in the trash for a delete for good`() {
+        val steps = planSync(local(), remote(revision = 5, deleted = true, forever = true), synced = emptyList())
+
+        assertEquals(listOf(SyncStep.TrashLocal(board, revision = 5)), steps)
+    }
+
+    @Test
+    fun `a delete for good already heard leaves the trash alone`() {
+        val inTrash = listOf(LocalBoard(board, "trashed", inTrash = true))
+
+        val steps = planSync(inTrash, remote(revision = 2, deleted = true, forever = true), synced(revision = 2, fingerprint = "trashed"))
+
+        assertEquals(emptyList<SyncStep>(), steps)
     }
 }

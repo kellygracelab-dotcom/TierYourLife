@@ -20,6 +20,11 @@ data class RemoteBoard(
     val deleted: Boolean,
     /** The fingerprint of whichever phone wrote it last, if it sent one. */
     val fingerprint: String? = null,
+    /**
+     * Deleted for good by the person, the trash emptied; not just the account's
+     * copy taken away, which leaves every phone's own board alone.
+     */
+    val forever: Boolean = false,
 )
 
 /** What this phone knew last time it and the account agreed about a board. */
@@ -64,6 +69,9 @@ sealed interface SyncStep {
      * The board goes up over the marker rather than being taken for a delete.
      */
     data class Revive(override val uid: String, val basedOn: Int) : SyncStep
+
+    /** Deleted for good somewhere else, and nothing here since: gone here as well, record and all. */
+    data class DeleteLocal(override val uid: String) : SyncStep
 
     /** Thrown away here. Tell the account, so the other phone lets go as well. */
     data class Forget(override val uid: String) : SyncStep
@@ -116,20 +124,7 @@ private fun stepFor(local: LocalBoard, remote: RemoteBoard?, synced: SyncedBoard
     if (remote == null) {
         return SyncStep.Create(local.uid)
     }
-    if (remote.deleted) {
-        // Without a record of agreeing, the marker says nothing about this
-        // board: backup switched off leaves one for every board, and reading
-        // those as deletes emptied the library the moment it was switched back
-        // on. An edit here since outweighs a delete made elsewhere. Otherwise
-        // it was thrown away on another phone: it goes to the trash here once
-        // and stays there until somebody empties it or takes it back out.
-        return when {
-            synced == null -> SyncStep.Revive(local.uid, basedOn = remote.revision)
-            local.fingerprint != synced.fingerprint && !local.inTrash -> SyncStep.Revive(local.uid, basedOn = remote.revision)
-            synced.revision != remote.revision -> SyncStep.TrashLocal(local.uid, revision = remote.revision)
-            else -> null
-        }
-    }
+    if (remote.deleted) return stepForMarker(local, remote, synced)
 
     // Asked first: a database restored from a system backup has every board
     // twice with no record of agreeing, and the safe reading would duplicate
@@ -155,6 +150,27 @@ private fun stepFor(local: LocalBoard, remote: RemoteBoard?, synced: SyncedBoard
         changedThere -> SyncStep.Restore(local.uid)
         // Neither side moved and the fingerprints disagree: written before
         // phones sent one. Nothing to do until an edit.
+        else -> null
+    }
+}
+
+private fun stepForMarker(local: LocalBoard, remote: RemoteBoard, synced: SyncedBoard?): SyncStep? {
+    // Without a record of agreeing, the marker says nothing about this
+    // board: backup switched off leaves one for every board, and reading
+    // those as deletes emptied the library the moment it was switched back
+    // on. An edit here since outweighs a delete made elsewhere. Otherwise
+    // it was thrown away on another phone: it goes to the trash here once
+    // and stays there until somebody empties it or takes it back out.
+    // Deleted for good, it goes here too, unless this phone has something
+    // of its own in it: then the trash keeps it, and taking it back out
+    // after that marker is heard sends it up again.
+    val unheard = synced == null || synced.revision != remote.revision
+    val editedHere = synced == null || (local.fingerprint != synced.fingerprint && !local.inTrash)
+    return when {
+        remote.forever && unheard && editedHere -> SyncStep.TrashLocal(local.uid, revision = remote.revision)
+        editedHere -> SyncStep.Revive(local.uid, basedOn = remote.revision)
+        remote.forever && unheard -> SyncStep.DeleteLocal(local.uid)
+        unheard -> SyncStep.TrashLocal(local.uid, revision = remote.revision)
         else -> null
     }
 }
