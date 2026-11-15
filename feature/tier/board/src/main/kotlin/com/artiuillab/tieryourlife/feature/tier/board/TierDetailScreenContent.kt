@@ -66,6 +66,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.ScrollAwayHeader
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
@@ -80,7 +81,10 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.drag.FloatingDr
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.CardPicking
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalCardPicking
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTierRowDensity
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OneByOnePanel
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUMN_MARGIN
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PlayButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolColumn
@@ -90,6 +94,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPool
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberOneByOne
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
@@ -525,6 +530,18 @@ private fun TierScreenBody(
             else -> null
         }
         val rowDensity = TierRowDensity.of(short, poolBeside, maxWidth, indexBeside)
+        val layoutMemory = LocalBoardLayoutMemory.current
+        val oneByOne = rememberOneByOne(onMoveItem)
+        val oneByOneOffered = pool != null && !readOnly && !glanceable && list.displayMode != TierListDisplayMode.FLAT_RANKED
+        val oneByOneOn = oneByOneOffered && layoutMemory.oneCardAtATime
+        val picking = remember(oneByOneOn, oneByOne.selectedId) {
+            if (oneByOneOn) CardPicking(oneByOne.selectedId, oneByOne::pick) else null
+        }
+        val oneByOnePanel: (@Composable (Boolean) -> Unit)? = if (oneByOneOffered) {
+            { beside -> OneByOnePanel(list, oneByOne, onExit = { layoutMemory.oneCardAtATime = false }, beside = beside) }
+        } else {
+            null
+        }
 
         val bar: @Composable () -> Unit = {
             TierScreenTopBar(
@@ -686,6 +703,7 @@ private fun TierScreenBody(
                             note = poolNote.takeIf { docked },
                             side = actions.poolSide,
                             countWhenEmpty = actions.emptyPoolCounted,
+                            oneByOnePanel = oneByOnePanel,
                         )
                     }
                 }
@@ -705,6 +723,7 @@ private fun TierScreenBody(
                         indexBeside = indexBeside,
                         note = poolNote,
                         side = actions.poolSide,
+                        oneByOnePanel = oneByOnePanel,
                         modifier = Modifier
                             .navigationBarsPadding()
                             .padding(POOL_COLUMN_MARGIN),
@@ -713,7 +732,7 @@ private fun TierScreenBody(
             }
         }
 
-        CompositionLocalProvider(LocalTierRowDensity provides rowDensity) {
+        CompositionLocalProvider(LocalTierRowDensity provides rowDensity, LocalCardPicking provides picking) {
             if (short) {
                 // The inset stays with the screen; the bar slides under it and back.
                 ScrollAwayHeader(header = bar, modifier = Modifier.fillMaxSize().statusBarsPadding()) {

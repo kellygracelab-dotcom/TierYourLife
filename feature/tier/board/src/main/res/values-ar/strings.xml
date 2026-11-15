@@ -212,4 +212,18 @@
     <string name="list_settings_public_changed_elsewhere">تغيّرت القائمة على جهاز آخر. حاول نشرها مجددًا.</string>
     <string name="list_settings_cover_adjust">ضبط الموضع</string>
     <string name="list_settings_cover_adjust_sub">أي جزء من الصورة يظهر</string>
+    <string name="one_by_one_toggle">واحدة تلو الأخرى</string>
+    <string name="one_by_one_on">التصنيف بطاقةً بطاقة</string>
+    <string name="one_by_one_skip">تخطَّ</string>
+    <string name="one_by_one_to_pool">إلى المجمّع</string>
+    <string name="one_by_one_done">كل البطاقات في أماكنها</string>
+    <string name="one_by_one_exit">خروج</string>
+    <plurals name="one_by_one_left">
+        <item quantity="zero">لم يبقَ شيء</item>
+        <item quantity="one">بقيت بطاقة واحدة</item>
+        <item quantity="two">بقيت بطاقتان</item>
+        <item quantity="few">بقيت %d بطاقات</item>
+        <item quantity="many">بقيت %d بطاقة</item>
+        <item quantity="other">بقيت %d بطاقة</item>
+    </plurals>
 </resources>

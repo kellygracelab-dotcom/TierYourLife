@@ -182,6 +182,11 @@ interface AppPreferences {
     fun poolDockRows(): Int = DEFAULT_POOL_DOCK_ROWS
 
     fun setPoolDockRows(rows: Int) = Unit
+
+    /** The pool ranked one card at a time, with a button per tier, instead of by dragging; this device only. */
+    fun oneCardAtATime(): Boolean = false
+
+    fun setOneCardAtATime(on: Boolean) = Unit
 }
 
 const val DEFAULT_POOL_DOCK_ROWS = 2

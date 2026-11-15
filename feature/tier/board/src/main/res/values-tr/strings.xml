@@ -172,4 +172,14 @@
     <string name="list_settings_public_changed_elsewhere">Bu liste başka bir cihazda değişti. Yeniden yayınlamayı deneyin.</string>
     <string name="list_settings_cover_adjust">Konumu ayarla</string>
     <string name="list_settings_cover_adjust_sub">Resmin hangi kısmı görünür</string>
+    <string name="one_by_one_toggle">Tek tek</string>
+    <string name="one_by_one_on">Her seferinde bir kart sıralama</string>
+    <string name="one_by_one_skip">Atla</string>
+    <string name="one_by_one_to_pool">Havuza</string>
+    <string name="one_by_one_done">Tüm kartlar yerinde</string>
+    <string name="one_by_one_exit">Çık</string>
+    <plurals name="one_by_one_left">
+        <item quantity="one">%d kaldı</item>
+        <item quantity="other">%d kaldı</item>
+    </plurals>
 </resources>

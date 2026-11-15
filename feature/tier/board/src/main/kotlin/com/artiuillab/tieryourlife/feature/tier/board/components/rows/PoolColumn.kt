@@ -20,7 +20,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -121,6 +123,8 @@ fun PoolColumn(
      * starts again from the rule each time the side changes.
      */
     side: Any? = null,
+    /** The pool ranked one card at a time, offered by a switch in the head; null where the board is not one's own. */
+    oneByOnePanel: (@Composable (beside: Boolean) -> Unit)? = null,
 ) {
     val memory = LocalBoardLayoutMemory.current
     val count = pool.items.size
@@ -188,16 +192,23 @@ fun PoolColumn(
             onAddClick = onAddClick,
             onGenerateClick = onGenerateClick,
         )
-        PoolColumnCards(
-            pool = pool,
-            roomy = roomy,
-            slot = if (isHovered) dragController.hoverIndex else null,
-            dragController = dragController,
-            onMoveItem = onMoveItem,
-            onDeleteItem = onDeleteItem,
-            onDoubleTap = onDoubleTap,
-            modifier = Modifier.weight(1f, fill = false),
-        )
+        val panel = oneByOnePanel.takeIf { memory.oneCardAtATime }
+        if (panel != null) {
+            Box(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) { panel(false) }
+        } else {
+            PoolColumnCards(
+                pool = pool,
+                roomy = roomy,
+                slot = if (isHovered) dragController.hoverIndex else null,
+                dragController = dragController,
+                onMoveItem = onMoveItem,
+                onDeleteItem = onDeleteItem,
+                onDoubleTap = onDoubleTap,
+                modifier = Modifier.weight(1f, fill = false),
+            )
+        }
+        // At the foot, so the head leaves a short window's cards their room.
+        oneByOneSwitch(offered = oneByOnePanel != null, memory = memory)?.let { Box(Modifier.padding(bottom = 10.dp)) { it() } }
     }
 }
 
