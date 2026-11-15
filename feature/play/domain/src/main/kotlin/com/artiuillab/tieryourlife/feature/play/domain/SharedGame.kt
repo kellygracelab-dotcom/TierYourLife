@@ -39,9 +39,10 @@ data class SharedGame(
 
 /**
  * The JSON both clients write and the proxy checks (readPlay in its sync.ts),
- * in its one normal form: compact, the keys in the order below, `scope` only
- * for part of a board (an empty one is the whole board, as the website writes
- * it) and `keepTier` only when true over a single tier. A
+ * in its one normal form: compact, the keys in the order below, `tiers` only
+ * in smart, which needs it, `scope` only for part of a board (an empty one is
+ * the whole board, as the website writes it) and `keepTier` only when true
+ * over a single tier. A
  * game written any other way the proxy writes back differently, and the
  * board's fingerprint would never settle.
  */
@@ -64,6 +65,7 @@ object SharedGameJson {
         }
         put("round", game.round)
         put("startedAt", game.startedAt)
+        if (game.spec.kind == GameKind.Smart) put("tiers", (game.spec.tiers ?: 1).coerceIn(1, game.ids.size))
         game.scope?.takeIf { it.isNotEmpty() }?.let { tiers -> putJsonArray("scope") { tiers.forEach { add(it) } } }
         if (game.keepTier && game.scope?.size == 1) put("keepTier", true)
     }.toString()
@@ -78,6 +80,8 @@ object SharedGameJson {
         val refine = (game["refine"] as? JsonPrimitive)?.takeUnless { it.isString }?.booleanOrNull ?: return null
         val round = game.whole("round")?.takeIf { it >= 0 } ?: return null
         val startedAt = (game["startedAt"] as? JsonPrimitive)?.takeUnless { it.isString }?.longOrNull?.takeIf { it >= 1 } ?: return null
+        // Read for smart alone, which cannot go on without it; the board's fingerprint leaves it out.
+        val tiers = game.whole("tiers").takeIf { kind == GameKind.Smart }
         val history = (game["history"] as? JsonArray)?.takeIf { it.size <= MAX_SHARED_GAME_HISTORY }
             ?.map { outcome(it, count) ?: return null } ?: return null
         val scope = when (val tiers = game["scope"]) {
@@ -85,15 +89,18 @@ object SharedGameJson {
             else -> uids(tiers, MAX_SHARED_GAME_SCOPE)?.takeIf { it.isNotEmpty() } ?: return null
         }
         return SharedGame(
-            spec = GameSpec(kind, count, seed, refine),
+            spec = GameSpec(kind, count, seed, refine, tiers),
             ids = ids,
             history = history,
             round = round,
             startedAt = startedAt,
             scope = scope,
             keepTier = game["keepTier"] == JsonPrimitive(true) && scope?.size == 1,
-        )
+        ).takeIf(::wellTiered)
     }
+
+    /** Smart is cut into 1 to count tiers; the other games are not cut until they end. */
+    private fun wellTiered(game: SharedGame): Boolean = game.spec.kind != GameKind.Smart || game.spec.tiers in 1..game.ids.size
 
     private fun JsonObject.text(key: String): String? = (this[key] as? JsonPrimitive)?.takeIf { it.isString }?.content
 

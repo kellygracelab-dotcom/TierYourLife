@@ -7,9 +7,11 @@
         <item quantity="other">%1$d cartões de %2$s</item>
     </plurals>
     <string name="play_choose_cards">Escolher cartões</string>
+    <string name="play_game_smart">Escolha inteligente</string>
     <string name="play_game_swiss">Perdedores continuam</string>
     <string name="play_game_hill">Rei da colina</string>
     <string name="play_game_bracket">Chaveamento</string>
+    <string name="play_game_smart_line">Pergunta só pelos cartões que ainda podem mudar de nível. Quase os mesmos níveis com bem menos duelos.</string>
     <string name="play_game_swiss_line">Todos jogam todas as rodadas. Mais lento, o melhor para preencher os níveis.</string>
     <string name="play_game_hill_line">O vencedor fica e enfrenta o próximo cartão. Rápido; os níveis saem aproximados.</string>
     <string name="play_game_bracket_line">Os pares se enfrentam e os vencedores avançam até sobrar um. Rápido; os níveis saem aproximados.</string>

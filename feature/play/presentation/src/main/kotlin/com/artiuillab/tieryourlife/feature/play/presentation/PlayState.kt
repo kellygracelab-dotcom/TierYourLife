@@ -27,7 +27,7 @@ enum class PickerPage { Games, Cards, Individual }
 data class CardOption(val item: TierItem, val tierId: Long)
 
 /** The games in the order the picker lists them: the default first. */
-val PlayGames = listOf(GameKind.Swiss, GameKind.Hill, GameKind.Bracket)
+val PlayGames = listOf(GameKind.Smart, GameKind.Swiss, GameKind.Hill, GameKind.Bracket)
 
 /** One row of "Choose cards": the pool or a tier that has cards. */
 @Immutable
@@ -63,7 +63,7 @@ data class Picker(
     val title: String,
     val groups: List<CardGroup>,
     val chosen: Set<Long>,
-    val kind: GameKind = GameKind.Swiss,
+    val kind: GameKind = GameKind.Smart,
     val page: PickerPage = PickerPage.Games,
     /** Opened on the cards because the board is too big to play whole: there is no game page behind it yet. */
     val cardsFirst: Boolean = false,

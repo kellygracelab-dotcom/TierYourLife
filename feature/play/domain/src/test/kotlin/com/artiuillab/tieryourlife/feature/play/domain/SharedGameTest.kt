@@ -173,4 +173,25 @@ class SharedGameTest {
         assertNull(latestGame(onBoard = null, inFile = exampleOnThisPhone.copy(onBoard = true)))
         assertEquals(exampleOnThisPhone, latestGame(onBoard = null, inFile = exampleOnThisPhone))
     }
+
+    @Test
+    fun smart_carriesItsTiers_betweenStartedAtAndScope_andNeedsThem() {
+        val smart = exampleGame.copy(spec = GameSpec(GameKind.Smart, 4, seed = 7, tiers = 3), round = 0)
+
+        val json = SharedGameJson.encode(smart)
+
+        assertTrue(json, json.contains(""""startedAt":1793146000000,"tiers":3,"scope":["t-s"]"""))
+        assertEquals(smart, SharedGameJson.decode(json))
+        assertNull(SharedGameJson.decode(json.replace(""""tiers":3,""", "")))
+        assertNull(SharedGameJson.decode(json.replace(""""tiers":3""", """"tiers":5""")))
+        assertNull(SharedGameJson.decode(json.replace(""""tiers":3""", """"tiers":0""")))
+    }
+
+    @Test
+    fun theOtherGames_neitherWriteNorKeepTiers() {
+        assertEquals(sharedExample, SharedGameJson.encode(exampleGame.copy(spec = exampleGame.spec.copy(tiers = 3))))
+        val withTiers = sharedExample.replace(""""startedAt":1793146000000,""", """"startedAt":1793146000000,"tiers":3,""")
+
+        assertEquals(exampleGame, SharedGameJson.decode(withTiers))
+    }
 }
