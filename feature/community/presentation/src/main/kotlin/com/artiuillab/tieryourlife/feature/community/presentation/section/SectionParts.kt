@@ -37,8 +37,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -282,16 +284,8 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
         } else {
             SectionArt(section, Modifier.fillMaxSize(), scrim = false)
         }
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        0f to Color.Black.copy(alpha = if (waiting) 0.45f else 0f),
-                        1f to Color.Black.copy(alpha = 0.7f),
-                    ),
-                ),
-        )
+        if (waiting) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = WAITING_DIM)))
+        Box(Modifier.fillMaxSize().background(NameStrip))
         if (waiting) {
             Row(
                 Modifier
@@ -312,7 +306,7 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 12.dp, end = 10.dp, bottom = 8.dp),
-            style = TileName,
+            style = TopicName,
             color = Color.White,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -320,11 +314,28 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
     }
 }
 
+/**
+ * The picture at full strength, dark only under the name: clear down to the
+ * strip, then deep enough by the letters for white to read at 4.5:1 on white.
+ * The website uses the same stops.
+ */
+private val NameStrip = Brush.verticalGradient(
+    0.55f to Color.Black.copy(alpha = 0f),
+    0.64f to Color.Black.copy(alpha = 0.55f),
+    1f to Color.Black.copy(alpha = 0.75f),
+)
+private const val WAITING_DIM = 0.45f
+
 private val TOPIC_TILE_HEIGHT = 64.dp
 private const val FOLDED_ROWS = 2
 private const val TOPIC_FADE_MILLIS = 150
 private val TOPIC_TILE_MIN_WIDTH = 170.dp
-private val TileName = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
+private val TopicName = TextStyle(
+    fontSize = 15.sp,
+    lineHeight = 20.sp,
+    fontWeight = FontWeight.Medium,
+    shadow = Shadow(Color.Black.copy(alpha = 0.6f), Offset(0f, 1f), blurRadius = 4f),
+)
 
 /** Popular or Newest from a menu, at the end of the row (§3.1). */
 @Composable
