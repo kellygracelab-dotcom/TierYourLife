@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.play.domain.SharedGameJson
 import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.play.domain.progress
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -220,5 +221,30 @@ class SyncTest {
         assertNull(second.boardByUid(uid))
         assertEquals(listOf("Sport"), second.boards.getTrashEntries().map { it.title })
         assertNotEquals(0, second.boardsApi.index().boards.count { it.uid == uid && it.deleted })
+    }
+
+    // 15.11: a library deleted for good somewhere else landed in this phone's
+    // trash. Taking a board back out has to put it in the account again.
+    @Test
+    fun aBoardTakenBackOutOfTheTrash_afterADeleteElsewhere_returnsToTheAccountAndTheOtherPhone() = runBlocking<Unit> {
+        val id = first.newBoard("Pixar", ranked = mapOf("S" to listOf("Up")))
+        val uid = first.board(id).uid
+        first.sync.sync()
+        second.sync.sync()
+        second.boards.deleteTierListPermanently(second.boardByUid(uid)!!.id)
+        second.sync.sync()
+        first.sync.sync()
+        val trashed = first.boards.getTrashEntries().filterIsInstance<TrashEntry.DeletedList>().single { it.title == "Pixar" }
+
+        first.boards.restoreTierLists(listOf(trashed.id))
+        first.sync.sync()
+        second.sync.sync()
+        first.sync.sync()
+
+        assertFalse(first.boardsApi.index().boards.single { it.uid == uid }.deleted)
+        assertNull(first.boardsApi.board(uid).deletedAt)
+        assertEquals(listOf("Up"), second.cardsIn(second.boardByUid(uid)!!, "S"))
+        assertNotNull(first.boardByUid(uid))
+        assertTrue(first.boards.getTrashEntries().none { it.title == "Pixar" })
     }
 }
