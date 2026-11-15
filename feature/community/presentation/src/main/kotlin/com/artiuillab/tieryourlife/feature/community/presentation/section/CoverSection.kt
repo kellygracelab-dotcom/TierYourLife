@@ -40,10 +40,10 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListS
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.shownTitle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CloudOffIcon
+import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.countText
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
-import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 
 /**
@@ -53,28 +53,29 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
  */
 @Composable
 internal fun CoverSection(
-    state: SectionUiState,
+    title: String,
+    feed: FeedPane,
     onBack: () -> Unit,
     onOpenList: (PublishedListSummary) -> Unit,
     onRetry: () -> Unit,
     onLoadMore: () -> Unit,
 ) {
     val list = rememberLazyListState()
-    val alpha = rememberSkeletonAlpha(running = state.feed.lists.isEmpty() && state.feed.phase != FeedPhase.Failed)
-    val rows = state.feed.lists
+    val alpha = rememberSkeletonAlpha(running = feed.lists.isEmpty() && feed.phase != FeedPhase.Failed)
+    val rows = feed.lists
     val nearEnd by remember { derivedStateOf { (list.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) >= list.layoutInfo.totalItemsCount - NEAR_END } }
-    LaunchedEffect(nearEnd, rows.size) { if (nearEnd && rows.isNotEmpty() && state.feed.canLoadMore) onLoadMore() }
+    LaunchedEffect(nearEnd, rows.size) { if (nearEnd && rows.isNotEmpty() && feed.canLoadMore) onLoadMore() }
     LazyColumn(
         state = list,
         modifier = Modifier.fillMaxSize().testTag(SectionTestTags.COVER),
         contentPadding = PaddingValues(bottom = 8.dp),
     ) {
         item(key = "header") {
-            CoverHeader(title = state.section.label(), onBack = onBack)
+            CoverHeader(title = title, onBack = onBack)
         }
         when {
             rows.isNotEmpty() -> items(rows, key = { it.id }) { summary -> CoverRow(summary) { onOpenList(summary) } }
-            state.feed.phase == FeedPhase.Failed -> item(key = "failed") { CoverFailed(onRetry) }
+            feed.phase == FeedPhase.Failed -> item(key = "failed") { CoverFailed(onRetry) }
             else -> items(SKELETON_ROWS) { CoverSkeletonRow(alpha) }
         }
     }
