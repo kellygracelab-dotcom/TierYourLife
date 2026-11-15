@@ -486,9 +486,13 @@ class StoreListingScreenshotTest {
         const val HOLD_MILLIS = 600L
         const val STEP_MILLIS = 16L
         const val DRAG_STEPS = 20
-        val SCREENS = listOf("hero-board", "drag", "game", "rankings", "section", "rankings-a", "rankings-b", "rankings-a-rows", "rankings-b-rows", "board", "pool", "lists", "community", "settings")
-            .map { Shot(it, dark = false) } +
-            listOf("board", "settings", "lists", "pool", "community", "game", "section", "rankings").map { Shot(it, dark = true) }
+        val SCREENS = listOf(
+            "hero-board", "drag", "game", "rankings", "section", "rankings-a", "rankings-b", "rankings-a-rows",
+            "rankings-b-rows", "board", "pool", "lists", "community", "settings",
+        ).map { Shot(it, dark = false) } + listOf(
+            "hero-board", "drag", "game", "section", "rankings-a", "rankings-b", "rankings-a-rows", "rankings-b-rows",
+            "community", "lists",
+        ).map { Shot(it, dark = true) }
     }
 }
 

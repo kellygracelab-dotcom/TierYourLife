@@ -5,7 +5,9 @@ same board with a card held up over the top row; a game's duel; a list's Ranking
 section with its topics; one list as its author placed it and as a reader did (`rankings-a`,
 `rankings-b`, with the bar naming whose rows, and `-rows` without it, all five tiers in frame); then a
 board, a board with its pool, Your lists, Community and Settings.
-The dark theme repeats the last eight for comparison. Files are named `light-N-…` and `dark-N-…`.
+The dark theme has the same scenes without Settings (it shows an email): the full board, the card
+in flight, the duel, the Food section, both rankings with and without the bar, Community and Your lists.
+Files are named `light-N-…` and `dark-N-…`.
 
 Only pictures made for the app go on a card: the fruit and vegetables in
 `navigation/src/androidTest/assets/listing/`, drawn by `docs/store-listing/draw_pictures.py`, and
