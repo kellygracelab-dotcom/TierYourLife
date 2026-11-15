@@ -233,7 +233,7 @@ private fun PoolColumnCards(
             items(entries, key = { it.key }) { entry ->
                 Box(contentAlignment = Alignment.Center) {
                     when (entry) {
-                        PoolEntry.Slot -> CardSlot(POOL_TILE_WIDTH, POOL_TILE_HEIGHT)
+                        PoolEntry.Slot -> CardSlot(POOL_TILE_WIDTH, POOL_TILE_HEIGHT, dragController.draggedPayload)
                         is PoolEntry.Card -> DraggableTile(
                             item = entry.item,
                             sourceTierId = pool.id,

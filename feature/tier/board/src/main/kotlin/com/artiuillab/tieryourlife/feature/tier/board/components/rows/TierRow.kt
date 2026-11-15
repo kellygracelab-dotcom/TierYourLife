@@ -291,7 +291,7 @@ fun TierRow(
                     } else {
                         null
                     },
-                    slotContent = { CardSlot(rowDensity.tileWidth, rowDensity.tileHeight) },
+                    slotContent = { CardSlot(rowDensity.tileWidth, rowDensity.tileHeight, dragController.draggedPayload) },
                     modifier = Modifier
                         .weight(1f)
                         .padding(rowDensity.padding)

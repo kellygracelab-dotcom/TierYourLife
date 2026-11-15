@@ -298,7 +298,7 @@ private fun PoolCards(
         ) {
             items(entries, key = { it.key }) { entry ->
                 when (entry) {
-                    PoolEntry.Slot -> CardSlot(POOL_TILE_WIDTH, POOL_TILE_HEIGHT, Modifier.padding(end = STRIP_GAP))
+                    PoolEntry.Slot -> CardSlot(POOL_TILE_WIDTH, POOL_TILE_HEIGHT, dragController.draggedPayload, Modifier.padding(end = STRIP_GAP))
                     is PoolEntry.Card -> DraggableTile(
                         item = entry.item,
                         sourceTierId = pool.id,
@@ -498,7 +498,7 @@ private fun PoolCardsWrapped(
         ) {
             items(entries, key = { it.key }) { entry ->
                 when (entry) {
-                    PoolEntry.Slot -> CardSlot(POOL_TILE_WIDTH, POOL_TILE_HEIGHT)
+                    PoolEntry.Slot -> CardSlot(POOL_TILE_WIDTH, POOL_TILE_HEIGHT, dragController.draggedPayload)
                     is PoolEntry.Card -> DraggableTile(
                         item = entry.item,
                         sourceTierId = pool.id,

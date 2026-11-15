@@ -7,11 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.dashedBorder
+import com.artiuillab.tieryourlife.feature.tier.board.components.drag.DragPayload
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 
 /** One place in the pool's lazy row or grid: a card, or the slot of the card hovering over it. */
@@ -69,13 +72,20 @@ internal fun HoldPlaceWhileReordering(entries: List<PoolEntry>, hold: () -> Unit
     }
 }
 
-/** Where the lifted card would land, as the rows and the pool draw it. */
+/** Where the lifted card would land, as the rows and the pool draw it: the card itself, faint, as the site draws it. */
 @Composable
-internal fun CardSlot(width: Dp, height: Dp, modifier: Modifier = Modifier) {
-    Box(
-        modifier
-            .size(width, height)
-            .dashedBorder(width = 2.dp, color = MaterialTheme.colorScheme.primary, cornerRadius = 6.dp)
-            .testTag(TierDetailTestTags.DROP_SLOT),
-    )
+internal fun CardSlot(width: Dp, height: Dp, lifted: DragPayload?, modifier: Modifier = Modifier) {
+    val place = modifier
+        .size(width, height)
+        .testTag(TierDetailTestTags.DROP_SLOT)
+    if (lifted == null) {
+        Box(place.dashedBorder(width = 2.dp, color = MaterialTheme.colorScheme.primary, cornerRadius = 6.dp))
+        return
+    }
+    // A picture of the card, not a second card: screen readers and tests find only the one being moved.
+    Box(place.alpha(SLOT_ALPHA).clearAndSetSemantics {}) {
+        ItemTile(item = TierItem(id = lifted.itemId, title = lifted.title, imageUrl = lifted.imageUrl), width = width, height = height)
+    }
 }
+
+private const val SLOT_ALPHA = 0.4f
