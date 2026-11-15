@@ -161,12 +161,14 @@ private fun stepForMarker(local: LocalBoard, remote: RemoteBoard, synced: Synced
     // on. An edit here since outweighs a delete made elsewhere. Otherwise
     // it was thrown away on another phone: it goes to the trash here once
     // and stays there until somebody empties it or takes it back out.
-    // Deleted for good, it goes here too, unless this phone has something
-    // of its own in it: then the trash keeps it, and taking it back out
-    // after that marker is heard sends it up again.
+    // Deleted for good, it goes here too, from the trash whatever happened
+    // to it, unless this phone has something of its own in it: then the
+    // trash keeps it, and taking it back out after that marker is heard
+    // sends it up again. The website reads a marker the same way.
     val unheard = synced == null || synced.revision != remote.revision
     val editedHere = synced == null || (local.fingerprint != synced.fingerprint && !local.inTrash)
     return when {
+        remote.forever && unheard && local.inTrash -> SyncStep.DeleteLocal(local.uid)
         remote.forever && unheard && editedHere -> SyncStep.TrashLocal(local.uid, revision = remote.revision)
         editedHere -> SyncStep.Revive(local.uid, basedOn = remote.revision)
         remote.forever && unheard -> SyncStep.DeleteLocal(local.uid)

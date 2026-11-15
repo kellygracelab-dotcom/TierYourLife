@@ -323,4 +323,22 @@ class BoardSyncPlanTest {
 
         assertEquals(emptyList<SyncStep>(), steps)
     }
+
+    @Test
+    fun `a board in the trash here and never agreed on goes for good with a delete for good`() {
+        val inTrash = listOf(LocalBoard(board, "trashed", inTrash = true))
+
+        val steps = planSync(inTrash, remote(revision = 5, deleted = true, forever = true), synced = emptyList())
+
+        assertEquals(listOf(SyncStep.DeleteLocal(board)), steps)
+    }
+
+    @Test
+    fun `a board in the trash here and never agreed on still goes up over a marker without a reason`() {
+        val inTrash = listOf(LocalBoard(board, "trashed", inTrash = true))
+
+        val steps = planSync(inTrash, remote(revision = 5, deleted = true), synced = emptyList())
+
+        assertEquals(listOf(SyncStep.Revive(board, basedOn = 5)), steps)
+    }
 }
