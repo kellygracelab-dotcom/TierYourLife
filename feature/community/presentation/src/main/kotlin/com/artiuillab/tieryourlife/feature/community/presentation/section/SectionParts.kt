@@ -63,7 +63,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSection
@@ -95,54 +94,18 @@ internal object SectionTestTags {
 
 internal val SectionTitleStyle = TextStyle(fontSize = 28.sp, lineHeight = 36.sp)
 
-/**
- * The expanded header (§3.1): the four top covers, or the section's art when
- * fewer qualify, under a scrim, with the name and Follow.
- */
+/** A section's picture: its four top covers, or its art when fewer qualify. */
 @Composable
-internal fun SectionHeader(
-    section: Section,
-    stats: Section?,
-    onToggleFollow: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .testTag(SectionTestTags.HEADER),
-    ) {
-        val collage = stats?.collage.orEmpty()
-        if (collage.size >= COLLAGE_COVERS) {
-            Row(Modifier.fillMaxSize().background(lookOf(section).tintNow), horizontalArrangement = Arrangement.spacedBy(1.dp)) {
-                collage.take(COLLAGE_COVERS).forEach { url ->
-                    AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.weight(1f).fillMaxSize())
-                }
+internal fun SectionBackdrop(section: Section, stats: Section?, modifier: Modifier) {
+    val collage = stats?.collage.orEmpty()
+    if (collage.size >= COLLAGE_COVERS) {
+        Row(modifier.background(lookOf(section).tintNow), horizontalArrangement = Arrangement.spacedBy(1.dp)) {
+            collage.take(COLLAGE_COVERS).forEach { url ->
+                AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.weight(1f).fillMaxSize())
             }
-        } else {
-            SectionArt(section, Modifier.fillMaxSize(), scrim = false)
         }
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        0f to Color.Black.copy(alpha = 0.35f),
-                        0.35f to Color.Black.copy(alpha = 0.05f),
-                        1f to Color.Black.copy(alpha = 0.68f),
-                    ),
-                ),
-        )
-        Row(
-            Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(section.label(), Modifier.weight(1f), style = SectionTitleStyle, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            FollowToggle(following = stats?.following == true, onClick = onToggleFollow)
-        }
+    } else {
+        SectionArt(section, modifier, scrim = false)
     }
 }
 

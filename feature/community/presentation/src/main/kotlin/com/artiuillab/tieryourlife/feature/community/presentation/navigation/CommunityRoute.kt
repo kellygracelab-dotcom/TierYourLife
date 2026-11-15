@@ -127,9 +127,11 @@ sealed interface CommunityRoute {
         val name: String? = null,
         /** A section id; null while the topic waits. */
         val section: String? = null,
+        /** Its own picture, as the tile showed it, so the page opens on it rather than on the section's art. */
+        val picture: String? = null,
     ) : CommunityRoute {
         companion object {
-            fun of(topic: TopicModel) = Topic(topicId = topic.id, name = topic.name, section = topic.section)
+            fun of(topic: TopicModel) = Topic(topicId = topic.id, name = topic.name, section = topic.section, picture = topic.pictureUrl)
         }
     }
 }
@@ -171,6 +173,7 @@ internal fun SavedStateHandle.topicRoute() = CommunityRoute.Topic(
     topicId = required(CommunityRoute.Topic::topicId.name),
     name = get<String>(CommunityRoute.Topic::name.name),
     section = get<String>(CommunityRoute.Topic::section.name),
+    picture = get<String>(CommunityRoute.Topic::picture.name),
 )
 
 internal fun SavedStateHandle.proposeSectionRoute() = CommunityRoute.ProposeSection(
