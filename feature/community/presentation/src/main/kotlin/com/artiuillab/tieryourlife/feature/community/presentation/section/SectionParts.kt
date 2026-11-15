@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -284,8 +285,11 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
         } else {
             SectionArt(section, Modifier.fillMaxSize(), scrim = false)
         }
-        if (waiting) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = WAITING_DIM)))
-        Box(Modifier.fillMaxSize().background(NameStrip))
+        if (waiting) {
+            Box(Modifier.fillMaxSize().background(WaitingDim))
+        } else {
+            Box(Modifier.align(Alignment.BottomStart).fillMaxWidth().fillMaxHeight(NAME_STRIP_HEIGHT).background(NameStrip))
+        }
         if (waiting) {
             Row(
                 Modifier
@@ -315,16 +319,23 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
 }
 
 /**
- * The picture at full strength, dark only under the name: clear down to the
- * strip, then deep enough by the letters for white to read at 4.5:1 on white.
- * The website uses the same stops.
+ * The picture at full strength, dark only in the bottom strip under the name,
+ * deep enough by the letters for white to read at 4.5:1 on a white picture.
+ * The website uses the same strip and stops. A waiting topic is dimmed whole:
+ * it is not a place yet.
  */
+private const val NAME_STRIP_HEIGHT = 0.45f
 private val NameStrip = Brush.verticalGradient(
-    0.55f to Color.Black.copy(alpha = 0f),
-    0.64f to Color.Black.copy(alpha = 0.55f),
+    0f to Color.Black.copy(alpha = 0f),
+    0.1f to Color.Black.copy(alpha = 0.3f),
+    0.2f to Color.Black.copy(alpha = 0.58f),
+    0.55f to Color.Black.copy(alpha = 0.66f),
     1f to Color.Black.copy(alpha = 0.75f),
 )
-private const val WAITING_DIM = 0.45f
+private val WaitingDim = Brush.verticalGradient(
+    0f to Color.Black.copy(alpha = 0.45f),
+    1f to Color.Black.copy(alpha = 0.7f),
+)
 
 private val TOPIC_TILE_HEIGHT = 64.dp
 private const val FOLDED_ROWS = 2
@@ -334,7 +345,7 @@ private val TopicName = TextStyle(
     fontSize = 15.sp,
     lineHeight = 20.sp,
     fontWeight = FontWeight.Medium,
-    shadow = Shadow(Color.Black.copy(alpha = 0.6f), Offset(0f, 1f), blurRadius = 4f),
+    shadow = Shadow(Color.Black.copy(alpha = 0.6f), Offset(0f, 1f), blurRadius = 3f),
 )
 
 /** Popular or Newest from a menu, at the end of the row (§3.1). */
