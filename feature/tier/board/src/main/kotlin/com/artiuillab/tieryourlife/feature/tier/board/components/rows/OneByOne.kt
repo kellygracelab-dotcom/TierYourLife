@@ -57,6 +57,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.BoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
@@ -155,17 +156,18 @@ internal fun rememberOneByOne(move: (itemId: Long, toTierId: Long, toPosition: I
     return remember { OneByOne { itemId, toTierId, toPosition -> latest(itemId, toTierId, toPosition) } }
 }
 
-/** The pool's switch where one at a time is [offered], or null. */
-internal fun oneByOneSwitch(offered: Boolean, memory: BoardLayoutMemory): (@Composable () -> Unit)? = if (offered) {
-    { OneByOneToggle(on = memory.oneCardAtATime, onToggle = { memory.oneCardAtATime = !memory.oneCardAtATime }) }
+/** The pool's switch where one at a time is [offered], or null; [compact] on the phone's tray, whose head keeps one line. */
+internal fun oneByOneSwitch(offered: Boolean, memory: BoardLayoutMemory, compact: Boolean = false): (@Composable () -> Unit)? = if (offered) {
+    { OneByOneToggle(on = memory.oneCardAtATime, onToggle = { memory.oneCardAtATime = !memory.oneCardAtATime }, compact = compact) }
 } else {
     null
 }
 
 /** The switch in the pool's head between dragging and one card at a time. */
 @Composable
-internal fun OneByOneToggle(on: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
+internal fun OneByOneToggle(on: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, compact: Boolean = false) {
     val description = stringResource(R.string.one_by_one_on)
+    val tint = if (on) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(100.dp))
@@ -177,13 +179,13 @@ internal fun OneByOneToggle(on: Boolean, onToggle: () -> Unit, modifier: Modifie
                 contentDescription = description
             }
             .testTag(TierDetailTestTags.ONE_BY_ONE_TOGGLE)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = if (compact) 8.dp else 12.dp, vertical = 6.dp),
     ) {
-        Text(
-            text = stringResource(R.string.one_by_one_toggle),
-            style = MaterialTheme.typography.labelLarge,
-            color = if (on) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (compact) {
+            ViewCarouselIcon(20.dp, tint)
+        } else {
+            Text(text = stringResource(R.string.one_by_one_toggle), style = MaterialTheme.typography.labelLarge, color = tint)
+        }
     }
 }
 

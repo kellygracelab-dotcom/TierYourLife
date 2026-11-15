@@ -131,7 +131,7 @@ fun PoolSheet(
     val memory = LocalBoardLayoutMemory.current
     val dockRows = memory.poolDockRows.takeIf { it in BoardLayoutMemory.DockRowChoices } ?: BoardLayoutMemory.DEFAULT_DOCK_ROWS
     val lifting = docked && dragController.draggedPayload != null && !readOnly
-    val toggle = oneByOneSwitch(offered = oneByOnePanel != null, memory = memory)
+    val toggle = oneByOneSwitch(offered = oneByOnePanel != null, memory = memory, compact = !docked)
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
     val count = pool.items.size
     val description = pluralStringResource(
