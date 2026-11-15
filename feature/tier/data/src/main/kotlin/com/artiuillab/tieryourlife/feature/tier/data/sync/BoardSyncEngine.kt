@@ -14,6 +14,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardRemoval
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.BoardConflictDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeepBoardRequestDto
@@ -316,6 +317,7 @@ class BoardSyncEngine @Inject constructor(
                     revision = summary.revision,
                     deleted = summary.deleted,
                     fingerprint = summary.fingerprint,
+                    forever = summary.deleted && summary.removal == BoardRemoval.FOREVER,
                 )
             }
             after = page.next
@@ -338,8 +340,9 @@ class BoardSyncEngine @Inject constructor(
             is SyncStep.Restore -> takeOver(account, api.board(step.uid), planned = fingerprints[step.uid])
             is SyncStep.Adopt -> adopt(account, api.board(step.uid))
             is SyncStep.TrashLocal -> trashHere(account, step.uid, step.revision, planned = fingerprints[step.uid])
+            is SyncStep.DeleteLocal -> deleteHere(account, step.uid, planned = fingerprints[step.uid])
             is SyncStep.Forget -> {
-                api.forget(step.uid)
+                api.forget(step.uid, BoardRemoval.FOREVER)
                 dao.forget(account, step.uid)
             }
             is SyncStep.DropRecord -> dao.forget(account, step.uid)
@@ -360,6 +363,14 @@ class BoardSyncEngine @Inject constructor(
         if (board.deletedAt == null) dao.trashBoard(uid, System.currentTimeMillis())
         val trashed = dao.boardByUid(uid) ?: return@together
         remember(account, uid, revision, fingerprintOf(trashed))
+    }
+
+    /** Deleted for good elsewhere. Not if it was edited since the plan: the next run looks again. */
+    private suspend fun deleteHere(account: String, uid: String, planned: String?) = dao.together {
+        val board = dao.boardByUid(uid) ?: return@together
+        if (planned != null && fingerprintOf(board) != planned) return@together
+        dao.deleteBoardByUid(uid)
+        dao.forget(account, uid)
     }
 
     /**

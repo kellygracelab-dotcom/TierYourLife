@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.BoardSyncEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardRemoval
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
 import kotlinx.coroutines.Job
@@ -455,6 +456,7 @@ class BoardSyncEngineTest : SyncEngineBench() {
 
         assertTrue(backup.stopAndDelete())
         assertEquals(listOf(true, true), listOf(films, games).map { boards.server.getValue(it).deleted })
+        assertEquals(setOf(BoardRemoval.CLOUD), boards.removals.map { it.second }.toSet())
         backup.start()
         engine(preferences = preferences, accounts = accounts).sync()
 

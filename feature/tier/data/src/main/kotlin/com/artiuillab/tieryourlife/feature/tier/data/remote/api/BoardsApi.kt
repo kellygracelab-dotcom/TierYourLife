@@ -31,5 +31,14 @@ interface BoardsApi {
     ): Response<KeptBoardRevisionDto>
 
     @DELETE("boards/{uid}")
-    suspend fun forget(@Path("uid") uid: String)
+    suspend fun forget(@Path("uid") uid: String, @Query("removal") removal: String)
+}
+
+/** Why a board left the account, as its marker keeps it. */
+object BoardRemoval {
+    /** The person deleted it for good: every phone lets go of it. */
+    const val FOREVER = "forever"
+
+    /** Only the account's copy went: each phone keeps its own. */
+    const val CLOUD = "cloud"
 }
