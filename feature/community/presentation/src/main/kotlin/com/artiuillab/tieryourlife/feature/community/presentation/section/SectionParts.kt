@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,8 +38,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -63,7 +66,6 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSection
@@ -95,54 +97,18 @@ internal object SectionTestTags {
 
 internal val SectionTitleStyle = TextStyle(fontSize = 28.sp, lineHeight = 36.sp)
 
-/**
- * The expanded header (§3.1): the four top covers, or the section's art when
- * fewer qualify, under a scrim, with the name and Follow.
- */
+/** A section's picture: its four top covers, or its art when fewer qualify. */
 @Composable
-internal fun SectionHeader(
-    section: Section,
-    stats: Section?,
-    onToggleFollow: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .testTag(SectionTestTags.HEADER),
-    ) {
-        val collage = stats?.collage.orEmpty()
-        if (collage.size >= COLLAGE_COVERS) {
-            Row(Modifier.fillMaxSize().background(lookOf(section).tintNow), horizontalArrangement = Arrangement.spacedBy(1.dp)) {
-                collage.take(COLLAGE_COVERS).forEach { url ->
-                    AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.weight(1f).fillMaxSize())
-                }
+internal fun SectionBackdrop(section: Section, stats: Section?, modifier: Modifier) {
+    val collage = stats?.collage.orEmpty()
+    if (collage.size >= COLLAGE_COVERS) {
+        Row(modifier.background(lookOf(section).tintNow), horizontalArrangement = Arrangement.spacedBy(1.dp)) {
+            collage.take(COLLAGE_COVERS).forEach { url ->
+                AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.weight(1f).fillMaxSize())
             }
-        } else {
-            SectionArt(section, Modifier.fillMaxSize(), scrim = false)
         }
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        0f to Color.Black.copy(alpha = 0.35f),
-                        0.35f to Color.Black.copy(alpha = 0.05f),
-                        1f to Color.Black.copy(alpha = 0.68f),
-                    ),
-                ),
-        )
-        Row(
-            Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(section.label(), Modifier.weight(1f), style = SectionTitleStyle, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            FollowToggle(following = stats?.following == true, onClick = onToggleFollow)
-        }
+    } else {
+        SectionArt(section, modifier, scrim = false)
     }
 }
 
@@ -282,16 +248,11 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
         } else {
             SectionArt(section, Modifier.fillMaxSize(), scrim = false)
         }
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        0f to Color.Black.copy(alpha = if (waiting) 0.45f else 0f),
-                        1f to Color.Black.copy(alpha = 0.7f),
-                    ),
-                ),
-        )
+        if (waiting) {
+            Box(Modifier.fillMaxSize().background(WaitingDim))
+        } else {
+            Box(Modifier.align(Alignment.BottomStart).fillMaxWidth().fillMaxHeight(NAME_STRIP_HEIGHT).background(NameStrip))
+        }
         if (waiting) {
             Row(
                 Modifier
@@ -312,7 +273,7 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 12.dp, end = 10.dp, bottom = 8.dp),
-            style = TileName,
+            style = TopicName,
             color = Color.White,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -320,11 +281,35 @@ private fun TopicTile(section: Section, topic: Topic, waiting: Boolean, modifier
     }
 }
 
+/**
+ * The picture at full strength, dark only in the bottom strip under the name,
+ * deep enough by the letters for white to read at 4.5:1 on a white picture.
+ * The website uses the same strip and stops. A waiting topic is dimmed whole:
+ * it is not a place yet.
+ */
+private const val NAME_STRIP_HEIGHT = 0.45f
+private val NameStrip = Brush.verticalGradient(
+    0f to Color.Black.copy(alpha = 0f),
+    0.1f to Color.Black.copy(alpha = 0.3f),
+    0.2f to Color.Black.copy(alpha = 0.58f),
+    0.55f to Color.Black.copy(alpha = 0.66f),
+    1f to Color.Black.copy(alpha = 0.75f),
+)
+private val WaitingDim = Brush.verticalGradient(
+    0f to Color.Black.copy(alpha = 0.45f),
+    1f to Color.Black.copy(alpha = 0.7f),
+)
+
 private val TOPIC_TILE_HEIGHT = 64.dp
 private const val FOLDED_ROWS = 2
 private const val TOPIC_FADE_MILLIS = 150
 private val TOPIC_TILE_MIN_WIDTH = 170.dp
-private val TileName = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
+private val TopicName = TextStyle(
+    fontSize = 15.sp,
+    lineHeight = 20.sp,
+    fontWeight = FontWeight.Medium,
+    shadow = Shadow(Color.Black.copy(alpha = 0.6f), Offset(0f, 1f), blurRadius = 3f),
+)
 
 /** Popular or Newest from a menu, at the end of the row (§3.1). */
 @Composable

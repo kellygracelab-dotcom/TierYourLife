@@ -12,6 +12,8 @@ data class TopicUiState(
     val name: String,
     /** A section id. */
     val section: String?,
+    /** The topic's own picture: the route's at first, the server's once it answers. */
+    val picture: String? = null,
     val topic: Topic? = null,
     val feed: CommunityFeed = CommunityFeed.Loading,
     val sort: FeedSort = FeedSort.Popular,
