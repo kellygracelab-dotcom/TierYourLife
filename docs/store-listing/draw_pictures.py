@@ -7,9 +7,14 @@ S = 4
 W, H = 400, 600
 out = Path(sys.argv[1])
 out.mkdir(parents=True, exist_ok=True)
+# While a topic's picture is put together, each drawing is kept here on a clear ground instead of saved.
+kept = None
 
 
 def canvas(bg_top, bg_bottom):
+    if kept is not None:
+        img = Image.new("RGBA", (W * S, H * S), (0, 0, 0, 0))
+        return img, ImageDraw.Draw(img)
     img = Image.new("RGB", (W * S, H * S), bg_top)
     d = ImageDraw.Draw(img)
     for y in range(H * S):
@@ -28,7 +33,8 @@ def ell(d, cx, cy, rx, ry, fill, outline=None, width=0):
 
 
 def shadow(d, cx, cy, rx, color):
-    ell(d, cx, cy, rx, rx * 0.16, color)
+    if kept is None:
+        ell(d, cx, cy, rx, rx * 0.16, color)
 
 
 def leaf(d, x, y, length, angle, width, fill):
@@ -40,6 +46,9 @@ def leaf(d, x, y, length, angle, width, fill):
 
 
 def save(img, name):
+    if kept is not None:
+        kept[name] = img
+        return
     img.resize((W, H), Image.LANCZOS).save(out / f"{name}.png", optimize=True)
 
 
@@ -368,3 +377,38 @@ for draw in (strawberry, watermelon, mango, cherries, lemon, grapes, kiwi, orang
              carrot, tomato, eggplant, broccoli, corn, pepper,
              apple, pear, pineapple, avocado, blueberries, lime, plum, coconut, radish, pumpkin):
     draw()
+
+
+# A topic's tile is 16:10: three whole drawings side by side, with room around them.
+TW, TH = 1280, 800
+
+
+def topic(name, bg_top, bg_bottom, drawings):
+    global kept
+    kept = {}
+    for draw in drawings:
+        draw()
+    parts, kept = list(kept.values()), None
+    img = Image.new("RGB", (TW, TH), bg_top)
+    d = ImageDraw.Draw(img)
+    for y in range(TH):
+        t = y / TH
+        d.line([(0, y), (TW, y)], fill=tuple(round(a + (b - a) * t) for a, b in zip(bg_top, bg_bottom)))
+    height = 460
+    width = round(340 * height / 400)
+    gap = (TW - width * len(parts)) / (len(parts) + 1)
+    for i, part in enumerate(parts):
+        piece = part.crop((30 * S, 100 * S, 370 * S, 500 * S)).resize((width, height), Image.LANCZOS)
+        x = round(gap + i * (width + gap))
+        ell_box = [x + width * 0.1, (TH + height) / 2 - 18, x + width * 0.9, (TH + height) / 2 + 22]
+        d.ellipse(ell_box, fill=tuple(round(c * 0.9) for c in bg_bottom))
+        img.paste(piece, (x, (TH - height) // 2), piece)
+    img.save(out / f"topic-{name}.png", optimize=True)
+
+
+topic("fruit", (255, 243, 214), (252, 226, 170), (mango, strawberry, cherries))
+topic("vegetables", (232, 245, 220), (208, 232, 190), (carrot, broccoli, pepper))
+topic("soup", (255, 230, 222), (248, 200, 190), (tomato, carrot, broccoli))
+topic("picnic", (224, 247, 230), (196, 234, 206), (watermelon, banana, grapes))
+topic("berries", (243, 229, 245), (225, 204, 236), (strawberry, blueberries, cherries))
+topic("breakfast", (255, 246, 222), (250, 230, 186), (banana, orange, apple))
