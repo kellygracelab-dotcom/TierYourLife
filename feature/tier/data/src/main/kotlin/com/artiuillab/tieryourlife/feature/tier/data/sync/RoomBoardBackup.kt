@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardRemoval
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardBackup
@@ -67,7 +68,7 @@ class RoomBoardBackup @Inject constructor(
             // Each record goes with its board, so one left halfway is sent
             // back up by the next run rather than read as a delete.
             liveInAccount().forEach { uid ->
-                api.forget(uid)
+                api.forget(uid, BoardRemoval.CLOUD)
                 dao.forget(account, uid)
             }
             dao.syncRecordsOf(account).forEach { record -> dao.forget(account, record.listUid) }

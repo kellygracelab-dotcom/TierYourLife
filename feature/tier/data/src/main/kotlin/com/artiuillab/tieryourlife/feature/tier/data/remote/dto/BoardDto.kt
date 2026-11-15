@@ -16,6 +16,8 @@ data class KeptBoardDto(
     val revision: Int = 0,
     val deleted: Boolean = false,
     val fingerprint: String? = null,
+    /** On a marker: [BoardRemoval.FOREVER] or [BoardRemoval.CLOUD]; older ones have none. */
+    val removal: String? = null,
     /** The phone that last wrote it, shown on the copy kept after a conflict. */
     val deviceName: String? = null,
     val title: String = "",
@@ -85,6 +87,7 @@ data class KeptBoardSummaryDto(
     val deviceName: String? = null,
     val title: String = "",
     val itemCount: Int = 0,
+    val removal: String? = null,
     val updatedAt: Long = 0,
 )
 
