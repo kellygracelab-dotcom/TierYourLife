@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.feature.account.presentation.erased.AccountErasedNoticeHost
 import com.artiuillab.tieryourlife.feature.community.presentation.section.ProvideSections
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.rememberStartOnCommunity
 
 /**
  * A cover screen gets an app of its own rather than the app with most of its
@@ -47,7 +48,10 @@ fun TierYourLifeContent(
             val wanted = HandOffRules.stillWanted(handOff, System.currentTimeMillis())
             // Too late is dropped here, not shown again the next time the phone shuts.
             if (handOff != null && wanted == null) LaunchedEffect(handOff) { handOff = null }
-            TierYourLifeNavHost(
+            // Asked of the database before the first screen is drawn, so nobody sees Your lists flash past.
+            val startOnCommunity = rememberStartOnCommunity()
+            if (startOnCommunity != null) {
+                TierYourLifeNavHost(
                 themeChoice = themeChoice,
                 onThemeChoiceChange = onThemeChoiceChange,
                 languageTag = languageTag,
@@ -56,7 +60,9 @@ fun TierYourLifeContent(
                 handOff = wanted,
                 onHandOffDone = { handOff = null },
                 onBoardShown = { boardOnMain = it },
+                startOnCommunity = startOnCommunity,
             )
+            }
         }
         AccountErasedNoticeHost()
     }
