@@ -89,6 +89,8 @@ fun TierYourLifeNavHost(
     handOff: HandOff? = null,
     onHandOffDone: () -> Unit = {},
     onBoardShown: (Long?) -> Unit = {},
+    /** Someone with no lists yet starts on the community's, where there is something to see. */
+    startOnCommunity: Boolean = false,
 ) {
     // The rail replaces the tabs once there is room beside the content.
     // Outside the NavHost so it stays put while destinations change under it.
@@ -112,6 +114,7 @@ fun TierYourLifeNavHost(
                 onThemeChoiceChange = onThemeChoiceChange,
                 languageTag = languageTag,
                 onLanguageTagChange = onLanguageTagChange,
+                startOnCommunity = startOnCommunity,
             )
         }
     }
@@ -268,6 +271,7 @@ private fun NavContent(
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     languageTag: String?,
     onLanguageTagChange: (String?) -> Unit,
+    startOnCommunity: Boolean,
 ) {
     // A card that knows the list is the reader's own goes to its board, with no page pushed in between.
     val openList = rememberListOpener(
@@ -277,7 +281,7 @@ private fun NavContent(
     val shift = with(LocalDensity.current) { AXIS_SHIFT.roundToPx() }
     NavHost(
         navController = navController,
-        startDestination = Route.TierLists(),
+        startDestination = Route.TierLists(community = startOnCommunity),
         enterTransition = { if (betweenTopLevels()) topLevelIn() else pushIn(shift) },
         exitTransition = { if (betweenTopLevels()) holdBeneath(TOP_LEVEL_FADE_MILLIS) else pushAside(shift) },
         popEnterTransition = { if (betweenTopLevels()) topLevelIn() else comeBack(shift) },
