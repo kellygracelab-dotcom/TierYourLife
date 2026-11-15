@@ -298,6 +298,9 @@
     <string name="community_started_from_theirs_unnamed">Deine Version beginnt mit diesem Ranking</string>
     <string name="community_replaced_yours">Deine Version durch das Ranking von %1$s ersetzt</string>
     <string name="community_replaced_yours_unnamed">Deine Version durch dieses Ranking ersetzt</string>
+    <string name="community_replace_yours_ask">Mit dem Ranking von %1$s beginnen? Deine Version wird ersetzt.</string>
+    <string name="community_replace_yours_ask_unnamed">Mit diesem Ranking beginnen? Deine Version wird ersetzt.</string>
+    <string name="community_action_replace">Ersetzen</string>
     <string name="community_action_undo">Rückgängig</string>
     <string name="community_picture_credits">Bildnachweise</string>
     <string name="community_picture_credit_line">%1$s — %2$s</string>

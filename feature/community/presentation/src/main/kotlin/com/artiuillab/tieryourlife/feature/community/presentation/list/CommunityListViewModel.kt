@@ -104,6 +104,9 @@ class CommunityListViewModel @Inject constructor(
 
     /** Mine as it was before a move on Theirs replaced it, for Undo. */
     private var beforeTheirs: Pair<TierList, Boolean>? = null
+
+    /** The move on Theirs that asked before replacing Mine. */
+    private var asked: Triple<Long, Long, Int>? = null
     internal val game: GameTurns = GameTurns(_state) { afterGame ->
         progress.keep()
         choices.offerIfNeeded(afterGame)
@@ -338,11 +341,46 @@ class CommunityListViewModel @Inject constructor(
      * A move while their arrangement is on screen: the reader's own version
      * begins as what they were looking at, a chosen reader's placing included,
      * with that one move made. The board stays as it was under the finger.
+     * A Mine with a card in a tier is asked about first, each time, as on the web.
      */
     private fun startFromTheirs(current: CommunityListUiState.Success, itemId: Long, toTierId: Long, toPosition: Int) {
         // Cards another reader added stay in their version: Mine on this page holds the list's cards only.
         val listCards = current.list.tiers.flatMap { it.items }.mapTo(mutableSetOf()) { it.id }
         if (itemId !in listCards) return
+        if (hasOwnVersion(current)) {
+            asked = Triple(itemId, toTierId, toPosition)
+            _state.value = current.copy(replaceAsk = ReplaceAsk(current.theirsName))
+            return
+        }
+        replaceMineWithTheirs(current, listCards, itemId, toTierId, toPosition, replaced = false)
+    }
+
+    /** Replace: Mine starts from Theirs with the move that asked. */
+    fun replaceYours() {
+        val (itemId, toTierId, toPosition) = asked ?: return
+        asked = null
+        val current = (_state.value as? CommunityListUiState.Success)?.copy(replaceAsk = null) ?: return
+        val listCards = current.list.tiers.flatMap { it.items }.mapTo(mutableSetOf()) { it.id }
+        replaceMineWithTheirs(current, listCards, itemId, toTierId, toPosition, replaced = true)
+    }
+
+    /** Cancel: the move is not made, and Theirs stays on screen as it was. */
+    fun keepYours() {
+        asked = null
+        _state.update { state -> if (state is CommunityListUiState.Success) state.copy(replaceAsk = null) else state }
+    }
+
+    private fun hasOwnVersion(current: CommunityListUiState.Success): Boolean =
+        current.arranged && current.mine.tiers.any { !it.isPool && it.items.isNotEmpty() }
+
+    private fun replaceMineWithTheirs(
+        current: CommunityListUiState.Success,
+        listCards: Set<Long>,
+        itemId: Long,
+        toTierId: Long,
+        toPosition: Int,
+        replaced: Boolean,
+    ) {
         beforeTheirs = current.mine to current.arranged
         game.forget()
         _state.update { state ->
@@ -352,9 +390,10 @@ class CommunityListViewModel @Inject constructor(
                 mine = state.mine.copy(tiers = theirs).withItemMoved(itemId, toTierId, toPosition),
                 showing = Showing.Mine,
                 arranged = true,
+                replaceAsk = null,
             )
         }
-        viewModelScope.launch { told.send(ListNotice.StartedFromTheirs(current.theirsName, replaced = current.arranged)) }
+        viewModelScope.launch { told.send(ListNotice.StartedFromTheirs(current.theirsName, replaced = replaced)) }
         progress.keep()
         choices.offerIfNeeded()
     }

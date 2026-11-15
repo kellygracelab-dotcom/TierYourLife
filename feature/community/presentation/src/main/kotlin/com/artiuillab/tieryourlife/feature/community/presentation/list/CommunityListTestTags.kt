@@ -24,6 +24,8 @@ internal object CommunityListTestTags {
     const val GAME_STEP = "community_list_game_step"
     const val REMOVE_RANKING_DIALOG = "community_list_remove_ranking_dialog"
     const val REMOVE_RANKING_CONFIRM = "community_list_remove_ranking_confirm"
+    const val REPLACE_YOURS_DIALOG = "community_list_replace_yours_dialog"
+    const val REPLACE_YOURS_CONFIRM = "community_list_replace_yours_confirm"
     const val RANKINGS_SHEET = "community_list_rankings_sheet"
     const val RANKING_AUTHOR = "community_list_ranking_author"
     const val WITHDRAW_RANKING = "community_list_withdraw_ranking"

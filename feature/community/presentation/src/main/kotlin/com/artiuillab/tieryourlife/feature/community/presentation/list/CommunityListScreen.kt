@@ -157,6 +157,9 @@ fun CommunityListScreen(
             onNotNow = viewModel.choices::dismiss,
         )
     }
+    loaded?.replaceAsk?.let { ask ->
+        ReplaceYoursDialog(name = ask.name, onReplace = viewModel::replaceYours, onCancel = viewModel::keepYours)
+    }
     if (playRequest != null) {
         play.Layer(request = playRequest, open = playOpen, onArranged = viewModel::putInMine, onClose = { playOpen = false })
     }
@@ -430,6 +433,24 @@ fun CommunityListScreenContent(
             onOpenBoard = onOpenSaved,
         )
     }
+}
+
+/** Asked before a move on someone else's ranking puts it in place of one's own version. */
+@Composable
+internal fun ReplaceYoursDialog(name: String?, onReplace: () -> Unit, onCancel: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onCancel,
+        modifier = Modifier.testTag(CommunityListTestTags.REPLACE_YOURS_DIALOG),
+        text = {
+            Text(if (name != null) stringResource(R.string.community_replace_yours_ask, name) else stringResource(R.string.community_replace_yours_ask_unnamed))
+        },
+        confirmButton = {
+            TextButton(onClick = onReplace, modifier = Modifier.testTag(CommunityListTestTags.REPLACE_YOURS_CONFIRM)) {
+                Text(stringResource(R.string.community_action_replace))
+            }
+        },
+        dismissButton = { TextButton(onClick = onCancel) { Text(stringResource(ThemeR.string.action_cancel)) } },
+    )
 }
 
 /** Taking one's own ranking out of the list's Rankings, asked first: the board on this phone stays. */

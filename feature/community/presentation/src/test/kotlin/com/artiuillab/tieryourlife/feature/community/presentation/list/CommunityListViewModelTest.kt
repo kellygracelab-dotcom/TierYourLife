@@ -33,6 +33,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -114,13 +115,68 @@ class CommunityListViewModelTest {
         assertFalse(after.arranged)
     }
 
+    // Danylo 16.11, as on the web: one's own version is asked about first, every time.
     @Test
-    fun startingFromTheirsOverAnArrangedMine_saysItReplacedIt_andUndoBringsItBack() = runBlocking {
+    fun aMoveOnTheirsOverAnArrangedMine_asksFirst_andChangesNothingYet() = runBlocking {
         val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
         val mine = arranged(viewModel).mine
         viewModel.show(Showing.Theirs)
 
         viewModel.moveItem(itemId = 0, toTierId = 1, toPosition = 0)
+
+        val asking = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(ReplaceAsk("Olena M."), asking.replaceAsk)
+        assertEquals(mine, asking.mine)
+        assertEquals(Showing.Theirs, asking.showing)
+    }
+
+    @Test
+    fun cancel_leavesTheirsAsItWas_andTheNextMoveAsksAgain() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
+        val mine = arranged(viewModel).mine
+        viewModel.show(Showing.Theirs)
+        val theirs = (viewModel.state.value as CommunityListUiState.Success).theirs
+
+        viewModel.moveItem(itemId = 0, toTierId = 1, toPosition = 0)
+        viewModel.keepYours()
+
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertNull(after.replaceAsk)
+        assertEquals(mine, after.mine)
+        assertEquals(theirs, after.theirs)
+        assertEquals(Showing.Theirs, after.showing)
+
+        viewModel.moveItem(itemId = 0, toTierId = 1, toPosition = 0)
+        assertEquals(ReplaceAsk("Olena M."), (viewModel.state.value as CommunityListUiState.Success).replaceAsk)
+    }
+
+    @Test
+    fun aMineWithNothingInItsTiers_isReplacedWithoutAsking() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
+        val loaded = arranged(viewModel)
+        viewModel.moveItem(itemId = 1, toTierId = loaded.mine.tiers.first { it.isPool }.id, toPosition = 0)
+        viewModel.show(Showing.Theirs)
+
+        viewModel.moveItem(itemId = 1, toTierId = 1, toPosition = 0)
+
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertNull(after.replaceAsk)
+        assertEquals(Showing.Mine, after.showing)
+        assertEquals(ListNotice.StartedFromTheirs("Olena M.", replaced = false), withTimeout(5_000) { viewModel.listNotices.first() })
+    }
+
+    @Test
+    fun replace_startsMineFromTheirs_saysItReplacedIt_andUndoBringsItBack() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
+        val mine = arranged(viewModel).mine
+        viewModel.show(Showing.Theirs)
+
+        viewModel.moveItem(itemId = 0, toTierId = 1, toPosition = 0)
+        viewModel.replaceYours()
+        val replaced = viewModel.state.value as CommunityListUiState.Success
+        assertNull(replaced.replaceAsk)
+        assertEquals(Showing.Mine, replaced.showing)
+        assertEquals(listOf("Hereditary"), replaced.mine.tiers.first { it.id == 1L }.items.map { it.title })
         val notice = withTimeout(5_000) { viewModel.listNotices.first() }
         viewModel.undoStartFromTheirs()
 

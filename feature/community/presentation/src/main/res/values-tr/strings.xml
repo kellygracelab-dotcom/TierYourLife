@@ -298,6 +298,9 @@
     <string name="community_started_from_theirs_unnamed">Sürümünüz bu sıralamadan başlıyor</string>
     <string name="community_replaced_yours">Sürümünüz %1$s sıralamasıyla değiştirildi</string>
     <string name="community_replaced_yours_unnamed">Sürümünüz bu sıralamayla değiştirildi</string>
+    <string name="community_replace_yours_ask">%1$s adlı kişinin sıralamasıyla başlansın mı? Senin sürümün değiştirilecek.</string>
+    <string name="community_replace_yours_ask_unnamed">Bu sıralamayla başlansın mı? Senin sürümün değiştirilecek.</string>
+    <string name="community_action_replace">Değiştir</string>
     <string name="community_action_undo">Geri al</string>
     <string name="community_picture_credits">Görsel kaynakları</string>
     <string name="community_picture_credit_line">%1$s — %2$s</string>
