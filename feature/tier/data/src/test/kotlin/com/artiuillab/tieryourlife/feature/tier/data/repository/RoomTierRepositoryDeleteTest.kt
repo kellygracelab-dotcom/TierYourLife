@@ -318,6 +318,16 @@ private class RecordingTierDao : TierDao {
         lists.computeIfPresent(id) { _, list -> list.copy(coverFocusX = x, coverFocusY = y, coverFocusZoom = zoom) }
     }
 
+    override suspend fun dropDrafts() {
+        lists.values.removeAll { it.draft }
+    }
+
+    override suspend fun keepDraft(id: Long) {
+        lists.computeIfPresent(id) { _, list -> list.copy(draft = false) }
+    }
+
+    override suspend fun discardDraft(id: Long): Int = if (lists[id]?.draft == true) deleteTierListById(id) else 0
+
     override suspend fun countPublishedLists(owner: String?): Int = 0
 
     override suspend fun countBoards(owner: String?): Int = 0

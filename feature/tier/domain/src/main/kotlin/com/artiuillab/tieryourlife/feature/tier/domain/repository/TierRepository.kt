@@ -31,6 +31,18 @@ interface TierRepository {
     suspend fun createTierList(title: String, captions: List<String>): Long
 
     /**
+     * A board from New list, as [createTierList] but a draft: no list of
+     * boards shows it and it is not sent to the account until [keepDraft],
+     * so one left untouched leaves nothing behind.
+     */
+    suspend fun createDraft(title: String, captions: List<String>): Long = createTierList(title, captions)
+
+    suspend fun keepDraft(id: Long) {}
+
+    /** Removes the board if it is still a draft; a kept one stays. */
+    suspend fun discardDraft(id: Long) {}
+
+    /**
      * Builds a board from somebody else's published list, keeping the ranking
      * it was handed: each of [tiers] arrives with the cards ranked into it,
      * and [items] are the ones left in the pool.

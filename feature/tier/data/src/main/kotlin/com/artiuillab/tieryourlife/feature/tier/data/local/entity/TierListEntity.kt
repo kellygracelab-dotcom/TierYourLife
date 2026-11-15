@@ -73,6 +73,9 @@ data class TierListEntity(
     val ownerUid: String? = null,
     val originVersion: Long? = null,
     val rankingChoice: String? = null,
+    /** Made by New list and not touched yet: shown only on its own board, never sent, and gone when left as it came. */
+    @ColumnInfo(defaultValue = "0")
+    val draft: Boolean = false,
 ) {
     companion object {
         /** Not a uid any account can have. */

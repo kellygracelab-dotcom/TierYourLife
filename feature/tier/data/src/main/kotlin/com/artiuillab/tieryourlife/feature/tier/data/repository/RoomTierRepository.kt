@@ -101,6 +101,14 @@ class RoomTierRepository internal constructor(
         return dao.createTierListWithDefaultTier(title = title, captions = captions, owner = owner())
     }
 
+    override suspend fun createDraft(title: String, captions: List<String>): Long = dao.createDraft(title, captions, owner())
+
+    override suspend fun keepDraft(id: Long) = dao.keepDraft(id)
+
+    override suspend fun discardDraft(id: Long) {
+        if (dao.discardDraft(id) > 0) imageStore.deleteOrphans(picturesInUse())
+    }
+
     override suspend fun createFromTemplate(
         title: String,
         authorName: String,

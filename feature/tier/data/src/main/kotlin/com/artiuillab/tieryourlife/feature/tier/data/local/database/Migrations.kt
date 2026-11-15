@@ -5,6 +5,13 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 
+/** No board is a draft: every one made before was kept as it was made. */
+val MIGRATION_22_23 = object : Migration(22, 23) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN draft INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
 /** Which part of each card's picture shows: none yet, so every card keeps its picture's default. */
 val MIGRATION_21_22 = object : Migration(21, 22) {
     override fun migrate(db: SupportSQLiteDatabase) {
