@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onNodeWithText
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import org.junit.Rule
 import org.junit.Test
@@ -23,7 +24,7 @@ class TopicListCountTest {
     private fun show(listCount: Int?) {
         val topic = Topic("pixar", "Pixar", ListCategory.FilmTv.id, TopicStatus.Approved, listCount = listCount)
         composeRule.setContent {
-            TierYourLifeTheme { TopicScreenContent(state = TopicUiState(name = "Pixar", section = topic.section, topic = topic), onBack = {}) }
+            TierYourLifeTheme { TopicScreenContent(state = TopicUiState(name = "Pixar", section = topic.section, topic = topic, feed = CommunityFeed.Ready(emptyList())), onBack = {}) }
         }
     }
 

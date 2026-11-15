@@ -57,7 +57,7 @@ class TopicViewModel @Inject constructor(
     val signInRequests: Flow<Unit> = guest.signInRequests
 
     private val _state = MutableStateFlow(
-        TopicUiState(name = route.name.orEmpty(), section = route.section),
+        TopicUiState(name = route.name.orEmpty(), section = route.section, picture = route.picture),
     )
     val state: StateFlow<TopicUiState> = _state.asStateFlow()
 
@@ -75,7 +75,7 @@ class TopicViewModel @Inject constructor(
         viewModelScope.launch {
             community.topic(route.topicId).fold(
                 onSuccess = { topic ->
-                    _state.update { it.copy(topic = topic, name = topic.name, section = topic.section, headerFailed = false) }
+                    _state.update { it.copy(topic = topic, name = topic.name, section = topic.section, picture = topic.pictureUrl ?: it.picture, headerFailed = false) }
                 },
                 onFailure = { error ->
                     Timber.w(error, "Reading a topic failed")

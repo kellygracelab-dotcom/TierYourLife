@@ -45,11 +45,14 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Commun
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
+import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.list.CommunityListUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionScreenContent
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionUiState
+import com.artiuillab.tieryourlife.feature.community.presentation.topic.TopicScreenContent
+import com.artiuillab.tieryourlife.feature.community.presentation.topic.TopicUiState
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.presentation.DuelScreen
 import com.artiuillab.tieryourlife.feature.play.presentation.DuelState
@@ -205,6 +208,17 @@ class StoreListingScreenshotTest {
             onSkip = {},
             onUndo = {},
             onQuit = {},
+        )
+
+        "topic" -> TopicScreenContent(
+            state = TopicUiState(
+                name = "Fruit",
+                section = ListCategory.Food.id,
+                picture = pic("topic-fruit"),
+                topic = topic("fruit", "Fruit", "topic-fruit").copy(following = true, listCount = foodLists().size),
+                feed = CommunityFeed.Ready(foodLists()),
+            ),
+            onBack = {},
         )
 
         "section" -> SectionScreenContent(
@@ -488,10 +502,10 @@ class StoreListingScreenshotTest {
         const val DRAG_STEPS = 20
         val SCREENS = listOf(
             "hero-board", "drag", "game", "rankings", "section", "rankings-a", "rankings-b", "rankings-a-rows",
-            "rankings-b-rows", "board", "pool", "lists", "community", "settings",
+            "rankings-b-rows", "board", "pool", "lists", "community", "settings", "topic",
         ).map { Shot(it, dark = false) } + listOf(
             "hero-board", "drag", "game", "section", "rankings-a", "rankings-b", "rankings-a-rows", "rankings-b-rows",
-            "community", "lists",
+            "community", "lists", "topic",
         ).map { Shot(it, dark = true) }
     }
 }

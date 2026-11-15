@@ -1,86 +1,33 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.section
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
-import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
-import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.BackArrowIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CardActions
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.CommunityNotice
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.EnterAlwaysColumn
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedCallbacks
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedListMenus
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowSize
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.FollowToggle
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.HomeLayout
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.NearEndWatcher
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.NewListsPill
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.OfflineStrip
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScrolledDownWatcher
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.WideContentMax
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.edgeToEdge
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedItems
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.homeLayoutFor
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.followingSentence
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
@@ -90,7 +37,6 @@ import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.launch
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /** What a section's page can be asked to do beyond its feed. */
@@ -167,24 +113,21 @@ fun SectionScreenContent(
     val topicCalls = TopicCalls(onOpenWaiting = { waitingTopic = it }, onSuggest = { suggesting = true })
     SectionNotices(notices, snackbar, feed.onRefresh, calls.onToggleSectionFollow)
 
-    Surface(Modifier.fillMaxSize().testTag(SectionTestTags.SCREEN), color = MaterialTheme.colorScheme.surface) {
-        BoxWithConstraints(Modifier.fillMaxSize()) {
-            val layout = homeLayoutFor(currentWindowShape, maxHeight)
-            val cards = CardActions(onOpenList) { menuFor = it }
-            when (layout) {
-                HomeLayout.Cover -> CoverSection(state, onBack, onOpenList, feed.onRetry, feed.onLoadMore)
-                HomeLayout.CompactHeight -> EnterAlwaysColumn(
-                    // The inset stays with the screen while the bar leaves.
-                    modifier = Modifier.statusBarsPadding(),
-                    header = { CompactSectionBar(state, onBack, calls.onToggleSectionFollow) },
-                    body = { SectionFeed(state, layout, feed, calls, cards, headerShown = false, topicCalls = topicCalls) },
-                )
-
-                else -> SectionFeed(state, layout, feed, calls, cards, headerShown = true, topicCalls = topicCalls, onBack = onBack)
-            }
-            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
-        }
-    }
+    val head = PageHead(
+        title = state.section.label(),
+        following = state.stats?.following == true,
+        onToggleFollow = calls.onToggleSectionFollow,
+        backdrop = { SectionBackdrop(state.section, state.stats, it) },
+    )
+    val cards = CardActions(onOpenList) { menuFor = it }
+    val body = PageBody(
+        feed = state.feed,
+        nowMillis = state.nowMillis,
+        callbacks = feed,
+        onOpenList = onOpenList,
+        items = { layout, alpha -> sectionBody(state, layout, alpha, feed, calls, cards, topicCalls) },
+    )
+    ListsPage(head, body, onBack, snackbar, SectionTestTags.SCREEN)
     FeedListMenus(menuFor, { menuFor = null }, feed, onOpenAuthor)
     waitingTopic?.let { WaitingTopicSheet(it) { waitingTopic = null } }
     if (suggesting) {
@@ -237,65 +180,6 @@ private fun SectionNotices(
     }
 }
 
-/** The grid: header (where there is one), the topics, the sort row, the lists. */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SectionFeed(
-    state: SectionUiState,
-    layout: HomeLayout,
-    feed: FeedCallbacks,
-    calls: SectionCallbacks,
-    cards: CardActions,
-    headerShown: Boolean,
-    topicCalls: TopicCalls,
-    onBack: () -> Unit = {},
-) {
-    val grid = rememberLazyGridState()
-    val scope = rememberCoroutineScope()
-    val alpha = rememberSkeletonAlpha(running = state.feed.phase == FeedPhase.Loading)
-    ScrolledDownWatcher(grid, feed.onScrolledDown)
-    NearEndWatcher(grid, state.feed.lists.size, feed.onLoadMore)
-    Column(Modifier.fillMaxSize()) {
-        OfflineStrip(state.feed.offlineSinceMillis, state.nowMillis, state.feed.retrying, feed.onRetry)
-        Box(Modifier.fillMaxSize()) {
-            PullToRefreshBox(isRefreshing = state.feed.refreshing, onRefresh = feed.onRefresh, modifier = Modifier.fillMaxSize()) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(layout.feedColumns),
-                        state = grid,
-                        modifier = Modifier
-                            .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
-                            .fillMaxSize(),
-                        contentPadding = systemBarsContentPadding(start = sideOf(layout), end = sideOf(layout), bottom = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        if (headerShown) {
-                            item(key = "header", span = { GridItemSpan(maxLineSpan) }) {
-                                SectionHeader(state.section, state.stats, calls.onToggleSectionFollow, Modifier.edgeToEdge(sideOf(layout)))
-                            }
-                        }
-                        sectionBody(state, layout, alpha, feed, calls, cards, topicCalls)
-                    }
-                }
-            }
-            if (headerShown) CollapsingBar(state, grid, onBack, calls.onToggleSectionFollow)
-            NewListsPill(
-                visible = state.feed.newListsWaiting,
-                onClick = {
-                    scope.launch { grid.animateScrollToItem(0) }
-                    feed.onApplyHeld()
-                },
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 76.dp),
-            )
-        }
-    }
-}
-
-private fun sideOf(layout: HomeLayout) = if (layout == HomeLayout.Wide) 24.dp else 16.dp
-
 /**
  * One wait for the topics and the first page together, then everything at
  * once: the topics, a line, and the lists under their heading and sort.
@@ -316,80 +200,7 @@ private fun LazyGridScope.sectionBody(
     item(key = "topics", span = { GridItemSpan(maxLineSpan) }) {
         TopicTiles(state.section, state.topics, state.waiting, calls.onOpenTopic, topicCalls.onOpenWaiting, topicCalls.onSuggest)
     }
-    item(key = "sort", span = { GridItemSpan(maxLineSpan) }) {
+    listsBlock(state.feed, layout, alpha, cards, feed.onRetry) {
         SortRow(sort = state.sort, onSort = calls.onSelectSort, count = state.stats?.listCount?.takeIf { it > 0 })
-    }
-    if (state.feed.phase == FeedPhase.Ready && state.feed.lists.isEmpty()) {
-        item(key = "empty", span = { GridItemSpan(maxLineSpan) }) { SectionEmpty() }
-    } else {
-        feedItems(state.feed, layout, alpha, cards, feed.onRetry, reasonFor = { null })
-    }
-}
-
-/**
- * Over the header: the back arrow and, once the header has scrolled away, the
- * 64dp bar with the name and a compact Follow, on the surface colour (§3.1).
- */
-@Composable
-private fun CollapsingBar(state: SectionUiState, grid: LazyGridState, onBack: () -> Unit, onToggleFollow: () -> Unit) {
-    val density = LocalDensity.current
-    val travel = with(density) { (200.dp - 64.dp).toPx() }
-    val collapsed by remember(grid) {
-        derivedStateOf {
-            if (grid.firstVisibleItemIndex > 0) 1f else (grid.firstVisibleItemScrollOffset / travel).coerceIn(0f, 1f)
-        }
-    }
-    val onImage = collapsed < 1f
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = collapsed))
-            .statusBarsPadding()
-            .height(64.dp)
-            .padding(start = 4.dp, end = 12.dp)
-            .testTag(SectionTestTags.BAR),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconButton(onClick = onBack) {
-            BackArrowIcon(24.dp, if (onImage) Color.White else MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        if (!onImage) {
-            Text(
-                state.section.label(),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            FollowToggle(following = state.stats?.following == true, onClick = onToggleFollow, size = FollowSize.Compact)
-        }
-    }
-}
-
-/** A short window's one bar for a section: back, the name, and Follow. It scrolls away with the lists. */
-@Composable
-private fun CompactSectionBar(state: SectionUiState, onBack: () -> Unit, onToggleFollow: () -> Unit) {
-    Column {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .padding(start = 4.dp, end = 12.dp)
-                .testTag(SectionTestTags.BAR),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = onBack) { BackIcon() }
-            Text(
-                state.section.label(),
-                modifier = Modifier.weight(1f),
-                style = TextStyle(fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Medium),
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            FollowToggle(following = state.stats?.following == true, onClick = onToggleFollow, size = FollowSize.Compact)
-        }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
