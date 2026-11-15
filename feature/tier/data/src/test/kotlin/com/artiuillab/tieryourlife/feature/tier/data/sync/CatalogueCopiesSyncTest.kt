@@ -101,6 +101,56 @@ class CatalogueCopiesSyncTest : SyncEngineBench() {
     }
 
     @Test
+    fun copies_keepWhichPartOfEachPictureShows() = runBlocking {
+        val uid = givenBoardWith(
+            TierItemEntity(tierId = 0, position = 0, title = "Alien", imageUrl = POSTER, focusX = 0.3f, focusY = 0.15f, focusZoom = 2f),
+            cover = POSTER,
+            coverFocus = Triple(0.5f, 0.2f, 1.5f),
+        )
+        boards.copies = mapOf(POSTER to POSTER_COPY)
+
+        engine().sync()
+
+        val board = dao.boardByUid(uid)!!
+        val card = dao.itemsOf(board.id).single()
+        assertEquals(POSTER_COPY, card.imageUrl)
+        assertEquals(Triple(0.3f, 0.15f, 2f), Triple(card.focusX, card.focusY, card.focusZoom))
+        assertEquals(Triple(0.5f, 0.2f, 1.5f), Triple(board.coverFocusX, board.coverFocusY, board.coverFocusZoom))
+        val sent = boards.kept.last().second
+        assertEquals(POSTER_COPY, sent.items.single().imageUrl)
+        assertEquals(0.3f, sent.items.single().pictureFocus?.x)
+    }
+
+    @Test
+    fun aFocusChosenWhileTheBoardWentUp_isNotUndoneByTheCopy() = runBlocking {
+        val uid = givenBoardWith(TierItemEntity(tierId = 0, position = 0, title = "Alien", imageUrl = POSTER), cover = POSTER)
+        boards.copies = mapOf(POSTER to POSTER_COPY)
+        var moved = false
+        boards.onKeep = {
+            if (!moved) {
+                moved = true
+                runBlocking {
+                    val board = dao.boardByUid(uid)!!
+                    dao.updateBoard(board.copy(coverFocusX = 0.5f, coverFocusY = 0.1f, coverFocusZoom = 1f))
+                    dao.updateItem(dao.itemsOf(board.id).single().copy(focusX = 0.7f, focusY = 0.2f, focusZoom = 1.5f))
+                }
+            }
+        }
+        val engine = engine()
+
+        engine.sync()
+        engine.sync()
+
+        val board = dao.boardByUid(uid)!!
+        val card = dao.itemsOf(board.id).single()
+        assertEquals(POSTER_COPY, card.imageUrl)
+        assertEquals(Triple(0.7f, 0.2f, 1.5f), Triple(card.focusX, card.focusY, card.focusZoom))
+        assertEquals(Triple(0.5f, 0.1f, 1f), Triple(board.coverFocusX, board.coverFocusY, board.coverFocusZoom))
+        assertEquals(fingerprintOf(uid), boards.server.getValue(uid).fingerprint)
+        assertEquals(emptySet<String>(), engine.unsent())
+    }
+
+    @Test
     fun noCopies_noSecondWrite() = runBlocking {
         val uid = givenBoardWith(TierItemEntity(tierId = 0, position = 0, title = "Alien", imageUrl = POSTER))
 
@@ -121,11 +171,19 @@ class CatalogueCopiesSyncTest : SyncEngineBench() {
         assertNull(catalogueSourceOf("not an address"))
     }
 
-    private suspend fun givenBoardWith(vararg items: TierItemEntity, cover: String? = null, collage: List<String> = emptyList()): String {
+    private suspend fun givenBoardWith(
+        vararg items: TierItemEntity,
+        cover: String? = null,
+        collage: List<String> = emptyList(),
+        coverFocus: Triple<Float, Float, Float>? = null,
+    ): String {
         val board = TierListEntity(
             title = "Films",
             ownerUid = someone,
             coverImageUrl = cover,
+            coverFocusX = coverFocus?.first,
+            coverFocusY = coverFocus?.second,
+            coverFocusZoom = coverFocus?.third,
             coverImageUrls = collage.joinToString("\n").ifEmpty { null },
         )
         dao.addBoard(
