@@ -16,8 +16,8 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 /**
@@ -43,13 +43,7 @@ internal fun SectionArt(section: Section, modifier: Modifier = Modifier, scrim: 
             picture == null -> Hatch(Modifier.fillMaxSize())
         }
         if (picture != null) {
-            AsyncImage(
-                model = picture,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-            )
+            FocusedImage(model = picture, focus = section.pictureFocus, modifier = Modifier.fillMaxSize())
         }
         if (scrim) {
             Box(

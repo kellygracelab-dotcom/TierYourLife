@@ -12,6 +12,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.mapper.toEntity
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toRemoved
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toSummaries
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
@@ -72,6 +73,7 @@ class RoomTierRepository internal constructor(
                 title = board.title, category = board.category, displayMode = board.displayMode.name,
                 anonymous = board.anonymous, coverImageUrl = board.coverImageUrl,
                 coverImageUrls = board.coverImageUrls.toStoredCoverImageUrls(),
+                coverFocusX = board.coverFocus?.x, coverFocusY = board.coverFocus?.y, coverFocusZoom = board.coverFocus?.zoom,
                 topicId = board.topicId, topicName = board.topicName,
                 originVersion = sourceVersion, rankingChoice = choice?.wireName,
             ),
@@ -172,6 +174,11 @@ class RoomTierRepository internal constructor(
 
     override suspend fun setCover(id: Long, pictures: List<String>) {
         dao.setCover(id, coverImageUrl = pictures.singleOrNull(), coverImageUrls = pictures.toStoredCoverImageUrls())
+    }
+
+    override suspend fun setCoverFocus(id: Long, focus: CoverFocus?) {
+        val kept = focus?.inRange()?.takeUnless { it.isCentred }
+        dao.setCoverFocus(id, kept?.x, kept?.y, kept?.zoom)
     }
 
     override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) {

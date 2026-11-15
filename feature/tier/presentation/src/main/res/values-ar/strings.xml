@@ -291,4 +291,11 @@
     <string name="add_to_list_to_pool">إلى المجموعة</string>
     <string name="add_to_list_added">أُضيفت إلى «%1$s»</string>
     <string name="add_to_list_sign_in">تُحفظ صور الروابط في حسابك. سجّل الدخول في TierYourLife لإضافتها، أو أضف البطاقة بدون صورة.</string>
+    <string name="cover_adjust_title">ضبط الغلاف</string>
+    <string name="cover_adjust_zoom">تكبير</string>
+    <string name="cover_adjust_preview">معاينة</string>
+    <string name="cover_adjust_feed">الخلاصة</string>
+    <string name="cover_adjust_header">رأس الصفحة</string>
+    <string name="cover_adjust_close">إغلاق</string>
+    <string name="cover_adjust_hint">اسحب للتحريك، وباعد بين إصبعيك للتكبير</string>
 </resources>

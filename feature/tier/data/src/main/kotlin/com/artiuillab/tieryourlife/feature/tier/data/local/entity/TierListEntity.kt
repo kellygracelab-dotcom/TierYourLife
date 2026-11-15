@@ -31,6 +31,10 @@ data class TierListEntity(
     val coverImageUrl: String? = null,
     /** The chosen collage, one web address per line; null while the cover is one picture or left to the cards. */
     val coverImageUrls: String? = null,
+    /** Which part of the single cover shows (CoverFocus); all three null for the centre, as every cover before. */
+    val coverFocusX: Float? = null,
+    val coverFocusY: Float? = null,
+    val coverFocusZoom: Float? = null,
     /** The community topic once the server named it, and the name beside it so no screen needs a second read. */
     val topicId: String? = null,
     val topicName: String? = null,

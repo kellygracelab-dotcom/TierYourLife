@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -516,6 +517,7 @@ internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
     override suspend fun setPlay(id: Long, play: String?) = Unit
 
     override suspend fun setCover(id: Long, pictures: List<String>) = Unit
+    override suspend fun setCoverFocus(id: Long, focus: CoverFocus?) = Unit
     override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) = Unit
 
     private val lists = initial.associateBy { it.id }.toMutableMap()

@@ -13,6 +13,7 @@ data class TopicDto(
     val createdBy: String = "",
     val mergedInto: String? = null,
     val pictureUrl: String? = null,
+    val pictureFocus: CoverFocusDto? = null,
     val listCount: Int? = null,
 )
 
@@ -33,6 +34,7 @@ data class PendingTopicDto(
     val createdBy: String = "",
     val mergedInto: String? = null,
     val pictureUrl: String? = null,
+    val pictureFocus: CoverFocusDto? = null,
     val proposerName: String = "",
     val requestedSection: String? = null,
     val similar: List<TopicDto> = emptyList(),

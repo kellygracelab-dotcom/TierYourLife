@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierWithItems
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -32,6 +33,7 @@ internal fun TierListEntity.toDomain(): TierList = TierList(
     anonymous = anonymous,
     coverImageUrl = coverImageUrl,
     coverImageUrls = coverImageUrls.toCoverImageUrls(),
+    coverFocus = coverFocus(),
     topicId = topicId.takeUnless { it == TOPIC_TAKEN_OFF },
     topicTakenOff = topicId == TOPIC_TAKEN_OFF,
     topicName = topicName,
@@ -61,6 +63,7 @@ internal fun TierListWithTiers.toDomain(): TierList = TierList(
     anonymous = tierList.anonymous,
     coverImageUrl = tierList.coverImageUrl,
     coverImageUrls = tierList.coverImageUrls.toCoverImageUrls(),
+    coverFocus = tierList.coverFocus(),
     topicId = tierList.topicId.takeUnless { it == TOPIC_TAKEN_OFF },
     topicTakenOff = tierList.topicId == TOPIC_TAKEN_OFF,
     topicName = tierList.topicName,
@@ -92,6 +95,7 @@ internal fun SummaryRows.toSummaries(): List<TierListSummary> {
             authorName = board.authorName,
             coverImageUrl = board.coverImageUrl,
             coverImageUrls = board.coverImageUrls.toCoverImageUrls(),
+            coverFocus = board.coverFocus(),
             arrivedFrom = board.arrivedFrom,
             editedAt = board.editedAt,
             favouritedAt = board.favouritedAt,
@@ -136,3 +140,12 @@ internal fun List<String>.toStoredCoverImageUrls(): String? =
     takeIf { it.size >= SMALLEST_COLLAGE }?.joinToString("\n")
 
 internal fun String?.toCoverImageUrls(): List<String> = this?.lines()?.filter { it.isNotBlank() }.orEmpty()
+
+/** Only a single cover has a part to show; a stored focus beside a collage or no cover means nothing. */
+internal fun TierListEntity.coverFocus(): CoverFocus? {
+    if (coverImageUrl == null) return null
+    val x = coverFocusX ?: return null
+    val y = coverFocusY ?: return null
+    val zoom = coverFocusZoom ?: return null
+    return CoverFocus(x, y, zoom).inRange().takeUnless { it.isCentred }
+}

@@ -93,6 +93,7 @@ private val BADGE_SIZE = 22.dp
 fun CoverPickerScreen(
     onBack: () -> Unit,
     onSaved: () -> Unit,
+    onAdjust: () -> Unit = onSaved,
     viewModel: CoverPickerViewModel = hiltViewModel(),
     searchViewModel: CatalogueSearchViewModel = hiltViewModel(),
 ) {
@@ -104,7 +105,7 @@ fun CoverPickerScreen(
     }
 
     LaunchedEffect(state.saved) {
-        if (state.saved) onSaved()
+        if (state.saved) if (state.adjustNext) onAdjust() else onSaved()
     }
 
     CoverPickerScreenContent(

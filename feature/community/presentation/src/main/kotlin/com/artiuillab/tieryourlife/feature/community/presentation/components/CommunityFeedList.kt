@@ -326,6 +326,7 @@ private fun CommunityCard(
         ) {
             ListArt(
                 coverImageUrl = summary.coverImageUrl,
+                coverFocus = summary.coverFocus,
                 previewImages = summary.previewImages,
                 tierColors = summary.tierColors,
                 modifier = Modifier.fillMaxSize(),

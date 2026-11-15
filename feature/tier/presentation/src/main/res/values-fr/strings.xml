@@ -249,4 +249,11 @@
     <string name="add_to_list_to_pool">Dans le pool</string>
     <string name="add_to_list_added">Ajouté à « %1$s »</string>
     <string name="add_to_list_sign_in">Les images depuis des liens sont gardées dans votre compte. Connectez-vous dans TierYourLife pour les ajouter, ou ajoutez la carte sans image.</string>
+    <string name="cover_adjust_title">Ajuster la couverture</string>
+    <string name="cover_adjust_zoom">Zoom</string>
+    <string name="cover_adjust_preview">Aperçu</string>
+    <string name="cover_adjust_feed">Fil</string>
+    <string name="cover_adjust_header">En-tête</string>
+    <string name="cover_adjust_close">Fermer</string>
+    <string name="cover_adjust_hint">Faites glisser pour déplacer, pincez pour zoomer</string>
 </resources>

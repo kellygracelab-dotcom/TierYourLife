@@ -190,8 +190,21 @@ interface TierDao {
 
     // Both columns in one statement: the edited-at trigger watches coverImageUrl,
     // so a new collage stamps the board even while the single cover stays null.
-    @Query("UPDATE tier_lists SET coverImageUrl = :coverImageUrl, coverImageUrls = :coverImageUrls WHERE id = :id")
+    // The focus belongs to the picture it was set on and stays only while it does.
+    @Query(
+        """
+        UPDATE tier_lists SET coverImageUrl = :coverImageUrl, coverImageUrls = :coverImageUrls,
+            coverFocusX = CASE WHEN coverImageUrl IS :coverImageUrl THEN coverFocusX END,
+            coverFocusY = CASE WHEN coverImageUrl IS :coverImageUrl THEN coverFocusY END,
+            coverFocusZoom = CASE WHEN coverImageUrl IS :coverImageUrl THEN coverFocusZoom END
+        WHERE id = :id
+        """,
+    )
     suspend fun setCover(id: Long, coverImageUrl: String?, coverImageUrls: String?)
+
+    // The cover is written as it is so the edited-at trigger, which watches it, stamps the board.
+    @Query("UPDATE tier_lists SET coverImageUrl = coverImageUrl, coverFocusX = :x, coverFocusY = :y, coverFocusZoom = :zoom WHERE id = :id")
+    suspend fun setCoverFocus(id: Long, x: Float?, y: Float?, zoom: Float?)
 
     @Query("UPDATE tier_lists SET topicId = :topicId, topicName = :topicName, newTopicName = :newTopicName WHERE id = :id")
     suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?)

@@ -158,4 +158,6 @@
     <string name="tier_detail_card_details">カードの詳細</string>
     <string name="tier_detail_credits_close">閉じる</string>
     <string name="list_settings_public_changed_elsewhere">別の端末でリストが変更されました。もう一度公開してください。</string>
+    <string name="list_settings_cover_adjust">位置を調整</string>
+    <string name="list_settings_cover_adjust_sub">画像のどの部分を表示するか</string>
 </resources>

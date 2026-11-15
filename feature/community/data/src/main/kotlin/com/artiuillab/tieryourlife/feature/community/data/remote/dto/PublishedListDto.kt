@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.data.remote.dto
 
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,6 +14,7 @@ data class PublishedListSummaryDto(
     val category: String = "other",
     val itemCount: Int,
     val coverImageUrl: String? = null,
+    val coverFocus: CoverFocusDto? = null,
     val previewImages: List<String> = emptyList(),
     val tierColors: List<String> = emptyList(),
     val updatedAt: Long = 0,
@@ -111,6 +114,7 @@ data class PublishedListDto(
     val category: String = "other",
     val itemCount: Int = 0,
     val coverImageUrl: String? = null,
+    val coverFocus: CoverFocusDto? = null,
     val previewImages: List<String> = emptyList(),
     val tierColors: List<String> = emptyList(),
     val updatedAt: Long = 0,
@@ -137,6 +141,10 @@ data class PublishListRequestDto(
     val category: String,
     val coverImageUrl: String? = null,
     val coverPictureId: String? = null,
+    /** Always sent, null for the centre: left out, the list keeps the focus it had for the same cover. */
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val coverFocus: CoverFocusDto? = null,
     /** The author's collage, web addresses only; a single cover above it wins when set. */
     val coverImageUrls: List<String> = emptyList(),
     val tiers: List<PublishedTierDto>,

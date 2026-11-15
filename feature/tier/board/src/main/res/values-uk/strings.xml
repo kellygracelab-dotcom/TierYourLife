@@ -188,4 +188,6 @@
     <string name="tier_detail_card_details">Деталі картки</string>
     <string name="tier_detail_credits_close">Закрити</string>
     <string name="list_settings_public_changed_elsewhere">Список змінився на іншому пристрої. Повторіть публікацію.</string>
+    <string name="list_settings_cover_adjust">Налаштувати положення</string>
+    <string name="list_settings_cover_adjust_sub">Яку частину зображення видно</string>
 </resources>

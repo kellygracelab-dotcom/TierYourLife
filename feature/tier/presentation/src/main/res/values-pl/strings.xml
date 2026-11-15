@@ -263,4 +263,11 @@
     <string name="add_to_list_to_pool">Do puli</string>
     <string name="add_to_list_added">Dodano do „%1$s”</string>
     <string name="add_to_list_sign_in">Obrazki z linków są przechowywane na koncie. Zaloguj się w TierYourLife, aby je dodawać, albo dodaj kartę bez obrazka.</string>
+    <string name="cover_adjust_title">Dopasuj okładkę</string>
+    <string name="cover_adjust_zoom">Powiększenie</string>
+    <string name="cover_adjust_preview">Podgląd</string>
+    <string name="cover_adjust_feed">Kanał</string>
+    <string name="cover_adjust_header">Nagłówek strony</string>
+    <string name="cover_adjust_close">Zamknij</string>
+    <string name="cover_adjust_hint">Przeciągnij, aby przesunąć, rozsuń palce, aby powiększyć</string>
 </resources>

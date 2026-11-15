@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.aistudio.data.library
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -44,6 +45,7 @@ private class FakeTierRepository : TierRepository {
     override suspend fun setPlay(id: Long, play: String?) = Unit
 
     override suspend fun setCover(id: Long, pictures: List<String>) = Unit
+    override suspend fun setCoverFocus(id: Long, focus: CoverFocus?) = Unit
     override suspend fun setTopic(id: Long, topicId: String?, topicName: String?, newTopicName: String?) = Unit
 
     override suspend fun createFromTemplate(

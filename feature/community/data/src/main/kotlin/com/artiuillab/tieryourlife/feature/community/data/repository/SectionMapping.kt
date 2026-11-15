@@ -4,6 +4,8 @@ import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.SectionMergedDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ThemePairDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDomain
+import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDto
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionLookup
 import com.artiuillab.tieryourlife.feature.community.domain.model.SectionStatus
@@ -29,6 +31,7 @@ internal fun SectionDto.toDomain(me: String? = null): Section {
         names = names.filterValues { it.isNotBlank() },
         icon = icon?.takeIf { it in SectionSymbols.ALL } ?: art?.symbol ?: SectionSymbols.DEFAULT,
         pictureUrl = pictureUrl?.takeIf { it.startsWith("https://") },
+        pictureFocus = pictureFocus.takeIf { pictureUrl?.startsWith("https://") == true }.toDomain(),
         tint = tint?.toDomain(),
         topicBg = topicBg?.toDomain(),
         topicIcon = topicIcon?.toDomain(),
@@ -57,6 +60,7 @@ internal fun Section.toDto() = SectionDto(
     names = names,
     icon = icon,
     pictureUrl = pictureUrl,
+    pictureFocus = pictureFocus.toDto(),
     tint = tint?.let { ThemePairDto(it.light, it.dark) },
     topicBg = topicBg?.let { ThemePairDto(it.light, it.dark) },
     topicIcon = topicIcon?.let { ThemePairDto(it.light, it.dark) },

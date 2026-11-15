@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.domain.model
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 /** One colour in the light theme and the dark one, as "#RRGGBB". */
@@ -33,6 +34,8 @@ data class Section(
     /** A Material Symbols name, one of [SectionSymbols.ALL]. */
     val icon: String = SectionSymbols.DEFAULT,
     val pictureUrl: String? = null,
+    /** Which part of [pictureUrl] shows; null for the centre. */
+    val pictureFocus: CoverFocus? = null,
     val tint: ThemePair? = null,
     val topicBg: ThemePair? = null,
     val topicIcon: ThemePair? = null,

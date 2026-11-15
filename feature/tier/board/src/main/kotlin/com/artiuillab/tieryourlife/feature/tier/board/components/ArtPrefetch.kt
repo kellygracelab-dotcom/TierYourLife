@@ -11,11 +11,13 @@ import coil3.SingletonImageLoader
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Scale
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.math.ceil
 
 /** What [ListArt] draws for one tile: its cover, or else its first pictures. */
-data class ArtPictures(val coverImageUrl: String?, val previewImages: List<String>)
+data class ArtPictures(val coverImageUrl: String?, val previewImages: List<String>, val coverFocus: CoverFocus? = null)
 
 /** One picture as [ListArt] asks Coil for it in a tile of [width] by [height] pixels. */
 data class ArtRequest(val url: String, val width: Int, val height: Int)
@@ -24,7 +26,11 @@ data class ArtRequest(val url: String, val width: Int, val height: Int)
 fun artRequests(art: ArtPictures, width: Int, height: Int): List<ArtRequest> {
     val images = art.previewImages.distinct().take(MOSAIC_CELLS)
     return when {
-        art.coverImageUrl != null -> listOf(ArtRequest(art.coverImageUrl, width, height))
+        // As FocusedImage asks for it: a cover drawn closer is decoded larger.
+        art.coverImageUrl != null -> {
+            val zoom = art.coverFocus?.zoom ?: CoverFocus.MIN_ZOOM
+            listOf(ArtRequest(art.coverImageUrl, ceil(width * zoom).toInt(), ceil(height * zoom).toInt()))
+        }
         images.isEmpty() -> emptyList()
         else -> {
             val rows = mosaicRows(images.size)

@@ -214,6 +214,7 @@ internal class PrivateRankingProgress(
         return translated.copy(
             category = current.section,
             coverImageUrl = original.summary.coverImageUrl,
+            coverFocus = original.summary.coverFocus,
             coverImageUrls = emptyList(),
             tiers = translated.tiers.map { tier -> tier.copy(items = tier.items.map { it.copy(sourceIndex = indices[it.id]) }) },
         )

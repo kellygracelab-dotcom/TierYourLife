@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.data.sync
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.coverFocus
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
@@ -75,11 +76,14 @@ object BoardFingerprint {
         }
         if (board.anonymous) digest.write(ANONYMOUS)
         board.play?.let(::canonicalPlay)?.let { digest.write(it) }
+        // Last, and only on a cover moved off its centre, in whole steps as the site writes it.
+        board.coverFocus()?.let { focus -> digest.write(COVER_FOCUS, *focus.fingerprintParts.toTypedArray()) }
 
         return digest.digest().joinToString("") { byte -> "%02x".format(byte) }
     }
 
     private const val ANONYMOUS = "anonymous"
+    private const val COVER_FOCUS = "coverFocus"
 
     /**
      * The saved game as both clients write it, not as the server's bytes

@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
@@ -45,7 +44,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
@@ -81,6 +79,8 @@ import com.artiuillab.tieryourlife.feature.tier.board.common.LocalSections
 import com.artiuillab.tieryourlife.feature.tier.board.common.label
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSection
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
+import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 
 /** Where the strip and the empty tab lead; sections go by id. */
@@ -211,7 +211,7 @@ internal fun FollowedStrip(following: Following, waiting: List<Topic>, actions: 
             }
             following.topics.forEach { topic ->
                 item(key = "t-${topic.id}") {
-                    StripItem(topic.name, "t-${topic.id}", { actions.onOpenTopic(topic) }) { TopicSquare(topic.section, StripVisual, 22.dp, topic.pictureUrl) }
+                    StripItem(topic.name, "t-${topic.id}", { actions.onOpenTopic(topic) }) { TopicSquare(topic.section, StripVisual, 22.dp, topic.pictureUrl, topic.pictureFocus) }
                 }
             }
             waiting.forEach { topic ->
@@ -262,7 +262,7 @@ private fun FollowedSectionItem(followed: FollowedSection, actions: FollowingAct
  * Other's while it has no section.
  */
 @Composable
-internal fun TopicSquare(sectionId: String?, size: Dp, icon: Dp, pictureUrl: String? = null) {
+internal fun TopicSquare(sectionId: String?, size: Dp, icon: Dp, pictureUrl: String? = null, pictureFocus: CoverFocus? = null) {
     val placed = rememberSection(sectionId ?: ListCategory.Other.id)
     val look = lookOf(placed)
     Box(
@@ -275,12 +275,7 @@ internal fun TopicSquare(sectionId: String?, size: Dp, icon: Dp, pictureUrl: Str
     ) {
         SectionIcon(placed, icon, look.topicIconNow)
         if (pictureUrl != null) {
-            AsyncImage(
-                model = pictureUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize().testTag(ExploreTestTags.TOPIC_PICTURE),
-                contentScale = ContentScale.Crop,
-            )
+            FocusedImage(model = pictureUrl, focus = pictureFocus, modifier = Modifier.fillMaxSize().testTag(ExploreTestTags.TOPIC_PICTURE))
         }
     }
 }

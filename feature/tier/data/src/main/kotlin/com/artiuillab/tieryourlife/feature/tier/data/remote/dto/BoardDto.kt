@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.remote.dto
 
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -24,6 +26,8 @@ data class KeptBoardDto(
     val coverImageUrls: List<String> = emptyList(),
     /** The person's own photo as the whole cover, by the file's name; absent when there is none. */
     val coverPictureId: String? = null,
+    /** Which part of the single cover shows; absent for the centre. */
+    val coverFocus: CoverFocusDto? = null,
     val authorName: String? = null,
     val publishedId: String? = null,
     val takenFrom: String? = null,
@@ -126,6 +130,10 @@ data class KeepBoardRequestDto(
      * or left out (null here) to keep the one it has.
      */
     val coverPictureId: JsonElement? = null,
+    /** Always sent, null for the centre: left out, the account keeps the focus it has. */
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val coverFocus: CoverFocusDto? = null,
     val authorName: String? = null,
     val publishedId: String? = null,
     val takenFrom: String? = null,
@@ -139,3 +147,7 @@ data class KeepBoardRequestDto(
     val tiers: List<KeptTierDto>,
     val items: List<KeptItemDto>,
 )
+
+/** Shares of the picture's width and height for its middle, and how far in; see `CoverFocus`. */
+@Serializable
+data class CoverFocusDto(val x: Float, val y: Float, val zoom: Float)

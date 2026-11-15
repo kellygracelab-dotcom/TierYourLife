@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.domain.model
 
+import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
+
 /** Where a proposed word stands: waiting for a moderator, admitted, turned down, or folded into another. */
 enum class TopicStatus(val id: String) {
     Pending("pending"),
@@ -26,6 +28,8 @@ data class Topic(
     val mergedInto: String? = null,
     /** Its own square picture; without one the section's tinted square stands in. */
     val pictureUrl: String? = null,
+    /** Which part of [pictureUrl] shows; null for the centre. */
+    val pictureFocus: CoverFocus? = null,
     /** Published lists filed under it; null where the server did not say. */
     val listCount: Int? = null,
 ) {

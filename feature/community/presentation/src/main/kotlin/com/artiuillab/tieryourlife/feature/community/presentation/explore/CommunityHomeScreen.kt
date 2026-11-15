@@ -267,7 +267,7 @@ fun CommunityHomeContent(
 private fun PrefetchCovers(explore: FeedPane, following: FeedPane, layout: HomeLayout, cardWidth: Int, picturesOnWifiOnly: () -> Boolean) {
     val coverHeight = with(LocalDensity.current) { layout.coverHeight.roundToPx() }
     val arts = remember(explore, following) {
-        (explore.kept() + following.kept()).map { ArtPictures(it.coverImageUrl, it.previewImages) }
+        (explore.kept() + following.kept()).map { ArtPictures(it.coverImageUrl, it.previewImages, it.coverFocus) }
     }
     PrefetchArt(arts, cardWidth, coverHeight, picturesOnWifiOnly)
 }
