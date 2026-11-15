@@ -41,10 +41,23 @@ data class CoverFocus(
         /** What a cover without a focus is drawn with, as it always was. */
         val CENTRED = CoverFocus()
 
+        /** A tall picture without a focus: a portrait's face and a poster's title sit above the middle. */
+        val TALL = CoverFocus(y = TALL_Y)
+
+        /** What a [width]×[height] picture shows when nobody chose: [TALL] past 1.2 high to 1 wide, else the centre. */
+        fun defaultFor(width: Double, height: Double): CoverFocus =
+            if (width > 0 && height / width > TALL_RATIO) TALL else CENTRED
+
+        private const val TALL_RATIO = 1.2
+        private const val TALL_Y = 0.35f
+
         private const val PLACE_STEPS = 10_000L
         private const val ZOOM_STEPS = 100L
     }
 }
+
+/** The chosen focus, or what a picture of this size shows without one. */
+fun CoverFocus?.orDefaultFor(width: Double, height: Double): CoverFocus = this ?: CoverFocus.defaultFor(width, height)
 
 /** A part of a picture, in its own pixels. */
 data class CoverFrame(val left: Double, val top: Double, val width: Double, val height: Double)
@@ -55,7 +68,7 @@ data class CoverFrame(val left: Double, val top: Double, val width: Double, val 
  * times smaller, centred on the focus and then kept inside the picture.
  */
 fun coverFrame(width: Float, height: Float, aspect: Float, focus: CoverFocus?): CoverFrame {
-    val (x, y, zoom) = focus ?: CoverFocus.CENTRED
+    val (x, y, zoom) = focus.orDefaultFor(width.toDouble(), height.toDouble())
     return coverFrame(width.toDouble(), height.toDouble(), aspect.toDouble(), x.toDouble(), y.toDouble(), zoom.toDouble())
 }
 

@@ -43,7 +43,7 @@ class AdjustCoverViewModelTest {
     }
 
     @Test
-    fun reset_andDone_leaveTheCoverCentred() = runBlocking {
+    fun reset_andDone_leaveTheCoverToItsDefault() = runBlocking {
         val repository = RecordingTierRepository(
             boards = listOf(TierList(1, "Films", emptyList(), coverImageUrl = picture, coverFocus = CoverFocus(0.2f, 0.2f, 3f))),
         )
@@ -51,6 +51,7 @@ class AdjustCoverViewModelTest {
         viewModel.state.firstWithin { it.loaded }
 
         viewModel.reset()
+        assertEquals(null, viewModel.state.value.focus)
         viewModel.save()
 
         viewModel.state.firstWithin { it.saved }

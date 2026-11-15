@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.coveradjust
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,7 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
+import androidx.compose.ui.unit.toSize
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
@@ -75,17 +76,24 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
-/** The shapes the cover is drawn in most: a feed tile (183 × 132) and a page's header (a phone's width × 200). */
-internal const val FEED_TILE_ASPECT = 183f / 132f
+/**
+ * The shapes the cover is drawn in: a page's header (a phone's width × 200),
+ * the widest, is the editor's frame; a feed tile (183 × 132) and a list's
+ * square card are the previews.
+ */
 internal const val PAGE_HEADER_ASPECT = 411f / 200f
+internal const val FEED_TILE_ASPECT = 183f / 132f
+internal const val SQUARE_ASPECT = 1f
 
-/** The frame the picture is moved under: between the tile and the header, so neither surprises. */
-private const val EDITOR_ASPECT = 4f / 3f
-private val EditorFrame = Size(EDITOR_ASPECT, 1f)
-private val EditorMargin = 20.dp
-private val EditorMaxWidth = 480.dp
-private val FrameCorner = 12.dp
-private const val DIM_ALPHA = 0.5f
+/** The whole picture is laid out in this shape, with room around it for a tall one. */
+private const val EDITOR_AREA_ASPECT = 4f / 3f
+private val EditorPadding = 12.dp
+private val EditorMaxWidth = 520.dp
+private val FrameCorner = 8.dp
+private val PointRadius = 7.dp
+private val PreviewsMaxWidth = 340.dp
+private const val DIM_ALPHA = 0.55f
+private const val POINT_RING_ALPHA = 0.45f
 private val SIDE_BY_SIDE_FROM = 600.dp
 private val SIDE_BY_SIDE_MAX_WIDTH = 1040.dp
 private const val EDITOR_SHARE = 0.85f
@@ -199,7 +207,7 @@ private fun Stacked(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                CoverEditor(painter, state.focus, onMove, Modifier.width(EditorMaxWidth + EditorMargin * 2))
+                CoverEditor(painter, state.focus, onMove, Modifier.widthIn(max = EditorMaxWidth).fillMaxWidth().aspectRatio(EDITOR_AREA_ASPECT))
                 Controls(state, painter, onMove, onReset, onDone)
             }
         }
@@ -241,7 +249,7 @@ private fun Controls(
     onReset: () -> Unit,
     onDone: () -> Unit,
 ) {
-    val focus = state.focus
+    val focus = state.focus.resolvedFor(painter)
     Text(
         text = stringResource(R.string.cover_adjust_hint),
         style = MaterialTheme.typography.bodySmall,
@@ -257,7 +265,7 @@ private fun Controls(
         )
         Slider(
             value = focus.zoom,
-            onValueChange = { zoom -> onMove(focus.moved(Offset.Zero, zoom / focus.zoom, painter.intrinsicSize, EditorFrame)) },
+            onValueChange = { zoom -> onMove(focus.copy(zoom = zoom.coerceIn(CoverFocus.MIN_ZOOM, CoverFocus.MAX_ZOOM))) },
             valueRange = CoverFocus.MIN_ZOOM..CoverFocus.MAX_ZOOM,
             modifier = Modifier.weight(1f).testTag(AdjustCoverTestTags.ZOOM),
         )
@@ -267,7 +275,7 @@ private fun Controls(
         style = MaterialTheme.typography.labelLarge,
         modifier = Modifier.fillMaxWidth(),
     )
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Bottom) {
+    Row(Modifier.widthIn(max = PreviewsMaxWidth).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Bottom) {
         Preview(
             painter = painter,
             focus = focus,
@@ -278,9 +286,9 @@ private fun Controls(
         Preview(
             painter = painter,
             focus = focus,
-            aspect = PAGE_HEADER_ASPECT,
-            label = stringResource(R.string.cover_adjust_header),
-            modifier = Modifier.weight(PAGE_HEADER_ASPECT).testTag(AdjustCoverTestTags.HEADER_PREVIEW),
+            aspect = SQUARE_ASPECT,
+            label = stringResource(R.string.cover_adjust_square),
+            modifier = Modifier.weight(SQUARE_ASPECT).testTag(AdjustCoverTestTags.SQUARE_PREVIEW),
         )
     }
     Row(
@@ -289,7 +297,7 @@ private fun Controls(
     ) {
         OutlinedButton(
             onClick = onReset,
-            enabled = !focus.isCentred,
+            enabled = state.focus != null,
             contentPadding = ButtonPadding,
             modifier = Modifier.height(40.dp).testTag(AdjustCoverTestTags.RESET),
         ) { Text(stringResource(R.string.cover_picker_reset), maxLines = 1) }
@@ -302,42 +310,69 @@ private fun Controls(
     }
 }
 
+/** The chosen focus, or the picture's own default once its size is known. */
+private fun CoverFocus?.resolvedFor(painter: Painter): CoverFocus {
+    val picture = painter.intrinsicSize
+    return this ?: if (picture.isKnown) CoverFocus.defaultFor(picture.width.toDouble(), picture.height.toDouble()) else CoverFocus.CENTRED
+}
+
 /**
- * The picture under a 4:3 frame with the rest of it dimmed around: the frame
- * is what the formula shows at this shape, the rest is where it can go.
+ * The whole picture, dimmed, with the page header's frame lit where the
+ * formula puts it and the focus as a point. A finger moves the point anywhere
+ * on the picture and the frame follows, stopping at the edges; a tap puts the
+ * point down; a pinch brings the frame closer. The page header is the widest
+ * shape, so what fits under this frame fits every other.
  */
 @Composable
-private fun CoverEditor(painter: Painter, focus: CoverFocus, onMove: (CoverFocus) -> Unit, modifier: Modifier) {
-    val current by rememberUpdatedState(focus)
+private fun CoverEditor(painter: Painter, focus: CoverFocus?, onMove: (CoverFocus) -> Unit, modifier: Modifier) {
+    val current by rememberUpdatedState(focus.resolvedFor(painter))
     val move by rememberUpdatedState(onMove)
     val dim = Color.Black.copy(alpha = DIM_ALPHA)
-    BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
-        val byWidth = maxWidth - EditorMargin * 2
-        val byHeight = if (constraints.hasBoundedHeight) (maxHeight - EditorMargin * 2) * EDITOR_ASPECT else byWidth
-        val frameWidth: Dp = min(byWidth, byHeight).coerceAtLeast(0.dp)
+    val ring = Color.Black.copy(alpha = POINT_RING_ALPHA)
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Canvas(
             Modifier
-                .size(frameWidth + EditorMargin * 2, frameWidth / EDITOR_ASPECT + EditorMargin * 2)
+                .weight(1f)
+                .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                 .testTag(AdjustCoverTestTags.EDITOR)
                 .pointerInput(painter) {
-                    val margin = EditorMargin.toPx() * 2
                     detectTransformGestures { _, pan, zoom, _ ->
-                        val frame = Size(size.width - margin, size.height - margin)
-                        move(current.moved(pan, zoom, painter.intrinsicSize, frame))
+                        move(current.moved(pan, zoom, placedIn(size.toSize(), painter.intrinsicSize, EditorPadding.toPx())))
+                    }
+                }
+                .pointerInput(painter) {
+                    detectTapGestures { tap ->
+                        move(current.placedAt(tap, placedIn(size.toSize(), painter.intrinsicSize, EditorPadding.toPx())))
                     }
                 },
         ) {
-            val margin = EditorMargin.toPx()
-            val frame = Rect(margin, margin, size.width - margin, size.height - margin)
+            val picture = painter.intrinsicSize
+            val placed = placedIn(size, picture, EditorPadding.toPx())
+            if (placed.isEmpty) return@Canvas
+            val frame = frameOn(placed, picture, PAGE_HEADER_ASPECT, current)
             val corner = CornerRadius(FrameCorner.toPx())
-            drawCover(painter, focus, frame)
-            clipPath(Path().apply { addRoundRect(RoundRect(frame, corner)) }, ClipOp.Difference) { drawRect(dim) }
+            drawCover(painter, CoverFocus.CENTRED, placed)
+            clipPath(Path().apply { addRoundRect(RoundRect(frame, corner)) }, ClipOp.Difference) {
+                drawRect(dim, placed.topLeft, placed.size)
+            }
             drawRoundRect(Color.White, frame.topLeft, frame.size, corner, style = Stroke(2.dp.toPx()))
+            val point = Offset(placed.left + current.x * placed.width, placed.top + current.y * placed.height)
+            drawCircle(ring, PointRadius.toPx() + 2.dp.toPx(), point)
+            drawCircle(Color.White, PointRadius.toPx(), point)
         }
+        Text(
+            text = stringResource(R.string.cover_adjust_header),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
+
+/** Where the whole picture sits in the editor: fitted inside [space] less [padding] all round. */
+private fun placedIn(space: Size, picture: Size, padding: Float): Rect =
+    fitted(picture, Size(space.width - padding * 2, space.height - padding * 2)).translate(padding, padding)
 
 @Composable
 private fun Preview(painter: Painter, focus: CoverFocus, aspect: Float, label: String, modifier: Modifier) {

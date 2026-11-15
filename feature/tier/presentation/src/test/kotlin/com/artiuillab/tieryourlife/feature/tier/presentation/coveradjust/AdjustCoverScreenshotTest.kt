@@ -31,8 +31,9 @@ import org.robolectric.annotation.GraphicsMode
 
 /**
  * The step after a single picture is chosen (Danylo, 15.11: "the head gets
- * cut off"): a tall portrait with its face near the top, moved up under the
- * frame and a little closer, in every window shape and both themes.
+ * cut off"): a tall portrait with its face near the top, the header's frame
+ * moved up onto it and a little closer, the point a little right of centre so
+ * the square preview shows it moved too; in every window shape and both themes.
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -42,7 +43,7 @@ class AdjustCoverScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private val raised = AdjustCoverUiState(picture = "portrait", focus = CoverFocus(0.5f, 0.2f, 1.3f), loaded = true)
+    private val raised = AdjustCoverUiState(picture = "portrait", focus = CoverFocus(0.62f, 0.2f, 1.3f), loaded = true)
 
     /** A portrait in a frame of sky, with a face a fifth of the way down: what a centre crop cuts the head off. */
     private val portrait: BitmapPainter by lazy {
@@ -81,15 +82,15 @@ class AdjustCoverScreenshotTest {
 
         composeRule.onNodeWithTag(AdjustCoverTestTags.RESET).assertIsEnabled()
         composeRule.onNodeWithTag(AdjustCoverTestTags.FEED_PREVIEW).assertExists()
-        composeRule.onNodeWithTag(AdjustCoverTestTags.HEADER_PREVIEW).assertExists()
+        composeRule.onNodeWithTag(AdjustCoverTestTags.SQUARE_PREVIEW).assertExists()
     }
 
     @Test
     fun dark() = capture("adjust_cover_dark", dark = true)
 
     @Test
-    fun centred_hasNothingToReset() {
-        capture("adjust_cover_centred", raised.copy(focus = CoverFocus.CENTRED))
+    fun untouched_hasNothingToReset_andATallPictureStartsAboveTheMiddle() {
+        capture("adjust_cover_centred", raised.copy(focus = null))
 
         composeRule.onNodeWithTag(AdjustCoverTestTags.RESET).assertIsNotEnabled()
     }

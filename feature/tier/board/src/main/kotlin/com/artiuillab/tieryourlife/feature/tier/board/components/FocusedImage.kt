@@ -17,6 +17,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
+import com.artiuillab.tieryourlife.feature.tier.domain.model.orDefaultFor
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -25,7 +26,7 @@ import kotlin.math.roundToInt
  * A cover picture cut to whatever frame it is given by the one formula every
  * platform uses ([com.artiuillab.tieryourlife.feature.tier.domain.model.coverFrame]):
  * the chosen point in the middle, as far in as chosen, never past an edge.
- * Without a focus it is the plain centre crop it always was.
+ * Without a focus it is the centre, or a little above it on a tall picture.
  */
 @Composable
 fun FocusedImage(
@@ -73,7 +74,7 @@ fun focusScale(focus: CoverFocus?): ContentScale = object : ContentScale {
 
 /** The focus point in the middle of the frame, held back from showing past an edge. */
 fun focusAlignment(focus: CoverFocus?): Alignment = Alignment { size, space, _: LayoutDirection ->
-    val (x, y) = focus ?: CoverFocus.CENTRED
+    val (x, y) = focus.orDefaultFor(size.width.toDouble(), size.height.toDouble())
     IntOffset(
         x = -(x * size.width - space.width / 2f).coerceIn(0f, max(0, size.width - space.width).toFloat()).roundToInt(),
         y = -(y * size.height - space.height / 2f).coerceIn(0f, max(0, size.height - space.height).toFloat()).roundToInt(),

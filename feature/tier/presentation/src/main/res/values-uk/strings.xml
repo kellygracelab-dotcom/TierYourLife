@@ -267,7 +267,8 @@
     <string name="cover_adjust_zoom">Масштаб</string>
     <string name="cover_adjust_preview">Попередній перегляд</string>
     <string name="cover_adjust_feed">Стрічка</string>
+    <string name="cover_adjust_square">Квадрат</string>
     <string name="cover_adjust_header">Шапка сторінки</string>
     <string name="cover_adjust_close">Закрити</string>
-    <string name="cover_adjust_hint">Рухайте пальцем, масштаб — двома пальцями</string>
+    <string name="cover_adjust_hint">Перетягніть або торкніться, щоб вибрати точку, масштаб — двома пальцями</string>
 </resources>

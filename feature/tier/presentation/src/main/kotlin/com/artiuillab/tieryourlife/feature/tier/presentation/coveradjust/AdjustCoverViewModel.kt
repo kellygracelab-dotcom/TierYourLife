@@ -40,7 +40,7 @@ class AdjustCoverViewModel @Inject constructor(
                 .onFailure { Timber.w(it, "Reading the board for its cover failed") }
                 .getOrNull()
             _state.update {
-                it.copy(picture = list?.coverImageUrl, focus = list?.coverFocus ?: CoverFocus.CENTRED, loaded = true)
+                it.copy(picture = list?.coverImageUrl, focus = list?.coverFocus, loaded = true)
             }
         }
     }
@@ -50,7 +50,7 @@ class AdjustCoverViewModel @Inject constructor(
     }
 
     fun reset() {
-        _state.update { it.copy(focus = CoverFocus.CENTRED) }
+        _state.update { it.copy(focus = null) }
     }
 
     fun save() {
@@ -58,7 +58,7 @@ class AdjustCoverViewModel @Inject constructor(
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
             val saved = messages.guard("Saving the cover's focus") {
-                repository.setCoverFocus(tierListId, _state.value.focus.inRange().takeUnless { it.isCentred })
+                repository.setCoverFocus(tierListId, _state.value.focus?.inRange()?.takeUnless { it.isCentred })
             }
             _state.update { it.copy(saving = false, saved = saved) }
         }

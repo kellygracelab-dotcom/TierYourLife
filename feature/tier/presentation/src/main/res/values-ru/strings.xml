@@ -267,7 +267,8 @@
     <string name="cover_adjust_zoom">Масштаб</string>
     <string name="cover_adjust_preview">Предпросмотр</string>
     <string name="cover_adjust_feed">Лента</string>
+    <string name="cover_adjust_square">Квадрат</string>
     <string name="cover_adjust_header">Шапка страницы</string>
     <string name="cover_adjust_close">Закрыть</string>
-    <string name="cover_adjust_hint">Двигайте пальцем, масштаб — двумя пальцами</string>
+    <string name="cover_adjust_hint">Перетащите или коснитесь, чтобы выбрать точку, масштаб — двумя пальцами</string>
 </resources>

@@ -253,7 +253,8 @@
     <string name="cover_adjust_zoom">Zoom</string>
     <string name="cover_adjust_preview">Aperçu</string>
     <string name="cover_adjust_feed">Fil</string>
+    <string name="cover_adjust_square">Carré</string>
     <string name="cover_adjust_header">En-tête</string>
     <string name="cover_adjust_close">Fermer</string>
-    <string name="cover_adjust_hint">Faites glisser pour déplacer, pincez pour zoomer</string>
+    <string name="cover_adjust_hint">Faites glisser ou touchez pour placer le point, pincez pour zoomer</string>
 </resources>

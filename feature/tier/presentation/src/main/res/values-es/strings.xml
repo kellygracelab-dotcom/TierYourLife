@@ -253,7 +253,8 @@
     <string name="cover_adjust_zoom">Zoom</string>
     <string name="cover_adjust_preview">Vista previa</string>
     <string name="cover_adjust_feed">Feed</string>
+    <string name="cover_adjust_square">Cuadrado</string>
     <string name="cover_adjust_header">Cabecera</string>
     <string name="cover_adjust_close">Cerrar</string>
-    <string name="cover_adjust_hint">Arrastra para mover, pellizca para ampliar</string>
+    <string name="cover_adjust_hint">Arrastra o toca para elegir el punto, pellizca para hacer zoom</string>
 </resources>

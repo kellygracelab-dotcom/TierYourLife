@@ -267,7 +267,8 @@
     <string name="cover_adjust_zoom">Powiększenie</string>
     <string name="cover_adjust_preview">Podgląd</string>
     <string name="cover_adjust_feed">Kanał</string>
+    <string name="cover_adjust_square">Kwadrat</string>
     <string name="cover_adjust_header">Nagłówek strony</string>
     <string name="cover_adjust_close">Zamknij</string>
-    <string name="cover_adjust_hint">Przeciągnij, aby przesunąć, rozsuń palce, aby powiększyć</string>
+    <string name="cover_adjust_hint">Przeciągnij lub dotknij, by wybrać punkt, zbliż dwoma palcami</string>
 </resources>
