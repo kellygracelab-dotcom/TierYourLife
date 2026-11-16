@@ -312,6 +312,10 @@
     <string name="community_started_from_theirs_unnamed">Twoja wersja zaczyna się od tego rankingu</string>
     <string name="community_replaced_yours">Zastąpiono twoją wersję rankingiem: %1$s</string>
     <string name="community_replaced_yours_unnamed">Zastąpiono twoją wersję tym rankingiem</string>
+    <string name="community_replace_yours_ask">Zacząć od rankingu: %1$s?</string>
+    <string name="community_replace_yours_ask_unnamed">Zacząć od tego rankingu?</string>
+    <string name="community_replace_yours_body">Twoja wersja zostanie zastąpiona.</string>
+    <string name="community_action_replace">Zastąp</string>
     <string name="community_action_undo">Cofnij</string>
     <string name="community_picture_credits">Autorzy zdjęć</string>
     <string name="community_picture_credit_line">%1$s — %2$s</string>

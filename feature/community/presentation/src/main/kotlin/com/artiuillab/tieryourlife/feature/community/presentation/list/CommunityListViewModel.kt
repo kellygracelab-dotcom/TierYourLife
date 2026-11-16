@@ -102,8 +102,11 @@ class CommunityListViewModel @Inject constructor(
         forget = { openedLists.forget(publishedId) },
     )
 
-    /** Mine as it was before a move on Theirs replaced it, for Undo. */
-    private var beforeTheirs: Pair<TierList, Boolean>? = null
+    /** A move on Theirs starts Mine from it, asking first over a Mine of one's own. */
+    internal val theirsStart: TheirsStart = TheirsStart(_state, viewModelScope, told::send, replacing = { game.forget() }) {
+        progress.keep()
+        choices.offerIfNeeded()
+    }
     internal val game: GameTurns = GameTurns(_state) { afterGame ->
         progress.keep()
         choices.offerIfNeeded(afterGame)
@@ -111,15 +114,15 @@ class CommunityListViewModel @Inject constructor(
 
     /** When the board on screen was last changed by its author, as the server said. */
     private var shownUpdatedAt: Long? = null
-    internal val progress = PrivateRankingProgress(
+    internal val progress: PrivateRankingProgress = PrivateRankingProgress(
         publishedId, _state, accounts, drafts, viewModelScope, messages, ::emptied,
         invalidateUndo = {
             game.forget()
-            beforeTheirs = null
+            theirsStart.forget()
         },
         tiers = tiers,
     )
-    internal val choices = CommunityRankingChoices(_state, progress, viewModelScope, messages, told::send, rankings::showMine)
+    internal val choices: CommunityRankingChoices = CommunityRankingChoices(_state, progress, viewModelScope, messages, told::send, rankings::showMine)
 
     /** Taps on Follow so far: an answer asked for before the latest one does not get to undo it. */
     private var followTaps = 0
@@ -260,7 +263,7 @@ class CommunityListViewModel @Inject constructor(
         shownUpdatedAt = answer.summary.updatedAtMillis
         if (!sameBoard) {
             game.forget()
-            beforeTheirs = null
+            theirsStart.forget()
         }
         val continuing = if (sameBoard) fresh.keepingWhatTheReaderDid(before) else null
         val shown = progress.opened(answer, fresh, before, continuing)
@@ -324,47 +327,11 @@ class CommunityListViewModel @Inject constructor(
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         val current = _state.value as? CommunityListUiState.Success ?: return
         if (current.own || current.arriving) return
-        if (current.showing == Showing.Theirs) return startFromTheirs(current, itemId, toTierId, toPosition)
+        if (current.showing == Showing.Theirs) return theirsStart.move(current, itemId, toTierId, toPosition)
         game.forget()
         _state.update { state ->
             if (state !is CommunityListUiState.Success) return@update state
             state.copy(mine = state.mine.withItemMoved(itemId, toTierId, toPosition), arranged = true)
-        }
-        progress.keep()
-        choices.offerIfNeeded()
-    }
-
-    /**
-     * A move while their arrangement is on screen: the reader's own version
-     * begins as what they were looking at, a chosen reader's placing included,
-     * with that one move made. The board stays as it was under the finger.
-     */
-    private fun startFromTheirs(current: CommunityListUiState.Success, itemId: Long, toTierId: Long, toPosition: Int) {
-        // Cards another reader added stay in their version: Mine on this page holds the list's cards only.
-        val listCards = current.list.tiers.flatMap { it.items }.mapTo(mutableSetOf()) { it.id }
-        if (itemId !in listCards) return
-        beforeTheirs = current.mine to current.arranged
-        game.forget()
-        _state.update { state ->
-            if (state !is CommunityListUiState.Success) return@update state
-            val theirs = state.theirs.tiers.map { tier -> tier.copy(items = tier.items.filter { it.id in listCards }) }
-            state.copy(
-                mine = state.mine.copy(tiers = theirs).withItemMoved(itemId, toTierId, toPosition),
-                showing = Showing.Mine,
-                arranged = true,
-            )
-        }
-        viewModelScope.launch { told.send(ListNotice.StartedFromTheirs(current.theirsName, replaced = current.arranged)) }
-        progress.keep()
-        choices.offerIfNeeded()
-    }
-
-    /** Mine as it was before, and their arrangement back on screen. */
-    fun undoStartFromTheirs() {
-        val (mine, arranged) = beforeTheirs ?: return
-        beforeTheirs = null
-        _state.update { state ->
-            if (state !is CommunityListUiState.Success) state else state.copy(mine = mine, arranged = arranged, showing = Showing.Theirs)
         }
         progress.keep()
         choices.offerIfNeeded()
@@ -378,7 +345,7 @@ class CommunityListViewModel @Inject constructor(
         val current = (_state.value as? CommunityListUiState.Success)?.takeUnless { it.own || it.arriving } ?: return
         if (current.mine.tiers.none { !it.isPool && it.items.isNotEmpty() }) return
         game.forget()
-        beforeTheirs = null
+        theirsStart.forget()
         _state.value = current.copy(mine = current.mine.returningAllToPool(), showing = Showing.Mine, arranged = true, gameStep = null)
         progress.keep()
     }
