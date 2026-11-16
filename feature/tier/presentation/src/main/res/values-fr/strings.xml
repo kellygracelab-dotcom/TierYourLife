@@ -260,4 +260,25 @@
     <string name="cover_adjust_header">En-tête</string>
     <string name="cover_adjust_close">Fermer</string>
     <string name="cover_adjust_hint">Faites glisser ou touchez pour placer le point, pincez pour zoomer</string>
+    <string name="publish_sheet_title">Publier « %1$s »</string>
+    <plurals name="publish_sheet_cards">
+        <item quantity="one">%d carte</item>
+        <item quantity="many">%d cartes</item>
+        <item quantity="other">%d cartes</item>
+    </plurals>
+    <string name="publish_sheet_section">Rubrique</string>
+    <string name="publish_sheet_section_first">Choisissez d’abord une rubrique.</string>
+    <string name="publish_sheet_topic">Thème dans %1$s · facultatif</string>
+    <string name="publish_sheet_topic_plain">Thème · facultatif</string>
+    <string name="publish_sheet_pick_section">Choisissez une rubrique pour voir ses thèmes.</string>
+    <string name="publish_sheet_propose_topic">Proposer un thème</string>
+    <string name="publish_sheet_topic_name">Nommer un nouveau thème</string>
+    <string name="publish_sheet_add">Ajouter</string>
+    <string name="publish_sheet_as_section">Proposer comme rubrique à part, pas comme thème</string>
+    <string name="publish_sheet_moderator">Un modérateur l’examine. D’ici là, la liste reste dans %1$s avec cette étiquette.</string>
+    <string name="publish_sheet_how">Elle apparaît dans Communauté sous votre nom. Toute personne ayant le lien peut la classer. Vous pouvez toujours la modifier.</string>
+    <string name="publish_sheet_new">nouveau</string>
+    <string name="publish_sheet_new_section">Nouvelle rubrique</string>
+    <string name="publish_sheet_continue">Continuer</string>
+    <string name="publish_sheet_section_note">Une rubrique demande une icône et une image 16:10 d’au moins 960 px de large. Vous les ajoutez ensuite. Tant qu’un modérateur n’a pas décidé, la liste reste dans %1$s.</string>
 </resources>

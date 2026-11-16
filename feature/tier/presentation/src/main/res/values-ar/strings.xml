@@ -302,4 +302,28 @@
     <string name="cover_adjust_header">رأس الصفحة</string>
     <string name="cover_adjust_close">إغلاق</string>
     <string name="cover_adjust_hint">اسحب أو انقر لاختيار النقطة، واقرص للتكبير</string>
+    <string name="publish_sheet_title">نشر «%1$s»</string>
+    <plurals name="publish_sheet_cards">
+        <item quantity="zero">لا بطاقات</item>
+        <item quantity="one">بطاقة واحدة</item>
+        <item quantity="two">بطاقتان</item>
+        <item quantity="few">%d بطاقات</item>
+        <item quantity="many">%d بطاقة</item>
+        <item quantity="other">%d بطاقة</item>
+    </plurals>
+    <string name="publish_sheet_section">القسم</string>
+    <string name="publish_sheet_section_first">اختر قسمًا أولًا.</string>
+    <string name="publish_sheet_topic">موضوع في %1$s · اختياري</string>
+    <string name="publish_sheet_topic_plain">الموضوع · اختياري</string>
+    <string name="publish_sheet_pick_section">اختر قسمًا لترى مواضيعه.</string>
+    <string name="publish_sheet_propose_topic">اقترح موضوعًا</string>
+    <string name="publish_sheet_topic_name">سمِّ موضوعًا جديدًا</string>
+    <string name="publish_sheet_add">إضافة</string>
+    <string name="publish_sheet_as_section">اقترحه قسمًا مستقلًا، لا موضوعًا</string>
+    <string name="publish_sheet_moderator">سيراجعه مشرف. حتى ذلك الحين تبقى القائمة في %1$s بهذه التسمية.</string>
+    <string name="publish_sheet_how">تظهر في المجتمع باسمك. يمكن لأي شخص لديه الرابط ترتيبها. ويمكنك مواصلة تعديلها.</string>
+    <string name="publish_sheet_new">جديد</string>
+    <string name="publish_sheet_new_section">قسم جديد</string>
+    <string name="publish_sheet_continue">متابعة</string>
+    <string name="publish_sheet_section_note">يحتاج القسم إلى أيقونة وصورة بنسبة 16:10 وعرض 960 بكسل على الأقل. ستضيفهما في الخطوة التالية. إلى أن يقرر المشرف، تبقى القائمة في %1$s.</string>
 </resources>

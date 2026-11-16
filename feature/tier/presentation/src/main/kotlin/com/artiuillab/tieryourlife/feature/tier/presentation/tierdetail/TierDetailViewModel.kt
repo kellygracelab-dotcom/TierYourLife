@@ -12,6 +12,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
@@ -26,6 +27,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailRoute
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardPublicationController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PublishSheetController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
@@ -123,6 +125,26 @@ class TierDetailViewModel @Inject constructor(
     fun shareRankingOffer(onSignIn: () -> Unit) = publication.shareOffer(onSignIn)
     fun recheckOriginal() = publication.recheckOriginal()
 
+    private val sheet = PublishSheetController(
+        repository, community, viewModelScope,
+        current = { (board as? TierDetailUiState.Success)?.list },
+        reload = ::reloadTierList,
+        publish = { setPublic(true) },
+    )
+    internal val publishSheet = sheet.state
+
+    fun openPublishSheet() = sheet.open()
+    fun chooseSection(section: String) = sheet.chooseSection(section)
+    fun chooseTopic(topic: Topic?) = sheet.chooseTopic(topic)
+    fun proposeTopic(name: String) = sheet.proposeTopic(name)
+    fun publishFromSheet() = sheet.publish()
+
+    /** Closed by hand: what it said of a refusal goes with it, rather than opening the settings after. */
+    fun closePublishSheet() {
+        sheet.close()
+        if (!publishing) dismissPublicationError()
+    }
+
     init {
         // What the website or another phone did since shows on the board that is open, not the next time it opens.
         viewModelScope.launch {
@@ -197,6 +219,8 @@ class TierDetailViewModel @Inject constructor(
         if (recorded) showPublished(published, waiting)
         // Just sent, so nothing is behind any more.
         publishedIsBehind = false
+        // Out: the sheet has done its work, and the snackbar says the rest.
+        if (recorded && published != null) sheet.close()
         if (recorded && published != null) messages.send(publishedMessage(published, wasOut = list.publishedId != null || list.rankingOf != null))
     }
 

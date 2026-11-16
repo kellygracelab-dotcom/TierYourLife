@@ -246,4 +246,24 @@
     <string name="cover_adjust_header">Seitenkopf</string>
     <string name="cover_adjust_close">Schließen</string>
     <string name="cover_adjust_hint">Ziehen oder tippen, um den Punkt zu setzen, mit zwei Fingern zoomen</string>
+    <string name="publish_sheet_title">„%1$s“ veröffentlichen</string>
+    <plurals name="publish_sheet_cards">
+        <item quantity="one">%d Karte</item>
+        <item quantity="other">%d Karten</item>
+    </plurals>
+    <string name="publish_sheet_section">Rubrik</string>
+    <string name="publish_sheet_section_first">Wähle zuerst eine Rubrik.</string>
+    <string name="publish_sheet_topic">Thema in %1$s · optional</string>
+    <string name="publish_sheet_topic_plain">Thema · optional</string>
+    <string name="publish_sheet_pick_section">Wähle eine Rubrik, um ihre Themen zu sehen.</string>
+    <string name="publish_sheet_propose_topic">Thema vorschlagen</string>
+    <string name="publish_sheet_topic_name">Neues Thema benennen</string>
+    <string name="publish_sheet_add">Hinzufügen</string>
+    <string name="publish_sheet_as_section">Als eigene Rubrik vorschlagen, nicht als Thema</string>
+    <string name="publish_sheet_moderator">Ein Moderator sieht es sich an. Bis dahin bleibt die Liste mit dieser Markierung in %1$s.</string>
+    <string name="publish_sheet_how">Sie erscheint unter deinem Namen in der Community. Alle mit dem Link können sie einordnen. Bearbeiten kannst du sie weiterhin.</string>
+    <string name="publish_sheet_new">neu</string>
+    <string name="publish_sheet_new_section">Neue Rubrik</string>
+    <string name="publish_sheet_continue">Weiter</string>
+    <string name="publish_sheet_section_note">Eine Rubrik braucht ein Symbol und ein Bild im Format 16:10, mindestens 960 px breit. Beides fügst du als Nächstes hinzu. Bis ein Moderator entscheidet, bleibt die Liste in %1$s.</string>
 </resources>

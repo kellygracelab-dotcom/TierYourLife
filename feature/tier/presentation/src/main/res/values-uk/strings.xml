@@ -274,4 +274,26 @@
     <string name="cover_adjust_header">Шапка сторінки</string>
     <string name="cover_adjust_close">Закрити</string>
     <string name="cover_adjust_hint">Перетягніть або торкніться, щоб вибрати точку, масштаб — двома пальцями</string>
+    <string name="publish_sheet_title">Опублікувати «%1$s»</string>
+    <plurals name="publish_sheet_cards">
+        <item quantity="one">%d картка</item>
+        <item quantity="few">%d картки</item>
+        <item quantity="many">%d карток</item>
+        <item quantity="other">%d картки</item>
+    </plurals>
+    <string name="publish_sheet_section">Розділ</string>
+    <string name="publish_sheet_section_first">Спершу виберіть розділ.</string>
+    <string name="publish_sheet_topic">Тема в розділі «%1$s» · необовʼязково</string>
+    <string name="publish_sheet_topic_plain">Тема · необовʼязково</string>
+    <string name="publish_sheet_pick_section">Виберіть розділ, щоб побачити його теми.</string>
+    <string name="publish_sheet_propose_topic">Запропонувати тему</string>
+    <string name="publish_sheet_topic_name">Назвіть нову тему</string>
+    <string name="publish_sheet_add">Додати</string>
+    <string name="publish_sheet_as_section">Запропонувати окремим розділом, а не темою</string>
+    <string name="publish_sheet_moderator">Її перегляне модератор. Доти список лежить у розділі «%1$s» з цією позначкою.</string>
+    <string name="publish_sheet_how">Список зʼявиться в Спільноті під вашим іменем. Будь-хто з посиланням зможе його розкласти. Змінювати його можна й далі.</string>
+    <string name="publish_sheet_new">нова</string>
+    <string name="publish_sheet_new_section">Новий розділ</string>
+    <string name="publish_sheet_continue">Далі</string>
+    <string name="publish_sheet_section_note">Розділу потрібні значок і зображення 16:10 завширшки від 960 px. Їх ви додасте далі. Поки модератор не вирішить, список лежить у розділі «%1$s».</string>
 </resources>

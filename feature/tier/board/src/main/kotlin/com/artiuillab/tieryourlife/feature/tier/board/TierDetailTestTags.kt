@@ -50,6 +50,9 @@ object TierDetailTestTags {
     const val SETTINGS_VIEW_PUBLISHED = "tier_detail_settings_view_published"
     const val UNPUBLISHED_CHANGES = "tier_detail_unpublished_changes"
     const val PUBLISH_PROGRESS = "tier_detail_publish_progress"
+    const val VIEW_MODE = "tier_detail_view_mode"
+
+    fun viewMode(mode: String) = "tier_detail_view_mode_$mode"
     const val OPEN_ORIGINAL_ROW = "tier_detail_open_original_row"
     const val LIST_SETTINGS_SCREEN = "tier_detail_list_settings_screen"
     const val LIST_SETTINGS_MODE_WRAP = "tier_detail_list_settings_mode_wrap"

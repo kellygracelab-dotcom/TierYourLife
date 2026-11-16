@@ -33,7 +33,7 @@ fun NavGraphBuilder.tierDetailScreen(
     onOpenPublishedList: (String) -> Unit = {},
     onSeeInCommunity: ((String) -> Unit)? = null,
     play: BoardPlay = NoPlay,
-    onProposeSection: ((String?) -> Unit)? = null,
+    onProposeSection: ((fileUnder: String?, name: String?) -> Unit)? = null,
     onSignIn: () -> Unit = {},
 ) {
     composable<Route.TierDetail> { backStackEntry ->
