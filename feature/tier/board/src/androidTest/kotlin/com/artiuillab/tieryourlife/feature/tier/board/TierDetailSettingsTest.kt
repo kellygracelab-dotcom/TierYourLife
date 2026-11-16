@@ -371,7 +371,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.rankedRow(100)).performClick()
 
-        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertIsDisplayed()
     }
 
     @Test
@@ -385,7 +385,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
         composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_COLLAPSED).performClick()
         composeRule.onNodeWithTag(TierDetailTestTags.rankedPoolItem(200)).performClick()
 
-        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertIsDisplayed()
     }
 
     @Test
@@ -398,7 +398,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performClick()
 
-        composeRule.onNodeWithText("Move to a tier").assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertDoesNotExist()
     }
 
     @Test
@@ -411,7 +411,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performClick()
 
-        composeRule.onNodeWithText("Move to a tier").assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertDoesNotExist()
     }
 
     @Test
@@ -424,7 +424,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
 
-        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertIsDisplayed()
     }
 
     @Test
