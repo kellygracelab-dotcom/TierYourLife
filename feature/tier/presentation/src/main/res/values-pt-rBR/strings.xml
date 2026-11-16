@@ -260,4 +260,21 @@
     <string name="cover_adjust_header">Cabeçalho</string>
     <string name="cover_adjust_close">Fechar</string>
     <string name="cover_adjust_hint">Arraste ou toque para escolher o ponto, use dois dedos para zoom</string>
+    <string name="publish_sheet_title">Publicar “%1$s”</string>
+    <plurals name="publish_sheet_cards">
+        <item quantity="one">%d cartão</item>
+        <item quantity="many">%d cartões</item>
+        <item quantity="other">%d cartões</item>
+    </plurals>
+    <string name="publish_sheet_section">Seção</string>
+    <string name="publish_sheet_section_first">Escolha uma seção primeiro.</string>
+    <string name="publish_sheet_topic">Tema em %1$s · opcional</string>
+    <string name="publish_sheet_topic_plain">Tema · opcional</string>
+    <string name="publish_sheet_pick_section">Escolha uma seção para ver os temas dela.</string>
+    <string name="publish_sheet_propose_topic">Propor um tema</string>
+    <string name="publish_sheet_topic_name">Nome do novo tema</string>
+    <string name="publish_sheet_add">Adicionar</string>
+    <string name="publish_sheet_as_section">Propor como seção separada, não como tema</string>
+    <string name="publish_sheet_moderator">Um moderador vai analisar. Até lá, a lista fica em %1$s com este rótulo.</string>
+    <string name="publish_sheet_how">Ela aparece em Comunidade com o seu nome. Qualquer pessoa com o link pode organizá-la. Você continua podendo editá-la.</string>
 </resources>

@@ -116,7 +116,7 @@ sealed interface CommunityRoute {
 
     /** The proposal form; [fileUnder] is the section of the list it was opened from, if any. */
     @Serializable
-    data class ProposeSection(val fileUnder: String? = null) : CommunityRoute
+    data class ProposeSection(val fileUnder: String? = null, val name: String? = null) : CommunityRoute
 
     /**
      * One topic's page. The name and section travel so the header is right
@@ -193,6 +193,7 @@ internal fun SavedStateHandle.topicRoute() = CommunityRoute.Topic(
 
 internal fun SavedStateHandle.proposeSectionRoute() = CommunityRoute.ProposeSection(
     fileUnder = get<String>(CommunityRoute.ProposeSection::fileUnder.name),
+    name = get<String>(CommunityRoute.ProposeSection::name.name),
 )
 
 internal fun SavedStateHandle.sectionRoute() = CommunityRoute.Section(

@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
@@ -22,8 +23,11 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.ManualEn
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.AddItemsSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardPublicationDialogs
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PublishSheet
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PublishSheetCalls
 
 @Composable
 fun TierDetailScreen(
@@ -48,7 +52,7 @@ fun TierDetailScreen(
     /** Play over this board; navigation hands in the real one. */
     play: BoardPlay = NoPlay,
     /** The proposal form, from the end of the category picker. */
-    onProposeSection: ((String?) -> Unit)? = null,
+    onProposeSection: ((fileUnder: String?, name: String?) -> Unit)? = null,
     onSignIn: () -> Unit = {},
     viewModel: TierDetailViewModel = hiltViewModel(),
     originalLinks: OriginalLinkViewModel = hiltViewModel(),
@@ -103,7 +107,7 @@ fun TierDetailScreen(
             onOpenOriginal = loadedList?.original()?.let { id -> { onOpenPublishedList(id) } },
             onSetCategory = viewModel::setCategory,
             onCategoryNotChosen = viewModel::categoryNotChosen,
-            onProposeSection = onProposeSection,
+            onProposeSection = onProposeSection?.let { propose -> { fileUnder -> propose(fileUnder, null) } },
             onChooseCover = onChooseCover,
             onAdjustCover = onAdjustCover,
             onAdjustPicture = onAdjustPicture,
@@ -133,7 +137,7 @@ fun TierDetailScreen(
             playSaved = playRequest?.let { play.isSaved(it.key) } == true,
             onPublish = publishAfterSignIn(signedIn = screen.signedIn, onSignIn = onSignIn) { kind ->
                 when (kind) {
-                    Publishing.Publish -> viewModel.setPublic(true)
+                    Publishing.Publish -> viewModel.openPublishSheet()
                     Publishing.Update -> viewModel.updatePublished()
                     Publishing.ShareRanking -> viewModel.shareRanking()
                 }
@@ -152,6 +156,8 @@ fun TierDetailScreen(
         onRecheckOriginal = viewModel::recheckOriginal,
         onSignIn = onSignIn,
     )
+
+    if (loadedList != null) BoardPublishSheet(viewModel, loadedList, publish.publishing, publish.error, onProposeSection)
 
     if (playRequest != null) {
         play.Layer(
@@ -195,4 +201,34 @@ fun TierDetailScreen(
             },
         )
     }
+}
+
+@Composable
+private fun BoardPublishSheet(
+    viewModel: TierDetailViewModel,
+    list: TierList,
+    busy: Boolean,
+    error: PublishError?,
+    onProposeSection: ((fileUnder: String?, name: String?) -> Unit)?,
+) {
+    val sheet by viewModel.publishSheet.collectAsStateWithLifecycle()
+    PublishSheet(
+        list = list,
+        state = sheet ?: return,
+        busy = busy,
+        error = error,
+        calls = PublishSheetCalls(
+            onSection = viewModel::chooseSection,
+            onTopic = viewModel::chooseTopic,
+            onProposeTopic = viewModel::proposeTopic,
+            onProposeSection = onProposeSection?.let { propose ->
+                { name ->
+                    viewModel.closePublishSheet()
+                    propose(list.category, name)
+                }
+            },
+            onPublish = viewModel::publishFromSheet,
+            onDismiss = viewModel::closePublishSheet,
+        ),
+    )
 }

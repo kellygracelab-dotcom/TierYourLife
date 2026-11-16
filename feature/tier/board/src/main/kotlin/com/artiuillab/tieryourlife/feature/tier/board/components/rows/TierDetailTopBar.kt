@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,8 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -59,15 +62,20 @@ import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.ui.AddPhotoIcon
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CloudUploadIcon
+import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
+import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
 import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlayArrowIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PublishIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.play.PLAY_MIN_CARDS
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private const val TITLE_MAX_LENGTH = 80
@@ -101,6 +109,8 @@ fun TierScreenTopBar(
     play: PlayButton? = null,
     /** Publish, Update or Share ranking, before Play; null leaves it out. */
     publish: PublishButton? = null,
+    /** How the tiers are shown, first of the actions; it gives way on a narrow bar where Publish needs the room. */
+    view: ViewButton? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
@@ -162,7 +172,7 @@ fun TierScreenTopBar(
                 }
             }
             trailing?.invoke(this)
-            BarActions(publish, play)
+            BarActions(publish, play, view)
             if (onReaderMoreClick != null) {
                 // Moving cards in Mine does not make the reader the list's editor.
                 IconButton(
@@ -194,6 +204,60 @@ private fun ManualAddAction(onManualAdd: () -> Unit, description: String) {
             .semantics { contentDescription = description }
             .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
     ) { AddPhotoIcon() }
+}
+
+/** The bar's way to show the tiers otherwise, as on the web: the current one's picture, the three in a menu. */
+@Immutable
+data class ViewButton(val mode: TierListDisplayMode, val onSelect: (TierListDisplayMode) -> Unit)
+
+private val ViewModes = listOf(TierListDisplayMode.WRAP, TierListDisplayMode.HORIZONTAL_SCROLL, TierListDisplayMode.FLAT_RANKED)
+
+@Composable
+private fun ViewModeIcon(mode: TierListDisplayMode, color: Color) = when (mode) {
+    TierListDisplayMode.WRAP -> GridViewIcon(24.dp, color)
+    TierListDisplayMode.HORIZONTAL_SCROLL -> ViewCarouselIcon(24.dp, color)
+    TierListDisplayMode.FLAT_RANKED -> FormatListNumberedIcon(24.dp, color)
+}
+
+fun viewModeLabel(mode: TierListDisplayMode): Int = when (mode) {
+    TierListDisplayMode.WRAP -> R.string.tier_list_settings_mode_wrapped
+    TierListDisplayMode.HORIZONTAL_SCROLL -> R.string.tier_list_settings_mode_strip
+    TierListDisplayMode.FLAT_RANKED -> R.string.tier_list_settings_mode_ranked
+}
+
+@Composable
+private fun ViewAction(view: ViewButton) {
+    var open by remember { mutableStateOf(false) }
+    val description = stringResource(R.string.tier_list_settings_display_section) + ": " + stringResource(viewModeLabel(view.mode))
+    Box {
+        IconButton(
+            onClick = { open = true },
+            modifier = Modifier
+                .size(48.dp)
+                .semantics { contentDescription = description }
+                .testTag(TierDetailTestTags.VIEW_MODE),
+        ) { ViewModeIcon(view.mode, MaterialTheme.colorScheme.onSurfaceVariant) }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            ViewModes.forEach { mode ->
+                val chosen = mode == view.mode
+                val tint = if (chosen) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                DropdownMenuItem(
+                    text = { Text(stringResource(viewModeLabel(mode))) },
+                    onClick = {
+                        open = false
+                        if (!chosen) view.onSelect(mode)
+                    },
+                    modifier = Modifier.testTag(TierDetailTestTags.viewMode(mode.name)),
+                    leadingIcon = { ViewModeIcon(mode, tint) },
+                    trailingIcon = if (chosen) {
+                        { CheckIcon(20.dp, MaterialTheme.colorScheme.primary) }
+                    } else {
+                        null
+                    },
+                )
+            }
+        }
+    }
 }
 
 /** The bar's Play: how many cards there are decides whether it can start, a saved game puts a dot on it. */
@@ -260,7 +324,8 @@ fun everyCardPlaced(list: TierList): Boolean =
 
 /** The bar's actions after the title: publishing, then Play. */
 @Composable
-private fun BarActions(publish: PublishButton?, play: PlayButton?) {
+private fun BarActions(publish: PublishButton?, play: PlayButton?, view: ViewButton?) {
+    if (view != null && publish?.narrow != true) ViewAction(view)
     publish?.let { PublishAction(it) }
     play?.let { PlayAction(it) }
 }

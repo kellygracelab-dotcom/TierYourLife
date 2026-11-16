@@ -128,6 +128,10 @@ class ProposeSectionViewModel @Inject constructor(
 
     private var checking: Job? = null
 
+    init {
+        savedStateHandle.proposeSectionRoute().name?.let(::updateName)
+    }
+
     /** Only an open section takes lists; anything else, or nothing, starts on Other. */
     private fun startingFileUnder(wanted: String?): String =
         wanted?.takeIf { id -> catalog.directory.value.shown.any { it.id == id } } ?: ListCategory.Other.id

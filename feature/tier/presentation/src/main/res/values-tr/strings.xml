@@ -246,4 +246,20 @@
     <string name="cover_adjust_header">Sayfa başlığı</string>
     <string name="cover_adjust_close">Kapat</string>
     <string name="cover_adjust_hint">Noktayı seçmek için sürükleyin veya dokunun, yakınlaştırmak için iki parmak kullanın</string>
+    <string name="publish_sheet_title">“%1$s” listesini yayımla</string>
+    <plurals name="publish_sheet_cards">
+        <item quantity="one">%d kart</item>
+        <item quantity="other">%d kart</item>
+    </plurals>
+    <string name="publish_sheet_section">Bölüm</string>
+    <string name="publish_sheet_section_first">Önce bir bölüm seç.</string>
+    <string name="publish_sheet_topic">%1$s içinde konu · isteğe bağlı</string>
+    <string name="publish_sheet_topic_plain">Konu · isteğe bağlı</string>
+    <string name="publish_sheet_pick_section">Konularını görmek için bir bölüm seç.</string>
+    <string name="publish_sheet_propose_topic">Konu öner</string>
+    <string name="publish_sheet_topic_name">Yeni konunun adı</string>
+    <string name="publish_sheet_add">Ekle</string>
+    <string name="publish_sheet_as_section">Konu olarak değil, ayrı bir bölüm olarak öner</string>
+    <string name="publish_sheet_moderator">Bir moderatör inceler. O zamana kadar liste bu etiketle %1$s içinde kalır.</string>
+    <string name="publish_sheet_how">Toplulukta senin adınla görünür. Bağlantıya sahip herkes sıralayabilir. Düzenlemeye devam edebilirsin.</string>
 </resources>

@@ -311,7 +311,7 @@ private fun NavContent(
                 navController.navigateToCommunityList(CommunityRoute.CommunityList(id, mine = true, fromBoard = true))
             },
             play = PlayOverBoards,
-            onProposeSection = { fileUnder -> navController.navigateToProposeSection(fileUnder) },
+            onProposeSection = { fileUnder, name -> navController.navigateToProposeSection(fileUnder, name) },
         )
         coverPickerScreen(
             onBack = { navController.popBackStack() },

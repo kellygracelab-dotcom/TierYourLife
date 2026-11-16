@@ -33,6 +33,7 @@ fun NavGraphBuilder.proposeSectionScreen(
     }
 }
 
-fun NavController.navigateToProposeSection(fileUnder: String? = null) {
-    navigate(CommunityRoute.ProposeSection(fileUnder))
+/** [name]: typed already, as a topic that should be a section of its own. */
+fun NavController.navigateToProposeSection(fileUnder: String? = null, name: String? = null) {
+    navigate(CommunityRoute.ProposeSection(fileUnder, name))
 }

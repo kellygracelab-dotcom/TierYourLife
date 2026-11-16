@@ -97,6 +97,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPool
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.ViewButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.everyCardPlaced
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishingOf
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberOneByOne
@@ -570,6 +571,8 @@ private fun TierScreenBody(
                     PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
                 },
                 publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - BAR_BESIDE_PUBLISH)?.takeUnless { glanceable || readOnly },
+                // One's own board only: a reader's page keeps the author's choice.
+                view = ViewButton(list.displayMode, onSetDisplayMode).takeIf { actions.onPublish != null && !glanceable && !readOnly },
             )
         }
         val board: @Composable (Modifier) -> Unit = { boardModifier ->

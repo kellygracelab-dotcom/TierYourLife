@@ -274,4 +274,22 @@
     <string name="cover_adjust_header">Nagłówek strony</string>
     <string name="cover_adjust_close">Zamknij</string>
     <string name="cover_adjust_hint">Przeciągnij lub dotknij, by wybrać punkt, zbliż dwoma palcami</string>
+    <string name="publish_sheet_title">Opublikuj „%1$s”</string>
+    <plurals name="publish_sheet_cards">
+        <item quantity="one">%d karta</item>
+        <item quantity="few">%d karty</item>
+        <item quantity="many">%d kart</item>
+        <item quantity="other">%d karty</item>
+    </plurals>
+    <string name="publish_sheet_section">Dział</string>
+    <string name="publish_sheet_section_first">Najpierw wybierz dział.</string>
+    <string name="publish_sheet_topic">Temat w dziale %1$s · opcjonalnie</string>
+    <string name="publish_sheet_topic_plain">Temat · opcjonalnie</string>
+    <string name="publish_sheet_pick_section">Wybierz dział, aby zobaczyć jego tematy.</string>
+    <string name="publish_sheet_propose_topic">Zaproponuj temat</string>
+    <string name="publish_sheet_topic_name">Nazwa nowego tematu</string>
+    <string name="publish_sheet_add">Dodaj</string>
+    <string name="publish_sheet_as_section">Zaproponuj jako osobny dział, nie temat</string>
+    <string name="publish_sheet_moderator">Sprawdzi go moderator. Do tego czasu lista zostaje w dziale %1$s z tą etykietą.</string>
+    <string name="publish_sheet_how">Pojawi się w Społeczności pod Twoim imieniem. Każdy, kto ma link, może ją ułożyć. Nadal możesz ją edytować.</string>
 </resources>
