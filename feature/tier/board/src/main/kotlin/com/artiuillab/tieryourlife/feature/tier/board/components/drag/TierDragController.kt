@@ -117,6 +117,8 @@ class TierDragController {
 
     fun registerRowBounds(tierId: Long, bounds: Rect) {
         rowBounds[DragTarget.Tier(tierId)] = bounds
+        // The list scrolls on its own near an edge: the rows move under a finger that does not.
+        refreshHover()
     }
 
     fun unregisterRowBounds(tierId: Long) {
