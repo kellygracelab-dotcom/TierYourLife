@@ -53,6 +53,41 @@ jobs:
         if: always()
         run: python3 .github/scripts/coverage-summary.py build/reports/kover/report.xml >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: build-reports
+          path: |
+            **/build/reports/tests/**
+            **/build/reports/lint-results-*.html
+            build/reports/kover/**
+            **/build/outputs/roborazzi/**
+          retention-days: 7
+
+  # A job of its own, beside the tests and not after them: it needs nothing
+  # they make, and R8 alone takes minutes. The bundle is published only from a
+  # run whose every job passed, so one built beside a failed test goes nowhere.
+  release:
+    name: Release bundle
+    runs-on: ubuntu-latest
+
+    steps:
+      # The whole history: the version code is the number of commits.
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+
       # The build that reaches people is shrunk by R8, which the debug build
       # never is: a class R8 strips or a rule it rejects would otherwise first
       # show up as a crash on a tester's phone. Unsigned, and the mapping file
@@ -79,27 +114,19 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Upload reports
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: build-reports
-          path: |
-            **/build/reports/tests/**
-            **/build/reports/lint-results-*.html
-            build/reports/kover/**
-            **/build/outputs/roborazzi/**
-          retention-days: 7
-
+  # Every job above and below is named in `needs` here and, by the name GitHub
+  # shows, in .github/scripts/play_internal/github.py; a test there reads this
+  # file and fails when the two lists differ.
   ci-passed:
     name: Android CI passed
-    needs: [build, changes, e2e, instrumentation]
+    needs: [build, release, changes, e2e, instrumentation]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: Require every applicable check
         env:
           BUILD_RESULT: ${{ needs.build.result }}
+          RELEASE_RESULT: ${{ needs.release.result }}
           CHANGES_RESULT: ${{ needs.changes.result }}
           CODE_CHANGED: ${{ needs.changes.outputs.code }}
           E2E_RESULT: ${{ needs.e2e.result }}
@@ -107,6 +134,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$BUILD_RESULT" = success
+          test "$RELEASE_RESULT" = success
           test "$CHANGES_RESULT" = success
           case "$CODE_CHANGED" in
             true)
