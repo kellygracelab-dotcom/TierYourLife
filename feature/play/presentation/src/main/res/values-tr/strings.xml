@@ -5,6 +5,17 @@
         <item quantity="one">%2$s listesinden %1$d kart</item>
         <item quantity="other">%2$s listesinden %1$d kart</item>
     </plurals>
+    <string name="play_how_it_works">İki karttan daha iyisini seçin. Seviyeler kendiliğinden dolar.</string>
+    <string name="play_game_kept">İstediğiniz zaman çıkın — oyun saklanır.</string>
+    <string name="play_other_ways">Başka oynama yolları</string>
+    <plurals name="play_about_duels">
+        <item quantity="one">yaklaşık %1$d düello</item>
+        <item quantity="other">yaklaşık %1$d düello</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="one">%1$d dk</item>
+        <item quantity="other">%1$d dk</item>
+    </plurals>
     <string name="play_choose_cards">Kart seç</string>
     <string name="play_game_smart">Akıllı seçim</string>
     <string name="play_game_swiss">Kaybeden kalır</string>
@@ -39,7 +50,7 @@
     <string name="play_too_few_to_start_again">Kartlar değişti ve bu oyunu yeniden başlatmak için çok az kart kaldı.</string>
     <string name="play_tier_gone">Bu oyundaki seviyelerden biri artık yok.</string>
     <string name="play_start_again">Yeniden başla</string>
-    <string name="play_into_mine_note">Sonuç “Benimki”ne gider. “Onunki” değişmez.</string>
+    <string name="play_into_mine_note">Sonuç “Benimki” bölümüne gider. Yazarın sıralaması değişmez.</string>
     <string name="play_cancel">İptal</string>
     <string name="play_start">Başla</string>
     <string name="play_continue">Devam</string>
@@ -57,6 +68,7 @@
     <string name="play_ranked">Sıralananlar</string>
     <string name="play_quit">Çık</string>
     <string name="play_duel_of">Düello %1$d/%2$d</string>
+    <string name="play_duel_of_about">Düello %1$d/yaklaşık %2$d</string>
     <string name="play_round_of">Tur %1$d/%2$d</string>
     <string name="play_refine_of">Netleştir · %1$d/%2$d</string>
     <string name="play_undo_pick">Son seçimi geri al</string>

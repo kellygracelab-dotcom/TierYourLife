@@ -9,6 +9,28 @@
 # inline script one line per shell, so a variable set on one line is gone by the next.
 set -u
 
+# The modules' tests run one after another on one emulator, and these three
+# take half of that time, so they have an emulator to themselves and all the
+# other modules share a second one. `rest` is every module but these, not a
+# list of its own: a module added later is tested there without being named
+# anywhere. Measured on both API levels, the halves end within half a minute
+# of each other.
+named=(:navigation :feature:tier:board :feature:play:presentation)
+tasks=()
+case "${1:-}" in
+  named)
+    for module in "${named[@]}"; do tasks+=("$module:connectedDebugAndroidTest"); done
+    ;;
+  rest)
+    tasks+=(connectedDebugAndroidTest)
+    for module in "${named[@]}"; do tasks+=(-x "$module:connectedDebugAndroidTest"); done
+    ;;
+  *)
+    echo "usage: instrumentation.sh named|rest" >&2
+    exit 2
+    ;;
+esac
+
 adb shell settings put global verifier_verify_adb_installs 0
 
 # The test runner's own lines stream into the job log as the run goes, so a
@@ -33,7 +55,7 @@ trap stop_everything EXIT
 # Read straight off the pipeline, not after an `if`: a failed `if` with no `else`
 # is a success, and `status=$?` there reported every red run green.
 log=instrumentation.log
-./gradlew connectedDebugAndroidTest 2>&1 | tee "$log"
+./gradlew "${tasks[@]}" 2>&1 | tee "$log"
 status=${PIPESTATUS[0]}
 
 if [ "$status" -eq 0 ]; then
@@ -48,4 +70,4 @@ else
   exit "$status"
 fi
 
-./gradlew connectedDebugAndroidTest
+./gradlew "${tasks[@]}"

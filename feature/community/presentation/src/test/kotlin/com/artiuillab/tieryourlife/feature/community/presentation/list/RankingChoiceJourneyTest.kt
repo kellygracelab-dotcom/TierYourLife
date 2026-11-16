@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.core.testing.onMain
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
@@ -29,7 +30,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -45,7 +45,7 @@ class RankingChoiceJourneyTest {
 
     @After fun clear() = models.forEach { it.viewModelScope.cancel() }
 
-    @Test fun lookingAtTheAuthorsFinishedRankingNeverOffers_andNineteenIsNotTwenty_andDismissalSurvivesReopen() = runBlocking {
+    @Test fun lookingAtTheAuthorsFinishedRankingNeverOffers_andNineteenIsNotTwenty_andDismissalSurvivesReopen() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         assertNull(vm.loaded().rankingOffer)
@@ -62,7 +62,7 @@ class RankingChoiceJourneyTest {
         assertEquals(0, fixture.shown)
     }
 
-    @Test fun privateChoiceKeepsAnEditableLibraryCopy_andAnotherDeviceRestoresLaterMovesWithoutPromptOrPublication() = runBlocking {
+    @Test fun privateChoiceKeepsAnEditableLibraryCopy_andAnotherDeviceRestoresLaterMovesWithoutPromptOrPublication() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         placeSeven(vm)
@@ -77,7 +77,7 @@ class RankingChoiceJourneyTest {
         assertEquals(0, fixture.shown)
     }
 
-    @Test fun completingSignInAfterTheGuestPublicButtonNeverPublishesWithoutAnotherExplicitAction() = runBlocking {
+    @Test fun completingSignInAfterTheGuestPublicButtonNeverPublishesWithoutAnotherExplicitAction() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         placeSeven(vm)
@@ -90,7 +90,7 @@ class RankingChoiceJourneyTest {
         assertEquals(7, vm.loaded().mine.tiers.first().items.size)
     }
 
-    @Test fun placingTheLastCardAfterAnEarlierManualSaveAlsoKeepsTheOfferMemoryOnTheSharedCopy() = runBlocking {
+    @Test fun placingTheLastCardAfterAnEarlierManualSaveAlsoKeepsTheOfferMemoryOnTheSharedCopy() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         vm.show(Showing.Mine)
@@ -104,7 +104,7 @@ class RankingChoiceJourneyTest {
         assertEquals(0, fixture.shown)
     }
 
-    @Test fun explicitPublicChoicePublishesOnce_andWithdrawalKeepsBothPrivateCopyAndChoiceMemory() = runBlocking {
+    @Test fun explicitPublicChoicePublishesOnce_andWithdrawalKeepsBothPrivateCopyAndChoiceMemory() = onMain {
         val fixture = ChoiceFixture(signedIn = true)
         val vm = open(fixture)
         placeSeven(vm)
@@ -125,7 +125,7 @@ class RankingChoiceJourneyTest {
 
     // Coordinator, parity with the website: a page opened over a copy already in Rankings knows it,
     // so its menu says Update and Remove, and Remove works before the Rankings are read.
-    @Test fun aCopyAlreadyInRankings_opensKnowingIt_andComesOutFromTheMenu() = runBlocking {
+    @Test fun aCopyAlreadyInRankings_opensKnowingIt_andComesOutFromTheMenu() = onMain {
         val fixture = ChoiceFixture(signedIn = true)
         val vm = open(fixture)
         placeSeven(vm)
@@ -147,7 +147,7 @@ class RankingChoiceJourneyTest {
 
     // QA list-flow Н6: shown from another visit, with no copy here, the page reads the first page as it opens
     // and its menu says Update rather than Show.
-    @Test fun aRankingShownEarlier_isKnownAsThePageOpens_withoutACopy() = runBlocking {
+    @Test fun aRankingShownEarlier_isKnownAsThePageOpens_withoutACopy() = onMain {
         val fixture = ChoiceFixture(signedIn = true)
         placeSeven(open(fixture))
         fixture.served = listOf(someone("olena"), Ranking("me", "Me", null, emptyList(), listOf("S"), 1, mine = true))
@@ -160,7 +160,7 @@ class RankingChoiceJourneyTest {
     }
 
     // ... and where their own is not among them, Show sends it, and again only replaces it: one row, one copy.
-    @Test fun withoutOneOfTheirOwn_showSendsIt_andShowingAgainReplacesIt() = runBlocking {
+    @Test fun withoutOneOfTheirOwn_showSendsIt_andShowingAgainReplacesIt() = onMain {
         val fixture = ChoiceFixture(signedIn = true)
         placeSeven(open(fixture))
         fixture.served = listOf(someone("olena"))
@@ -178,7 +178,7 @@ class RankingChoiceJourneyTest {
     }
 
     // A guest or a reader with nothing arranged reads nothing until the sheet opens.
-    @Test fun nothingArranged_readsNoRankingsAsThePageOpens() = runBlocking {
+    @Test fun nothingArranged_readsNoRankingsAsThePageOpens() = onMain {
         val fixture = ChoiceFixture(signedIn = true)
         fixture.served = listOf(someone("olena"))
 
@@ -190,7 +190,7 @@ class RankingChoiceJourneyTest {
     }
 
     // The game's result is on the board: the offer comes straight away, however many cards it placed.
-    @Test fun aGameEndingOnTheBoardOffersToShowIt_once() = runBlocking {
+    @Test fun aGameEndingOnTheBoardOffersToShowIt_once() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         val played = vm.loaded().mine.let { mine ->
@@ -207,7 +207,7 @@ class RankingChoiceJourneyTest {
     }
 
     // What is saved is what the reader sees as theirs, and once saved, the list is "Saved" and opens that one copy.
-    @Test fun savingAfterArrangingKeepsTheReadersOwnArrangement_andTheListIsSavedFromThenOn() = runBlocking {
+    @Test fun savingAfterArrangingKeepsTheReadersOwnArrangement_andTheListIsSavedFromThenOn() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         placeSeven(vm)
@@ -223,7 +223,7 @@ class RankingChoiceJourneyTest {
     }
 
     // Danylo's Eurovision twice in My lists: a copy saved as the author ranked it carried no choice and was not found again.
-    @Test fun aCopySavedWithoutAChoice_isFoundAgain_soTheListOpensItInsteadOfSavingAnother() = runBlocking {
+    @Test fun aCopySavedWithoutAChoice_isFoundAgain_soTheListOpensItInsteadOfSavingAnother() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         vm.saveToMyLists()
@@ -238,7 +238,7 @@ class RankingChoiceJourneyTest {
     }
 
     // The author published again since: the copy of the older version is still this reader's one copy, left as it was.
-    @Test fun aCopyOfAnOlderVersion_isStillTheSavedOne() = runBlocking {
+    @Test fun aCopyOfAnOlderVersion_isStillTheSavedOne() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         vm.saveToMyLists()
@@ -252,7 +252,7 @@ class RankingChoiceJourneyTest {
         assertEquals(1L, fixture.boards.saved?.originVersion)
     }
 
-    @Test fun theCopyTakesTheListsCoverFromTheCommunity_notACollage() = runBlocking {
+    @Test fun theCopyTakesTheListsCoverFromTheCommunity_notACollage() = onMain {
         val fixture = ChoiceFixture(cover = "https://tieryourlife.web.app/img/original/published/abc/cover")
         val vm = open(fixture)
         vm.saveToMyLists()
@@ -261,7 +261,7 @@ class RankingChoiceJourneyTest {
         assertEquals(emptyList<String>(), fixture.boards.saved?.coverImageUrls)
     }
 
-    @Test fun editedLibraryCopyIsNeverOverwrittenOrMistakenForTheUnchangedOriginal() = runBlocking {
+    @Test fun editedLibraryCopyIsNeverOverwrittenOrMistakenForTheUnchangedOriginal() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         placeSeven(vm)
@@ -274,7 +274,7 @@ class RankingChoiceJourneyTest {
         assertEquals(1, open(fixture).loaded().mine.tiers[1].items.size)
     }
 
-    @Test fun aWholeOfficialTranslationWithBaseFallbackRestoresTheSamePrivateCopyOnAnotherDevice() = runBlocking {
+    @Test fun aWholeOfficialTranslationWithBaseFallbackRestoresTheSamePrivateCopyOnAnotherDevice() = onMain {
         val fixture = ChoiceFixture(translations = ListTranslations(mapOf("ru" to mapOf("Every A24 film" to "Все фильмы A24", "S" to "Лучшие", "Card 0" to "Карточка 0"))))
         val vm = open(fixture)
         placeSeven(vm)
@@ -289,7 +289,7 @@ class RankingChoiceJourneyTest {
     }
 
     // SPEC list-flow Н2: a copy changed on its board still gives Mine its places when nothing is arranged on this phone.
-    @Test fun aChangedCopy_givesMineItsPlaces_whenNothingIsArrangedHere() = runBlocking {
+    @Test fun aChangedCopy_givesMineItsPlaces_whenNothingIsArrangedHere() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         placeSeven(vm)
@@ -304,7 +304,7 @@ class RankingChoiceJourneyTest {
         assertEquals(100L, elsewhere.savedId)
     }
 
-    @Test fun aCopyThatArrivesAfterThePage_givesMineItsPlaces_butNeverOverwritesWhatIsArranged() = runBlocking {
+    @Test fun aCopyThatArrivesAfterThePage_givesMineItsPlaces_butNeverOverwritesWhatIsArranged() = onMain {
         val fixture = ChoiceFixture()
         val vm = open(fixture)
         placeSeven(vm)

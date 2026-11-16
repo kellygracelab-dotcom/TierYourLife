@@ -71,6 +71,21 @@ class PlayScreenshotTest {
     }
 
     @Test
+    fun thePicker_smartOverTheWholeList_asTheDesignDrawsIt() = capture("play_picker_smart") {
+        Sheet(frieren)
+    }
+
+    @Test
+    fun thePicker_smartOverTheWholeList_dark() = capture("play_picker_smart_dark", dark = true) {
+        Sheet(frieren)
+    }
+
+    @Test
+    fun otherWaysToPlay_theFourGames() = capture("play_modes") {
+        Sheet(frieren.copy(page = PickerPage.Modes, kind = GameKind.Swiss))
+    }
+
+    @Test
     fun choosingCards_oneTier_ordersOnlyThatTier() = capture("play_choose_one_tier") {
         Sheet(picker.copy(page = PickerPage.Cards, chosen = setOf(1L)))
     }
@@ -99,6 +114,16 @@ class PlayScreenshotTest {
     @Test
     fun aDuel_whileRefining_dark() = capture("play_duel_refine_dark", dark = true) {
         DuelScreen(duel = duel.copy(refining = true, number = 4, total = 17, canUndo = true), onPick = {}, onSkip = {}, onUndo = {}, onQuit = {})
+    }
+
+    @Test
+    fun aSmartDuel_countsTheWholeGame() = capture("play_duel_smart") {
+        DuelScreen(duel = smartDuel, onPick = {}, onSkip = {}, onUndo = {}, onQuit = {})
+    }
+
+    @Test
+    fun aSmartDuel_dark() = capture("play_duel_smart_dark", dark = true) {
+        DuelScreen(duel = smartDuel, onPick = {}, onSkip = {}, onUndo = {}, onQuit = {})
     }
 
     // A Galaxy Z Flip6 held sideways: wide, and short of height.
@@ -193,6 +218,23 @@ class PlayScreenshotTest {
             total = 136,
             round = 1,
             rounds = 8,
+            canUndo = true,
+        )
+
+        /** The design's example: Smart over all 25 cards of someone else's list. */
+        val frieren = Picker(
+            title = "Frieren characters",
+            groups = listOf(CardGroup(POOL, "Unranked", null, "#DAD7E0", "#46464F", count = 25, isPool = true)),
+            chosen = setOf(POOL),
+            intoMine = true,
+        )
+
+        val smartDuel = DuelState(
+            kind = GameKind.Smart,
+            first = TierItem(1, "Frieren", null),
+            second = TierItem(2, "Stark", null),
+            number = 5,
+            total = 63,
             canUndo = true,
         )
 

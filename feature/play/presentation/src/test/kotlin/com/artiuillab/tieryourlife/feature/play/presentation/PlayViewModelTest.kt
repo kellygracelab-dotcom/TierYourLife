@@ -109,7 +109,7 @@ class PlayViewModelTest {
 
         viewModel.open()
 
-        val picker = picker(viewModel.state.value)!!
+        val picker = picker(viewModel.state.firstWithin { picker(it)?.resume != null })!!
         assertEquals(GameKind.Hill, picker.kind)
         assertEquals(2, picker.resume?.played)
     }
@@ -158,8 +158,8 @@ class PlayViewModelTest {
         viewModel.duel.quit()
 
         val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
-        // Smart, the default, plans its first round of three and one more: six.
-        assertEquals(PlayNotice.GameSaved(2, 6), said.notice)
+        // Smart, the default, is about two and a half duels a card: fifteen over six, as the picker said.
+        assertEquals(PlayNotice.GameSaved(2, 15), said.notice)
         assertEquals(2, games.games.getValue(KEY).history.size)
         assertEquals(null, games.games.getValue(KEY).history[1].winner)
         assertTrue(KEY in viewModel.state.value.saved)

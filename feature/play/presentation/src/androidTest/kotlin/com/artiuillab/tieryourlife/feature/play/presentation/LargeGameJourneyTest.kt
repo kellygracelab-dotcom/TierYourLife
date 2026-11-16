@@ -42,14 +42,14 @@ class LargeGameJourneyTest {
     @Test
     fun ninetyOneCardsSampleSixteen_keepInS_thenApplyLeavesEveryCardOnce() {
         open()
-        compose.runOnIdle { vm.picker.showCards() }
+        compose.runOnIdle { vm.picker.show(PickerPage.Cards) }
         compose.onNodeWithTag("play_sample_16").performScrollTo().performClick()
         compose.runOnIdle { assertEquals(16, picking().count) }
         compose.onNodeWithTag("play_individual_cards").performScrollTo().performClick()
         compose.onNodeWithTag("play_individual_list").assertIsDisplayed()
         compose.runOnIdle {
             assertEquals(16, picking().selectedCards.map { it.item.id }.toSet().size)
-            vm.picker.showGames()
+            vm.picker.show(PickerPage.Games)
             vm.picker.choose(GameKind.Hill)
         }
         compose.onNodeWithTag(PlayTestTags.START).performClick()
