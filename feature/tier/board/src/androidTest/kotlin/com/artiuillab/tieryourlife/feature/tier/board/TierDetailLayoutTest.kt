@@ -18,12 +18,12 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TIER_BAND_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @RunWith(AndroidJUnit4::class)
 class TierDetailLayoutTest : TierDetailScreenTestBase() {
