@@ -168,6 +168,53 @@ class BoardPublicationControllerTest {
         assertTrue(h.community.published.isEmpty())
     }
 
+    // Danylo 16.11: Show in Rankings goes on the tap, with no refusal and no second panel.
+    @Test
+    fun showInRankings_onACopyWithCardsOfOnesOwn_goesThereAtOnce() = runTest {
+        val h = Harness(this, copy().copy(originVersion = 42))
+        h.community.classification = { Result.success(PublicationKind.NewList(BasedOn("source", "Original", "Author"), sourceVersion = 42)) }
+
+        h.controller.setPublic(public = true, asRanking = true, direct = true)
+        advanceUntilIdle()
+
+        assertNull(h.controller.state.value.error)
+        assertNull(h.controller.state.value.offer)
+        assertNull(h.controller.state.value.preview)
+        assertEquals(listOf("source"), h.community.shownBoards)
+        assertTrue(h.community.published.isEmpty())
+    }
+
+    @Test
+    fun showInRankings_onAnUnchangedCopy_publishesTheRankingAtOnce() = runTest {
+        val h = Harness(this, copy())
+        h.community.classification = { Result.success(PublicationKind.Ranking("source", 10)) }
+
+        h.controller.setPublic(public = true, asRanking = true, direct = true)
+        advanceUntilIdle()
+
+        assertNull(h.controller.state.value.preview)
+        assertEquals(10L, h.community.published.single().originVersion)
+    }
+
+    @Test
+    fun publish_onOnesOwnList_goesAtOnce_orAsksOnlyForTheMissingSection() = runTest {
+        val h = Harness(this, copy().copy(takenFrom = null, category = null))
+        h.community.classification = { Result.success(PublicationKind.NewList()) }
+
+        h.controller.setPublic(public = true, direct = true)
+        advanceUntilIdle()
+
+        assertEquals(1, h.categoryRequests)
+        assertNull(h.controller.state.value.preview)
+        assertTrue(h.community.published.isEmpty())
+
+        h.replace(h.repository.board.copy(category = "films"))
+        h.controller.setPublic(public = true, direct = true)
+        advanceUntilIdle()
+
+        assertEquals(1, h.community.published.size)
+    }
+
     // SPEC list-flow К3–К4: what a changed copy can do instead is offered, and goes as the reader's version with their cards.
     @Test
     fun aCopyWithCardsOfOnesOwn_isOfferedToRankings_andGoesThereWithThem() = runTest {

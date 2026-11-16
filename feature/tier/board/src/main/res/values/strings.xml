@@ -173,4 +173,11 @@
     <string name="list_settings_public_changed_elsewhere">This list changed on another device. Try publishing again.</string>
     <string name="list_settings_cover_adjust">Adjust position</string>
     <string name="list_settings_cover_adjust_sub">Which part of the picture shows</string>
+    <string name="board_publish">Publish</string>
+    <string name="board_publish_update">Update</string>
+    <string name="board_publish_ranking">Show in Rankings</string>
+    <string name="list_settings_published_status">Published ✓</string>
+    <string name="list_settings_ranked_status">In Rankings ✓</string>
+    <string name="list_settings_take_down">Take it down</string>
+    <string name="list_settings_manual_add_sub">Your own photo or name</string>
 </resources>

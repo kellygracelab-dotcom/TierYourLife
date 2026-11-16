@@ -182,4 +182,11 @@
     <string name="list_settings_public_changed_elsewhere">Cette liste a changé sur un autre appareil. Réessayez de la publier.</string>
     <string name="list_settings_cover_adjust">Ajuster la position</string>
     <string name="list_settings_cover_adjust_sub">La partie de l’image qui s’affiche</string>
+    <string name="board_publish">Publier</string>
+    <string name="board_publish_update">Mettre à jour</string>
+    <string name="board_publish_ranking">Afficher dans les classements</string>
+    <string name="list_settings_published_status">Publiée ✓</string>
+    <string name="list_settings_ranked_status">Dans les classements ✓</string>
+    <string name="list_settings_take_down">Retirer</string>
+    <string name="list_settings_manual_add_sub">Votre propre photo ou un nom</string>
 </resources>

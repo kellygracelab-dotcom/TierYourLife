@@ -212,4 +212,11 @@
     <string name="list_settings_public_changed_elsewhere">تغيّرت القائمة على جهاز آخر. حاول نشرها مجددًا.</string>
     <string name="list_settings_cover_adjust">ضبط الموضع</string>
     <string name="list_settings_cover_adjust_sub">أي جزء من الصورة يظهر</string>
+    <string name="board_publish">نشر</string>
+    <string name="board_publish_update">تحديث</string>
+    <string name="board_publish_ranking">عرض في الترتيبات</string>
+    <string name="list_settings_published_status">منشورة ✓</string>
+    <string name="list_settings_ranked_status">في الترتيبات ✓</string>
+    <string name="list_settings_take_down">إزالة</string>
+    <string name="list_settings_manual_add_sub">صورتك أو اسم من عندك</string>
 </resources>

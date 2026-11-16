@@ -17,6 +17,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.Publishing
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.ManualEntryDialog
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
@@ -131,6 +132,13 @@ fun TierDetailScreen(
             focusTierId = focusTierId,
             onPlay = { playOpen = true },
             playSaved = playRequest?.let { play.isSaved(it.key) } == true,
+            onPublish = publishAfterSignIn(signedIn = screen.signedIn, onSignIn = onSignIn) { kind ->
+                when (kind) {
+                    Publishing.Publish -> viewModel.setPublic(true)
+                    Publishing.Update -> viewModel.updatePublished()
+                    Publishing.ShareRanking -> viewModel.shareRanking()
+                }
+            },
         ),
     )
 

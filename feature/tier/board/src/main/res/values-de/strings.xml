@@ -172,4 +172,11 @@
     <string name="list_settings_public_changed_elsewhere">Diese Liste wurde auf einem anderen Gerät geändert. Versuche erneut, sie zu veröffentlichen.</string>
     <string name="list_settings_cover_adjust">Ausschnitt anpassen</string>
     <string name="list_settings_cover_adjust_sub">Welcher Teil des Bildes zu sehen ist</string>
+    <string name="board_publish">Veröffentlichen</string>
+    <string name="board_publish_update">Aktualisieren</string>
+    <string name="board_publish_ranking">In den Ranglisten zeigen</string>
+    <string name="list_settings_published_status">Veröffentlicht ✓</string>
+    <string name="list_settings_ranked_status">In den Ranglisten ✓</string>
+    <string name="list_settings_take_down">Entfernen</string>
+    <string name="list_settings_manual_add_sub">Eigenes Foto oder eigener Name</string>
 </resources>
