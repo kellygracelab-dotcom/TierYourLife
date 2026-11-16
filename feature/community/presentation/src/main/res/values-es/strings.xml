@@ -305,8 +305,9 @@
     <string name="community_started_from_theirs_unnamed">Tu versión parte de esta clasificación</string>
     <string name="community_replaced_yours">Tu versión se reemplazó por la clasificación de %1$s</string>
     <string name="community_replaced_yours_unnamed">Tu versión se reemplazó por esta clasificación</string>
-    <string name="community_replace_yours_ask">¿Empezar desde el ranking de %1$s? Tu versión se reemplazará.</string>
-    <string name="community_replace_yours_ask_unnamed">¿Empezar desde este ranking? Tu versión se reemplazará.</string>
+    <string name="community_replace_yours_ask">¿Empezar desde la clasificación de %1$s?</string>
+    <string name="community_replace_yours_ask_unnamed">¿Empezar desde esta clasificación?</string>
+    <string name="community_replace_yours_body">Tu versión se reemplazará.</string>
     <string name="community_action_replace">Reemplazar</string>
     <string name="community_action_undo">Deshacer</string>
     <string name="community_picture_credits">Créditos de las imágenes</string>

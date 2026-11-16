@@ -441,9 +441,10 @@ internal fun ReplaceYoursDialog(name: String?, onReplace: () -> Unit, onCancel: 
     AlertDialog(
         onDismissRequest = onCancel,
         modifier = Modifier.testTag(CommunityListTestTags.REPLACE_YOURS_DIALOG),
-        text = {
+        title = {
             Text(if (name != null) stringResource(R.string.community_replace_yours_ask, name) else stringResource(R.string.community_replace_yours_ask_unnamed))
         },
+        text = { Text(stringResource(R.string.community_replace_yours_body)) },
         confirmButton = {
             TextButton(onClick = onReplace, modifier = Modifier.testTag(CommunityListTestTags.REPLACE_YOURS_CONFIRM)) {
                 Text(stringResource(R.string.community_action_replace))
