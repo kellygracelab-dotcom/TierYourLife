@@ -9,11 +9,13 @@
 # inline script one line per shell, so a variable set on one line is gone by the next.
 set -u
 
-# The modules' tests run one after another on one emulator, and these two take
-# half of that time, so they have an emulator to themselves and all the other
-# modules share a second one. `rest` is every module but these, not a list of
-# its own: a module added later is tested there without being named anywhere.
-named=(:navigation :feature:tier:board)
+# The modules' tests run one after another on one emulator, and these three
+# take half of that time, so they have an emulator to themselves and all the
+# other modules share a second one. `rest` is every module but these, not a
+# list of its own: a module added later is tested there without being named
+# anywhere. Measured on both API levels, the halves end within half a minute
+# of each other.
+named=(:navigation :feature:tier:board :feature:play:presentation)
 tasks=()
 case "${1:-}" in
   named)
