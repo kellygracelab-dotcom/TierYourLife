@@ -32,7 +32,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -111,7 +110,6 @@ fun TierListSettingsScreenContent(
     publicPending: Boolean? = null,
     categoryWanted: Boolean = false,
     onSetPublic: (Boolean) -> Unit = {},
-    onSetAnonymous: (Boolean) -> Unit = {},
     publishedIsBehind: Boolean = false,
     onUpdatePublished: () -> Unit = {},
     /** The bar's publish, so both places say and do the same; null falls back to [onSetPublic] and [onUpdatePublished]. */
@@ -178,7 +176,6 @@ fun TierListSettingsScreenContent(
                         onPublish = onPublish ?: { kind -> if (kind == Publishing.Update) onUpdatePublished() else onSetPublic(true) },
                         onTakeDown = { onSetPublic(false) },
                         onAddCards = onAddCards,
-                        onSetAnonymous = onSetAnonymous,
                     )
                     if (onSeeInCommunity != null && publicPending != false) {
                         SeeInCommunityRow(onClick = onSeeInCommunity)
@@ -582,7 +579,6 @@ private fun PublishSection(
     onPublish: (Publishing) -> Unit,
     onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
-    onSetAnonymous: (Boolean) -> Unit,
 ) = PublishSection(
     published = published,
     asRankingOf = if (list.rankingOf != null) list.authorName.orEmpty() else null,
@@ -595,8 +591,6 @@ private fun PublishSection(
     onTakeDown = onTakeDown,
     onAddCards = onAddCards,
     behind = behind,
-    anonymous = list.anonymous,
-    onSetAnonymous = onSetAnonymous,
 )
 
 @Composable
@@ -613,8 +607,6 @@ private fun PublishSection(
     onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
     behind: Boolean,
-    anonymous: Boolean = false,
-    onSetAnonymous: (Boolean) -> Unit = {},
 ) {
     Column(
         Modifier
@@ -639,13 +631,6 @@ private fun PublishSection(
                 },
             )
             PublishButtonRow(kind, enabled = hasItems && !busy, onPublish = onPublish, tag = TierDetailTestTags.SETTINGS_PUBLISH)
-        }
-        // Chosen before publishing as easily as after; not offered on a
-        // ranking, which goes out beside somebody else's list.
-        val ranking = kind == Publishing.ShareRanking || (published && asRankingOf != null)
-        if (signedIn && !ranking) {
-            Spacer(Modifier.height(14.dp))
-            AnonymousRow(anonymous = anonymous, enabled = !busy, onSetAnonymous = onSetAnonymous)
         }
         if (error != null) {
             Spacer(Modifier.height(8.dp))
@@ -711,30 +696,6 @@ private fun PublishButtonRow(kind: Publishing, enabled: Boolean, onPublish: (Pub
         PublishingIcon(kind, LocalContentColor.current)
         Spacer(Modifier.width(8.dp))
         Text(stringResource(publishLabel(kind)))
-    }
-}
-
-@Composable
-private fun AnonymousRow(anonymous: Boolean, enabled: Boolean, onSetAnonymous: (Boolean) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = stringResource(R.string.list_settings_anonymous),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = stringResource(R.string.list_settings_anonymous_body),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Switch(
-            checked = anonymous,
-            onCheckedChange = onSetAnonymous,
-            enabled = enabled,
-            modifier = Modifier.testTag(TierDetailTestTags.ANONYMOUS_SWITCH),
-        )
     }
 }
 

@@ -187,18 +187,14 @@ class PublishRequestTest {
         assertNull(board.toRequest(Pictures, uploaded = emptySet()).takenFrom)
     }
 
-    // Missing means "keep what is stored" on a republish, so both answers are always said out loud.
+    // Danylo 16.11: no more anonymous publishing. Left out, the server keeps an old anonymous list so and names a new one.
     @Test
-    fun `whether a list goes out anonymously is always said, true or false`() {
-        val named = networkJson.parseToJsonElement(
-            networkJson.encodeToString(PublishListRequestDto.serializer(), board.toRequest(Pictures, uploaded = emptySet())),
-        ).jsonObject
-        val anonymous = networkJson.parseToJsonElement(
+    fun `whether a list goes out anonymously is never said, not even for one that was`() {
+        val sent = networkJson.parseToJsonElement(
             networkJson.encodeToString(PublishListRequestDto.serializer(), board.copy(anonymous = true).toRequest(Pictures, uploaded = emptySet())),
         ).jsonObject
 
-        assertEquals("false", named["anonymous"].toString())
-        assertEquals("true", anonymous["anonymous"].toString())
+        assertFalse("anonymous" in sent)
     }
 
     @Test

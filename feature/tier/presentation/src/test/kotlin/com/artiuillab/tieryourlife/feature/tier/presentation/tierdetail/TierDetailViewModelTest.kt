@@ -433,44 +433,6 @@ class TierDetailViewModelTest {
     }
 
     @Test
-    fun goingAnonymous_onAListAlreadyOut_sendsItAgainAtOnce_withoutTheName() = runBlocking {
-        val community = FakeCommunityRepositoryForDetail()
-        val viewModel = TierDetailViewModel(
-            FakeTierRepository(listWithOneCard().copy(category = ListCategory.Food.id), publishedId = "published-1"),
-            community,
-            FakeAccountRepository(FakeAccountRepository.signedIn),
-            savedStateHandle(),
-        )
-        viewModel.board.firstWithin { it is TierDetailUiState.Success }
-
-        viewModel.setAnonymous(true)
-        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.anonymous == true }
-        community.sent.firstWithin { it.isNotEmpty() }
-
-        assertTrue(community.published.single().anonymous)
-    }
-
-    @Test
-    fun goingAnonymous_beforePublishing_onlyRemembersItForThePublish() = runBlocking {
-        val community = FakeCommunityRepositoryForDetail()
-        val viewModel = TierDetailViewModel(
-            FakeTierRepository(listWithOneCard().copy(category = ListCategory.Food.id)),
-            community,
-            FakeAccountRepository(FakeAccountRepository.signedIn),
-            savedStateHandle(),
-        )
-        viewModel.board.firstWithin { it is TierDetailUiState.Success }
-
-        viewModel.setAnonymous(true)
-        viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.anonymous == true }
-        assertTrue(community.published.isEmpty())
-
-        viewModel.publishAfterPreview()
-        community.sent.firstWithin { it.isNotEmpty() }
-        assertTrue(community.published.single().anonymous)
-    }
-
-    @Test
     fun aSectionOfSomebodysOwn_isKeptAndPublishedByItsId() = runBlocking {
         val repository = FakeTierRepository(listWithOneCard().copy(category = null))
         val community = FakeCommunityRepositoryForDetail()

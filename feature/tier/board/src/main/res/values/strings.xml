@@ -39,8 +39,6 @@
     <string name="list_settings_see_in_community_sub">As others see it, with their rankings and the link</string>
     <string name="list_settings_original">Open the original</string>
     <string name="list_settings_original_sub">The Community list you ranked</string>
-    <string name="list_settings_update_published">Published version</string>
-    <string name="list_settings_update_published_body">Send this board again, over the same link.</string>
     <string name="manual_dialog_add">Add</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">Add %1$d item</item>
@@ -155,8 +153,6 @@
     <string name="tier_detail_drop_unrank_dock">Drop on the pool to unrank</string>
     <string name="tier_detail_content_description_play">Play</string>
     <string name="tier_detail_play_needs_cards">Play needs at least 3 cards</string>
-    <string name="list_settings_anonymous">Publish anonymously</string>
-    <string name="list_settings_anonymous_body">Your name and face aren’t shown with the list. It’s still yours: only you can edit it or delete it.</string>
     <string name="list_settings_propose_section">Propose a section</string>
     <string name="list_settings_category_waiting">Waiting for a moderator</string>
     <string name="list_settings_moves_to">Moves to %1$s once it’s approved</string>

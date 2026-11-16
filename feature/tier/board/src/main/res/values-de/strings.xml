@@ -39,8 +39,6 @@
     <string name="list_settings_see_in_community_sub">So, wie andere sie sehen, mit ihren Rankings und dem Link</string>
     <string name="list_settings_original">Original öffnen</string>
     <string name="list_settings_original_sub">Die Community-Liste, die du eingestuft hast</string>
-    <string name="list_settings_update_published">Veröffentlichte Fassung</string>
-    <string name="list_settings_update_published_body">Dieses Board erneut senden, unter demselben Link.</string>
     <string name="manual_dialog_add">Hinzufügen</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">%1$d Element hinzufügen</item>
@@ -154,8 +152,6 @@
     <string name="tier_detail_drop_unrank_dock">Auf den Pool ablegen, um die Einstufung aufzuheben</string>
     <string name="tier_detail_content_description_play">Spielen</string>
     <string name="tier_detail_play_needs_cards">Zum Spielen braucht es mindestens 3 Karten</string>
-    <string name="list_settings_anonymous">Anonym veröffentlichen</string>
-    <string name="list_settings_anonymous_body">Dein Name und dein Bild werden bei der Liste nicht gezeigt. Sie gehört weiter dir: Nur du kannst sie bearbeiten oder löschen.</string>
     <string name="list_settings_propose_section">Rubrik vorschlagen</string>
     <string name="list_settings_category_waiting">Wartet auf einen Moderator</string>
     <string name="list_settings_moves_to">Zieht nach %1$s, sobald sie angenommen ist</string>

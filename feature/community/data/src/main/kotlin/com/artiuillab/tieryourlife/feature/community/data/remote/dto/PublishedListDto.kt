@@ -169,12 +169,6 @@ data class PublishListRequestDto(
     /** The published list the cards were taken from; the server decides whether this is a ranking of it. */
     val takenFrom: String? = null,
     val sourceVersion: Long? = null,
-    /**
-     * Always sent, true or false, with no default: a republish without the
-     * field keeps whatever the server has, which is how an older app cannot
-     * turn an anonymous list back into a named one.
-     */
-    val anonymous: Boolean,
 )
 
 @Serializable

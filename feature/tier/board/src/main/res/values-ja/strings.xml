@@ -39,8 +39,6 @@
     <string name="list_settings_see_in_community_sub">ほかの人に見えるとおりに。みんなのランキングとリンクも</string>
     <string name="list_settings_original">元のリストを開く</string>
     <string name="list_settings_original_sub">ランキングしたコミュニティのリスト</string>
-    <string name="list_settings_update_published">公開中の内容</string>
-    <string name="list_settings_update_published_body">このボードを同じリンクで再送信します。</string>
     <string name="manual_dialog_add">追加</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="other">%1$d件を追加</item>
@@ -144,8 +142,6 @@
     <string name="tier_detail_drop_unrank_dock">プールにドロップするとランク外に戻ります</string>
     <string name="tier_detail_content_description_play">プレイ</string>
     <string name="tier_detail_play_needs_cards">プレイするにはカードが3枚以上必要です</string>
-    <string name="list_settings_anonymous">匿名で公開</string>
-    <string name="list_settings_anonymous_body">リストにあなたの名前と写真は表示されません。リストはあなたのもののままで、編集や削除ができるのはあなただけです。</string>
     <string name="list_settings_propose_section">セクションを提案</string>
     <string name="list_settings_category_waiting">モデレーターの確認待ち</string>
     <string name="list_settings_moves_to">承認されると「%1$s」に移ります</string>

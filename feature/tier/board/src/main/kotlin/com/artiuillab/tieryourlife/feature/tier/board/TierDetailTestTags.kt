@@ -32,7 +32,6 @@ object TierDetailTestTags {
     const val SETTINGS_PUBLISH = "tier_detail_settings_publish"
     const val SETTINGS_TAKE_DOWN = "tier_detail_settings_take_down"
     const val SETTINGS_MANUAL_ADD = "tier_detail_settings_manual_add"
-    const val ANONYMOUS_SWITCH = "tier_detail_anonymous_switch"
     const val PROPOSE_SECTION = "tier_detail_propose_section"
     const val PUBLISH_ERROR = "tier_detail_publish_error"
     const val CATEGORY_ROW = "tier_detail_category_row"

@@ -336,7 +336,6 @@ private fun TierScreenBody(
             publicPending = actions.publicPending,
             categoryWanted = actions.categoryWanted,
             onSetPublic = actions.onSetPublic,
-            onSetAnonymous = actions.onSetAnonymous,
             publishedIsBehind = actions.publishedIsBehind,
             onUpdatePublished = actions.onUpdatePublished,
             onPublish = actions.onPublish,

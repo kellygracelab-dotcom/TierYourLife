@@ -39,8 +39,6 @@
     <string name="list_settings_see_in_community_sub">Як її бачать інші: їхні рейтинги й посилання</string>
     <string name="list_settings_original">Відкрити оригінал</string>
     <string name="list_settings_original_sub">Список зі Спільноти, який ви оцінили</string>
-    <string name="list_settings_update_published">Опублікована версія</string>
-    <string name="list_settings_update_published_body">Надіслати дошку знову, за тим самим посиланням.</string>
     <string name="manual_dialog_add">Додати</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">Додати %1$d елемент</item>
@@ -174,8 +172,6 @@
     <string name="tier_detail_drop_unrank_dock">Відпустіть на пул, щоб прибрати з рейтингу</string>
     <string name="tier_detail_content_description_play">Грати</string>
     <string name="tier_detail_play_needs_cards">Для гри потрібно щонайменше 3 картки</string>
-    <string name="list_settings_anonymous">Публікувати анонімно</string>
-    <string name="list_settings_anonymous_body">Ваше імʼя та фото не показуються біля списку. Він і далі ваш: лише ви можете його змінити чи видалити.</string>
     <string name="list_settings_propose_section">Запропонувати розділ</string>
     <string name="list_settings_category_waiting">Очікує на модератора</string>
     <string name="list_settings_moves_to">Перейде в «%1$s», щойно його схвалять</string>

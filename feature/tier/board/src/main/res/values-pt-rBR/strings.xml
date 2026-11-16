@@ -39,8 +39,6 @@
     <string name="list_settings_see_in_community_sub">Como os outros a veem, com os rankings deles e o link</string>
     <string name="list_settings_original">Abrir o original</string>
     <string name="list_settings_original_sub">A lista da Comunidade que você classificou</string>
-    <string name="list_settings_update_published">Versão publicada</string>
-    <string name="list_settings_update_published_body">Enviar este quadro de novo, no mesmo link.</string>
     <string name="manual_dialog_add">Adicionar</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">Adicionar %1$d item</item>
@@ -164,8 +162,6 @@
     <string name="tier_detail_drop_unrank_dock">Solte na reserva para tirar do ranking</string>
     <string name="tier_detail_content_description_play">Jogar</string>
     <string name="tier_detail_play_needs_cards">Para jogar, são necessários pelo menos 3 cartões</string>
-    <string name="list_settings_anonymous">Publicar anonimamente</string>
-    <string name="list_settings_anonymous_body">Seu nome e sua foto não aparecem com a lista. Ela continua sendo sua: só você pode editá-la ou excluí-la.</string>
     <string name="list_settings_propose_section">Propor uma seção</string>
     <string name="list_settings_category_waiting">Aguardando um moderador</string>
     <string name="list_settings_moves_to">Vai para %1$s quando for aprovada</string>

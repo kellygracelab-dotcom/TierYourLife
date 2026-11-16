@@ -39,8 +39,6 @@
     <string name="list_settings_see_in_community_sub">Başkalarının gördüğü gibi; sıralamaları ve bağlantısıyla</string>
     <string name="list_settings_original">Orijinali aç</string>
     <string name="list_settings_original_sub">Sıraladığınız Topluluk listesi</string>
-    <string name="list_settings_update_published">Yayımlanan sürüm</string>
-    <string name="list_settings_update_published_body">Bu panoyu aynı bağlantıyla yeniden gönderin.</string>
     <string name="manual_dialog_add">Ekle</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">%1$d öğe ekle</item>
@@ -154,8 +152,6 @@
     <string name="tier_detail_drop_unrank_dock">Sıralamadan çıkarmak için havuza bırakın</string>
     <string name="tier_detail_content_description_play">Oyna</string>
     <string name="tier_detail_play_needs_cards">Oynamak için en az 3 kart gerekir</string>
-    <string name="list_settings_anonymous">Anonim olarak yayınla</string>
-    <string name="list_settings_anonymous_body">Adınız ve fotoğrafınız listeyle birlikte gösterilmez. Liste yine sizindir: yalnızca siz düzenleyebilir veya silebilirsiniz.</string>
     <string name="list_settings_propose_section">Bölüm öner</string>
     <string name="list_settings_category_waiting">Moderatör bekleniyor</string>
     <string name="list_settings_moves_to">Onaylanınca %1$s bölümüne taşınacak</string>

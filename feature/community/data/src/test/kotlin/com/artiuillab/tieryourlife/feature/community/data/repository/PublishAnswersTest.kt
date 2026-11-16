@@ -19,7 +19,7 @@ import java.io.IOException
 /** What the proxy's answers to a publish mean for the board that sent it. */
 class PublishAnswersTest {
 
-    private val request = PublishListRequestDto(title = "Films", category = "film_tv", tiers = emptyList(), items = emptyList(), anonymous = true)
+    private val request = PublishListRequestDto(title = "Films", category = "film_tv", tiers = emptyList(), items = emptyList())
 
     private class Calls {
         val sent = mutableListOf<String>()
