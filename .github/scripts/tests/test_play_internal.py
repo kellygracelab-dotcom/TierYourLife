@@ -32,6 +32,8 @@ MANIFEST = {"schema": 1, "source": SOURCE, "repositoryId": REPO_ID, "ownerId": O
             "firebaseConfigSha256": "c" * 64, "signedSha256": "d" * 64}
 
 
+EVERY_PUSH_JOBS = ["Build, static analysis, lint", "Unit tests, screenshots, coverage", "Release bundle",
+                   "What changed", "Android CI passed"]
 EMULATOR_JOBS = ["Instrumentation tests (26, named)", "Instrumentation tests (26, rest)",
                  "Instrumentation tests (34, named)", "Instrumentation tests (34, rest)"]
 
@@ -47,7 +49,7 @@ def run(cd=False):
 def gates(code="true"):
     receipt = {"schema": 1, "source": SOURCE, "code": code, "build": "success", "changes": "success",
                "e2e": "success" if code == "true" else "skipped", "instrumentation": "success" if code == "true" else "skipped"}
-    names = ["Build, unit tests, lint", "Release bundle", "What changed", "Android CI passed"]
+    names = [*EVERY_PUSH_JOBS]
     if code == "true":
         names += ["End-to-end against the proxy", *EMULATOR_JOBS]
     return [{"name": name, "conclusion": "success"} for name in names], receipt
@@ -115,7 +117,7 @@ class TrustTests(unittest.TestCase):
 
     def test_every_job_of_every_main_push_must_pass_and_a_skipped_or_absent_one_has_not(self):
         for code in ("true", "false"):
-            for name in ("Build, unit tests, lint", "Release bundle", "What changed", "Android CI passed"):
+            for name in EVERY_PUSH_JOBS:
                 for result in ("failure", "cancelled", "skipped", "timed_out", "absent"):
                     jobs, receipt = gates(code)
                     if result == "absent":
