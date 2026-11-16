@@ -187,5 +187,6 @@
     <string name="board_publish_ranking">Mostrar nas classificações</string>
     <string name="list_settings_published_status">Publicada ✓</string>
     <string name="list_settings_ranked_status">Nas classificações ✓</string>
-    <string name="list_settings_take_down">Retirar</string>
+    <string name="list_settings_take_down">Remover</string>
+    <string name="list_settings_manual_add_sub">Sua própria foto ou nome</string>
 </resources>

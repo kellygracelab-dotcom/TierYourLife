@@ -15,16 +15,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -173,13 +172,7 @@ fun TierScreenTopBar(
                         .testTag(TierDetailTestTags.MORE),
                 ) { MoreIcon() }
             } else if (!readOnly) {
-                IconButton(
-                    onClick = onManualAdd,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .semantics { contentDescription = manualAddDescription }
-                        .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
-                ) { AddPhotoIcon() }
+                if (publish?.narrow != true) ManualAddAction(onManualAdd, manualAddDescription)
                 IconButton(
                     onClick = onMoreClick,
                     modifier = Modifier
@@ -189,6 +182,17 @@ fun TierScreenTopBar(
             }
         }
     }
+}
+
+@Composable
+private fun ManualAddAction(onManualAdd: () -> Unit, description: String) {
+    IconButton(
+        onClick = onManualAdd,
+        modifier = Modifier
+            .size(48.dp)
+            .semantics { contentDescription = description }
+            .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
+    ) { AddPhotoIcon() }
 }
 
 /** The bar's Play: how many cards there are decides whether it can start, a saved game puts a dot on it. */
@@ -225,14 +229,18 @@ private const val DISABLED_ALPHA = 0.38f
 enum class Publishing { Publish, Update, ShareRanking }
 
 /**
- * The bar's publish button. [primary] once every card is placed: filled, ahead of
- * Play; tonal before. On a narrow bar ([labelled] false) a round icon, the word in its description.
+ * The bar's publish button, always with its word: an arrow alone reads as upload
+ * or share. [primary] once every card is placed: filled; tonal before. On a
+ * [narrow] bar it is tighter, and the camera gives it its room by moving to the
+ * list's page behind the overflow; the title shortens with an ellipsis.
  */
 @Immutable
 data class PublishButton(
     val kind: Publishing,
     val primary: Boolean,
-    val labelled: Boolean,
+    val narrow: Boolean,
+    /** At most this wide, so the title keeps a few letters; a longer word wraps to a second line. */
+    val room: Dp = Dp.Unspecified,
     val busy: Boolean,
     val onClick: () -> Unit,
 )
@@ -263,25 +271,23 @@ private fun PublishAction(publish: PublishButton) {
         .padding(horizontal = 4.dp)
         .semantics { contentDescription = label }
         .testTag(TierDetailTestTags.PUBLISH)
-    val icon: @Composable (Color) -> Unit = { tint -> PublishingIcon(publish.kind, tint) }
-    if (!publish.labelled) {
-        // A phone's bar keeps room for the title: the icon alone, the word for those who listen.
-        val colors = if (publish.primary) IconButtonDefaults.filledIconButtonColors() else IconButtonDefaults.filledTonalIconButtonColors()
-        FilledIconButton(onClick = publish.onClick, enabled = !publish.busy, colors = colors, modifier = modifier.size(40.dp)) {
-            icon(if (publish.primary) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondaryContainer)
-        }
-        return
-    }
     val content: @Composable RowScope.() -> Unit = {
-        icon(LocalContentColor.current)
-        Spacer(Modifier.width(8.dp))
-        Text(stringResource(publishLabel(publish.kind)), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.clearAndSetSemantics {})
+        PublishingIcon(publish.kind, LocalContentColor.current)
+        Spacer(Modifier.width(if (publish.narrow) 6.dp else 8.dp))
+        Text(
+            label,
+            style = if (publish.narrow) MaterialTheme.typography.labelLarge.copy(lineHeight = 16.sp) else MaterialTheme.typography.labelLarge,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.clearAndSetSemantics {},
+        )
     }
-    val padding = PaddingValues(start = 12.dp, end = 16.dp)
+    val padding = if (publish.narrow) PaddingValues(start = 10.dp, top = 4.dp, end = 12.dp, bottom = 4.dp) else PaddingValues(start = 12.dp, end = 16.dp)
+    val sized = modifier.heightIn(min = 36.dp).widthIn(max = publish.room)
     if (publish.primary) {
-        Button(onClick = publish.onClick, enabled = !publish.busy, modifier = modifier.heightIn(min = 36.dp), contentPadding = padding, content = content)
+        Button(onClick = publish.onClick, enabled = !publish.busy, modifier = sized, contentPadding = padding, content = content)
     } else {
-        FilledTonalButton(onClick = publish.onClick, enabled = !publish.busy, modifier = modifier.heightIn(min = 36.dp), contentPadding = padding, content = content)
+        FilledTonalButton(onClick = publish.onClick, enabled = !publish.busy, modifier = sized, contentPadding = padding, content = content)
     }
 }
 

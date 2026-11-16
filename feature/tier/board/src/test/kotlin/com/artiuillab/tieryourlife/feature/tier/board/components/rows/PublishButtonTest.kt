@@ -1,11 +1,13 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 
 import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
@@ -54,8 +56,9 @@ class PublishButtonTest {
     }
 
     @Test
-    fun ownUnpublished_withCardsLeft_isAQuietIconOnAPhone() {
+    fun ownUnpublished_withCardsLeft_isTonal_andSaysPublishEvenOnAPhone() {
         show(unplaced)
+        wordShown("Publish")
         composeRule.onNodeWithTag(TierDetailTestTags.PUBLISH).assertContentDescriptionEquals("Publish").performClick()
         assertEquals(listOf(Publishing.Publish), asked)
         capture("board_publish_cards_left")
@@ -78,9 +81,23 @@ class PublishButtonTest {
     }
 
     @Test
-    fun publishedAndUnchanged_hasNoButton() {
+    fun publishedAndUnchanged_hasNoButton_andThePhoneKeepsItsCamera() {
         show(placed.copy(publishedId = "p"))
         assertEquals(0, composeRule.onAllNodes(hasTestTag(TierDetailTestTags.PUBLISH)).fetchSemanticsNodes().size)
+        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).assertExists()
+    }
+
+    @Test
+    fun onAPhone_theCameraGivesPublishItsRoom() {
+        show(placed)
+        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).assertDoesNotExist()
+    }
+
+    @Test
+    @Config(qualifiers = "w720dp-h820dp-xhdpi")
+    fun anOpenFlip_keepsTheCameraBesidePublish() {
+        show(placed)
+        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).assertExists()
     }
 
     @Test
@@ -97,6 +114,30 @@ class PublishButtonTest {
         show(placed.copy(takenFrom = "source", authorName = "Ann"))
         composeRule.onNodeWithTag(TierDetailTestTags.PUBLISH).assertContentDescriptionEquals("Показать в рейтингах")
         capture("board_publish_ranking_ru")
+    }
+
+    @Test
+    @Config(qualifiers = "+ru-w360dp-h780dp")
+    fun aNarrowPhone_inRussian_saysBothWords() {
+        show(unplaced)
+        wordShown("Опубликовать")
+        capture("board_publish_narrow_ru")
+    }
+
+    @Test
+    @Config(qualifiers = "+ru-w360dp-h780dp")
+    fun aNarrowPhone_inRussian_showInRankings() {
+        show(placed.copy(takenFrom = "source", authorName = "Ann"))
+        wordShown("Показать в рейтингах")
+        capture("board_publish_narrow_ranking_ru")
+    }
+
+    @Test
+    @Config(qualifiers = "+de-w360dp-h780dp")
+    fun aNarrowPhone_inGerman() {
+        show(placed)
+        wordShown("Veröffentlichen")
+        capture("board_publish_narrow_de")
     }
 
     @Test
@@ -145,6 +186,11 @@ class PublishButtonTest {
                 )
             }
         }
+    }
+
+    /** The word is drawn beside the icon: the button is as wide as a word, and says it to those who listen. */
+    private fun wordShown(word: String) {
+        composeRule.onNodeWithTag(TierDetailTestTags.PUBLISH).assertContentDescriptionEquals(word).assertWidthIsAtLeast(80.dp)
     }
 
     private fun capture(name: String) {

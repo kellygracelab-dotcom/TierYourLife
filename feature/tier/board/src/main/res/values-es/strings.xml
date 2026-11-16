@@ -188,4 +188,5 @@
     <string name="list_settings_published_status">Publicada ✓</string>
     <string name="list_settings_ranked_status">En clasificaciones ✓</string>
     <string name="list_settings_take_down">Retirar</string>
+    <string name="list_settings_manual_add_sub">Tu propia foto o nombre</string>
 </resources>

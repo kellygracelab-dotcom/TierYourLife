@@ -177,5 +177,6 @@
     <string name="board_publish_ranking">Sıralamalarda göster</string>
     <string name="list_settings_published_status">Yayımlandı ✓</string>
     <string name="list_settings_ranked_status">Sıralamalarda ✓</string>
-    <string name="list_settings_take_down">Kaldır</string>
+    <string name="list_settings_take_down">Yayından kaldır</string>
+    <string name="list_settings_manual_add_sub">Kendi fotoğrafın veya adın</string>
 </resources>

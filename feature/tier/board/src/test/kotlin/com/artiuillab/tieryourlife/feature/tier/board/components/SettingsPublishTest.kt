@@ -23,7 +23,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Settings publish with the bar's button and words: one tap, then a status with Take down beside it. */
+/** Settings publish with the bar's button and words: one tap, then a status with Take it down beside it. */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = RobolectricDeviceQualifiers.Pixel7)
@@ -67,6 +67,18 @@ class SettingsPublishTest {
         composeRule.onNodeWithTag(TierDetailTestTags.UPDATE_PUBLISHED).performClick()
         assertEquals(listOf(Publishing.Update), published)
         capture("settings_published_update_dark")
+    }
+
+    @Test
+    fun theCamerasCardByHand_isHereToo() {
+        var asked = 0
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierListSettingsScreenContent(list = previewTierList, onBack = {}, onAddTier = { _, _, _, _ -> }, onSetDisplayMode = {}, onManualAdd = { asked++ })
+            }
+        }
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_MANUAL_ADD).performClick()
+        assertEquals(1, asked)
     }
 
     @Test

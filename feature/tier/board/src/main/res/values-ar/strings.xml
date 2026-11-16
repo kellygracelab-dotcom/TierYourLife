@@ -218,4 +218,5 @@
     <string name="list_settings_published_status">منشورة ✓</string>
     <string name="list_settings_ranked_status">في الترتيبات ✓</string>
     <string name="list_settings_take_down">إزالة</string>
+    <string name="list_settings_manual_add_sub">صورتك أو اسم من عندك</string>
 </resources>

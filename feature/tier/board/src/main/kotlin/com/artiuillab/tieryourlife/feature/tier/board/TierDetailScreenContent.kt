@@ -59,6 +59,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -349,6 +350,10 @@ private fun TierScreenBody(
                 listSettingsVisible = false
                 actions.onAddClick?.invoke()
             },
+            onManualAdd = {
+                listSettingsVisible = false
+                onManualAddClick()
+            },
             onShare = {
                 scope.launch {
                     if (!shareBoard(context, list, palette, shareCaption, shareFooter)) {
@@ -556,7 +561,7 @@ private fun TierScreenBody(
                 play = actions.onPlay?.takeUnless { glanceable }?.let { onPlay ->
                     PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
                 },
-                publish = publishButton(list, actions, labelled = maxWidth >= WindowShape.MediumFrom)?.takeUnless { glanceable || readOnly },
+                publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - BAR_BESIDE_PUBLISH)?.takeUnless { glanceable || readOnly },
             )
         }
         val board: @Composable (Modifier) -> Unit = { boardModifier ->
@@ -882,13 +887,17 @@ private fun RowChangeTick(dragController: TierDragController) {
     }
 }
 
-private fun publishButton(list: TierList, actions: TierDetailActions, labelled: Boolean): PublishButton? {
+/** Back, Play and the overflow, the bar's padding, and a few letters of the title. */
+private val BAR_BESIDE_PUBLISH = 48.dp * 3 + 16.dp + 56.dp
+
+private fun publishButton(list: TierList, actions: TierDetailActions, narrow: Boolean, room: Dp): PublishButton? {
     val onPublish = actions.onPublish ?: return null
     val kind = publishingOf(list, actions.publishedIsBehind) ?: return null
     return PublishButton(
         kind = kind,
         primary = everyCardPlaced(list),
-        labelled = labelled,
+        narrow = narrow,
+        room = room,
         busy = actions.publishing,
         onClick = { onPublish(kind) },
     )

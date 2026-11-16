@@ -178,5 +178,6 @@
     <string name="board_publish_ranking">Show in Rankings</string>
     <string name="list_settings_published_status">Published ✓</string>
     <string name="list_settings_ranked_status">In Rankings ✓</string>
-    <string name="list_settings_take_down">Take down</string>
+    <string name="list_settings_take_down">Take it down</string>
+    <string name="list_settings_manual_add_sub">Your own photo or name</string>
 </resources>

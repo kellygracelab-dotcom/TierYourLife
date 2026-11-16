@@ -198,4 +198,5 @@
     <string name="list_settings_published_status">Опубликован ✓</string>
     <string name="list_settings_ranked_status">В рейтингах ✓</string>
     <string name="list_settings_take_down">Снять</string>
+    <string name="list_settings_manual_add_sub">Своё фото или название</string>
 </resources>
