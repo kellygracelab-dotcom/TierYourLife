@@ -6,6 +6,19 @@
         <item quantity="many">%1$d cartões de %2$s</item>
         <item quantity="other">%1$d cartões de %2$s</item>
     </plurals>
+    <string name="play_how_it_works">Escolha o melhor de dois cartões. Os níveis se preenchem sozinhos.</string>
+    <string name="play_game_kept">Saia quando quiser: o jogo fica guardado.</string>
+    <string name="play_other_ways">Outras formas de jogar</string>
+    <plurals name="play_about_duels">
+        <item quantity="one">cerca de %1$d duelo</item>
+        <item quantity="many">cerca de %1$d duelos</item>
+        <item quantity="other">cerca de %1$d duelos</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="one">%1$d min</item>
+        <item quantity="many">%1$d min</item>
+        <item quantity="other">%1$d min</item>
+    </plurals>
     <string name="play_choose_cards">Escolher cartões</string>
     <string name="play_game_smart">Escolha inteligente</string>
     <string name="play_game_swiss">Perdedores continuam</string>
@@ -44,7 +57,7 @@
     <string name="play_too_few_to_start_again">Os cartões mudaram e restam poucos para começar este jogo de novo.</string>
     <string name="play_tier_gone">Um nível deste jogo não existe mais.</string>
     <string name="play_start_again">Começar de novo</string>
-    <string name="play_into_mine_note">O resultado vai para “Meu”. “Dele” não muda.</string>
+    <string name="play_into_mine_note">O resultado vai para “Meu”. A classificação do autor não muda.</string>
     <string name="play_cancel">Cancelar</string>
     <string name="play_start">Começar</string>
     <string name="play_continue">Continuar</string>
@@ -64,6 +77,7 @@
     <string name="play_ranked">Classificadas</string>
     <string name="play_quit">Sair</string>
     <string name="play_duel_of">Duelo %1$d de %2$d</string>
+    <string name="play_duel_of_about">Duelo %1$d de cerca de %2$d</string>
     <string name="play_round_of">Rodada %1$d de %2$d</string>
     <string name="play_refine_of">Refinar · %1$d de %2$d</string>
     <string name="play_undo_pick">Desfazer a última escolha</string>
