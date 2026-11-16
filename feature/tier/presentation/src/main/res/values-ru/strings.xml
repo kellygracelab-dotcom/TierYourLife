@@ -302,6 +302,7 @@
     <string name="publish_sheet_cover_photo">Ваше фото</string>
     <string name="publish_sheet_cover_hint">Загрузите своё фото и обрежьте как угодно, сделайте баннером картинку карточки или соберите свой коллаж.</string>
     <string name="publish_sheet_cover_change">Изменить обложку</string>
+    <string name="publish_sheet_change">Изменить</string>
     <string name="publish_sheet_cover">Обложка</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="one">Ваш коллаж · картинок: %d</item>

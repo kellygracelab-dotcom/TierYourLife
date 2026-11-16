@@ -257,6 +257,7 @@
     <string name="publish_sheet_cover_photo">自分の写真</string>
     <string name="publish_sheet_cover_hint">自分の写真をアップロードして好きなように切り抜いたり、カードの画像をバナーにしたり、自分だけのコラージュを作ったりできます。</string>
     <string name="publish_sheet_cover_change">カバーを変更</string>
+    <string name="publish_sheet_change">変更</string>
     <string name="publish_sheet_cover">カバー</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="other">自分のコラージュ · %d 枚</item>

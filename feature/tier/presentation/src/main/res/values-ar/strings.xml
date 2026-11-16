@@ -332,6 +332,7 @@
     <string name="publish_sheet_cover_photo">صورتك الخاصة</string>
     <string name="publish_sheet_cover_hint">ارفع صورتك الخاصة واقتصّها كما تشاء، أو اجعل صورة إحدى البطاقات لافتة، أو اصنع كولاجك الخاص.</string>
     <string name="publish_sheet_cover_change">تغيير الغلاف</string>
+    <string name="publish_sheet_change">تغيير</string>
     <string name="publish_sheet_cover">الغلاف</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="zero">كولاجك · الصور: %d</item>

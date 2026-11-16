@@ -287,6 +287,7 @@
     <string name="publish_sheet_cover_photo">Sua própria foto</string>
     <string name="publish_sheet_cover_hint">Envie sua própria foto e recorte como quiser, use a imagem de um card como banner ou monte sua própria colagem.</string>
     <string name="publish_sheet_cover_change">Alterar a capa</string>
+    <string name="publish_sheet_change">Alterar</string>
     <string name="publish_sheet_cover">Capa</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="one">Sua colagem · imagens: %d</item>

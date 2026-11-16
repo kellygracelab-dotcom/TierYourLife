@@ -302,6 +302,7 @@
     <string name="publish_sheet_cover_photo">Twoje własne zdjęcie</string>
     <string name="publish_sheet_cover_hint">Wgraj własne zdjęcie i przytnij je, jak chcesz, zrób z obrazu karty baner albo ułóż własny kolaż.</string>
     <string name="publish_sheet_cover_change">Zmień okładkę</string>
+    <string name="publish_sheet_change">Zmień</string>
     <string name="publish_sheet_cover">Okładka</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="one">Twój kolaż · obrazy: %d</item>

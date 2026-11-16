@@ -273,6 +273,7 @@
     <string name="publish_sheet_cover_photo">Your own photo</string>
     <string name="publish_sheet_cover_hint">Upload your own photo and crop it any way you like, make one card’s picture the banner, or build your own collage.</string>
     <string name="publish_sheet_cover_change">Change the cover</string>
+    <string name="publish_sheet_change">Change</string>
     <string name="publish_sheet_cover">Cover</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="one">Your collage · %d picture</item>

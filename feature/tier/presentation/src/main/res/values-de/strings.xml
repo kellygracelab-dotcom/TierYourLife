@@ -272,6 +272,7 @@
     <string name="publish_sheet_cover_photo">Dein eigenes Foto</string>
     <string name="publish_sheet_cover_hint">Lade ein eigenes Foto hoch und schneide es zu, wie du willst, mach das Bild einer Karte zum Banner oder stell deine eigene Collage zusammen.</string>
     <string name="publish_sheet_cover_change">Titelbild ändern</string>
+    <string name="publish_sheet_change">Ändern</string>
     <string name="publish_sheet_cover">Titelbild</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="one">Deine Collage · Bilder: %d</item>

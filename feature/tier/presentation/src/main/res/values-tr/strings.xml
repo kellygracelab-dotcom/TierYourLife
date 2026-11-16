@@ -272,6 +272,7 @@
     <string name="publish_sheet_cover_photo">Kendi fotoğrafın</string>
     <string name="publish_sheet_cover_hint">Kendi fotoğrafını yükleyip istediğin gibi kırp, bir kartın resmini afiş yap ya da kendi kolajını oluştur.</string>
     <string name="publish_sheet_cover_change">Kapağı değiştir</string>
+    <string name="publish_sheet_change">Değiştir</string>
     <string name="publish_sheet_cover">Kapak</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="one">Kendi kolajın · resim: %d</item>

@@ -16,6 +16,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -57,8 +60,13 @@ internal fun CoverBlock(list: TierList, enabled: Boolean, onChange: () -> Unit) 
             )
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(coverKindLabel(list), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface)
-                OutlinedButton(onClick = onChange, enabled = enabled, modifier = Modifier.testTag(PublishSheetTags.CHANGE_COVER)) {
-                    Text(stringResource(R.string.publish_sheet_cover_change))
+                val description = stringResource(R.string.publish_sheet_cover_change)
+                OutlinedButton(
+                    onClick = onChange,
+                    enabled = enabled,
+                    modifier = Modifier.testTag(PublishSheetTags.CHANGE_COVER).semantics(mergeDescendants = true) { contentDescription = description },
+                ) {
+                    Text(stringResource(R.string.publish_sheet_change), Modifier.clearAndSetSemantics {})
                 }
             }
         }

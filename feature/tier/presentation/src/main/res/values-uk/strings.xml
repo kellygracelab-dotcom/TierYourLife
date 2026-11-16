@@ -302,6 +302,7 @@
     <string name="publish_sheet_cover_photo">Ваше фото</string>
     <string name="publish_sheet_cover_hint">Завантажте своє фото й обріжте як завгодно, зробіть банером картинку картки або зберіть свій колаж.</string>
     <string name="publish_sheet_cover_change">Змінити обкладинку</string>
+    <string name="publish_sheet_change">Змінити</string>
     <string name="publish_sheet_cover">Обкладинка</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="one">Ваш колаж · картинок: %d</item>

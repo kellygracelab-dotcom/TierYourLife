@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -103,7 +104,7 @@ class PublishSheetTest {
         show(board.copy(category = "film_tv"), PublishSheetState(topics = topics), calls = calls.copy(onChangeCover = { said += "cover" }))
         composeRule.onNodeWithText("Tier colours · auto").assertExists()
         capture("publish_sheet_cover")
-        composeRule.onNodeWithTag(PublishSheetTags.CHANGE_COVER).performClick()
+        composeRule.onNodeWithTag(PublishSheetTags.CHANGE_COVER).assertContentDescriptionEquals("Change the cover").performClick()
         assertEquals(listOf("cover"), said)
     }
 

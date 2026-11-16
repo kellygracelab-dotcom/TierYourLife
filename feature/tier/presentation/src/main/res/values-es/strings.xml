@@ -287,6 +287,7 @@
     <string name="publish_sheet_cover_photo">Tu propia foto</string>
     <string name="publish_sheet_cover_hint">Sube tu propia foto y recórtala como quieras, usa la imagen de una tarjeta como banner o arma tu propio collage.</string>
     <string name="publish_sheet_cover_change">Cambiar la portada</string>
+    <string name="publish_sheet_change">Cambiar</string>
     <string name="publish_sheet_cover">Portada</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="one">Tu collage · imágenes: %d</item>

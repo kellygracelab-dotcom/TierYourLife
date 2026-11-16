@@ -287,6 +287,7 @@
     <string name="publish_sheet_cover_photo">Ta propre photo</string>
     <string name="publish_sheet_cover_hint">Importe ta propre photo et recadre-la comme tu veux, fais de l’image d’une carte la bannière, ou compose ton propre collage.</string>
     <string name="publish_sheet_cover_change">Modifier la couverture</string>
+    <string name="publish_sheet_change">Modifier</string>
     <string name="publish_sheet_cover">Couverture</string>
     <plurals name="publish_sheet_cover_collage">
         <item quantity="one">Ton collage · images : %d</item>
