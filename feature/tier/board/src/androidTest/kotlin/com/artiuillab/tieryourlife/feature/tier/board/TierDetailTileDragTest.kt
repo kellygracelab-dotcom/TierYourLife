@@ -5,7 +5,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.printToString
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -214,6 +216,9 @@ class TierDetailTileDragTest : TierDetailScreenTestBase() {
         val rowOneBounds = composeRule.onNodeWithTag(TierDetailTestTags.tierRow(1)).fetchSemanticsNode().boundsInRoot
         val poolBounds = composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).fetchSemanticsNode().boundsInRoot
         val edgeTarget = Offset(rowOneBounds.center.x, poolBounds.top - 10f)
+        val before = "tile $sourceBounds, row 1 $rowOneBounds, pool $poolBounds, target $edgeTarget, " +
+            "root ${composeRule.onRoot().fetchSemanticsNode().boundsInRoot}\n" +
+            composeRule.onNodeWithTag(TierDetailTestTags.POOL_PANEL).printToString()
 
         composeRule.mainClock.autoAdvance = false
         try {
@@ -235,7 +240,7 @@ class TierDetailTileDragTest : TierDetailScreenTestBase() {
         composeRule.waitForIdle()
 
         composeRule.runOnIdle {
-            assertEquals(500L, moved?.first)
+            assertEquals("no drop at all; before the drag: $before", 500L, moved?.first)
             assertTrue(
                 "expected a drop into a tier that was off-screen before scrolling (> $lastVisibleIdBeforeScrolling), landed on ${moved?.second}",
                 (moved?.second ?: -1L) > lastVisibleIdBeforeScrolling,
