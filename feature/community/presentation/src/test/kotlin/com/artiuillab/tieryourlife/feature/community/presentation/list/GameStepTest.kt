@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.core.testing.onMain
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.FakeOpenedLists
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
@@ -12,7 +13,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowA
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -66,7 +66,7 @@ class GameStepTest {
     )
 
     @Test
-    fun aGame_canBeTurnedOverOnThePage_beforeAndAfter() = runBlocking {
+    fun aGame_canBeTurnedOverOnThePage_beforeAndAfter() = onMain {
         val viewModel = viewModel()
         val loaded = viewModel.loaded()
         val played = played(loaded)
@@ -88,7 +88,7 @@ class GameStepTest {
     }
 
     @Test
-    fun theNextMove_endsTheGamesUndo() = runBlocking {
+    fun theNextMove_endsTheGamesUndo() = onMain {
         val viewModel = viewModel()
         val played = played(viewModel.loaded())
         viewModel.putInMine(played)
@@ -103,7 +103,7 @@ class GameStepTest {
     }
 
     @Test
-    fun theGamesOwnUndo_andThePagesButton_agree() = runBlocking {
+    fun theGamesOwnUndo_andThePagesButton_agree() = onMain {
         val viewModel = viewModel()
         val loaded = viewModel.loaded()
         val played = played(loaded)
