@@ -310,4 +310,14 @@
         <item quantity="many">Twój kolaż · obrazy: %d</item>
         <item quantity="other">Twój kolaż · obrazy: %d</item>
     </plurals>
+    <string name="started_title">Kontynuuj</string>
+    <plurals name="started_placed">
+        <item quantity="one">Umieszczono %1$d z %2$d</item>
+        <item quantity="few">Umieszczono %1$d z %2$d</item>
+        <item quantity="many">Umieszczono %1$d z %2$d</item>
+        <item quantity="other">Umieszczono %1$d z %2$d</item>
+    </plurals>
+    <string name="started_continue">Kontynuuj</string>
+    <string name="started_continue_of">Kontynuuj „%1$s”</string>
+    <string name="started_resume">Wznów grę</string>
 </resources>

@@ -310,4 +310,14 @@
         <item quantity="many">Ваш коллаж · картинок: %d</item>
         <item quantity="other">Ваш коллаж · картинок: %d</item>
     </plurals>
+    <string name="started_title">Продолжить</string>
+    <plurals name="started_placed">
+        <item quantity="one">Разложено %1$d из %2$d</item>
+        <item quantity="few">Разложено %1$d из %2$d</item>
+        <item quantity="many">Разложено %1$d из %2$d</item>
+        <item quantity="other">Разложено %1$d из %2$d</item>
+    </plurals>
+    <string name="started_continue">Продолжить</string>
+    <string name="started_continue_of">Продолжить «%1$s»</string>
+    <string name="started_resume">Продолжить игру</string>
 </resources>

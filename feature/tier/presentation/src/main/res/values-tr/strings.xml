@@ -278,4 +278,12 @@
         <item quantity="one">Kendi kolajın · resim: %d</item>
         <item quantity="other">Kendi kolajın · resim: %d</item>
     </plurals>
+    <string name="started_title">Devam et</string>
+    <plurals name="started_placed">
+        <item quantity="one">%1$d/%2$d yerleştirildi</item>
+        <item quantity="other">%1$d/%2$d yerleştirildi</item>
+    </plurals>
+    <string name="started_continue">Devam et</string>
+    <string name="started_continue_of">“%1$s” ile devam et</string>
+    <string name="started_resume">Oyuna devam et</string>
 </resources>

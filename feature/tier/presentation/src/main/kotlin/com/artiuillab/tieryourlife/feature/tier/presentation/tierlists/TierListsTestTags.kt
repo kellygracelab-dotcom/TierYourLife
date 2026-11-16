@@ -42,5 +42,9 @@ internal object TierListsTestTags {
     fun filterPublished(published: PublishedFilter?): String =
         "tier_lists_filter_published_${published?.name?.lowercase() ?: "any"}"
     fun tab(tab: HomeTab): String = "home_tab_${tab.name.lowercase()}"
+    const val CONTINUE_BLOCK = "home_continue"
+    fun started(listId: String): String = "home_started_$listId"
+    fun continueList(listId: String): String = "home_continue_$listId"
+    fun resumeGame(listId: String): String = "home_resume_game_$listId"
     fun suggestion(index: Int): String = "home_suggestion_$index"
 }

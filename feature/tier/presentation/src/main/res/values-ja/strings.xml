@@ -262,4 +262,11 @@
     <plurals name="publish_sheet_cover_collage">
         <item quantity="other">自分のコラージュ · %d 枚</item>
     </plurals>
+    <string name="started_title">続きから</string>
+    <plurals name="started_placed">
+        <item quantity="other">%2$d枚中%1$d枚配置済み</item>
+    </plurals>
+    <string name="started_continue">続ける</string>
+    <string name="started_continue_of">「%1$s」を続ける</string>
+    <string name="started_resume">ゲームを再開</string>
 </resources>

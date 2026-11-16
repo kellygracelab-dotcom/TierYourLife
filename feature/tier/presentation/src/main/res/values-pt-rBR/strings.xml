@@ -294,4 +294,13 @@
         <item quantity="many">Sua colagem · imagens: %d</item>
         <item quantity="other">Sua colagem · imagens: %d</item>
     </plurals>
+    <string name="started_title">Continuar</string>
+    <plurals name="started_placed">
+        <item quantity="one">%1$d de %2$d posicionado</item>
+        <item quantity="many">%1$d de %2$d posicionados</item>
+        <item quantity="other">%1$d de %2$d posicionados</item>
+    </plurals>
+    <string name="started_continue">Continuar</string>
+    <string name="started_continue_of">Continuar “%1$s”</string>
+    <string name="started_resume">Retomar jogo</string>
 </resources>

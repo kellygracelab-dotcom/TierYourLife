@@ -342,4 +342,16 @@
         <item quantity="many">كولاجك · الصور: %d</item>
         <item quantity="other">كولاجك · الصور: %d</item>
     </plurals>
+    <string name="started_title">متابعة</string>
+    <plurals name="started_placed">
+        <item quantity="zero">%1$d من %2$d موضوعة</item>
+        <item quantity="one">%1$d من %2$d موضوعة</item>
+        <item quantity="two">%1$d من %2$d موضوعة</item>
+        <item quantity="few">%1$d من %2$d موضوعة</item>
+        <item quantity="many">%1$d من %2$d موضوعة</item>
+        <item quantity="other">%1$d من %2$d موضوعة</item>
+    </plurals>
+    <string name="started_continue">متابعة</string>
+    <string name="started_continue_of">متابعة «%1$s»</string>
+    <string name="started_resume">استئناف اللعبة</string>
 </resources>

@@ -278,4 +278,12 @@
         <item quantity="one">Deine Collage · Bilder: %d</item>
         <item quantity="other">Deine Collage · Bilder: %d</item>
     </plurals>
+    <string name="started_title">Weitermachen</string>
+    <plurals name="started_placed">
+        <item quantity="one">%1$d von %2$d platziert</item>
+        <item quantity="other">%1$d von %2$d platziert</item>
+    </plurals>
+    <string name="started_continue">Weiter</string>
+    <string name="started_continue_of">„%1$s“ fortsetzen</string>
+    <string name="started_resume">Spiel fortsetzen</string>
 </resources>
