@@ -51,7 +51,6 @@ internal fun TierList.toRequest(images: OwnPictures, uploaded: Set<String>) = Pu
     boardUid = uid.trim().takeIf { it.length in 1..MAX_BOARD_UID },
     takenFrom = takenFrom,
     sourceVersion = originVersion,
-    anonymous = anonymous,
     tiers = tiers.filterNot { it.isPool }.map {
         PublishedTierDto(it.label, it.caption, it.colorLight, it.colorDark)
     },

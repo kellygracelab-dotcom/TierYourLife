@@ -35,12 +35,8 @@
     <string name="list_settings_public_unverified">O Google Play não confirmou esta instalação, então nada pode ser publicado a partir dela.</string>
     <string name="list_settings_share">Compartilhar como imagem</string>
     <string name="list_settings_share_sub">Uma imagem deste quadro, com link para o app</string>
-    <string name="list_settings_see_in_community">Ver na Comunidade</string>
-    <string name="list_settings_see_in_community_sub">Como os outros a veem, com os rankings deles e o link</string>
     <string name="list_settings_original">Abrir o original</string>
     <string name="list_settings_original_sub">A lista da Comunidade que você classificou</string>
-    <string name="list_settings_update_published">Versão publicada</string>
-    <string name="list_settings_update_published_body">Enviar este quadro de novo, no mesmo link.</string>
     <string name="manual_dialog_add">Adicionar</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">Adicionar %1$d item</item>
@@ -63,7 +59,6 @@
     <string name="manual_dialog_replace_photo">Trocar foto</string>
     <string name="manual_dialog_title">Adicionar um item</string>
     <string name="my_published_action_update">Atualizar</string>
-    <string name="my_published_behind">A versão publicada está desatualizada.</string>
     <string name="share_caption">%1$s — classificado no TierYourLife\n%2$s</string>
     <string name="share_footer">Feito no TierYourLife</string>
     <string name="share_failed">Não foi possível compartilhar a imagem</string>
@@ -164,8 +159,6 @@
     <string name="tier_detail_drop_unrank_dock">Solte na reserva para tirar do ranking</string>
     <string name="tier_detail_content_description_play">Jogar</string>
     <string name="tier_detail_play_needs_cards">Para jogar, são necessários pelo menos 3 cartões</string>
-    <string name="list_settings_anonymous">Publicar anonimamente</string>
-    <string name="list_settings_anonymous_body">Seu nome e sua foto não aparecem com a lista. Ela continua sendo sua: só você pode editá-la ou excluí-la.</string>
     <string name="list_settings_propose_section">Propor uma seção</string>
     <string name="list_settings_category_waiting">Aguardando um moderador</string>
     <string name="list_settings_moves_to">Vai para %1$s quando for aprovada</string>
@@ -199,5 +192,13 @@
     <string name="list_settings_published_status">Publicada ✓</string>
     <string name="list_settings_ranked_status">Nas classificações ✓</string>
     <string name="list_settings_take_down">Remover</string>
+    <string name="list_settings_publication">Publicação</string>
+    <string name="list_settings_unpublished_changes">Alterações ainda não publicadas</string>
+    <string name="board_published_short">Publicada</string>
+    <string name="board_updated_short">Atualizada</string>
+    <string name="board_ranked_short">Nas classificações</string>
+    <string name="board_published_view">Ver</string>
+    <string name="board_publishing">Publicando…</string>
+    <string name="board_updating">Atualizando…</string>
     <string name="list_settings_manual_add_sub">Sua própria foto ou nome</string>
 </resources>

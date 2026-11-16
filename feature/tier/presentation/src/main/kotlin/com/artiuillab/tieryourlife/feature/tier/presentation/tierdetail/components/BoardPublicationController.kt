@@ -7,6 +7,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKin
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
+import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.fixedInSettings
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
@@ -308,6 +309,7 @@ internal class BoardPublicationController(
     }
     private fun fail(reason: PublishError) {
         error(reason)
-        mutable.value = mutable.value.copy(error = reason)
+        // Settings open on the Publication row and say it there; a dialog over them would say it twice.
+        if (!reason.fixedInSettings()) mutable.value = mutable.value.copy(error = reason)
     }
 }

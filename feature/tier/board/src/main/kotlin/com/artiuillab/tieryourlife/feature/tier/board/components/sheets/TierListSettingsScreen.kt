@@ -7,8 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -28,11 +31,11 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -111,7 +114,6 @@ fun TierListSettingsScreenContent(
     publicPending: Boolean? = null,
     categoryWanted: Boolean = false,
     onSetPublic: (Boolean) -> Unit = {},
-    onSetAnonymous: (Boolean) -> Unit = {},
     publishedIsBehind: Boolean = false,
     onUpdatePublished: () -> Unit = {},
     /** The bar's publish, so both places say and do the same; null falls back to [onSetPublic] and [onUpdatePublished]. */
@@ -178,11 +180,8 @@ fun TierListSettingsScreenContent(
                         onPublish = onPublish ?: { kind -> if (kind == Publishing.Update) onUpdatePublished() else onSetPublic(true) },
                         onTakeDown = { onSetPublic(false) },
                         onAddCards = onAddCards,
-                        onSetAnonymous = onSetAnonymous,
+                        onView = (if (list.rankingOf != null) onOpenOriginal else onSeeInCommunity).takeIf { publicPending != false },
                     )
-                    if (onSeeInCommunity != null && publicPending != false) {
-                        SeeInCommunityRow(onClick = onSeeInCommunity)
-                    }
                     if (onOpenOriginal != null) OpenOriginalRow(onClick = onOpenOriginal)
 
                     // A category exists only for the feed; a cover is also the card's
@@ -517,17 +516,6 @@ private fun OpenOriginalRow(onClick: () -> Unit) {
 }
 
 @Composable
-private fun SeeInCommunityRow(onClick: () -> Unit) {
-    SettingsActionRow(
-        icon = { LeaderboardIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
-        title = stringResource(R.string.list_settings_see_in_community),
-        subtitle = stringResource(R.string.list_settings_see_in_community_sub),
-        onClick = onClick,
-        testTag = TierDetailTestTags.SEE_IN_COMMUNITY_ROW,
-    )
-}
-
-@Composable
 private fun NewTierRow(tierCount: Int, hasRoom: Boolean, onClick: () -> Unit) {
     SettingsActionRow(
         icon = { PlusIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
@@ -567,9 +555,9 @@ private fun TierListSettingsScreenDarkPreview() = TierYourLifeTheme(true) {
 }
 
 /**
- * Publishing as one button, the same as the bar's: a line saying what will
- * happen, then Publish or Show in Rankings, which go at once. Once out, a status
- * with Take down beside it, and Update while the board has moved on.
+ * One Publication row (Danylo, 16.11.2026). Before: a line saying what will
+ * happen, then Publish or Show in Rankings, which go at once. Once out: the
+ * status, then Update (filled while the board has moved on), View and Take down.
  */
 @Composable
 private fun PublishSection(
@@ -582,7 +570,7 @@ private fun PublishSection(
     onPublish: (Publishing) -> Unit,
     onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
-    onSetAnonymous: (Boolean) -> Unit,
+    onView: (() -> Unit)?,
 ) = PublishSection(
     published = published,
     asRankingOf = if (list.rankingOf != null) list.authorName.orEmpty() else null,
@@ -595,8 +583,7 @@ private fun PublishSection(
     onTakeDown = onTakeDown,
     onAddCards = onAddCards,
     behind = behind,
-    anonymous = list.anonymous,
-    onSetAnonymous = onSetAnonymous,
+    onView = onView,
 )
 
 @Composable
@@ -613,8 +600,7 @@ private fun PublishSection(
     onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
     behind: Boolean,
-    anonymous: Boolean = false,
-    onSetAnonymous: (Boolean) -> Unit = {},
+    onView: (() -> Unit)? = null,
 ) {
     Column(
         Modifier
@@ -622,13 +608,15 @@ private fun PublishSection(
             .then(if (!published && !hasItems) Modifier.clickable(onClick = onAddCards) else Modifier)
             .padding(horizontal = 20.dp, vertical = 16.dp),
     ) {
+        Text(
+            text = stringResource(R.string.list_settings_publication),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Spacer(Modifier.height(6.dp))
         if (published) {
-            PublishedStatus(asRankingOf = asRankingOf, busy = busy, onTakeDown = onTakeDown)
-            if (behind) {
-                Spacer(Modifier.height(12.dp))
-                PublishLine(R.string.my_published_behind)
-                PublishButtonRow(Publishing.Update, enabled = !busy, onPublish = onPublish, tag = TierDetailTestTags.UPDATE_PUBLISHED)
-            }
+            PublishedStatus(asRankingOf = asRankingOf, behind = behind)
+            PublishedActions(behind = behind, busy = busy, onUpdate = { onPublish(Publishing.Update) }, onView = onView, onTakeDown = onTakeDown)
         } else {
             PublishLine(
                 when {
@@ -639,13 +627,6 @@ private fun PublishSection(
                 },
             )
             PublishButtonRow(kind, enabled = hasItems && !busy, onPublish = onPublish, tag = TierDetailTestTags.SETTINGS_PUBLISH)
-        }
-        // Chosen before publishing as easily as after; not offered on a
-        // ranking, which goes out beside somebody else's list.
-        val ranking = kind == Publishing.ShareRanking || (published && asRankingOf != null)
-        if (signedIn && !ranking) {
-            Spacer(Modifier.height(14.dp))
-            AnonymousRow(anonymous = anonymous, enabled = !busy, onSetAnonymous = onSetAnonymous)
         }
         if (error != null) {
             Spacer(Modifier.height(8.dp))
@@ -668,20 +649,49 @@ private fun PublishSection(
 }
 
 @Composable
-private fun PublishedStatus(asRankingOf: String?, busy: Boolean, onTakeDown: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = stringResource(if (asRankingOf != null) R.string.list_settings_ranked_status else R.string.list_settings_published_status),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            if (asRankingOf != null) {
-                Text(
-                    text = stringResource(R.string.list_settings_public_ranking_body, asRankingOf),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+private fun PublishedStatus(asRankingOf: String?, behind: Boolean) {
+    Text(
+        text = stringResource(if (asRankingOf != null) R.string.list_settings_ranked_status else R.string.list_settings_published_status),
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurface,
+    )
+    if (asRankingOf != null) {
+        Text(
+            text = stringResource(R.string.list_settings_public_ranking_body, asRankingOf),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (behind) {
+        Text(
+            text = stringResource(R.string.list_settings_unpublished_changes),
+            modifier = Modifier.testTag(TierDetailTestTags.UNPUBLISHED_CHANGES),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun PublishedActions(behind: Boolean, busy: Boolean, onUpdate: () -> Unit, onView: (() -> Unit)?, onTakeDown: () -> Unit) {
+    Spacer(Modifier.height(10.dp))
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), itemVerticalAlignment = Alignment.CenterVertically) {
+        val update = Modifier.testTag(TierDetailTestTags.UPDATE_PUBLISHED)
+        val padding = PaddingValues(start = 14.dp, end = 18.dp)
+        val content: @Composable RowScope.() -> Unit = {
+            PublishingIcon(Publishing.Update, LocalContentColor.current)
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.board_publish_update))
+        }
+        if (behind) {
+            Button(onClick = onUpdate, enabled = !busy, modifier = update, contentPadding = padding, content = content)
+        } else {
+            FilledTonalButton(onClick = onUpdate, enabled = !busy, modifier = update, contentPadding = padding, content = content)
+        }
+        if (onView != null) {
+            TextButton(onClick = onView, modifier = Modifier.testTag(TierDetailTestTags.SETTINGS_VIEW_PUBLISHED)) {
+                Text(stringResource(R.string.board_published_view))
             }
         }
         TextButton(onClick = onTakeDown, enabled = !busy, modifier = Modifier.testTag(TierDetailTestTags.SETTINGS_TAKE_DOWN)) {
@@ -715,31 +725,18 @@ private fun PublishButtonRow(kind: Publishing, enabled: Boolean, onPublish: (Pub
 }
 
 @Composable
-private fun AnonymousRow(anonymous: Boolean, enabled: Boolean, onSetAnonymous: (Boolean) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = stringResource(R.string.list_settings_anonymous),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = stringResource(R.string.list_settings_anonymous_body),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Switch(
-            checked = anonymous,
-            onCheckedChange = onSetAnonymous,
-            enabled = enabled,
-            modifier = Modifier.testTag(TierDetailTestTags.ANONYMOUS_SWITCH),
-        )
-    }
-}
-
-@Composable
 private fun PublishError.message(): String = publishErrorText(this, LocalResources.current, LocalConfiguration.current.locales[0])
+
+/** Refusals put right in settings, so a publish from the bar opens them on the Publication row with the reason. */
+fun PublishError.fixedInSettings(): Boolean = when (this) {
+    PublishError.NothingToPublish,
+    PublishError.PictureRefused,
+    PublishError.SectionUnavailable,
+    PublishError.TopicUnavailable,
+    PublishError.TooManyPendingTopics,
+    -> true
+    else -> false
+}
 
 /** The sentence for a refused publish, wherever it is said: here, or beside the list among the person's public ones. */
 fun publishErrorText(error: PublishError, resources: Resources, locale: Locale): String = when (error) {

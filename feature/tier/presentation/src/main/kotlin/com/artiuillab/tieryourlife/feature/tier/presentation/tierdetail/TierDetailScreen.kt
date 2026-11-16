@@ -97,7 +97,6 @@ fun TierDetailScreen(
             publicPending = publish.publicPending,
             categoryWanted = publish.categoryWanted,
             onSetPublic = viewModel::setPublic,
-            onSetAnonymous = viewModel::setAnonymous,
             publishedIsBehind = publish.publishedIsBehind,
             onUpdatePublished = viewModel::updatePublished,
             onSeeInCommunity = onSeeInCommunity,

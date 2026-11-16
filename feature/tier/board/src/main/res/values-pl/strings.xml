@@ -35,12 +35,8 @@
     <string name="list_settings_public_unverified">Google Play nie potwierdził tej instalacji, więc nie można z niej nic opublikować.</string>
     <string name="list_settings_share">Udostępnij jako obraz</string>
     <string name="list_settings_share_sub">Obraz tej tablicy z linkiem do aplikacji</string>
-    <string name="list_settings_see_in_community">Zobacz w Społeczności</string>
-    <string name="list_settings_see_in_community_sub">Tak, jak widzą ją inni, z ich rankingami i linkiem</string>
     <string name="list_settings_original">Otwórz oryginał</string>
     <string name="list_settings_original_sub">Lista ze Społeczności, którą oceniasz</string>
-    <string name="list_settings_update_published">Opublikowana wersja</string>
-    <string name="list_settings_update_published_body">Wyślij tę listę ponownie, pod tym samym linkiem.</string>
     <string name="manual_dialog_add">Dodaj</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">Dodaj %1$d element</item>
@@ -65,7 +61,6 @@
     <string name="manual_dialog_replace_photo">Zmień zdjęcie</string>
     <string name="manual_dialog_title">Dodaj element</string>
     <string name="my_published_action_update">Aktualizuj</string>
-    <string name="my_published_behind">Opublikowana wersja jest starsza niż ta lista.</string>
     <string name="share_caption">%1$s — ułożone w TierYourLife\n%2$s</string>
     <string name="share_footer">Zrobione w TierYourLife</string>
     <string name="share_failed">Nie udało się udostępnić obrazu</string>
@@ -174,8 +169,6 @@
     <string name="tier_detail_drop_unrank_dock">Upuść na pulę, aby usunąć z rankingu</string>
     <string name="tier_detail_content_description_play">Graj</string>
     <string name="tier_detail_play_needs_cards">Do gry potrzebne są co najmniej 3 karty</string>
-    <string name="list_settings_anonymous">Publikuj anonimowo</string>
-    <string name="list_settings_anonymous_body">Twoje imię i zdjęcie nie są pokazywane przy liście. Nadal jest twoja: tylko ty możesz ją edytować lub usunąć.</string>
     <string name="list_settings_propose_section">Zaproponuj dział</string>
     <string name="list_settings_category_waiting">Czeka na moderatora</string>
     <string name="list_settings_moves_to">Trafi do działu %1$s, gdy zostanie zatwierdzony</string>
@@ -210,5 +203,13 @@
     <string name="list_settings_published_status">Opublikowano ✓</string>
     <string name="list_settings_ranked_status">W rankingach ✓</string>
     <string name="list_settings_take_down">Usuń z publikacji</string>
+    <string name="list_settings_publication">Publikacja</string>
+    <string name="list_settings_unpublished_changes">Zmiany jeszcze nieopublikowane</string>
+    <string name="board_published_short">Opublikowano</string>
+    <string name="board_updated_short">Zaktualizowano</string>
+    <string name="board_ranked_short">W rankingach</string>
+    <string name="board_published_view">Zobacz</string>
+    <string name="board_publishing">Publikowanie…</string>
+    <string name="board_updating">Aktualizowanie…</string>
     <string name="list_settings_manual_add_sub">Własne zdjęcie lub nazwa</string>
 </resources>

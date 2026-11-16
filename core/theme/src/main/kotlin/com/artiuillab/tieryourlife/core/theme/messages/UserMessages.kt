@@ -15,8 +15,8 @@ sealed interface UserMessage {
      */
     data object PublishedListStillPublic : UserMessage
 
-    /** The copy went out as this person's ranking of the list it was taken from, not as a second list. */
-    data object PublishedAsRanking : UserMessage
+    /** Out from the board: first time or [updated] over the same link, as a list or beside one as a [ranking]. */
+    data class Published(val updated: Boolean, val ranking: Boolean = false, val droppedPictures: Int = 0) : UserMessage
 
     /** The list was kept, but it waits for a moderator before anyone else can see it. */
     data object PublishedUnderReview : UserMessage

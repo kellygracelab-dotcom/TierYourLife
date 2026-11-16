@@ -35,12 +35,8 @@
     <string name="list_settings_public_unverified">Google Play could not confirm this installation, so nothing can be published from it.</string>
     <string name="list_settings_share">Share as image</string>
     <string name="list_settings_share_sub">A picture of this board, with a link to the app</string>
-    <string name="list_settings_see_in_community">See it in Community</string>
-    <string name="list_settings_see_in_community_sub">As others see it, with their rankings and the link</string>
     <string name="list_settings_original">Open the original</string>
     <string name="list_settings_original_sub">The Community list you ranked</string>
-    <string name="list_settings_update_published">Published version</string>
-    <string name="list_settings_update_published_body">Send this board again, over the same link.</string>
     <string name="manual_dialog_add">Add</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">Add %1$d item</item>
@@ -61,7 +57,6 @@
     <string name="manual_dialog_replace_photo">Replace photo</string>
     <string name="manual_dialog_title">Add an item</string>
     <string name="my_published_action_update">Update</string>
-    <string name="my_published_behind">The published copy is behind this board.</string>
     <string name="share_caption">%1$s — ranked in TierYourLife\n%2$s</string>
     <string name="share_footer">Made in TierYourLife</string>
     <string name="share_failed">Could not share the picture</string>
@@ -155,8 +150,6 @@
     <string name="tier_detail_drop_unrank_dock">Drop on the pool to unrank</string>
     <string name="tier_detail_content_description_play">Play</string>
     <string name="tier_detail_play_needs_cards">Play needs at least 3 cards</string>
-    <string name="list_settings_anonymous">Publish anonymously</string>
-    <string name="list_settings_anonymous_body">Your name and face aren’t shown with the list. It’s still yours: only you can edit it or delete it.</string>
     <string name="list_settings_propose_section">Propose a section</string>
     <string name="list_settings_category_waiting">Waiting for a moderator</string>
     <string name="list_settings_moves_to">Moves to %1$s once it’s approved</string>
@@ -189,5 +182,13 @@
     <string name="list_settings_published_status">Published ✓</string>
     <string name="list_settings_ranked_status">In Rankings ✓</string>
     <string name="list_settings_take_down">Take it down</string>
+    <string name="list_settings_publication">Publication</string>
+    <string name="list_settings_unpublished_changes">Changes not published yet</string>
+    <string name="board_published_short">Published</string>
+    <string name="board_updated_short">Updated</string>
+    <string name="board_ranked_short">In Rankings</string>
+    <string name="board_published_view">View</string>
+    <string name="board_publishing">Publishing…</string>
+    <string name="board_updating">Updating…</string>
     <string name="list_settings_manual_add_sub">Your own photo or name</string>
 </resources>

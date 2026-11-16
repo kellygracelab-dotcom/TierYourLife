@@ -35,12 +35,8 @@
     <string name="list_settings_public_unverified">لم يتمكن Google Play من تأكيد هذا التثبيت، لذا لا يمكن النشر منه.</string>
     <string name="list_settings_share">مشاركة كصورة</string>
     <string name="list_settings_share_sub">صورة لهذه اللوحة مع رابط للتطبيق</string>
-    <string name="list_settings_see_in_community">اعرضها في المجتمع</string>
-    <string name="list_settings_see_in_community_sub">كما يراها الآخرون، مع تصنيفاتهم والرابط</string>
     <string name="list_settings_original">فتح الأصل</string>
     <string name="list_settings_original_sub">قائمة المجتمع التي رتّبتها</string>
-    <string name="list_settings_update_published">النسخة المنشورة</string>
-    <string name="list_settings_update_published_body">أرسل هذه اللوحة مرة أخرى بنفس الرابط.</string>
     <string name="manual_dialog_add">إضافة</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="zero">إضافة %1$d عنصر</item>
@@ -69,7 +65,6 @@
     <string name="manual_dialog_replace_photo">استبدال الصورة</string>
     <string name="manual_dialog_title">إضافة عنصر</string>
     <string name="my_published_action_update">تحديث</string>
-    <string name="my_published_behind">النسخة المنشورة متأخرة عن هذه اللوحة.</string>
     <string name="share_caption">%1$s — مرتّبة في TierYourLife\n%2$s</string>
     <string name="share_footer">صُنع في TierYourLife</string>
     <string name="share_failed">تعذّرت مشاركة الصورة</string>
@@ -194,8 +189,6 @@
     <string name="tier_detail_drop_unrank_dock">أفلت على المجمّع لإلغاء الترتيب</string>
     <string name="tier_detail_content_description_play">العب</string>
     <string name="tier_detail_play_needs_cards">يتطلب اللعب 3 بطاقات على الأقل</string>
-    <string name="list_settings_anonymous">النشر دون اسم</string>
-    <string name="list_settings_anonymous_body">لا يظهر اسمك ولا صورتك مع القائمة. تبقى القائمة لك: أنت وحدك من يمكنه تعديلها أو حذفها.</string>
     <string name="list_settings_propose_section">اقتراح قسم</string>
     <string name="list_settings_category_waiting">بانتظار مشرف</string>
     <string name="list_settings_moves_to">سينتقل إلى %1$s بعد الموافقة عليه</string>
@@ -232,5 +225,13 @@
     <string name="list_settings_published_status">منشورة ✓</string>
     <string name="list_settings_ranked_status">في الترتيبات ✓</string>
     <string name="list_settings_take_down">إزالة</string>
+    <string name="list_settings_publication">النشر</string>
+    <string name="list_settings_unpublished_changes">التغييرات لم تُنشر بعد</string>
+    <string name="board_published_short">تم النشر</string>
+    <string name="board_updated_short">تم التحديث</string>
+    <string name="board_ranked_short">في الترتيبات</string>
+    <string name="board_published_view">عرض</string>
+    <string name="board_publishing">جارٍ النشر…</string>
+    <string name="board_updating">جارٍ التحديث…</string>
     <string name="list_settings_manual_add_sub">صورتك أو اسم من عندك</string>
 </resources>

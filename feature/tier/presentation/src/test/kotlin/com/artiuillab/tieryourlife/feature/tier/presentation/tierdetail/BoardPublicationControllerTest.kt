@@ -392,6 +392,21 @@ class BoardPublicationControllerTest {
         assertEquals(0, h.recorded)
     }
 
+    // Danylo 16.11: what settings can put right opens them on the Publication row; the rest is still a dialog.
+    @Test
+    fun aRefusalPutRightInSettings_isSaidThere_notInADialog() = runTest {
+        for ((refusal, dialog) in listOf(PublishError.PictureRefused to false, PublishError.TooLarge to true)) {
+            val h = Harness(this, copy().copy(takenFrom = null, originVersion = null))
+            h.community.publishResult = Result.failure(PublishRefused(refusal))
+
+            h.controller.setPublic(public = true, asRanking = false, direct = true)
+            advanceUntilIdle()
+
+            assertEquals(refusal, h.errors.last())
+            assertEquals(if (dialog) refusal else null, h.controller.state.value.error)
+        }
+    }
+
     private class Harness(scope: CoroutineScope, board: TierList = copy(), account: Account = FakeAccountRepository.signedIn) {
         val repository = Boards(board)
         val community = Community()
@@ -400,9 +415,10 @@ class BoardPublicationControllerTest {
         var categoryRequests = 0
         var withdrawals = 0
         var recorded = 0
+        val errors = mutableListOf<PublishError?>()
         val controller = BoardPublicationController(
             repository, community, accounts, scope,
-            current = { visible }, busy = { _, _ -> }, error = {},
+            current = { visible }, busy = { _, _ -> }, error = { errors += it },
             wantsCategory = { categoryRequests++ },
             takeDown = {
                 withdrawals++

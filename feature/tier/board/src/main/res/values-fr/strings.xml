@@ -35,12 +35,8 @@
     <string name="list_settings_public_unverified">Google Play n’a pas pu confirmer cette installation, donc rien ne peut être publié depuis celle-ci.</string>
     <string name="list_settings_share">Partager en image</string>
     <string name="list_settings_share_sub">Une image de ce tableau, avec un lien vers l’app</string>
-    <string name="list_settings_see_in_community">Voir dans la Communauté</string>
-    <string name="list_settings_see_in_community_sub">Telle que les autres la voient, avec leurs classements et le lien</string>
     <string name="list_settings_original">Ouvrir l’original</string>
     <string name="list_settings_original_sub">La liste de la Communauté que vous avez classée</string>
-    <string name="list_settings_update_published">Version publiée</string>
-    <string name="list_settings_update_published_body">Renvoyer ce tableau, sous le même lien.</string>
     <string name="manual_dialog_add">Ajouter</string>
     <plurals name="manual_dialog_add_many">
         <item quantity="one">Ajouter %1$d élément</item>
@@ -63,7 +59,6 @@
     <string name="manual_dialog_replace_photo">Remplacer la photo</string>
     <string name="manual_dialog_title">Ajouter un élément</string>
     <string name="my_published_action_update">Mettre à jour</string>
-    <string name="my_published_behind">La version publiée est en retard sur ce tableau.</string>
     <string name="share_caption">%1$s — classé dans TierYourLife\n%2$s</string>
     <string name="share_footer">Fait avec TierYourLife</string>
     <string name="share_failed">Impossible de partager l’image</string>
@@ -164,8 +159,6 @@
     <string name="tier_detail_drop_unrank_dock">Déposez sur la réserve pour retirer du classement</string>
     <string name="tier_detail_content_description_play">Jouer</string>
     <string name="tier_detail_play_needs_cards">Il faut au moins 3 cartes pour jouer</string>
-    <string name="list_settings_anonymous">Publier anonymement</string>
-    <string name="list_settings_anonymous_body">Votre nom et votre photo ne sont pas affichés avec la liste. Elle reste à vous : vous seul pouvez la modifier ou la supprimer.</string>
     <string name="list_settings_propose_section">Proposer une rubrique</string>
     <string name="list_settings_category_waiting">En attente d’un modérateur</string>
     <string name="list_settings_moves_to">Passera dans %1$s une fois approuvée</string>
@@ -199,5 +192,13 @@
     <string name="list_settings_published_status">Publiée ✓</string>
     <string name="list_settings_ranked_status">Dans les classements ✓</string>
     <string name="list_settings_take_down">Retirer</string>
+    <string name="list_settings_publication">Publication</string>
+    <string name="list_settings_unpublished_changes">Modifications pas encore publiées</string>
+    <string name="board_published_short">Publiée</string>
+    <string name="board_updated_short">Mise à jour</string>
+    <string name="board_ranked_short">Dans les classements</string>
+    <string name="board_published_view">Voir</string>
+    <string name="board_publishing">Publication…</string>
+    <string name="board_updating">Mise à jour…</string>
     <string name="list_settings_manual_add_sub">Votre propre photo ou un nom</string>
 </resources>
