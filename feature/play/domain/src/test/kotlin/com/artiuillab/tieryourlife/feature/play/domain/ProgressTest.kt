@@ -51,4 +51,24 @@ class ProgressTest {
         assertEquals(4, progress(refining, history).played)
         assertFalse(total == 0)
     }
+
+    @Test
+    fun smart_isAboutTwoAndAHalfDuelsACard_neverMoreThanLosersStay() {
+        assertEquals(4, estimatedDuels(GameKind.Smart, 3))
+        assertEquals(15, estimatedDuels(GameKind.Smart, 7))
+        assertEquals(100, estimatedDuels(GameKind.Smart, 40))
+        assertEquals(375, estimatedDuels(GameKind.Smart, 150))
+    }
+
+    @Test
+    fun smart_plansWhatItWillAsk_andKeepsNoRounds() {
+        val spec = GameSpec(GameKind.Smart, 6, seed = 1, tiers = 3)
+        val history = listOf(Outcome(0, 1, winner = 0), Outcome(2, 3, winner = null))
+
+        val progress = progress(spec, history)
+
+        assertEquals(2, progress.played)
+        assertEquals("the first round of three and the second", 6, progress.planned)
+        assertEquals(0, progress.round)
+    }
 }

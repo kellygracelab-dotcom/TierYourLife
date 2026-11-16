@@ -5,9 +5,11 @@
         <item quantity="other">「%2$s」のカード %1$d 枚</item>
     </plurals>
     <string name="play_choose_cards">カードを選ぶ</string>
+    <string name="play_game_smart">スマート</string>
     <string name="play_game_swiss">敗者も残る</string>
     <string name="play_game_hill">勝ち抜き</string>
     <string name="play_game_bracket">トーナメント</string>
+    <string name="play_game_smart_line">まだティアが変わりうるカードだけを尋ねます。ずっと少ない対戦で、ほぼ同じティアになります。</string>
     <string name="play_game_swiss_line">全員が毎ラウンド対戦します。時間はかかりますが、ティアを埋めるには最適です。</string>
     <string name="play_game_hill_line">勝者が残り、次のカードと対戦します。速いですが、ティアはおおまかになります。</string>
     <string name="play_game_bracket_line">ペアで対戦し、最後のひとつになるまで勝者が進みます。速いですが、ティアはおおまかになります。</string>

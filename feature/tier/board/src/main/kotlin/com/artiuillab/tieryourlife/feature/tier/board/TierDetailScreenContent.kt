@@ -25,7 +25,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
@@ -75,6 +74,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
+import com.artiuillab.tieryourlife.core.theme.ui.ReplacingSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.text
 import com.artiuillab.tieryourlife.feature.tier.board.components.BoardIndex
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.FloatingDragTile
@@ -383,6 +383,7 @@ private fun TierScreenBody(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val snackbar = remember(snackbarHostState, coroutineScope) { ReplacingSnackbar(snackbarHostState, coroutineScope) }
     val resources = LocalResources.current
     val deletedMessageTemplate = stringResource(R.string.tier_detail_item_removed)
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
@@ -393,7 +394,7 @@ private fun TierScreenBody(
 
     LaunchedEffect(Unit) {
         userMessages.collect { message ->
-            snackbarHostState.showSnackbar(
+            snackbar.show(
                 when (message) {
                     UserMessage.PublishedAsRanking -> publishedAsRankingMessage
                     UserMessage.PublishedUnderReview -> underReviewMessage
@@ -405,45 +406,20 @@ private fun TierScreenBody(
     }
     val onConsumeAddedItem = actions.onConsumeAddedItem
     val onUndoAddedItem = actions.onUndoAddedItem
-    var pendingAddedItemIds by remember { mutableStateOf(emptyList<Long>()) }
 
     LaunchedEffect(addedItemIds) {
-        if (addedItemIds.isEmpty()) return@LaunchedEffect
-        pendingAddedItemIds = addedItemIds
-        onConsumeAddedItem()
-    }
-
-    LaunchedEffect(pendingAddedItemIds) {
-        val itemIds = pendingAddedItemIds
+        val itemIds = addedItemIds
         if (itemIds.isEmpty()) return@LaunchedEffect
-        snackbarHostState.currentSnackbarData?.dismiss()
+        onConsumeAddedItem()
         val message = resources.getQuantityString(R.plurals.tier_detail_items_added_to_pool, itemIds.size, itemIds.size)
-        val result = snackbarHostState.showSnackbar(
-            message = message,
-            actionLabel = undoLabel,
-            duration = SnackbarDuration.Short,
-        )
-        pendingAddedItemIds = emptyList()
-        if (result == SnackbarResult.ActionPerformed) {
-            onUndoAddedItem(itemIds)
-        }
+        snackbar.show(message, undoLabel) { if (it == SnackbarResult.ActionPerformed) onUndoAddedItem(itemIds) }
     }
 
     val deleteAndAnnounce: (Long) -> Unit = { itemId ->
         val title = list.tiers.flatMap { it.items }.firstOrNull { it.id == itemId }?.title.orEmpty()
         onDeleteItem(itemId)
-        snackbarHostState.currentSnackbarData?.dismiss()
-        coroutineScope.launch {
-            val result = snackbarHostState.showSnackbar(
-                message = String.format(deletedMessageTemplate, title),
-                actionLabel = undoLabel,
-                duration = SnackbarDuration.Short,
-            )
-            if (result == SnackbarResult.ActionPerformed) {
-                onRestoreItem(itemId)
-            } else {
-                onForgetDeletedItem(itemId)
-            }
+        snackbar.show(String.format(deletedMessageTemplate, title), undoLabel) { result ->
+            if (result == SnackbarResult.ActionPerformed) onRestoreItem(itemId) else onForgetDeletedItem(itemId)
         }
     }
 
@@ -456,13 +432,7 @@ private fun TierScreenBody(
             val position = rankedTiers.indexOfFirst { it.id == tierId }
             val itemIds = tier.items.map { it.id }
             onDeleteTierToPool(tierId)
-            snackbarHostState.currentSnackbarData?.dismiss()
-            coroutineScope.launch {
-                val result = snackbarHostState.showSnackbar(
-                    message = String.format(tierDeletedMessageTemplate, tier.label),
-                    actionLabel = undoLabel,
-                    duration = SnackbarDuration.Short,
-                )
+            snackbar.show(String.format(tierDeletedMessageTemplate, tier.label), undoLabel) { result ->
                 if (result == SnackbarResult.ActionPerformed) {
                     onRestoreTier(tier.label, tier.caption, tier.colorLight, tier.colorDark, position, itemIds)
                 }

@@ -11,14 +11,16 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
+import com.artiuillab.tieryourlife.core.theme.ui.AutoAwesomeIcon
 import com.artiuillab.tieryourlife.core.theme.ui.VectorIcon
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import kotlin.math.cos
 import kotlin.math.sin
 
-/** Each game's picture: two arrows round for Swiss, a crown for the hill, a bracket for the bracket. */
+/** Each game's picture: sparkles for smart, two arrows round for Swiss, a crown for the hill, a bracket for the bracket. */
 @Composable
 internal fun GameIcon(kind: GameKind, iconSize: Dp, color: Color) = when (kind) {
+    GameKind.Smart -> AutoAwesomeIcon(iconSize, color)
     GameKind.Swiss -> AutorenewIcon(iconSize, color)
     GameKind.Hill -> CrownIcon(iconSize, color)
     GameKind.Bracket -> BracketIcon(iconSize, color)

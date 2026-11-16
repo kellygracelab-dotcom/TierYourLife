@@ -11,10 +11,23 @@ enum class GameKind {
 
     /** Swiss rounds: a lost duel knocks nobody out, cards with equal records meet. */
     Swiss,
+
+    /** Swiss's first rounds, then only pairs across the tiers' edges, until they stop moving. */
+    Smart,
 }
 
 /** What a game is: which, over how many cards, from which shuffle, and whether close calls are asked at the end. */
-data class GameSpec(val kind: GameKind, val count: Int, val seed: Int, val refine: Boolean = false)
+data class GameSpec(
+    val kind: GameKind,
+    val count: Int,
+    val seed: Int,
+    val refine: Boolean = false,
+    /**
+     * Smart only: the tiers the cards are cut into, fixed when the game starts,
+     * so the next pair never hangs on the board (the count itself to order one tier).
+     */
+    val tiers: Int? = null,
+)
 
 /** One asked duel: the pair shown, and who won it, or null when it was skipped. */
 data class Outcome(val first: Int, val second: Int, val winner: Int?) {
@@ -54,6 +67,8 @@ data class GameProgress(
     /** Close calls fixed for refining, and how many of them have been asked; both 0 until refining starts. */
     val refineTotal: Int = 0,
     val refineAsked: Int = 0,
+    /** Duels the main game should take in all, as it stands now: exact for hill and bracket, at most for the others. */
+    val planned: Int = played,
 )
 
 fun progress(spec: GameSpec, history: List<Outcome>): GameProgress {
@@ -63,10 +78,12 @@ fun progress(spec: GameSpec, history: List<Outcome>): GameProgress {
     val refineTotal = if (over && spec.refine) refinePairs(spec.count, history.take(main.used)).size else 0
     return GameProgress(
         played = main.used,
-        round = if (over) 0 else main.round,
+        // Smart's batches are no rounds anybody counts: the account keeps 0 for it.
+        round = if (over || spec.kind == GameKind.Smart) 0 else main.round,
         mainOver = over,
         refineTotal = refineTotal,
         refineAsked = minOf(history.size - main.used, refineTotal),
+        planned = if (over) main.used else main.planned,
     )
 }
 
@@ -77,10 +94,14 @@ private fun mainProgress(spec: GameSpec, history: List<Outcome>): Progress = whe
     GameKind.Hill -> hillPairs(spec, history)
     GameKind.Bracket -> bracketPairs(spec, history)
     GameKind.Swiss -> swissPairs(spec, history)
+    GameKind.Smart -> smartPairs(spec, history)
 }
 
-/** How many duels the main game took, the next one if it is not over, and in Swiss the round that one is in. */
-private data class Progress(val used: Int, val next: Pair<Int, Int>?, val round: Int = 0)
+/**
+ * How many duels the main game took, the next one if it is not over, the
+ * round that one is in, and how many the game should take in all.
+ */
+internal data class Progress(val used: Int, val next: Pair<Int, Int>?, val round: Int = 0, val planned: Int = used)
 
 private fun hillPairs(spec: GameSpec, history: List<Outcome>): Progress {
     val order = shuffled(spec.count, spec.seed)
@@ -92,7 +113,7 @@ private fun hillPairs(spec: GameSpec, history: List<Outcome>): Progress {
         challenger++
     }
     val used = challenger - 1
-    return Progress(used, if (challenger < order.size) champion to order[challenger] else null)
+    return Progress(used, if (challenger < order.size) champion to order[challenger] else null, planned = order.size - 1)
 }
 
 private fun bracketPairs(spec: GameSpec, history: List<Outcome>): Progress {
@@ -101,14 +122,14 @@ private fun bracketPairs(spec: GameSpec, history: List<Outcome>): Progress {
     while (round.size > 1) {
         val next = mutableListOf<Int>()
         for (at in 0 until round.size - 1 step 2) {
-            val outcome = history.getOrNull(used) ?: return Progress(used, round[at] to round[at + 1])
+            val outcome = history.getOrNull(used) ?: return Progress(used, round[at] to round[at + 1], planned = spec.count - 1)
             next += outcome.goesOn
             used++
         }
         if (round.size % 2 == 1) next += round.last()
         round = next
     }
-    return Progress(used, null)
+    return Progress(used, null, planned = spec.count - 1)
 }
 
 /** ceil(log2 n) + 2 rounds, counted in integers: the smallest r with 2^r >= n, plus two. */
@@ -117,18 +138,20 @@ fun swissRounds(count: Int): Int = (Int.SIZE_BITS - Integer.numberOfLeadingZeros
 private const val EXTRA_SWISS_ROUNDS = 2
 
 private fun swissPairs(spec: GameSpec, history: List<Outcome>): Progress {
+    val rounds = swissRounds(spec.count)
     var used = 0
-    var next: Pair<Int, Int>? = null
-    var round = 0
-    while (next == null && round < swissRounds(spec.count)) {
+    for (round in 0 until rounds) {
         val pairs = swissRound(spec.count, history.take(used))
         if (pairs.isEmpty()) break
         val answered = minOf(pairs.size, history.size - used)
+        val next = pairs.getOrNull(answered)
+        if (next != null) {
+            val planned = used + pairs.size + (rounds - round - 1) * (spec.count / 2)
+            return Progress(used + answered, next, round + 1, planned)
+        }
         used += answered
-        next = pairs.getOrNull(answered)
-        round++
     }
-    return Progress(used, next, round)
+    return Progress(used, null)
 }
 
 /**

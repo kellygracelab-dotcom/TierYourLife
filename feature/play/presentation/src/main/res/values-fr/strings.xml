@@ -7,9 +7,11 @@
         <item quantity="other">%1$d cartes de %2$s</item>
     </plurals>
     <string name="play_choose_cards">Choisir les cartes</string>
+    <string name="play_game_smart">Choix malin</string>
     <string name="play_game_swiss">Les perdants restent</string>
     <string name="play_game_hill">Roi de la colline</string>
     <string name="play_game_bracket">Tableau</string>
+    <string name="play_game_smart_line">Ne demande que les cartes qui pourraient encore changer de rang. Presque les mêmes rangs en bien moins de duels.</string>
     <string name="play_game_swiss_line">Tout le monde joue à chaque manche. Plus lent, idéal pour remplir les rangs.</string>
     <string name="play_game_hill_line">Le gagnant reste et affronte la carte suivante. Rapide ; les rangs restent approximatifs.</string>
     <string name="play_game_bracket_line">Les paires s’affrontent, les gagnants avancent jusqu’à ce qu’il en reste une. Rapide ; les rangs restent approximatifs.</string>

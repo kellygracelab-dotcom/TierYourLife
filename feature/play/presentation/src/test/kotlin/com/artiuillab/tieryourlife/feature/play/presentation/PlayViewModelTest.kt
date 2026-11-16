@@ -8,7 +8,6 @@ import com.artiuillab.tieryourlife.feature.play.domain.GameSpec
 import com.artiuillab.tieryourlife.feature.play.domain.Outcome
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGames
-import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -159,7 +158,8 @@ class PlayViewModelTest {
         viewModel.duel.quit()
 
         val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
-        assertEquals(PlayNotice.GameSaved(2, estimatedDuels(GameKind.Swiss, 6)), said.notice)
+        // Smart, the default, plans its first round of three and one more: six.
+        assertEquals(PlayNotice.GameSaved(2, 6), said.notice)
         assertEquals(2, games.games.getValue(KEY).history.size)
         assertEquals(null, games.games.getValue(KEY).history[1].winner)
         assertTrue(KEY in viewModel.state.value.saved)

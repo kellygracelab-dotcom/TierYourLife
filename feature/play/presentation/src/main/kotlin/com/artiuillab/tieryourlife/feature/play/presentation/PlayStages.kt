@@ -55,8 +55,12 @@ internal fun quickCounts(available: Int): List<Int> =
 /** Duels a game will take: the estimate while it runs, what it took once the main game is over. */
 internal fun totalOf(game: SavedGame): Int {
     val progress = progress(game.spec, game.history)
-    return if (progress.mainOver) progress.played else estimatedDuels(game.spec.kind, game.spec.count)
+    return if (progress.mainOver) progress.played else runningTotal(game.spec.kind, game.spec.count, progress.planned)
 }
+
+/** Smart's length follows its answers, so it says what it plans as it stands; the others keep their estimate. */
+private fun runningTotal(kind: GameKind, count: Int, planned: Int): Int =
+    if (kind == GameKind.Smart) planned else estimatedDuels(kind, count)
 
 internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
     val cards = board.cardsIn(null)
@@ -88,7 +92,7 @@ internal fun stageOf(session: Session): PlayStage.Dueling? {
             first = session.card(pair.first),
             second = session.card(pair.second),
             number = if (refining) progress.refineAsked + 1 else progress.played + 1,
-            total = if (refining) progress.refineTotal else estimatedDuels(spec.kind, spec.count),
+            total = if (refining) progress.refineTotal else runningTotal(spec.kind, spec.count, progress.planned),
             round = progress.round,
             rounds = if (spec.kind == GameKind.Swiss) swissRounds(spec.count) else 0,
             refining = refining,

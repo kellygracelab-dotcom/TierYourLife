@@ -114,7 +114,7 @@ class PlayViewModel @Inject constructor(
         val request = request ?: return
         if (stage != PlayStage.Closed) return
         val groups = groupsOf(request.board)
-        val shownKind = lastKind ?: GameKind.Swiss
+        val shownKind = lastKind ?: GameKind.Smart
         stage = PlayStage.Picking(
             Picker(
                 title = request.board.title,
@@ -306,7 +306,7 @@ class PlayViewModel @Inject constructor(
         val available = request.board.cardsIn(null).associateBy { it.id }
         val cards = ids.distinct().mapNotNull { available[it] }
         if (cards.size < MIN_PLAY_CARDS) return
-        val spec = GameSpec(kind, cards.size, seeds())
+        val spec = GameSpec(kind, cards.size, seeds(), tiers = smartTiers(kind, request.board, keepTier, cards.size))
         val game = SavedGame(
             spec = spec,
             ids = cards.map { it.id },
@@ -483,3 +483,14 @@ class PlayViewModel @Inject constructor(
 }
 
 private fun Session.withHistory(history: List<Outcome>) = copy(game = game.copy(history = history))
+
+/**
+ * The tiers a smart game cuts its cards into, fixed as it starts: the board's
+ * ranked tiers (the pool is none), or every card its own place when one tier is
+ * being ordered. Null in the other games, which do not need it.
+ */
+internal fun smartTiers(kind: GameKind, board: TierList, keepTier: Boolean, count: Int): Int? = when {
+    kind != GameKind.Smart -> null
+    keepTier -> count
+    else -> board.tiers.count { !it.isPool }.coerceIn(1, maxOf(1, count))
+}

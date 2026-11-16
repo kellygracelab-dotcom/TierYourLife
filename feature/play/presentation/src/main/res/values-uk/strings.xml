@@ -8,9 +8,11 @@
         <item quantity="other">%1$d картки зі списку «%2$s»</item>
     </plurals>
     <string name="play_choose_cards">Вибрати картки</string>
+    <string name="play_game_smart">Розумний вибір</string>
     <string name="play_game_swiss">Програвші лишаються</string>
     <string name="play_game_hill">Цар гори</string>
     <string name="play_game_bracket">Сітка</string>
+    <string name="play_game_smart_line">Питає лише про картки, які ще можуть змінити рівень. Майже ті самі рівні за значно меншу кількість дуелей.</string>
     <string name="play_game_swiss_line">Кожен грає в кожному раунді. Довше, зате найкраще заповнює рівні.</string>
     <string name="play_game_hill_line">Переможець лишається й зустрічає наступну картку. Швидко; рівні виходять приблизні.</string>
     <string name="play_game_bracket_line">Грають пари, переможці йдуть далі, доки не лишиться один. Швидко; рівні виходять приблизні.</string>

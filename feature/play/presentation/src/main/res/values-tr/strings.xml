@@ -6,9 +6,11 @@
         <item quantity="other">%2$s listesinden %1$d kart</item>
     </plurals>
     <string name="play_choose_cards">Kart seç</string>
+    <string name="play_game_smart">Akıllı seçim</string>
     <string name="play_game_swiss">Kaybeden kalır</string>
     <string name="play_game_hill">Tepenin kralı</string>
     <string name="play_game_bracket">Eleme tablosu</string>
+    <string name="play_game_smart_line">Yalnızca seviyesi hâlâ değişebilecek kartları sorar. Çok daha az düelloyla neredeyse aynı seviyeler.</string>
     <string name="play_game_swiss_line">Herkes her turda oynar. Daha yavaş, seviyeleri doldurmak için en iyisi.</string>
     <string name="play_game_hill_line">Kazanan kalır ve sıradaki kartla karşılaşır. Hızlı; seviyeler kabaca çıkar.</string>
     <string name="play_game_bracket_line">Çiftler oynar, kazananlar tek kart kalana dek ilerler. Hızlı; seviyeler kabaca çıkar.</string>
