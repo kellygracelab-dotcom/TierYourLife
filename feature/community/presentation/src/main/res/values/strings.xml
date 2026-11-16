@@ -298,8 +298,9 @@
     <string name="community_started_from_theirs_unnamed">Your version starts from this ranking</string>
     <string name="community_replaced_yours">Replaced your version with %1$s’s ranking</string>
     <string name="community_replaced_yours_unnamed">Replaced your version with this ranking</string>
-    <string name="community_replace_yours_ask">Start from %1$s’s ranking? Your version will be replaced.</string>
-    <string name="community_replace_yours_ask_unnamed">Start from this ranking? Your version will be replaced.</string>
+    <string name="community_replace_yours_ask">Start from %1$s’s ranking?</string>
+    <string name="community_replace_yours_ask_unnamed">Start from this ranking?</string>
+    <string name="community_replace_yours_body">Your version will be replaced.</string>
     <string name="community_action_replace">Replace</string>
     <string name="community_action_undo">Undo</string>
     <string name="community_picture_credits">Picture credits</string>
