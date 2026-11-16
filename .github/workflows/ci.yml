@@ -271,12 +271,12 @@ jobs:
           retention-days: 7
 
   instrumentation:
-    name: Instrumentation tests
+    name: Instrumentation tests (${{ matrix.api-level }}, ${{ matrix.part }})
     needs: changes
     # A skipped job counts as passed, so a docs-only PR is not left waiting.
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
-    # A run takes about ten minutes. One that is still going at thirty has hung,
+    # A run takes about seven minutes. One that is still going at thirty has hung,
     # and nothing a hung run does in its second half-hour is worth waiting for.
     timeout-minutes: 30
 
@@ -287,6 +287,9 @@ jobs:
         # differ in ways this app touches — scoped storage, per-app language,
         # ImageDecoder — so a pass on one says little about the other.
         api-level: [26, 34]
+        # Every module's tests on each level, in two halves on two emulators:
+        # the modules instrumentation.sh names, and all the rest.
+        part: [named, rest]
 
     steps:
       - name: Checkout
@@ -327,12 +330,12 @@ jobs:
           disk-size: 4096M
           # The package verifier occasionally holds the install long enough for
           # ddmlib to give up; nothing here needs verifying.
-          script: bash .github/scripts/instrumentation.sh
+          script: bash .github/scripts/instrumentation.sh ${{ matrix.part }}
 
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: instrumentation-reports-api-${{ matrix.api-level }}
+          name: instrumentation-reports-api-${{ matrix.api-level }}-${{ matrix.part }}
           path: '**/build/reports/androidTests/**'
           retention-days: 7
