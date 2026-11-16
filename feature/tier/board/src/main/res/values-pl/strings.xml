@@ -204,4 +204,11 @@
         <item quantity="many">zostało %d</item>
         <item quantity="other">zostało %d</item>
     </plurals>
+    <string name="board_publish">Opublikuj</string>
+    <string name="board_publish_update">Aktualizuj</string>
+    <string name="board_publish_ranking">Pokaż w rankingach</string>
+    <string name="list_settings_published_status">Opublikowano ✓</string>
+    <string name="list_settings_ranked_status">W rankingach ✓</string>
+    <string name="list_settings_take_down">Usuń z publikacji</string>
+    <string name="list_settings_manual_add_sub">Własne zdjęcie lub nazwa</string>
 </resources>

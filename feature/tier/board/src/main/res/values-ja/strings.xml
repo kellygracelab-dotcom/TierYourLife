@@ -171,4 +171,11 @@
     <plurals name="one_by_one_left">
         <item quantity="other">残り%d枚</item>
     </plurals>
+    <string name="board_publish">公開</string>
+    <string name="board_publish_update">更新</string>
+    <string name="board_publish_ranking">ランキングに表示</string>
+    <string name="list_settings_published_status">公開中 ✓</string>
+    <string name="list_settings_ranked_status">ランキングに表示中 ✓</string>
+    <string name="list_settings_take_down">取り下げる</string>
+    <string name="list_settings_manual_add_sub">自分の写真や名前</string>
 </resources>

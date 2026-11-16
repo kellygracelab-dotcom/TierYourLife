@@ -183,4 +183,11 @@
         <item quantity="one">%d left</item>
         <item quantity="other">%d left</item>
     </plurals>
+    <string name="board_publish">Publish</string>
+    <string name="board_publish_update">Update</string>
+    <string name="board_publish_ranking">Show in Rankings</string>
+    <string name="list_settings_published_status">Published ✓</string>
+    <string name="list_settings_ranked_status">In Rankings ✓</string>
+    <string name="list_settings_take_down">Take it down</string>
+    <string name="list_settings_manual_add_sub">Your own photo or name</string>
 </resources>

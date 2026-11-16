@@ -102,6 +102,8 @@ sealed interface CommunityListUiState {
         val gameStep: GameStep? = null,
         /** The reader's own ranking is in this list's Rankings: the menu updates or removes it rather than showing it. */
         val rankingShown: Boolean = false,
+        /** A move on Theirs over a Mine of one's own, waiting for Replace or Cancel; whose ranking it would start from. */
+        val replaceAsk: ReplaceAsk? = null,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine
@@ -134,6 +136,9 @@ sealed interface CommunityListUiState {
 
     data object Error : CommunityListUiState
 }
+
+/** "Start from [name]'s ranking? Your version will be replaced." */
+data class ReplaceAsk(val name: String?)
 
 data class CoverCredit(val imageUrl: String, val attribution: PictureAttribution)
 

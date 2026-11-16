@@ -45,14 +45,15 @@ class PoolReorderTest {
 
         composeRule.onNodeWithTag(TierDetailTestTags.DROP_SLOT).assertExists()
         assertEquals("the next card closes the gap", home.left, bounds(tile(1)).left, 1f)
-        assertEquals("the slot sits where the third card was", bounds(tile(3)).left + home.width + STRIP_GAP_PX, bounds(TierDetailTestTags.DROP_SLOT).left, 2f)
+        // Its centre is past the fourth card's near edge, so it has passed that card too.
+        assertEquals("the slot sits after the fourth card", bounds(tile(4)).left + home.width + STRIP_GAP_PX, bounds(TierDetailTestTags.DROP_SLOT).left, 2f)
         drop()
 
-        assertEquals(listOf(Triple(POOL_FIRST, POOL, 3)), moves)
+        assertEquals(listOf(Triple(POOL_FIRST, POOL, 4)), moves)
     }
 
     @Test
-    fun inTheStrip_aCardCarriedLeft_landsAfterTheCardWhoseMiddleItPassed() {
+    fun inTheStrip_aCardCarriedLeft_landsBeforeTheCardWhoseFarEdgeItReached() {
         setBoard()
         val first = bounds(tile(1))
 
@@ -60,11 +61,17 @@ class PoolReorderTest {
         moveTo(Offset(first.right - 50f, first.center.y))
 
         composeRule.onNodeWithTag(TierDetailTestTags.DROP_SLOT).assertExists()
-        assertEquals("the card after the slot makes room", bounds(TierDetailTestTags.DROP_SLOT).right + STRIP_GAP_PX, bounds(tile(2)).left, 2f)
+        assertEquals("the card after the slot makes room", bounds(TierDetailTestTags.DROP_SLOT).right + STRIP_GAP_PX, bounds(tile(1)).left, 2f)
         drop()
 
-        assertEquals(listOf(Triple(POOL_FIRST + 5, POOL, 2)), moves)
+        assertEquals(listOf(Triple(POOL_FIRST + 5, POOL, 1)), moves)
     }
+
+    @Test
+    fun inTheStrip_halfACardRight_movesItOnePlace_andLessKeepsItsPlace() = carriedHalfACard(push = 1f, lands = 3)
+
+    @Test
+    fun inTheStrip_halfACardLeft_movesItOnePlace_andLessKeepsItsPlace() = carriedHalfACard(push = -1f, lands = 1)
 
     @Test
     fun aCardFromARow_opensASlotInTheStripAndLandsThere() {
@@ -105,6 +112,22 @@ class PoolReorderTest {
         drop()
 
         assertEquals(listOf(Triple(POOL_FIRST, POOL, 3)), moves)
+    }
+
+    /** The third card carried by half a card and a gap, the same distance both ways: one place over; a little less, none. */
+    private fun carriedHalfACard(push: Float, lands: Int) {
+        setBoard()
+        val home = bounds(tile(2))
+        liftByPull(tile(2))
+        val reach = home.width / 2f + STRIP_GAP_PX
+
+        moveTo(Offset(home.center.x + push * (reach - STRIP_GAP_PX - 4f), home.center.y))
+        assertEquals("short of the next card, it keeps its place", home.left, bounds(TierDetailTestTags.DROP_SLOT).left, 2f)
+
+        moveTo(Offset(home.center.x + push * (reach + 4f), home.center.y))
+        drop()
+
+        assertEquals(listOf(Triple(POOL_FIRST + 2, POOL, lands)), moves)
     }
 
     private fun liftByPull(tag: String) {

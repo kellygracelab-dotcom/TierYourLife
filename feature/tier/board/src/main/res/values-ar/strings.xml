@@ -226,4 +226,11 @@
         <item quantity="many">بقيت %d بطاقة</item>
         <item quantity="other">بقيت %d بطاقة</item>
     </plurals>
+    <string name="board_publish">نشر</string>
+    <string name="board_publish_update">تحديث</string>
+    <string name="board_publish_ranking">عرض في الترتيبات</string>
+    <string name="list_settings_published_status">منشورة ✓</string>
+    <string name="list_settings_ranked_status">في الترتيبات ✓</string>
+    <string name="list_settings_take_down">إزالة</string>
+    <string name="list_settings_manual_add_sub">صورتك أو اسم من عندك</string>
 </resources>

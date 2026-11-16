@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -89,11 +90,14 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUM
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PlayButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolColumn
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PublishButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.everyCardPlaced
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishingOf
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberOneByOne
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
@@ -306,6 +310,8 @@ private fun TierScreenBody(
     var listSettingsVisible by rememberSaveable { mutableStateOf(false) }
 
     BackHandler(enabled = listSettingsVisible) { listSettingsVisible = false }
+    // A publish from the bar that needs a section asks for it where it is chosen.
+    LaunchedEffect(actions.categoryWanted) { if (actions.categoryWanted) listSettingsVisible = true }
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -338,6 +344,7 @@ private fun TierScreenBody(
             onSetAnonymous = actions.onSetAnonymous,
             publishedIsBehind = actions.publishedIsBehind,
             onUpdatePublished = actions.onUpdatePublished,
+            onPublish = actions.onPublish,
             onSetCategory = actions.onSetCategory,
             onCategoryNotChosen = actions.onCategoryNotChosen,
             onProposeSection = actions.onProposeSection,
@@ -347,6 +354,10 @@ private fun TierScreenBody(
             onAddCards = {
                 listSettingsVisible = false
                 actions.onAddClick?.invoke()
+            },
+            onManualAdd = {
+                listSettingsVisible = false
+                onManualAddClick()
             },
             onShare = {
                 scope.launch {
@@ -537,6 +548,7 @@ private fun TierScreenBody(
                 play = actions.onPlay?.takeUnless { glanceable }?.let { onPlay ->
                     PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
                 },
+                publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - BAR_BESIDE_PUBLISH)?.takeUnless { glanceable || readOnly },
             )
         }
         val board: @Composable (Modifier) -> Unit = { boardModifier ->
@@ -862,4 +874,20 @@ private fun RowChangeTick(dragController: TierDragController) {
         }
         last[0] = if (lifted) hovered else null
     }
+}
+
+/** Back, Play and the overflow, the bar's padding, and a few letters of the title. */
+private val BAR_BESIDE_PUBLISH = 48.dp * 3 + 16.dp + 56.dp
+
+private fun publishButton(list: TierList, actions: TierDetailActions, narrow: Boolean, room: Dp): PublishButton? {
+    val onPublish = actions.onPublish ?: return null
+    val kind = publishingOf(list, actions.publishedIsBehind) ?: return null
+    return PublishButton(
+        kind = kind,
+        primary = everyCardPlaced(list),
+        narrow = narrow,
+        room = room,
+        busy = actions.publishing,
+        onClick = { onPublish(kind) },
+    )
 }

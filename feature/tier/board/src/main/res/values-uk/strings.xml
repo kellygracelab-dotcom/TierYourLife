@@ -204,4 +204,11 @@
         <item quantity="many">лишилося %d</item>
         <item quantity="other">лишилося %d</item>
     </plurals>
+    <string name="board_publish">Опублікувати</string>
+    <string name="board_publish_update">Оновити</string>
+    <string name="board_publish_ranking">Показати в рейтингах</string>
+    <string name="list_settings_published_status">Опубліковано ✓</string>
+    <string name="list_settings_ranked_status">У рейтингах ✓</string>
+    <string name="list_settings_take_down">Зняти</string>
+    <string name="list_settings_manual_add_sub">Власне фото або назва</string>
 </resources>

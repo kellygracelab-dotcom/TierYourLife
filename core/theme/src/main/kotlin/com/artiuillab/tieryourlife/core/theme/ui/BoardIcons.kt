@@ -70,3 +70,39 @@ fun PlayArrowIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     drawPath(triangle, color)
     drawPath(triangle, color, style = Stroke(1.6f * scale, join = StrokeJoin.Round))
 }
+
+/** An arrow up out of a tray: send the board out for others to see. */
+@Composable
+fun PublishIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.8f * scale
+    drawLine(color, Offset(12f * scale, 15f * scale), Offset(12f * scale, 4.5f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(7.5f * scale, 9f * scale), Offset(12f * scale, 4.5f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(16.5f * scale, 9f * scale), Offset(12f * scale, 4.5f * scale), stroke, StrokeCap.Round)
+    val tray = Path().apply {
+        moveTo(4.5f * scale, 14f * scale)
+        lineTo(4.5f * scale, 19.5f * scale)
+        lineTo(19.5f * scale, 19.5f * scale)
+        lineTo(19.5f * scale, 14f * scale)
+    }
+    drawPath(tray, color, style = Stroke(stroke, cap = StrokeCap.Round, join = StrokeJoin.Round))
+}
+
+/** A cloud with an arrow up: send the published copy again. */
+@Composable
+fun CloudUploadIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = 1.7f * scale
+    val cloud = Path().apply {
+        moveTo(7f * scale, 18.5f * scale)
+        cubicTo(4f * scale, 18.5f * scale, 2.5f * scale, 16.5f * scale, 2.5f * scale, 14.5f * scale)
+        cubicTo(2.5f * scale, 12.3f * scale, 4.2f * scale, 10.6f * scale, 6.3f * scale, 10.5f * scale)
+        cubicTo(7f * scale, 7.6f * scale, 9.3f * scale, 5.5f * scale, 12f * scale, 5.5f * scale)
+        cubicTo(15.1f * scale, 5.5f * scale, 17.5f * scale, 7.9f * scale, 17.7f * scale, 10.9f * scale)
+        cubicTo(19.8f * scale, 11.1f * scale, 21.5f * scale, 12.7f * scale, 21.5f * scale, 14.8f * scale)
+        cubicTo(21.5f * scale, 16.9f * scale, 19.8f * scale, 18.5f * scale, 17.7f * scale, 18.5f * scale)
+        close()
+    }
+    drawPath(cloud, color, style = Stroke(stroke, join = StrokeJoin.Round))
+    drawLine(color, Offset(12f * scale, 16f * scale), Offset(12f * scale, 10f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(9.5f * scale, 12.5f * scale), Offset(12f * scale, 10f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(14.5f * scale, 12.5f * scale), Offset(12f * scale, 10f * scale), stroke, StrokeCap.Round)
+}

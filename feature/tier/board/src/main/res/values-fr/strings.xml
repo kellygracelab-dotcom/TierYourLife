@@ -193,4 +193,11 @@
         <item quantity="many">il en reste %d</item>
         <item quantity="other">il en reste %d</item>
     </plurals>
+    <string name="board_publish">Publier</string>
+    <string name="board_publish_update">Mettre à jour</string>
+    <string name="board_publish_ranking">Afficher dans les classements</string>
+    <string name="list_settings_published_status">Publiée ✓</string>
+    <string name="list_settings_ranked_status">Dans les classements ✓</string>
+    <string name="list_settings_take_down">Retirer</string>
+    <string name="list_settings_manual_add_sub">Votre propre photo ou un nom</string>
 </resources>

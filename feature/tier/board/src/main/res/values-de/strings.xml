@@ -182,4 +182,11 @@
         <item quantity="one">noch %d</item>
         <item quantity="other">noch %d</item>
     </plurals>
+    <string name="board_publish">Veröffentlichen</string>
+    <string name="board_publish_update">Aktualisieren</string>
+    <string name="board_publish_ranking">In den Ranglisten zeigen</string>
+    <string name="list_settings_published_status">Veröffentlicht ✓</string>
+    <string name="list_settings_ranked_status">In den Ranglisten ✓</string>
+    <string name="list_settings_take_down">Entfernen</string>
+    <string name="list_settings_manual_add_sub">Eigenes Foto oder eigener Name</string>
 </resources>
