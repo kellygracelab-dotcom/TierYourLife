@@ -11,6 +11,12 @@ unit/lint/static checks, screenshots/coverage, the R8 release AAB, proxy E2E and
 instrumentation on API26 and34. Docs-only skips require a gate receipt proving
 applicability. PR/fork/manual-CI events cannot obtain signing or Play credentials.
 
+The gates are separate jobs of ci.yml that run side by side; the release AAB is
+built in its own, beside the tests. ALWAYS_REQUIRED and REQUIRED_FOR_CODE in
+.github/scripts/play_internal/github.py name every one of them as GitHub shows
+it, and a policy test reads ci.yml and fails when the two differ or the final
+gate does not wait for a job. A skipped or missing required job is not a pass.
+
 ## External setup
 
 The coordinator owns GitHub/GCP/Play setup and secret entry. Never retrieve

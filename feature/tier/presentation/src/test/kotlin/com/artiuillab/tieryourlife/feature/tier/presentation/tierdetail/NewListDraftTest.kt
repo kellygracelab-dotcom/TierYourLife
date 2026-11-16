@@ -8,7 +8,9 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -25,9 +27,7 @@ class NewListDraftTest {
         val repository = FakeTierRepository(untitled())
         val viewModel = opened(repository, fresh = true)
 
-        val left = CompletableDeferred<Unit>()
-        viewModel.leave { left.complete(Unit) }
-        withTimeout(5_000) { left.await() }
+        viewModel.goBack()
 
         assertEquals(listOf("discarded 1"), repository.drafts)
     }
@@ -39,9 +39,7 @@ class NewListDraftTest {
 
         viewModel.renameTierList("Films")
         viewModel.screen.firstWithin { !it.untouchedDraft }
-        val left = CompletableDeferred<Unit>()
-        viewModel.leave { left.complete(Unit) }
-        withTimeout(5_000) { left.await() }
+        viewModel.goBack()
 
         assertEquals(listOf("kept 1"), repository.drafts)
     }
@@ -52,9 +50,7 @@ class NewListDraftTest {
         val viewModel = opened(repository, fresh = true)
 
         repository.setCategory(1, "film-tv")
-        val left = CompletableDeferred<Unit>()
-        viewModel.leave { left.complete(Unit) }
-        withTimeout(5_000) { left.await() }
+        viewModel.goBack()
 
         assertEquals(listOf("kept 1"), repository.drafts)
     }
@@ -70,6 +66,17 @@ class NewListDraftTest {
 
         assertEquals(true, left)
         assertEquals(emptyList<String>(), repository.drafts)
+    }
+
+    /**
+     * Back, pressed on the main thread as a phone presses it. From the test's own
+     * thread it could land between the board being marked kept and the keeping
+     * starting, and go back before the list was kept.
+     */
+    private suspend fun TierDetailViewModel.goBack() {
+        val left = CompletableDeferred<Unit>()
+        withContext(Dispatchers.Main) { leave { left.complete(Unit) } }
+        withTimeout(5_000) { left.await() }
     }
 
     private suspend fun opened(repository: FakeTierRepository, fresh: Boolean): TierDetailViewModel {

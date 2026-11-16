@@ -100,9 +100,16 @@ a value means updating the tests in the same commit. Tags are the test channel;
   Android's `Bundle` and would keep the test on an emulator. Each feature's
   `RouteFromHandleTest` (instrumented, real `NavHost`) holds the reader equal to
   `toRoute()`; add a case there when a route gains an argument.
+- **A ViewModel is called on the main thread**, as a screen calls it. A test that taps
+  between the ViewModel's own steps, or reads what it has just written, starts with
+  `= onMain { }` from `core:testing` in place of `runBlocking`, or wraps the one call in
+  `withContext(Dispatchers.Main)`. Called from the test's own thread, a tap can land in
+  the middle of what the ViewModel is doing, which no phone can do, and the test then
+  fails once in a hundred runs with nothing wrong in the code.
 - **Waiting for state** uses `firstWithin { }` from `core:testing`, never a bare
   `first { }`: a state that never comes fails that one test with the last value seen,
-  instead of hanging the instrumentation job for an hour.
+  instead of hanging the instrumentation job for an hour. Wait for the whole state
+  the test is about, or for the event that ends the work, not for its first sign.
 - **Fakes** of shared ports are open classes with quiet defaults; a test overrides only
   the calls it is about (`object : FakeCommunityRepository() { ... }`).
 - **Screenshots on the JVM:** `TierDetailScreenshotTest` draws the board with Robolectric
