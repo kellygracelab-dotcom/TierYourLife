@@ -165,6 +165,16 @@
     <string name="list_settings_public_changed_elsewhere">Diese Liste wurde auf einem anderen Gerät geändert. Versuche erneut, sie zu veröffentlichen.</string>
     <string name="list_settings_cover_adjust">Ausschnitt anpassen</string>
     <string name="list_settings_cover_adjust_sub">Welcher Teil des Bildes zu sehen ist</string>
+    <string name="one_by_one_toggle">Einzeln</string>
+    <string name="one_by_one_on">Eine Karte nach der anderen einordnen</string>
+    <string name="one_by_one_skip">Überspringen</string>
+    <string name="one_by_one_to_pool">In den Pool</string>
+    <string name="one_by_one_done">Alle Karten sind platziert</string>
+    <string name="one_by_one_exit">Beenden</string>
+    <plurals name="one_by_one_left">
+        <item quantity="one">noch %d</item>
+        <item quantity="other">noch %d</item>
+    </plurals>
     <string name="board_publish">Veröffentlichen</string>
     <string name="board_publish_update">Aktualisieren</string>
     <string name="board_publish_ranking">In den Ranglisten zeigen</string>

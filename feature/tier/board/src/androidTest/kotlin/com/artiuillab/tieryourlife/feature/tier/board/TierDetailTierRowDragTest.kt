@@ -11,7 +11,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -226,7 +225,7 @@ class TierDetailTierRowDragTest : TierDetailScreenTestBase() {
                     ).asTierList(),
                 )
             }
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(list),
                     actions = TierDetailActions(
@@ -268,7 +267,7 @@ class TierDetailTierRowDragTest : TierDetailScreenTestBase() {
                     ).asTierList(),
                 )
             }
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(list),
                     actions = TierDetailActions(

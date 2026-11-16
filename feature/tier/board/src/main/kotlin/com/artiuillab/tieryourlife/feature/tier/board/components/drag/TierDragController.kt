@@ -117,6 +117,8 @@ class TierDragController {
 
     fun registerRowBounds(tierId: Long, bounds: Rect) {
         rowBounds[DragTarget.Tier(tierId)] = bounds
+        // The list scrolls on its own near an edge: the rows move under a finger that does not.
+        refreshHover()
     }
 
     fun unregisterRowBounds(tierId: Long) {
@@ -355,7 +357,10 @@ class TierDragController {
 
 /**
  * Goes by the cards' keys, so the row may draw a slot and the lifted card where
- * it likes; [others] are the row's cards without the lifted one, in order.
+ * it likes; [others] are the row's cards without the lifted one, in order. The
+ * carried card's centre passes a card before the drawn slot at its far edge and
+ * one after it at its near edge, so the slot moves as soon as a card's room is
+ * reached and stays; with no slot drawn, by the cards' middles. The same as the web.
  */
 private fun insertionIndexInRow(state: LazyListState, fromStart: Float, others: List<Long>): Int {
     val info = state.layoutInfo
@@ -366,8 +371,15 @@ private fun insertionIndexInRow(state: LazyListState, fromStart: Float, others: 
     if (visible.isEmpty()) return 0
     // Offsets start after the padding before the first card; the finger is measured from the row's edge.
     val x = fromStart + info.viewportStartOffset
+    // A card's key is its id; anything else drawn in the row is the slot.
+    val slot = info.visibleItemsInfo.firstOrNull { it.key !is Long }
     for ((at, item) in visible) {
-        if (x < item.offset + item.size / 2f) return at
+        val passed = when {
+            slot == null -> x >= item.offset + item.size / 2f
+            item.offset < slot.offset -> x > item.offset + item.size
+            else -> x > item.offset
+        }
+        if (!passed) return at
     }
     return visible.last().first + 1
 }

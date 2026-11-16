@@ -54,7 +54,9 @@ import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.ItemTile
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalCardPicking
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTextCardRoom
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PickedOutline
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import kotlin.math.roundToInt
 
@@ -78,6 +80,7 @@ fun DraggableTile(
 ) {
     var rootPosition by remember { mutableStateOf(Offset.Zero) }
     var sizePx by remember { mutableStateOf(Offset.Zero) }
+    val picking = LocalCardPicking.current
     val isDragging = dragController.draggedPayload?.itemId == item.id ||
         dragController.returning?.payload?.itemId == item.id
     val haptic = LocalHapticFeedback.current
@@ -161,14 +164,20 @@ fun DraggableTile(
                         onDragCancel = { dragController.cancelDrag() },
                     )
                 }
-                .pointerInput(item.id) {
-                    detectDoubleTapOnPress { onDoubleTap(item.id) }
+                .pointerInput(item.id, picking) {
+                    // Ranking one at a time, a tap picks the card to move; a double tap still opens it.
+                    if (picking != null) {
+                        detectTapThenDoubleTap(onTap = { picking.onPick(item.id) }, onDoubleTap = { onDoubleTap(item.id) })
+                    } else {
+                        detectDoubleTapOnPress { onDoubleTap(item.id) }
+                    }
                 },
         ) {
             if (isDragging) {
                 Box(if (collapseWhileLifted && dragController.returning == null) Modifier.size(0.dp) else Modifier.size(width, height))
             } else {
                 ItemTile(item = item, width = width, height = height)
+                if (picking?.selectedId == item.id) PickedOutline(width, height)
             }
         }
     }

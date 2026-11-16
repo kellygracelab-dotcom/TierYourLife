@@ -155,6 +155,15 @@
     <string name="list_settings_public_changed_elsewhere">別の端末でリストが変更されました。もう一度公開してください。</string>
     <string name="list_settings_cover_adjust">位置を調整</string>
     <string name="list_settings_cover_adjust_sub">画像のどの部分を表示するか</string>
+    <string name="one_by_one_toggle">1枚ずつ</string>
+    <string name="one_by_one_on">1枚ずつランク付け</string>
+    <string name="one_by_one_skip">スキップ</string>
+    <string name="one_by_one_to_pool">プールへ</string>
+    <string name="one_by_one_done">すべてのカードを配置しました</string>
+    <string name="one_by_one_exit">終了</string>
+    <plurals name="one_by_one_left">
+        <item quantity="other">残り%d枚</item>
+    </plurals>
     <string name="board_publish">公開</string>
     <string name="board_publish_update">更新</string>
     <string name="board_publish_ranking">ランキングに表示</string>

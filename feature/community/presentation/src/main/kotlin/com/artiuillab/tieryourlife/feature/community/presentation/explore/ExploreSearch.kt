@@ -108,7 +108,7 @@ class ExploreSearch(
         val typed = _query.value ?: return
         val now = _results.value
         val after = now.cursor ?: return
-        if (!now.canLoadMore || now.loadingMore || job?.isActive == true) return
+        if (!now.canLoadMore || now.loadingMore) return
         _results.value = now.copy(loadingMore = true)
         val within = _within.value
         job = scope.launch {

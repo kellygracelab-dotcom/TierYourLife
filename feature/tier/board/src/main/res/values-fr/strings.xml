@@ -175,6 +175,17 @@
     <string name="list_settings_public_changed_elsewhere">Cette liste a changé sur un autre appareil. Réessayez de la publier.</string>
     <string name="list_settings_cover_adjust">Ajuster la position</string>
     <string name="list_settings_cover_adjust_sub">La partie de l’image qui s’affiche</string>
+    <string name="one_by_one_toggle">Une à une</string>
+    <string name="one_by_one_on">Classement carte par carte</string>
+    <string name="one_by_one_skip">Passer</string>
+    <string name="one_by_one_to_pool">Vers le pool</string>
+    <string name="one_by_one_done">Toutes les cartes sont placées</string>
+    <string name="one_by_one_exit">Quitter</string>
+    <plurals name="one_by_one_left">
+        <item quantity="one">il en reste %d</item>
+        <item quantity="many">il en reste %d</item>
+        <item quantity="other">il en reste %d</item>
+    </plurals>
     <string name="board_publish">Publier</string>
     <string name="board_publish_update">Mettre à jour</string>
     <string name="board_publish_ranking">Afficher dans les classements</string>
