@@ -266,4 +266,15 @@
     <string name="publish_sheet_new_section">Yeni bölüm</string>
     <string name="publish_sheet_continue">Devam</string>
     <string name="publish_sheet_section_note">Bir bölümün simgesi ve en az 960 px genişliğinde 16:10 bir resmi olmalı. Bunları sonraki adımda eklersin. Bir moderatör karar verene kadar liste %1$s içinde kalır.</string>
+    <string name="publish_sheet_cover_auto">Kolaj · otomatik</string>
+    <string name="publish_sheet_cover_colours">Seviye renkleri · otomatik</string>
+    <string name="publish_sheet_cover_card">Bir kartın resmi</string>
+    <string name="publish_sheet_cover_photo">Kendi fotoğrafın</string>
+    <string name="publish_sheet_cover_hint">Kendi fotoğrafını yükleyip istediğin gibi kırp, bir kartın resmini afiş yap ya da kendi kolajını oluştur.</string>
+    <string name="publish_sheet_cover_change">Kapağı değiştir</string>
+    <string name="publish_sheet_cover">Kapak</string>
+    <plurals name="publish_sheet_cover_collage">
+        <item quantity="one">Kendi kolajın · resim: %d</item>
+        <item quantity="other">Kendi kolajın · resim: %d</item>
+    </plurals>
 </resources>

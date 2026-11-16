@@ -281,4 +281,16 @@
     <string name="publish_sheet_new_section">Nueva sección</string>
     <string name="publish_sheet_continue">Continuar</string>
     <string name="publish_sheet_section_note">Una sección necesita un icono y una imagen 16:10 de al menos 960 px de ancho. Los añades a continuación. Hasta que un moderador decida, la lista queda en %1$s.</string>
+    <string name="publish_sheet_cover_auto">Collage · automático</string>
+    <string name="publish_sheet_cover_colours">Colores de los niveles · automático</string>
+    <string name="publish_sheet_cover_card">La imagen de una tarjeta</string>
+    <string name="publish_sheet_cover_photo">Tu propia foto</string>
+    <string name="publish_sheet_cover_hint">Sube tu propia foto y recórtala como quieras, usa la imagen de una tarjeta como banner o arma tu propio collage.</string>
+    <string name="publish_sheet_cover_change">Cambiar la portada</string>
+    <string name="publish_sheet_cover">Portada</string>
+    <plurals name="publish_sheet_cover_collage">
+        <item quantity="one">Tu collage · imágenes: %d</item>
+        <item quantity="many">Tu collage · imágenes: %d</item>
+        <item quantity="other">Tu collage · imágenes: %d</item>
+    </plurals>
 </resources>

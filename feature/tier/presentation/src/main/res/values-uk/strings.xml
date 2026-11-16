@@ -296,4 +296,17 @@
     <string name="publish_sheet_new_section">Новий розділ</string>
     <string name="publish_sheet_continue">Далі</string>
     <string name="publish_sheet_section_note">Розділу потрібні значок і зображення 16:10 завширшки від 960 px. Їх ви додасте далі. Поки модератор не вирішить, список лежить у розділі «%1$s».</string>
+    <string name="publish_sheet_cover_auto">Колаж · автоматично</string>
+    <string name="publish_sheet_cover_colours">Кольори рівнів · автоматично</string>
+    <string name="publish_sheet_cover_card">Картинка картки</string>
+    <string name="publish_sheet_cover_photo">Ваше фото</string>
+    <string name="publish_sheet_cover_hint">Завантажте своє фото й обріжте як завгодно, зробіть банером картинку картки або зберіть свій колаж.</string>
+    <string name="publish_sheet_cover_change">Змінити обкладинку</string>
+    <string name="publish_sheet_cover">Обкладинка</string>
+    <plurals name="publish_sheet_cover_collage">
+        <item quantity="one">Ваш колаж · картинок: %d</item>
+        <item quantity="few">Ваш колаж · картинок: %d</item>
+        <item quantity="many">Ваш колаж · картинок: %d</item>
+        <item quantity="other">Ваш колаж · картинок: %d</item>
+    </plurals>
 </resources>

@@ -266,4 +266,15 @@
     <string name="publish_sheet_new_section">Neue Rubrik</string>
     <string name="publish_sheet_continue">Weiter</string>
     <string name="publish_sheet_section_note">Eine Rubrik braucht ein Symbol und ein Bild im Format 16:10, mindestens 960 px breit. Beides fügst du als Nächstes hinzu. Bis ein Moderator entscheidet, bleibt die Liste in %1$s.</string>
+    <string name="publish_sheet_cover_auto">Collage · automatisch</string>
+    <string name="publish_sheet_cover_colours">Stufenfarben · automatisch</string>
+    <string name="publish_sheet_cover_card">Bild einer Karte</string>
+    <string name="publish_sheet_cover_photo">Dein eigenes Foto</string>
+    <string name="publish_sheet_cover_hint">Lade ein eigenes Foto hoch und schneide es zu, wie du willst, mach das Bild einer Karte zum Banner oder stell deine eigene Collage zusammen.</string>
+    <string name="publish_sheet_cover_change">Titelbild ändern</string>
+    <string name="publish_sheet_cover">Titelbild</string>
+    <plurals name="publish_sheet_cover_collage">
+        <item quantity="one">Deine Collage · Bilder: %d</item>
+        <item quantity="other">Deine Collage · Bilder: %d</item>
+    </plurals>
 </resources>

@@ -19,6 +19,8 @@ data class PublishSheetState(
     val topics: List<Topic>? = null,
     /** Publish was tapped with no section: the section is what the sheet points at. */
     val sectionWanted: Boolean = false,
+    /** Out to the cover picker: the sheet is not drawn over it, and comes back as it was. */
+    val away: Boolean = false,
 )
 
 /**
@@ -43,6 +45,14 @@ internal class PublishSheetController(
         if (mutable.value != null) return
         mutable.value = PublishSheetState()
         current()?.category?.let(::loadTopics)
+    }
+
+    fun leaveForCover() {
+        mutable.update { it?.copy(away = true) }
+    }
+
+    fun back() {
+        mutable.update { it?.copy(away = false) }
     }
 
     fun close() {

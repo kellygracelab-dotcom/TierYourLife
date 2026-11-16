@@ -251,4 +251,14 @@
     <string name="publish_sheet_new_section">新しいセクション</string>
     <string name="publish_sheet_continue">次へ</string>
     <string name="publish_sheet_section_note">セクションにはアイコンと、幅960px以上の16:10の画像が必要です。次の画面で追加します。モデレーターが決めるまで、リストは%1$sに置かれます。</string>
+    <string name="publish_sheet_cover_auto">コラージュ · 自動</string>
+    <string name="publish_sheet_cover_colours">ティアの色 · 自動</string>
+    <string name="publish_sheet_cover_card">カードの画像</string>
+    <string name="publish_sheet_cover_photo">自分の写真</string>
+    <string name="publish_sheet_cover_hint">自分の写真をアップロードして好きなように切り抜いたり、カードの画像をバナーにしたり、自分だけのコラージュを作ったりできます。</string>
+    <string name="publish_sheet_cover_change">カバーを変更</string>
+    <string name="publish_sheet_cover">カバー</string>
+    <plurals name="publish_sheet_cover_collage">
+        <item quantity="other">自分のコラージュ · %d 枚</item>
+    </plurals>
 </resources>

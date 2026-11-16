@@ -281,4 +281,16 @@
     <string name="publish_sheet_new_section">Nouvelle rubrique</string>
     <string name="publish_sheet_continue">Continuer</string>
     <string name="publish_sheet_section_note">Une rubrique demande une icône et une image 16:10 d’au moins 960 px de large. Vous les ajoutez ensuite. Tant qu’un modérateur n’a pas décidé, la liste reste dans %1$s.</string>
+    <string name="publish_sheet_cover_auto">Collage · automatique</string>
+    <string name="publish_sheet_cover_colours">Couleurs des niveaux · automatique</string>
+    <string name="publish_sheet_cover_card">L’image d’une carte</string>
+    <string name="publish_sheet_cover_photo">Ta propre photo</string>
+    <string name="publish_sheet_cover_hint">Importe ta propre photo et recadre-la comme tu veux, fais de l’image d’une carte la bannière, ou compose ton propre collage.</string>
+    <string name="publish_sheet_cover_change">Modifier la couverture</string>
+    <string name="publish_sheet_cover">Couverture</string>
+    <plurals name="publish_sheet_cover_collage">
+        <item quantity="one">Ton collage · images : %d</item>
+        <item quantity="many">Ton collage · images : %d</item>
+        <item quantity="other">Ton collage · images : %d</item>
+    </plurals>
 </resources>
