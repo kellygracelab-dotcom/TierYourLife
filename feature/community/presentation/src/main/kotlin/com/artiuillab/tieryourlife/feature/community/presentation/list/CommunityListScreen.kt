@@ -143,7 +143,7 @@ fun CommunityListScreen(
             onGetBack = viewModel.ownList::getBack,
             onTakeDown = viewModel.ownList::takeDown,
         ),
-        onUndoStartFromTheirs = viewModel::undoStartFromTheirs,
+        onUndoStartFromTheirs = viewModel.theirsStart::undo,
         listNotices = viewModel.listNotices,
         onTurnGame = viewModel.game::turn,
     )
@@ -158,7 +158,7 @@ fun CommunityListScreen(
         )
     }
     loaded?.replaceAsk?.let { ask ->
-        ReplaceYoursDialog(name = ask.name, onReplace = viewModel::replaceYours, onCancel = viewModel::keepYours)
+        ReplaceYoursDialog(name = ask.name, onReplace = viewModel.theirsStart::replace, onCancel = viewModel.theirsStart::keep)
     }
     if (playRequest != null) {
         play.Layer(request = playRequest, open = playOpen, onArranged = viewModel::putInMine, onClose = { playOpen = false })
