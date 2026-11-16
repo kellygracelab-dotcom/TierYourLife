@@ -321,6 +321,7 @@ class RankingChoiceJourneyTest {
         val shown = late.state.firstWithin { (it as CommunityListUiState.Success).arranged } as CommunityListUiState.Success
         assertEquals((0L..6L).toList(), shown.mine.tiers.first().items.map { it.id })
 
+        late.show(Showing.Mine)
         late.moveItem(7, 1, 0)
         sync.finish()
         delay(200)

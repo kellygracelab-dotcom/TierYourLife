@@ -86,7 +86,7 @@ class PrivateRankingProgressTest {
             val state = it as? CommunityListUiState.Success
             state?.signedIn == true && !state.arriving && state.mine.tiers.first().items.map { card -> card.id } == listOf(1L)
         } as CommunityListUiState.Success
-        vm.undoStartFromTheirs()
+        vm.theirsStart.undo()
         assertEquals(signedIn.mine, (vm.state.value as CommunityListUiState.Success).mine)
         vm.rankings.returnAllToPool()
         assertEquals(emptyList<Int>(), storage[null to "abc"]!!.pool)
