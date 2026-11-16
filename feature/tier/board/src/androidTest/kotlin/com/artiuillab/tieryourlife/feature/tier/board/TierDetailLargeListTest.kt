@@ -7,7 +7,6 @@ import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -63,7 +62,7 @@ class TierDetailLargeListTest {
     private fun setScreen(displayMode: TierListDisplayMode) {
         val list = bigList(displayMode)
         composeRule.setContent {
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(state = TierDetailUiState.Success(list))
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -20,13 +21,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -61,6 +65,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
 import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.ui.AddPhotoIcon
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CategoryIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
@@ -80,6 +85,10 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.common.LocalSections
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.Publishing
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PublishingIcon
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishLabel
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishingOf
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import java.text.DateFormat
@@ -105,6 +114,8 @@ fun TierListSettingsScreenContent(
     onSetAnonymous: (Boolean) -> Unit = {},
     publishedIsBehind: Boolean = false,
     onUpdatePublished: () -> Unit = {},
+    /** The bar's publish, so both places say and do the same; null falls back to [onSetPublic] and [onUpdatePublished]. */
+    onPublish: ((Publishing) -> Unit)? = null,
     onSetCategory: (String) -> Unit = {},
     onCategoryNotChosen: () -> Unit = {},
     /** Opens the proposal form, filing lists under the board's own section meanwhile; null where there is none. */
@@ -113,6 +124,8 @@ fun TierListSettingsScreenContent(
     onAdjustCover: () -> Unit = {},
     onChooseTopic: () -> Unit = {},
     onAddCards: () -> Unit = {},
+    /** A card of one's own by hand, here as well as the bar's camera, which a phone's bar gives up for Publish. */
+    onManualAdd: (() -> Unit)? = null,
     onShare: () -> Unit = {},
     /** The published list's own page, where readers' rankings and its link are; null while it is not out. */
     onSeeInCommunity: (() -> Unit)? = null,
@@ -149,23 +162,22 @@ fun TierListSettingsScreenContent(
                         hasRoom = list.hasRoomForATier,
                         onClick = { tierEditorVisible = true },
                     )
+                    ManualAddRow(onClick = onManualAdd)
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         color = MaterialTheme.colorScheme.outlineVariant,
                     )
 
                     PublishSection(
+                        list = list,
                         published = publicPending ?: list.isPublic,
-                        asRankingOf = if (list.rankingOf != null) list.authorName.orEmpty() else null,
                         signedIn = signedIn,
-                        hasItems = list.tiers.any { it.items.isNotEmpty() },
                         busy = publishing,
                         error = publishError,
-                        onSetPublic = onSetPublic,
                         behind = publishedIsBehind,
-                        onUpdatePublished = onUpdatePublished,
+                        onPublish = onPublish ?: { kind -> if (kind == Publishing.Update) onUpdatePublished() else onSetPublic(true) },
+                        onTakeDown = { onSetPublic(false) },
                         onAddCards = onAddCards,
-                        anonymous = list.anonymous,
                         onSetAnonymous = onSetAnonymous,
                     )
                     if (onSeeInCommunity != null && publicPending != false) {
@@ -471,6 +483,18 @@ private fun AdjustCoverRow(onClick: () -> Unit) {
 }
 
 @Composable
+private fun ManualAddRow(onClick: (() -> Unit)?) {
+    onClick ?: return
+    SettingsActionRow(
+        icon = { AddPhotoIcon() },
+        title = stringResource(R.string.tier_detail_content_description_manual_add),
+        subtitle = stringResource(R.string.list_settings_manual_add_sub),
+        onClick = onClick,
+        testTag = TierDetailTestTags.SETTINGS_MANUAL_ADD,
+    )
+}
+
+@Composable
 private fun ShareRow(onClick: () -> Unit) {
     SettingsActionRow(
         icon = { ShareIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
@@ -542,6 +566,39 @@ private fun TierListSettingsScreenDarkPreview() = TierYourLifeTheme(true) {
     )
 }
 
+/**
+ * Publishing as one button, the same as the bar's: a line saying what will
+ * happen, then Publish or Show in Rankings, which go at once. Once out, a status
+ * with Take down beside it, and Update while the board has moved on.
+ */
+@Composable
+private fun PublishSection(
+    list: TierList,
+    published: Boolean,
+    signedIn: Boolean,
+    busy: Boolean,
+    error: PublishError?,
+    behind: Boolean,
+    onPublish: (Publishing) -> Unit,
+    onTakeDown: () -> Unit,
+    onAddCards: () -> Unit,
+    onSetAnonymous: (Boolean) -> Unit,
+) = PublishSection(
+    published = published,
+    asRankingOf = if (list.rankingOf != null) list.authorName.orEmpty() else null,
+    signedIn = signedIn,
+    hasItems = list.tiers.any { it.items.isNotEmpty() },
+    busy = busy,
+    error = error,
+    kind = publishingOf(list, behind) ?: if (list.takenFrom != null) Publishing.ShareRanking else Publishing.Publish,
+    onPublish = onPublish,
+    onTakeDown = onTakeDown,
+    onAddCards = onAddCards,
+    behind = behind,
+    anonymous = list.anonymous,
+    onSetAnonymous = onSetAnonymous,
+)
+
 @Composable
 private fun PublishSection(
     published: Boolean,
@@ -551,55 +608,42 @@ private fun PublishSection(
     hasItems: Boolean,
     busy: Boolean,
     error: PublishError?,
-    onSetPublic: (Boolean) -> Unit,
+    kind: Publishing,
+    onPublish: (Publishing) -> Unit,
+    onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
     behind: Boolean,
-    onUpdatePublished: () -> Unit,
     anonymous: Boolean = false,
     onSetAnonymous: (Boolean) -> Unit = {},
 ) {
-    val caption = when {
-        !signedIn -> R.string.list_settings_public_needs_account
-        !hasItems -> R.string.list_settings_public_needs_items
-        else -> R.string.list_settings_public_body
-    }
-
     Column(
         Modifier
-            // An empty list: the switch says no by being off, and the row leads
-            // to the cards it is asking for.
-            .then(if (signedIn && !hasItems) Modifier.clickable(onClick = onAddCards) else Modifier)
+            // An empty list: the button cannot go, and the row leads to the cards it is asking for.
+            .then(if (!published && !hasItems) Modifier.clickable(onClick = onAddCards) else Modifier)
             .padding(horizontal = 20.dp, vertical = 16.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.list_settings_public),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = if (published && asRankingOf != null) {
-                        stringResource(R.string.list_settings_public_ranking_body, asRankingOf)
-                    } else {
-                        stringResource(caption)
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+        if (published) {
+            PublishedStatus(asRankingOf = asRankingOf, busy = busy, onTakeDown = onTakeDown)
+            if (behind) {
+                Spacer(Modifier.height(12.dp))
+                PublishLine(R.string.my_published_behind)
+                PublishButtonRow(Publishing.Update, enabled = !busy, onPublish = onPublish, tag = TierDetailTestTags.UPDATE_PUBLISHED)
             }
-            Switch(
-                checked = published,
-                onCheckedChange = onSetPublic,
-                // Off with nothing to publish: the reason is under it, and the
-                // row leads to the fix.
-                enabled = signedIn && hasItems && !busy,
-                modifier = Modifier.testTag(TierDetailTestTags.PUBLIC_SWITCH),
+        } else {
+            PublishLine(
+                when {
+                    !hasItems -> R.string.list_settings_public_needs_items
+                    kind == Publishing.ShareRanking -> ThemeR.string.publication_preview_ranking
+                    !signedIn -> R.string.list_settings_public_needs_account
+                    else -> R.string.list_settings_public_body
+                },
             )
+            PublishButtonRow(kind, enabled = hasItems && !busy, onPublish = onPublish, tag = TierDetailTestTags.SETTINGS_PUBLISH)
         }
         // Chosen before publishing as easily as after; not offered on a
         // ranking, which goes out beside somebody else's list.
-        if (signedIn && !(published && asRankingOf != null)) {
+        val ranking = kind == Publishing.ShareRanking || (published && asRankingOf != null)
+        if (signedIn && !ranking) {
             Spacer(Modifier.height(14.dp))
             AnonymousRow(anonymous = anonymous, enabled = !busy, onSetAnonymous = onSetAnonymous)
         }
@@ -612,37 +656,7 @@ private fun PublishSection(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        // Where somebody is after changing the board. The published copy is a
-        // snapshot, which is why a new one has to be sendable from here.
         if (published) {
-            Spacer(Modifier.height(14.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.list_settings_update_published),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        // Saying it is behind needs proof; offering to send it
-                        // again does not.
-                        text = stringResource(
-                            if (behind) {
-                                R.string.my_published_behind
-                            } else {
-                                R.string.list_settings_update_published_body
-                            },
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                TextButton(
-                    onClick = onUpdatePublished,
-                    enabled = !busy,
-                    modifier = Modifier.testTag(TierDetailTestTags.UPDATE_PUBLISHED),
-                ) { Text(stringResource(R.string.my_published_action_update)) }
-            }
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.list_settings_public_images),
@@ -650,6 +664,53 @@ private fun PublishSection(
                 color = MaterialTheme.colorScheme.outline,
             )
         }
+    }
+}
+
+@Composable
+private fun PublishedStatus(asRankingOf: String?, busy: Boolean, onTakeDown: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = stringResource(if (asRankingOf != null) R.string.list_settings_ranked_status else R.string.list_settings_published_status),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (asRankingOf != null) {
+                Text(
+                    text = stringResource(R.string.list_settings_public_ranking_body, asRankingOf),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        TextButton(onClick = onTakeDown, enabled = !busy, modifier = Modifier.testTag(TierDetailTestTags.SETTINGS_TAKE_DOWN)) {
+            Text(stringResource(R.string.list_settings_take_down))
+        }
+    }
+}
+
+@Composable
+private fun PublishLine(text: Int) {
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+@Composable
+private fun PublishButtonRow(kind: Publishing, enabled: Boolean, onPublish: (Publishing) -> Unit, tag: String) {
+    Spacer(Modifier.height(10.dp))
+    Button(
+        onClick = { onPublish(kind) },
+        enabled = enabled,
+        modifier = Modifier.testTag(tag),
+        contentPadding = PaddingValues(start = 14.dp, end = 18.dp),
+    ) {
+        PublishingIcon(kind, LocalContentColor.current)
+        Spacer(Modifier.width(8.dp))
+        Text(stringResource(publishLabel(kind)))
     }
 }
 

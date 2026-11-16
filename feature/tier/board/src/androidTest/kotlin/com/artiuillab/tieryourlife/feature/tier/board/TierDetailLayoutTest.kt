@@ -16,7 +16,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TIER_BAND_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import org.junit.Assert.assertEquals
@@ -166,7 +165,7 @@ class TierDetailLayoutTest : TierDetailScreenTestBase() {
         composeRule.setContent {
             val baseDensity = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density = baseDensity.density, fontScale = 2f)) {
-                TierYourLifeTheme {
+                BoardTestTheme {
                     TierDetailScreenContent(state = TierDetailUiState.Success(list))
                 }
             }
@@ -186,7 +185,7 @@ class TierDetailLayoutTest : TierDetailScreenTestBase() {
         ).asTierList()
 
         composeRule.setContent {
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(list),
                     actions = TierDetailActions(),

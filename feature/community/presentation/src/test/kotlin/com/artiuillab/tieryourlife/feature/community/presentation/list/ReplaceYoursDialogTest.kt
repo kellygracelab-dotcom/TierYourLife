@@ -34,7 +34,8 @@ class ReplaceYoursDialogTest {
     fun namesWhoseRankingItStartsFrom_andReplaceGoesOn() {
         show("Olena M.")
 
-        composeRule.onNodeWithText("Start from Olena M.’s ranking? Your version will be replaced.").assertExists()
+        composeRule.onNodeWithText("Start from Olena M.’s ranking?").assertExists()
+        composeRule.onNodeWithText("Your version will be replaced.").assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.REPLACE_YOURS_CONFIRM).performClick()
 
         assertEquals(listOf("replace"), answers)
@@ -44,7 +45,7 @@ class ReplaceYoursDialogTest {
     fun withoutAName_andCancelKeepsOnesOwn() {
         show(null)
 
-        composeRule.onNodeWithText("Start from this ranking? Your version will be replaced.").assertExists()
+        composeRule.onNodeWithText("Start from this ranking?").assertExists()
         composeRule.onNodeWithText("Cancel").performClick()
 
         assertEquals(listOf("cancel"), answers)
@@ -55,7 +56,7 @@ class ReplaceYoursDialogTest {
     fun inRussian_theNameIsNotDeclined() {
         show("Олена")
 
-        composeRule.onNodeWithText("Начать с рейтинга: Олена? Ваша версия будет заменена.").assertExists()
+        composeRule.onNodeWithText("Начать с рейтинга: Олена?").assertExists()
         composeRule.onNodeWithText("Заменить").assertExists()
     }
 }

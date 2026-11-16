@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -65,6 +66,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.ScrollAwayHeader
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
@@ -80,16 +82,23 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.drag.FloatingDr
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TrashTarget
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.CardPicking
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalCardPicking
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTierRowDensity
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OneByOnePanel
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUMN_MARGIN
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PlayButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolColumn
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PublishButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.everyCardPlaced
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishingOf
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberOneByOne
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
@@ -301,6 +310,8 @@ private fun TierScreenBody(
     var listSettingsVisible by rememberSaveable { mutableStateOf(false) }
 
     BackHandler(enabled = listSettingsVisible) { listSettingsVisible = false }
+    // A publish from the bar that needs a section asks for it where it is chosen.
+    LaunchedEffect(actions.categoryWanted) { if (actions.categoryWanted) listSettingsVisible = true }
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -333,6 +344,7 @@ private fun TierScreenBody(
             onSetAnonymous = actions.onSetAnonymous,
             publishedIsBehind = actions.publishedIsBehind,
             onUpdatePublished = actions.onUpdatePublished,
+            onPublish = actions.onPublish,
             onSetCategory = actions.onSetCategory,
             onCategoryNotChosen = actions.onCategoryNotChosen,
             onProposeSection = actions.onProposeSection,
@@ -342,6 +354,10 @@ private fun TierScreenBody(
             onAddCards = {
                 listSettingsVisible = false
                 actions.onAddClick?.invoke()
+            },
+            onManualAdd = {
+                listSettingsVisible = false
+                onManualAddClick()
             },
             onShare = {
                 scope.launch {
@@ -495,6 +511,18 @@ private fun TierScreenBody(
             else -> null
         }
         val rowDensity = TierRowDensity.of(short, poolBeside, maxWidth, indexBeside)
+        val layoutMemory = LocalBoardLayoutMemory.current
+        val oneByOne = rememberOneByOne(onMoveItem)
+        val oneByOneOffered = pool != null && !readOnly && !glanceable && list.displayMode != TierListDisplayMode.FLAT_RANKED
+        val oneByOneOn = oneByOneOffered && layoutMemory.oneCardAtATime
+        val picking = remember(oneByOneOn, oneByOne.selectedId) {
+            if (oneByOneOn) CardPicking(oneByOne.selectedId, oneByOne::pick) else null
+        }
+        val oneByOnePanel: (@Composable (Boolean) -> Unit)? = if (oneByOneOffered) {
+            { beside -> OneByOnePanel(list, oneByOne, onExit = { layoutMemory.oneCardAtATime = false }, beside = beside) }
+        } else {
+            null
+        }
 
         val bar: @Composable () -> Unit = {
             TierScreenTopBar(
@@ -520,6 +548,7 @@ private fun TierScreenBody(
                 play = actions.onPlay?.takeUnless { glanceable }?.let { onPlay ->
                     PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
                 },
+                publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - BAR_BESIDE_PUBLISH)?.takeUnless { glanceable || readOnly },
             )
         }
         val board: @Composable (Modifier) -> Unit = { boardModifier ->
@@ -656,6 +685,7 @@ private fun TierScreenBody(
                             note = poolNote.takeIf { docked },
                             side = actions.poolSide,
                             countWhenEmpty = actions.emptyPoolCounted,
+                            oneByOnePanel = oneByOnePanel,
                         )
                     }
                 }
@@ -675,6 +705,7 @@ private fun TierScreenBody(
                         indexBeside = indexBeside,
                         note = poolNote,
                         side = actions.poolSide,
+                        oneByOnePanel = oneByOnePanel,
                         modifier = Modifier
                             .navigationBarsPadding()
                             .padding(POOL_COLUMN_MARGIN),
@@ -683,7 +714,7 @@ private fun TierScreenBody(
             }
         }
 
-        CompositionLocalProvider(LocalTierRowDensity provides rowDensity) {
+        CompositionLocalProvider(LocalTierRowDensity provides rowDensity, LocalCardPicking provides picking) {
             if (short) {
                 // The inset stays with the screen; the bar slides under it and back.
                 ScrollAwayHeader(header = bar, modifier = Modifier.fillMaxSize().statusBarsPadding()) {
@@ -843,4 +874,20 @@ private fun RowChangeTick(dragController: TierDragController) {
         }
         last[0] = if (lifted) hovered else null
     }
+}
+
+/** Back, Play and the overflow, the bar's padding, and a few letters of the title. */
+private val BAR_BESIDE_PUBLISH = 48.dp * 3 + 16.dp + 56.dp
+
+private fun publishButton(list: TierList, actions: TierDetailActions, narrow: Boolean, room: Dp): PublishButton? {
+    val onPublish = actions.onPublish ?: return null
+    val kind = publishingOf(list, actions.publishedIsBehind) ?: return null
+    return PublishButton(
+        kind = kind,
+        primary = everyCardPlaced(list),
+        narrow = narrow,
+        room = room,
+        busy = actions.publishing,
+        onClick = { onPublish(kind) },
+    )
 }

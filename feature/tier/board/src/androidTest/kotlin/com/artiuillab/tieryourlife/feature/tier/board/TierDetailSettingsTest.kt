@@ -21,7 +21,6 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.ManualEntryDialog
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import org.junit.Assert.assertEquals
@@ -37,7 +36,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
     fun returningCardsToPool_requiresConfirmation_andCancelDoesNothing() {
         var confirmations = 0
         composeRule.setContent {
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(defaultList()),
                     actions = TierDetailActions(onReturnAllToPool = { confirmations++ }),
@@ -69,7 +68,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
     fun manualAddButton_opensTheManualEntryDialog() {
         composeRule.setContent {
             var manualEntryVisible by remember { mutableStateOf(false) }
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(defaultList()),
                     actions = TierDetailActions(onManualAddClick = { manualEntryVisible = true }),
@@ -437,7 +436,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
 
         composeRule.setContent {
             val listState = remember { mutableStateOf(initialList) }
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(listState.value),
                     actions = TierDetailActions(

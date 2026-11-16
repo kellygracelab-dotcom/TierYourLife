@@ -312,8 +312,9 @@
     <string name="community_started_from_theirs_unnamed">Вашу версію почато з цього рейтингу</string>
     <string name="community_replaced_yours">Вашу версію замінено рейтингом: %1$s</string>
     <string name="community_replaced_yours_unnamed">Вашу версію замінено цим рейтингом</string>
-    <string name="community_replace_yours_ask">Почати з рейтингу: %1$s? Вашу версію буде замінено.</string>
-    <string name="community_replace_yours_ask_unnamed">Почати з цього рейтингу? Вашу версію буде замінено.</string>
+    <string name="community_replace_yours_ask">Почати з рейтингу: %1$s?</string>
+    <string name="community_replace_yours_ask_unnamed">Почати з цього рейтингу?</string>
+    <string name="community_replace_yours_body">Вашу версію буде замінено.</string>
     <string name="community_action_replace">Замінити</string>
     <string name="community_action_undo">Скасувати</string>
     <string name="community_picture_credits">Автори зображень</string>

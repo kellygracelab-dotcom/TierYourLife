@@ -182,4 +182,22 @@
     <string name="list_settings_public_changed_elsewhere">A lista mudou em outro dispositivo. Tente publicá-la novamente.</string>
     <string name="list_settings_cover_adjust">Ajustar posição</string>
     <string name="list_settings_cover_adjust_sub">Qual parte da imagem aparece</string>
+    <string name="one_by_one_toggle">Uma por vez</string>
+    <string name="one_by_one_on">Classificando uma carta por vez</string>
+    <string name="one_by_one_skip">Pular</string>
+    <string name="one_by_one_to_pool">Para o pool</string>
+    <string name="one_by_one_done">Todas as cartas estão no lugar</string>
+    <string name="one_by_one_exit">Sair</string>
+    <plurals name="one_by_one_left">
+        <item quantity="one">falta %d</item>
+        <item quantity="many">faltam %d</item>
+        <item quantity="other">faltam %d</item>
+    </plurals>
+    <string name="board_publish">Publicar</string>
+    <string name="board_publish_update">Atualizar</string>
+    <string name="board_publish_ranking">Mostrar nas classificações</string>
+    <string name="list_settings_published_status">Publicada ✓</string>
+    <string name="list_settings_ranked_status">Nas classificações ✓</string>
+    <string name="list_settings_take_down">Remover</string>
+    <string name="list_settings_manual_add_sub">Sua própria foto ou nome</string>
 </resources>

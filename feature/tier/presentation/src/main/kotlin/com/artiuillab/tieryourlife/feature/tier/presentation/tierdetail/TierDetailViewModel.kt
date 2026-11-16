@@ -159,7 +159,11 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
-    fun setPublic(public: Boolean) = publication.setPublic(public)
+    /** From the publish buttons, which say beforehand what will happen: no panel to confirm. */
+    fun setPublic(public: Boolean) = publication.setPublic(public, direct = true)
+
+    /** A copy of someone's list goes out as this person's ranking of it, at once. */
+    fun shareRanking() = publication.setPublic(public = true, asRanking = true, direct = true)
 
     /** A ranking comes down from the list it sits beside; a list of its own comes down by its id. */
     private suspend fun takeDown(list: TierList): Result<Published?> {

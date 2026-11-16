@@ -40,6 +40,18 @@ class WrappedDropGridTest {
     }
 
     @Test
+    fun halfAPitchEitherWayFromItsCell_movesTheCardOnePlace_andTheSameDistanceBothWays() {
+        val spaced = WrappedDropGrid(Rect(0f, 0f, 550f, 200f), 100, 100, 10, 5, ids)
+        val centre = 2 * 110f + 50f
+
+        assertEquals(2, spaced.insertionIndex(Offset(centre, 50f), 3, false))
+        assertEquals(2, spaced.insertionIndex(Offset(centre + 54f, 50f), 3, false))
+        assertEquals(3, spaced.insertionIndex(Offset(centre + 56f, 50f), 3, false))
+        assertEquals(2, spaced.insertionIndex(Offset(centre - 54f, 50f), 3, false))
+        assertEquals(1, spaced.insertionIndex(Offset(centre - 56f, 50f), 3, false))
+    }
+
+    @Test
     fun aCardFromAnotherTier_canGoAfterEveryCard() {
         assertEquals(6, grid.insertionIndex(Offset(110f, 150f), 99, false))
     }

@@ -112,7 +112,12 @@ internal class BoardPublicationController(
         }
     }
 
-    fun setPublic(public: Boolean) {
+    /**
+     * [direct]: the publish buttons, which say beforehand what will happen and
+     * so go at once, with no panel to confirm. [asRanking]: a copy goes out as
+     * a ranking of its list rather than being refused as a second list first.
+     */
+    fun setPublic(public: Boolean, asRanking: Boolean = false, direct: Boolean = false) {
         val list = current() ?: return
         if (mutable.value.busy) return
         error(null)
@@ -130,23 +135,29 @@ internal class BoardPublicationController(
             val who = owner()
             action(pending = public) { perform(list, public, null, who, it) }
         } else {
-            review(list)
+            review(list, refuse = !asRanking, direct = direct)
         }
     }
 
     /** Somebody else's list never goes out as a separate one; what it can do instead is offered: Show in Rankings. */
-    private fun review(list: TierList) {
+    private fun review(list: TierList, refuse: Boolean = true, direct: Boolean = false) {
         val who = owner()
         action {
             val result = community.classifyPublication(list).getOrThrow()
             if (!active(it, who) || !present(list, who)) return@action
-            if (result is PublicationKind.NewList && result.basedOn != null) {
-                fail(PublishError.RankInstead)
-                rankingOf(result, list)?.let { ranking ->
-                    mutable.value = mutable.value.copy(offer = RankingOffer(list, ranking, who, placed(list), total(list)))
+            val ranking = (result as? PublicationKind.NewList)?.takeIf { it.basedOn != null }?.let { rankingOf(it, list) }
+            when {
+                result is PublicationKind.NewList && result.basedOn != null && direct && !refuse && ranking != null ->
+                    perform(list, true, ranking, who, it)
+                result is PublicationKind.NewList && result.basedOn != null -> {
+                    if (refuse) fail(PublishError.RankInstead)
+                    ranking?.let { offered ->
+                        mutable.value = mutable.value.copy(offer = RankingOffer(list, offered, who, placed(list), total(list)))
+                    }
                 }
-            } else {
-                mutable.value = mutable.value.copy(preview = PublicationPreview(list, result, who))
+                direct && result is PublicationKind.NewList && list.category == null -> wantsCategory()
+                direct -> perform(list, true, result, who, it)
+                else -> mutable.value = mutable.value.copy(preview = PublicationPreview(list, result, who))
             }
         }
     }

@@ -18,6 +18,9 @@ interface BoardLayoutMemory {
     /** Lines of cards in the pool docked under the rows on a tablet held upright: 1, 2 or 4. */
     var poolDockRows: Int
 
+    /** The pool ranked one card at a time: the current card and a button for each tier. */
+    var oneCardAtATime: Boolean
+
     companion object {
         val DockRowChoices = listOf(1, 2, 4)
         const val DEFAULT_DOCK_ROWS = 2
@@ -28,6 +31,7 @@ interface BoardLayoutMemory {
 class InMemoryBoardLayoutMemory : BoardLayoutMemory {
     override var poolColumnCollapsed: Boolean? by mutableStateOf(null)
     override var poolDockRows: Int by mutableStateOf(BoardLayoutMemory.DEFAULT_DOCK_ROWS)
+    override var oneCardAtATime: Boolean by mutableStateOf(false)
 }
 
 val LocalBoardLayoutMemory = staticCompositionLocalOf<BoardLayoutMemory> { InMemoryBoardLayoutMemory() }
