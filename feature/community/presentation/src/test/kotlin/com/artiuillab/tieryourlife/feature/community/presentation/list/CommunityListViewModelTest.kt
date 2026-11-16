@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.core.testing.onMain
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -27,7 +28,6 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.After
@@ -51,7 +51,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun opening_putsTheAuthorsCardsInThePool_andLeavesEveryTierEmpty() = runBlocking {
+    fun opening_putsTheAuthorsCardsInThePool_andLeavesEveryTierEmpty() = onMain {
         val viewModel = viewModel()
 
         val state = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
@@ -64,7 +64,7 @@ class CommunityListViewModelTest {
     // Ranking someone else's list writes nothing: backing out has to cost the
     // reader only the arrangement they were told was unsaved.
     @Test
-    fun ranking_changesNothingInTheDatabase() = runBlocking {
+    fun ranking_changesNothingInTheDatabase() = onMain {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
@@ -83,7 +83,7 @@ class CommunityListViewModelTest {
 
     // A template, every card left in the pool: no empty half to switch to, nothing to choose on saving.
     @Test
-    fun aListWhoseAuthorPlacedNothing_opensOnMine_withOneHalf() = runBlocking {
+    fun aListWhoseAuthorPlacedNothing_opensOnMine_withOneHalf() = onMain {
         val community = TestCommunity(arrangement = listOf(null, null), summary = { it.copy(authorUid = "", authorName = "", anonymous = true) })
         val viewModel = viewModel(community = community)
 
@@ -95,7 +95,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun aReadersRankingChosenOnATemplate_isTheOtherHalf_untilTheAuthorsEmptyOneIsChosenBack() = runBlocking {
+    fun aReadersRankingChosenOnATemplate_isTheOtherHalf_untilTheAuthorsEmptyOneIsChosenBack() = onMain {
         val kyle = Ranking("r1", "Kyle H.", null, arrangement = listOf(1, 0), tierLabels = listOf("Top", "Next"), updatedAtMillis = 0)
         val viewModel = viewModel(community = TestCommunity(rankings = listOf(kyle), arrangement = listOf(null, null)))
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
@@ -114,7 +114,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun onMyOwnList_aMoveChangesNothing() = runBlocking {
+    fun onMyOwnList_aMoveChangesNothing() = onMain {
         val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null), summary = { it.copy(mine = true) }))
         val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
 
@@ -124,7 +124,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun draggingWhileYourOwnIsShown_movesTheCardAndLeavesTheirsAlone() = runBlocking {
+    fun draggingWhileYourOwnIsShown_movesTheCardAndLeavesTheirsAlone() = onMain {
         val viewModel = viewModel()
         val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
         viewModel.show(Showing.Mine)
@@ -141,7 +141,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun aGamesResult_becomesMine_onScreen_andStillUnsaved() = runBlocking {
+    fun aGamesResult_becomesMine_onScreen_andStillUnsaved() = onMain {
         val viewModel = viewModel()
         val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
         val played = loaded.mine.copy(
@@ -166,7 +166,7 @@ class CommunityListViewModelTest {
 
     // A24: the undo of a result put in Mine left Mine on screen and marked as arranged.
     @Test
-    fun undoingAGamesResult_putsBackWhatWasOnScreen() = runBlocking {
+    fun undoingAGamesResult_putsBackWhatWasOnScreen() = onMain {
         val viewModel = viewModel()
         val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
         val played = loaded.mine.copy(
@@ -191,7 +191,7 @@ class CommunityListViewModelTest {
     // Keeping a list the way its author ranked it is a reason to save it, not
     // a mistake to correct.
     @Test
-    fun savingOnAuthor_keepsTheAuthorsArrangement() = runBlocking {
+    fun savingOnAuthor_keepsTheAuthorsArrangement() = onMain {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
@@ -212,7 +212,7 @@ class CommunityListViewModelTest {
 
     // Save my list before placing anything: the reader's own version, every card still to place.
     @Test
-    fun savingOnMine_keepsTheReadersOwnVersion() = runBlocking {
+    fun savingOnMine_keepsTheReadersOwnVersion() = onMain {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
@@ -227,7 +227,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun saving_copiesTheListUnderTheReadersOwnRoof_withTheAuthorAttached() = runBlocking {
+    fun saving_copiesTheListUnderTheReadersOwnRoof_withTheAuthorAttached() = onMain {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(tiers = tiers)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
@@ -246,7 +246,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun aListThatCannotBeOpened_saysSoRatherThanShowingAnEmptyBoard() = runBlocking {
+    fun aListThatCannotBeOpened_saysSoRatherThanShowingAnEmptyBoard() = onMain {
         val viewModel = viewModel(community = FailingCommunityRepository())
 
         val state = viewModel.state.firstWithin { it is CommunityListUiState.Error }
@@ -281,7 +281,7 @@ class CommunityListViewModelTest {
 
     // A reader's placing is the same cards under their own words; saving it keeps it, and the copy knows where it came from.
     @Test
-    fun choosingAReadersRanking_showsTheirPlacing_andSavingTheirsKeepsIt() = runBlocking {
+    fun choosingAReadersRanking_showsTheirPlacing_andSavingTheirsKeepsIt() = onMain {
         val olena = Ranking("r1", "Kyle H.", null, arrangement = listOf(1, 0), tierLabels = listOf("Top", "Next"), updatedAtMillis = 0)
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(community = TestCommunity(rankings = listOf(olena)), tiers = tiers)
@@ -304,7 +304,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun withdrawingMyRanking_takesItOutAtOnce_andPutsItBackIfRefused() = runBlocking {
+    fun withdrawingMyRanking_takesItOutAtOnce_andPutsItBackIfRefused() = onMain {
         val mine = Ranking("me", "Me", null, arrangement = listOf(0, 0), tierLabels = emptyList(), updatedAtMillis = 0, mine = true)
         val community = TestCommunity(rankings = listOf(mine), refusesWithdrawal = true)
         val viewModel = viewModel(community = community)
@@ -334,7 +334,7 @@ class CommunityListViewModelTest {
 
     // Danylo tapped his own list and got a page of it with a button to the board: the board is where it changes, so it opens.
     @Test
-    fun aCardThatSaysTheListIsMine_opensMyBoard_withoutAskingTheServer() = runBlocking {
+    fun aCardThatSaysTheListIsMine_opensMyBoard_withoutAskingTheServer() = onMain {
         val community = ownCommunity()
         val viewModel = viewModel(community = community, tiers = RecordingTierRepository(boards = listOf(myBoard)), handle = route(mine = true))
 
@@ -344,7 +344,7 @@ class CommunityListViewModelTest {
 
     // Opened by id alone, it is only known to be theirs once the server says so: until then the page waits, and it is never drawn.
     @Test
-    fun myOwnAnonymousList_openedByIdAlone_opensMyBoard_withoutEverDrawingThePage() = runBlocking {
+    fun myOwnAnonymousList_openedByIdAlone_opensMyBoard_withoutEverDrawingThePage() = onMain {
         val community = TestCommunity(summary = { it.copy(authorUid = "", authorName = "", anonymous = true, mine = true) })
         val viewModel = viewModel(community = community, tiers = RecordingTierRepository(boards = listOf(myBoard)))
 
@@ -355,7 +355,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun myOwnList_keptFromALastVisit_opensMyBoard_withoutDrawingTheKeptCopy() = runBlocking {
+    fun myOwnList_keptFromALastVisit_opensMyBoard_withoutDrawingTheKeptCopy() = onMain {
         val kept = published.copy(summary = published.summary.copy(mine = true))
         val community = ownCommunity()
         val viewModel = viewModel(community = community, tiers = RecordingTierRepository(boards = listOf(myBoard)), openedLists = FakeOpenedLists(kept))
@@ -366,7 +366,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun myOwnList_askedForFromItsBoard_staysAsThePage() = runBlocking {
+    fun myOwnList_askedForFromItsBoard_staysAsThePage() = onMain {
         val viewModel = viewModel(community = ownCommunity(), tiers = RecordingTierRepository(boards = listOf(myBoard)), handle = route(mine = true, fromBoard = true))
 
         val state = lookedUp(viewModel)
@@ -379,7 +379,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun somebodyElsesList_neverOpensABoard() = runBlocking {
+    fun somebodyElsesList_neverOpensABoard() = onMain {
         val viewModel = viewModel(tiers = RecordingTierRepository(boards = listOf(myBoard)))
 
         viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow != null }
@@ -388,7 +388,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun myOwnList_offersNothingToSave_hideOrReport() = runBlocking {
+    fun myOwnList_offersNothingToSave_hideOrReport() = onMain {
         val tiers = RecordingTierRepository()
         val preferences = FakeAppPreferences()
         val community = TestCommunity(summary = { it.copy(mine = true) })
@@ -406,7 +406,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun aModeratorReportingAListByStaff_isToldOnlyTheOwnerCan() = runBlocking {
+    fun aModeratorReportingAListByStaff_isToldOnlyTheOwnerCan() = onMain {
         val preferences = FakeAppPreferences()
         val viewModel = viewModel(community = TestCommunity(reportRefusal = TargetIsStaff()), preferences = preferences)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
@@ -426,7 +426,7 @@ class CommunityListViewModelTest {
     private val trashed = TrashEntry.DeletedList(id = 5, title = "Every A24 film", itemCount = 2, deletedAtMillis = 0, publishedId = "abc")
 
     @Test
-    fun myOwnList_withItsBoardInTheTrash_offersToRestoreIt_andTheRestoredBoardOpens() = runBlocking {
+    fun myOwnList_withItsBoardInTheTrash_offersToRestoreIt_andTheRestoredBoardOpens() = onMain {
         val tiers = RecordingTierRepository(trash = listOf(trashed))
         val viewModel = viewModel(community = ownCommunity(), tiers = tiers, handle = route(mine = true))
         assertEquals(OwnBoardAction.Restore, lookedUp(viewModel).ownBoardAction)
@@ -439,7 +439,7 @@ class CommunityListViewModelTest {
 
     // Owned, not taken: no takenFrom, still out as this list so Update sends to the same link, and as nameless as it went out.
     @Test
-    fun myOwnList_withNoBoardAnywhere_getsItBackAsMyOwnBoard_andOpensIt() = runBlocking {
+    fun myOwnList_withNoBoardAnywhere_getsItBackAsMyOwnBoard_andOpensIt() = onMain {
         val tiers = RecordingTierRepository()
         val viewModel = viewModel(community = ownCommunity(anonymous = true), tiers = tiers)
         assertEquals(OwnBoardAction.GetBack, lookedUp(viewModel).ownBoardAction)
@@ -458,7 +458,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun takingMyListDown_unpublishesIt_forgetsItOnTheTrashedBoard_andLeaves() = runBlocking {
+    fun takingMyListDown_unpublishesIt_forgetsItOnTheTrashedBoard_andLeaves() = onMain {
         val tiers = RecordingTierRepository(trash = listOf(trashed))
         val community = ownCommunity()
         val viewModel = viewModel(community = community, tiers = tiers)
@@ -472,7 +472,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun aTakeDownTheServerRefuses_saysSo_andTheBoardKeepsItsId() = runBlocking {
+    fun aTakeDownTheServerRefuses_saysSo_andTheBoardKeepsItsId() = onMain {
         val tiers = RecordingTierRepository(trash = listOf(trashed))
         val viewModel = viewModel(community = ownCommunity(unpublishFails = true), tiers = tiers)
         lookedUp(viewModel)
@@ -484,7 +484,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun somebodyElsesList_isTheirs_andTheirAuthorCanBeFollowed() = runBlocking {
+    fun somebodyElsesList_isTheirs_andTheirAuthorCanBeFollowed() = onMain {
         val community = TestCommunity()
         val viewModel = viewModel(community = community)
 
@@ -496,7 +496,7 @@ class CommunityListViewModelTest {
 
     // The open answer was read before the follow landed; the server followed, so the button must not go back.
     @Test
-    fun aFollowTappedWhileTheListIsOnItsWay_isNotUndoneByTheAnswer() = runBlocking {
+    fun aFollowTappedWhileTheListIsOnItsWay_isNotUndoneByTheAnswer() = onMain {
         val community = TestCommunity(holdOpen = true, summary = { it.copy(viewerFollowsAuthor = false, rankingCount = 5) })
         val kept = published.copy(summary = published.summary.copy(viewerFollowsAuthor = false))
         val viewModel = viewModel(community = community, accounts = signedIn, openedLists = FakeOpenedLists(kept))
@@ -511,7 +511,7 @@ class CommunityListViewModelTest {
 
     // Rows name cards by their place in the list; a kept copy the author has changed since would place them under the wrong items.
     @Test
-    fun showingMyRanking_fromAKeptCopyTheAuthorChanged_sendsNothing() = runBlocking {
+    fun showingMyRanking_fromAKeptCopyTheAuthorChanged_sendsNothing() = onMain {
         val community = TestCommunity().apply { offline = true }
         val kept = published.copy(items = published.items + TierItem(2, "Pearl", null), summary = published.summary.copy(itemCount = 3))
         val viewModel = viewModel(community = community, accounts = signedIn, openedLists = FakeOpenedLists(kept))
@@ -525,7 +525,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun showingMyRanking_fromAKeptCopyStillTheSame_readsItAgainAndSends() = runBlocking {
+    fun showingMyRanking_fromAKeptCopyStillTheSame_readsItAgainAndSends() = onMain {
         val community = TestCommunity().apply { offline = true }
         val viewModel = viewModel(community = community, accounts = signedIn, openedLists = FakeOpenedLists(published))
         arranged(viewModel)
@@ -538,7 +538,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun aGuestsFollow_opensTheSignIn_andTheSignInFollows() = runBlocking {
+    fun aGuestsFollow_opensTheSignIn_andTheSignInFollows() = onMain {
         val accounts = FakeAccountRepository()
         val viewModel = viewModel(accounts = accounts)
         viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.follow != null }
@@ -553,7 +553,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun aRefusedFollow_saysWhy() = runBlocking {
+    fun aRefusedFollow_saysWhy() = onMain {
         val community = object : FakeCommunityRepository() {
             override suspend fun open(id: String): Result<PublishedList> = Result.success(published)
 
@@ -568,7 +568,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun theListsVersion_isWhenItWasLastPublished() = runBlocking {
+    fun theListsVersion_isWhenItWasLastPublished() = onMain {
         val community = TestCommunity(summary = { it.copy(updatedAtMillis = 1_234L) })
         val viewModel = viewModel(community = community)
 
@@ -599,7 +599,7 @@ class CommunityListViewModelTest {
     private val signedIn = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null))
 
     @Test
-    fun showingMyRanking_sendsMineInTheListsOrder_andPutsMeFirstAsYou() = runBlocking {
+    fun showingMyRanking_sendsMineInTheListsOrder_andPutsMeFirstAsYou() = onMain {
         val community = TestCommunity()
         val viewModel = viewModel(community = community, accounts = signedIn)
         assertEquals(0, arranged(viewModel).rankingCount)
@@ -616,7 +616,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun showingItAgain_changesTheOneShown_withoutCountingItTwice() = runBlocking {
+    fun showingItAgain_changesTheOneShown_withoutCountingItTwice() = onMain {
         val community = TestCommunity(rankings = listOf(myOldRanking), shownIsNew = false)
         val viewModel = viewModel(community = community, accounts = signedIn)
         arranged(viewModel)
@@ -633,7 +633,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun nothingArranged_nothingToShow() = runBlocking {
+    fun nothingArranged_nothingToShow() = onMain {
         val community = TestCommunity()
         val viewModel = viewModel(community = community, accounts = signedIn)
         // Signed in on screen: the path that used to save a copy, mark it arranged and send it empty.
@@ -648,7 +648,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun aGuest_isAskedToSignIn_andNothingIsSent() = runBlocking {
+    fun aGuest_isAskedToSignIn_andNothingIsSent() = onMain {
         val community = TestCommunity()
         val viewModel = viewModel(community = community)
         assertFalse(arranged(viewModel).signedIn)
@@ -660,7 +660,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun signingInWhileTheListIsOpen_letsTheRankingBeShown() = runBlocking {
+    fun signingInWhileTheListIsOpen_letsTheRankingBeShown() = onMain {
         val accounts = FakeAccountRepository()
         val viewModel = viewModel(accounts = accounts)
         arranged(viewModel)
@@ -671,7 +671,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun myOwnList_isNeverSentAsMyRanking() = runBlocking {
+    fun myOwnList_isNeverSentAsMyRanking() = onMain {
         val community = TestCommunity(summary = { it.copy(mine = true) })
         val viewModel = viewModel(community = community, accounts = signedIn)
         viewModel.state.firstWithin { it is CommunityListUiState.Success }
@@ -684,7 +684,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun aSessionTheServerNoLongerKnows_isAskedToSignInAgain() = runBlocking {
+    fun aSessionTheServerNoLongerKnows_isAskedToSignInAgain() = onMain {
         val community = TestCommunity(showRefusal = RankingRefusal.NotSignedIn)
         val viewModel = viewModel(community = community, accounts = signedIn)
         arranged(viewModel)
@@ -696,7 +696,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun theLimitsOnPicturesFromOtherSites_areSaidAsThemselves() = runBlocking {
+    fun theLimitsOnPicturesFromOtherSites_areSaidAsThemselves() = onMain {
         listOf(
             RankingRefusal.WebPicturesToday to RankingNotice.WebPicturesToday,
             RankingRefusal.TooManyWebPictures to RankingNotice.TooManyWebPictures,
@@ -711,7 +711,7 @@ class CommunityListViewModelTest {
     }
 
     @Test
-    fun anyOtherRefusal_saysItFailed_andShowsNothing() = runBlocking {
+    fun anyOtherRefusal_saysItFailed_andShowsNothing() = onMain {
         val community = TestCommunity(showRefusal = RankingRefusal.Failed)
         val viewModel = viewModel(community = community, accounts = signedIn)
         arranged(viewModel)

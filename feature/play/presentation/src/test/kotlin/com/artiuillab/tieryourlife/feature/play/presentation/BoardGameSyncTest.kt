@@ -278,7 +278,10 @@ class BoardGameSyncTest {
             before.duel.pick(first = true)
             before.duel.pick(first = false)
             before.duel.quit()
-            eventually { games.games[KEY]?.history?.size == 2 && repository.board.play != null }
+            // Quitting puts the game down once more and then says so. Until it has, `before` is still
+            // writing to the board, and a write of its own could undo the renumbering below.
+            before.events.firstWithin { it is PlayEvent.Said && it.notice is PlayNotice.GameSaved }
+            assertEquals(kind.name, 2, games.games.getValue(KEY).history.size)
             val play = repository.board.play
             repository.board = renumbered(repository.board)
 
