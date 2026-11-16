@@ -109,7 +109,7 @@ class PlayViewModelTest {
 
         viewModel.open()
 
-        val picker = picker(viewModel.state.value)!!
+        val picker = picker(viewModel.state.firstWithin { picker(it)?.resume != null })!!
         assertEquals(GameKind.Hill, picker.kind)
         assertEquals(2, picker.resume?.played)
     }
