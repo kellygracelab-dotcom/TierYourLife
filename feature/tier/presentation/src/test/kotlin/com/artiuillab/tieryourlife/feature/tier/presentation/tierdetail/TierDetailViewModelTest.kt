@@ -223,7 +223,22 @@ class TierDetailViewModelTest {
         val shown = (viewModel.screen.value.board as TierDetailUiState.Success).list
         assertEquals("src-1", shown.rankingOf)
         assertNull(shown.publishedId)
-        assertEquals(UserMessage.PublishedAsRanking, said.await())
+        assertEquals(UserMessage.Published(updated = false, ranking = true), said.await())
+    }
+
+    @Test
+    fun setPublic_saysPublished_thenUpdatedOnceItWasOut() = runBlocking {
+        for ((publishedId, updated) in listOf(null to false, "p-1" to true)) {
+            val community = FakeCommunityRepositoryForDetail(publishResult = Result.success(Published("p-1", "sent")))
+            val viewModel = TierDetailViewModel(FakeTierRepository(listWithOneCard(), publishedId = publishedId), community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
+            viewModel.board.firstWithin { it is TierDetailUiState.Success }
+            val said = async { viewModel.userMessages.first() }
+
+            viewModel.publishAfterPreview()
+            viewModel.screen.firstWithin { !it.publish.publishing }
+
+            assertEquals(UserMessage.Published(updated = updated), said.await())
+        }
     }
 
     @Test
@@ -252,11 +267,11 @@ class TierDetailViewModelTest {
         viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
-        assertEquals(UserMessage.PicturesDropped(3), said.await())
+        assertEquals(UserMessage.Published(updated = false, droppedPictures = 3), said.await())
     }
 
     @Test
-    fun setPublic_withNoPicturesLeftOut_saysNothing() = runBlocking {
+    fun setPublic_withNoPicturesLeftOut_saysOnlyThatItIsOut() = runBlocking {
         val repository = FakeTierRepository(listWithOneCard())
         val community = FakeCommunityRepositoryForDetail(publishResult = Result.success(Published("p-1", "sent")))
         val viewModel = TierDetailViewModel(repository, community, FakeAccountRepository(FakeAccountRepository.signedIn), savedStateHandle())
@@ -265,6 +280,7 @@ class TierDetailViewModelTest {
         viewModel.publishAfterPreview()
         viewModel.screen.firstWithin { !it.publish.publishing }
 
+        assertEquals(UserMessage.Published(updated = false), viewModel.userMessages.first())
         assertNull(withTimeoutOrNull(300) { viewModel.userMessages.first() })
     }
 

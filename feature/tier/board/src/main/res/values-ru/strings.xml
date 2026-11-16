@@ -35,8 +35,6 @@
     <string name="list_settings_public_unverified">Google Play не подтвердил эту установку, поэтому публиковать с неё нельзя.</string>
     <string name="list_settings_share">Поделиться картинкой</string>
     <string name="list_settings_share_sub">Картинка этой доски и ссылка на приложение</string>
-    <string name="list_settings_see_in_community">Посмотреть в Сообществе</string>
-    <string name="list_settings_see_in_community_sub">Как её видят другие: их рейтинги и ссылка</string>
     <string name="list_settings_original">Открыть оригинал</string>
     <string name="list_settings_original_sub">Список из Сообщества, который вы оценили</string>
     <string name="manual_dialog_add">Добавить</string>
@@ -63,7 +61,6 @@
     <string name="manual_dialog_replace_photo">Заменить фото</string>
     <string name="manual_dialog_title">Добавить элемент</string>
     <string name="my_published_action_update">Обновить</string>
-    <string name="my_published_behind">Опубликованная версия отстала от вашей доски.</string>
     <string name="share_caption">%1$s — расставлено в TierYourLife\n%2$s</string>
     <string name="share_footer">Сделано в TierYourLife</string>
     <string name="share_failed">Не удалось поделиться картинкой</string>
@@ -194,5 +191,13 @@
     <string name="list_settings_published_status">Опубликован ✓</string>
     <string name="list_settings_ranked_status">В рейтингах ✓</string>
     <string name="list_settings_take_down">Снять</string>
+    <string name="list_settings_publication">Публикация</string>
+    <string name="list_settings_unpublished_changes">Есть неопубликованные изменения</string>
+    <string name="board_published_short">Опубликовано</string>
+    <string name="board_updated_short">Обновлено</string>
+    <string name="board_ranked_short">В рейтингах</string>
+    <string name="board_published_view">Посмотреть</string>
+    <string name="board_publishing">Публикуем…</string>
+    <string name="board_updating">Обновляем…</string>
     <string name="list_settings_manual_add_sub">Своё фото или название</string>
 </resources>

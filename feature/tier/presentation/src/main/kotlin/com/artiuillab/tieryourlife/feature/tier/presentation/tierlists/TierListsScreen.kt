@@ -225,16 +225,15 @@ fun TierListsScreenContent(
     val undoLabel = stringResource(R.string.action_undo)
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val stillPublicMessage = stringResource(R.string.snack_published_list_still_public)
-    val publishedAsRankingMessage = stringResource(ThemeR.string.snack_published_as_ranking)
     val underReviewMessage = stringResource(ThemeR.string.snack_published_under_review)
 
     LaunchedEffect(Unit) {
         userMessages.collect { message ->
             snackbarHostState.showSnackbar(
                 when (message) {
-                    UserMessage.ActionFailed, UserMessage.TargetIsStaff, is UserMessage.PicturesDropped -> actionFailedMessage
+                    // Published is said on the board it went out from, never here.
+                    UserMessage.ActionFailed, UserMessage.TargetIsStaff, is UserMessage.PicturesDropped, is UserMessage.Published -> actionFailedMessage
                     UserMessage.PublishedListStillPublic -> stillPublicMessage
-                    UserMessage.PublishedAsRanking -> publishedAsRankingMessage
                     UserMessage.PublishedUnderReview -> underReviewMessage
                 },
             )

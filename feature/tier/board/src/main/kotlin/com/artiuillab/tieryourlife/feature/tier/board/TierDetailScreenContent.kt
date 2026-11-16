@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
+import android.content.res.Resources
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
@@ -97,6 +98,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishing
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
+import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.fixedInSettings
 import com.artiuillab.tieryourlife.feature.tier.board.share.BoardPalette
 import com.artiuillab.tieryourlife.feature.tier.board.share.SHARE_LINK
 import com.artiuillab.tieryourlife.feature.tier.board.share.shareBoard
@@ -270,6 +272,14 @@ private fun TierDetailPane(
     }
 }
 
+/** "Published", "Updated" or "In Rankings"; with pictures left out, the sentence that says so, which begins the same. */
+private fun UserMessage.Published.text(resources: Resources): String = when {
+    droppedPictures > 0 -> UserMessage.PicturesDropped(droppedPictures).text(resources)
+    ranking -> resources.getString(R.string.board_ranked_short)
+    updated -> resources.getString(R.string.board_updated_short)
+    else -> resources.getString(R.string.board_published_short)
+}
+
 @Composable
 private fun TierScreenBody(
     list: TierList,
@@ -307,6 +317,8 @@ private fun TierScreenBody(
     BackHandler(enabled = listSettingsVisible) { listSettingsVisible = false }
     // A publish from the bar that needs a section asks for it where it is chosen.
     LaunchedEffect(actions.categoryWanted) { if (actions.categoryWanted) listSettingsVisible = true }
+    // So does a refusal put right there: the Publication row says why.
+    LaunchedEffect(actions.publishError) { if (actions.publishError?.fixedInSettings() == true) listSettingsVisible = true }
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -393,15 +405,25 @@ private fun TierScreenBody(
     val deletedMessageTemplate = stringResource(R.string.tier_detail_item_removed)
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
-    val publishedAsRankingMessage = stringResource(ThemeR.string.snack_published_as_ranking)
-
     val underReviewMessage = stringResource(ThemeR.string.snack_published_under_review)
+    val viewLabel = stringResource(R.string.board_published_view)
+    // What others see: the list in Community, or the Rankings of the list this one answers.
+    val viewPublished by rememberUpdatedState(
+        if (list.rankingOf != null) actions.onOpenOriginal else actions.onSeeInCommunity?.let { open -> list.publishedId?.let { id -> { open(id) } } },
+    )
 
     LaunchedEffect(Unit) {
         userMessages.collect { message ->
+            if (message is UserMessage.Published) {
+                // The new id may reach the board a frame after the message: the tap reads it, not this.
+                val canView = viewPublished != null || actions.onSeeInCommunity != null
+                snackbar.show(message.text(resources), viewLabel.takeIf { canView }) {
+                    if (it == SnackbarResult.ActionPerformed) viewPublished?.invoke()
+                }
+                return@collect
+            }
             snackbar.show(
                 when (message) {
-                    UserMessage.PublishedAsRanking -> publishedAsRankingMessage
                     UserMessage.PublishedUnderReview -> underReviewMessage
                     is UserMessage.PicturesDropped -> message.text(resources)
                     else -> actionFailedMessage

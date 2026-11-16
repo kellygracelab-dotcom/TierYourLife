@@ -197,18 +197,13 @@ class TierDetailViewModel @Inject constructor(
         if (recorded) showPublished(published, waiting)
         // Just sent, so nothing is behind any more.
         publishedIsBehind = false
-        if (recorded) {
-            publishedMessage(published)?.let { messages.send(it) }
-            picturesDroppedMessage(published?.droppedPictures ?: 0)?.let { messages.send(it) }
-        }
+        if (recorded && published != null) messages.send(publishedMessage(published, wasOut = list.publishedId != null || list.rankingOf != null))
     }
 
-    /** Held for a moderator says more than where the copy went. */
-    private fun publishedMessage(published: Published?): UserMessage? = when {
-        published == null -> null
-        published.underReview -> UserMessage.PublishedUnderReview
-        published.ranking -> UserMessage.PublishedAsRanking
-        else -> null
+    /** Held for a moderator says more than where the copy went, and has nothing to view yet. */
+    private fun publishedMessage(published: Published, wasOut: Boolean): UserMessage = when {
+        published.underReview -> picturesDroppedMessage(published.droppedPictures) ?: UserMessage.PublishedUnderReview
+        else -> UserMessage.Published(updated = wasOut, ranking = published.ranking, droppedPictures = published.droppedPictures)
     }
 
     /** Finishes the publish that asked for it: a tap becoming two is smaller than a tap that only refuses. */

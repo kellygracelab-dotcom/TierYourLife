@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -266,13 +267,18 @@ private fun BarActions(publish: PublishButton?, play: PlayButton?) {
 
 @Composable
 private fun PublishAction(publish: PublishButton) {
-    val label = stringResource(publishLabel(publish.kind))
+    // While it goes, the button says so in place and takes no second tap.
+    val label = stringResource(if (publish.busy) sendingLabel(publish.kind) else publishLabel(publish.kind))
     val modifier = Modifier
         .padding(horizontal = 4.dp)
         .semantics { contentDescription = label }
         .testTag(TierDetailTestTags.PUBLISH)
     val content: @Composable RowScope.() -> Unit = {
-        PublishingIcon(publish.kind, LocalContentColor.current)
+        if (publish.busy) {
+            CircularProgressIndicator(Modifier.size(16.dp).testTag(TierDetailTestTags.PUBLISH_PROGRESS), color = LocalContentColor.current, strokeWidth = 2.dp)
+        } else {
+            PublishingIcon(publish.kind, LocalContentColor.current)
+        }
         Spacer(Modifier.width(if (publish.narrow) 6.dp else 8.dp))
         Text(
             label,
@@ -297,6 +303,8 @@ fun publishLabel(kind: Publishing): Int = when (kind) {
     Publishing.Update -> R.string.board_publish_update
     Publishing.ShareRanking -> R.string.board_publish_ranking
 }
+
+fun sendingLabel(kind: Publishing): Int = if (kind == Publishing.Update) R.string.board_updating else R.string.board_publishing
 
 @Composable
 fun PublishingIcon(kind: Publishing, tint: Color) = when (kind) {

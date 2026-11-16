@@ -35,8 +35,6 @@
     <string name="list_settings_public_unverified">Google Play がこのインストールを確認できないため、ここからは公開できません。</string>
     <string name="list_settings_share">画像として共有</string>
     <string name="list_settings_share_sub">このボードの画像とアプリへのリンク</string>
-    <string name="list_settings_see_in_community">コミュニティで見る</string>
-    <string name="list_settings_see_in_community_sub">ほかの人に見えるとおりに。みんなのランキングとリンクも</string>
     <string name="list_settings_original">元のリストを開く</string>
     <string name="list_settings_original_sub">ランキングしたコミュニティのリスト</string>
     <string name="manual_dialog_add">追加</string>
@@ -57,7 +55,6 @@
     <string name="manual_dialog_replace_photo">写真を変更</string>
     <string name="manual_dialog_title">アイテムを追加</string>
     <string name="my_published_action_update">更新</string>
-    <string name="my_published_behind">公開中の内容はこのボードより古いです。</string>
     <string name="share_caption">%1$s — TierYourLife でランク付け\n%2$s</string>
     <string name="share_footer">TierYourLife で作成</string>
     <string name="share_failed">画像を共有できませんでした</string>
@@ -164,5 +161,13 @@
     <string name="list_settings_published_status">公開中 ✓</string>
     <string name="list_settings_ranked_status">ランキングに表示中 ✓</string>
     <string name="list_settings_take_down">取り下げる</string>
+    <string name="list_settings_publication">公開</string>
+    <string name="list_settings_unpublished_changes">変更はまだ公開されていません</string>
+    <string name="board_published_short">公開しました</string>
+    <string name="board_updated_short">更新しました</string>
+    <string name="board_ranked_short">ランキングに表示中</string>
+    <string name="board_published_view">見る</string>
+    <string name="board_publishing">公開中…</string>
+    <string name="board_updating">更新中…</string>
     <string name="list_settings_manual_add_sub">自分の写真や名前</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 
 import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -78,6 +79,22 @@ class PublishButtonTest {
         composeRule.onNodeWithTag(TierDetailTestTags.PUBLISH).assertContentDescriptionEquals("Update").performClick()
         assertEquals(listOf(Publishing.Update), asked)
         capture("board_publish_update")
+    }
+
+    // Danylo 16.11: a long publish showed nothing. Now the button turns, says so, and takes no second tap.
+    @Test
+    fun whileItGoes_theButtonTurns_saysSo_andTakesNoSecondTap() {
+        show(placed, busy = true)
+        composeRule.onNodeWithTag(TierDetailTestTags.PUBLISH).assertContentDescriptionEquals("Publishing…").assertIsNotEnabled().performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.PUBLISH_PROGRESS, useUnmergedTree = true).assertExists()
+        assertTrue(asked.isEmpty())
+        capture("board_publish_busy")
+    }
+
+    @Test
+    fun anUpdateGoing_saysUpdating() {
+        show(placed.copy(publishedId = "p"), behind = true, busy = true)
+        composeRule.onNodeWithTag(TierDetailTestTags.PUBLISH).assertContentDescriptionEquals("Updating…")
     }
 
     @Test
@@ -177,12 +194,12 @@ class PublishButtonTest {
         assertEquals(0, composeRule.onAllNodes(hasTestTag(TierDetailTestTags.PUBLISH)).fetchSemanticsNodes().size)
     }
 
-    private fun show(list: TierList, behind: Boolean = false, dark: Boolean = false) {
+    private fun show(list: TierList, behind: Boolean = false, dark: Boolean = false, busy: Boolean = false) {
         composeRule.setContent {
             TierYourLifeTheme(darkTheme = dark) {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(list),
-                    actions = TierDetailActions(onPlay = {}, publishedIsBehind = behind, onPublish = { asked += it }),
+                    actions = TierDetailActions(onPlay = {}, publishing = busy, publishedIsBehind = behind, onPublish = { asked += it }),
                 )
             }
         }

@@ -23,7 +23,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Settings publish with the bar's button and words: one tap, then a status with Take it down beside it. */
+/** One Publication row: the bar's button before, then the status with Update, View and Take it down (Danylo, 16.11.2026). */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = RobolectricDeviceQualifiers.Pixel7)
@@ -34,6 +34,7 @@ class SettingsPublishTest {
 
     private val published = mutableListOf<Publishing>()
     private val setPublic = mutableListOf<Boolean>()
+    private var viewed = 0
 
     @Test
     fun ownUnpublished_theButtonPublishesAtOnce() {
@@ -54,16 +55,53 @@ class SettingsPublishTest {
     @Test
     fun published_saysSo_andTakeDownIsBesideIt() {
         show(previewTierList.copy(publishedId = "p"))
+        composeRule.onNodeWithText("Publication").assertExists()
         composeRule.onNodeWithText("Published ✓").assertExists()
         composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_PUBLISH).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.UNPUBLISHED_CHANGES).assertDoesNotExist()
         composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_TAKE_DOWN).performClick()
         assertEquals(listOf(false), setPublic)
         capture("settings_published")
     }
 
     @Test
+    fun published_viewOpensItAsOthersSeeIt() {
+        show(previewTierList.copy(publishedId = "p"))
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_VIEW_PUBLISHED).performClick()
+        assertEquals(1, viewed)
+    }
+
+    @Test
+    fun beingTakenDown_offersNoView() {
+        show(previewTierList.copy(publishedId = "p"), publicPending = false)
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_VIEW_PUBLISHED).assertDoesNotExist()
+    }
+
+    @Test
+    fun aRanking_viewOpensTheListItAnswers() {
+        var original = 0
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierListSettingsScreenContent(
+                    list = previewTierList.copy(takenFrom = "source", rankingOf = "source", authorName = "Ann"),
+                    onBack = {},
+                    onAddTier = { _, _, _, _ -> },
+                    onSetDisplayMode = {},
+                    signedIn = true,
+                    onSeeInCommunity = { viewed++ },
+                    onOpenOriginal = { original++ },
+                )
+            }
+        }
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_VIEW_PUBLISHED).performClick()
+        assertEquals(1, original)
+        assertEquals(0, viewed)
+    }
+
+    @Test
     fun publishedAndChanged_offersUpdate_theSameAsTheBar() {
         show(previewTierList.copy(publishedId = "p"), behind = true, dark = true)
+        composeRule.onNodeWithText("Changes not published yet").assertExists()
         composeRule.onNodeWithTag(TierDetailTestTags.UPDATE_PUBLISHED).performClick()
         assertEquals(listOf(Publishing.Update), published)
         capture("settings_published_update_dark")
@@ -89,7 +127,7 @@ class SettingsPublishTest {
         capture("settings_ranked_ru")
     }
 
-    private fun show(list: TierList, behind: Boolean = false, dark: Boolean = false) {
+    private fun show(list: TierList, behind: Boolean = false, dark: Boolean = false, publicPending: Boolean? = null) {
         composeRule.setContent {
             TierYourLifeTheme(darkTheme = dark) {
                 Surface(color = MaterialTheme.colorScheme.background) {
@@ -100,8 +138,10 @@ class SettingsPublishTest {
                     onSetDisplayMode = {},
                     signedIn = true,
                     publishedIsBehind = behind,
+                    publicPending = publicPending,
                     onSetPublic = { setPublic += it },
                     onPublish = { published += it },
+                    onSeeInCommunity = { viewed++ },
                 )
                 }
             }

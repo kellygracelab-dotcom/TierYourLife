@@ -56,6 +56,34 @@ class TheirsStartTest {
         assertEquals(ListNotice.StartedFromTheirs("Olena M.", replaced = false), withTimeout(5_000) { viewModel.listNotices.first() })
     }
 
+    // Danylo 16.11: back to the pool is a move too, the same as into a tier.
+    @Test
+    fun aCardBackToThePoolOnTheirs_startsMine_too() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        val pool = loaded.mine.tiers.first { it.isPool }.id
+
+        viewModel.moveItem(itemId = 0, toTierId = pool, toPosition = 0)
+
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(Showing.Mine, after.showing)
+        assertTrue(after.mine.tiers.filterNot { it.isPool }.all { it.items.isEmpty() })
+        assertTrue("Hereditary" in after.mine.tiers.first { it.isPool }.items.map { it.title })
+    }
+
+    @Test
+    fun aCardBackToThePoolOnTheirs_overAnArrangedMine_asksFirst() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
+        val mine = arranged(viewModel).mine
+        viewModel.show(Showing.Theirs)
+
+        viewModel.moveItem(itemId = 0, toTierId = mine.tiers.first { it.isPool }.id, toPosition = 0)
+
+        val asking = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(ReplaceAsk("Olena M."), asking.replaceAsk)
+        assertEquals(mine, asking.mine)
+    }
+
     @Test
     fun undo_afterStartingFromTheirs_putsMineBack_andTheirsOnScreen() = runBlocking {
         val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
