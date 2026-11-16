@@ -172,4 +172,11 @@
     <string name="list_settings_public_changed_elsewhere">Bu liste başka bir cihazda değişti. Yeniden yayınlamayı deneyin.</string>
     <string name="list_settings_cover_adjust">Konumu ayarla</string>
     <string name="list_settings_cover_adjust_sub">Resmin hangi kısmı görünür</string>
+    <string name="board_publish">Yayımla</string>
+    <string name="board_publish_update">Güncelle</string>
+    <string name="board_publish_ranking">Sıralamalarda göster</string>
+    <string name="list_settings_published_status">Yayımlandı ✓</string>
+    <string name="list_settings_ranked_status">Sıralamalarda ✓</string>
+    <string name="list_settings_take_down">Yayından kaldır</string>
+    <string name="list_settings_manual_add_sub">Kendi fotoğrafın veya adın</string>
 </resources>

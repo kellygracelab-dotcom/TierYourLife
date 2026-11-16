@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.Publishing
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 
 /** Public because [TierDetailScreenContent] is, and this is its default. */
@@ -63,6 +64,8 @@ data class TierDetailActions(
     val onPlay: (() -> Unit)? = null,
     /** A game of this board is put down: the button carries a dot. */
     val playSaved: Boolean = false,
+    /** The bar's publish button, by what it offers; null where the board is not one's own to send out. */
+    val onPublish: ((Publishing) -> Unit)? = null,
     /** A card picked up (true) or put down (false), for a screen that says something while one is in the air. */
     val onCardLifted: (Boolean) -> Unit = {},
     /**

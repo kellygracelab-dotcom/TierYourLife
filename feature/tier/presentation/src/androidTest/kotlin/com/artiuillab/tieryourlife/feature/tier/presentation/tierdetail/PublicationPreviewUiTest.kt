@@ -3,12 +3,9 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
@@ -31,7 +28,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @RunWith(AndroidJUnit4::class)
 class PublicationPreviewUiTest {
@@ -43,18 +39,12 @@ class PublicationPreviewUiTest {
         if (::vm.isInitialized) vm.viewModelScope.cancel()
     }
 
-    @Test fun theRankingPreviewCanBeCancelledWithoutAPublicRequestOrLocalPublication() {
+    // The bar's button says beforehand what will happen, so it goes at once: no panel to confirm.
+    @Test fun theRankingGoesOutFromTheButtonAtOnce_withNoPanelToConfirm() {
         val boards = show(PublicationKind.Ranking("original", 123))
-        askToPublish()
-        val text = InstrumentationRegistry.getInstrumentation().targetContext.getString(ThemeR.string.publication_preview_ranking)
-        compose.onNodeWithText(text, substring = true).assertIsDisplayed()
-        compose.onNodeWithTag("publication_cancel").performClick()
+        compose.runOnIdle { vm.setPublic(true) }
+        compose.waitUntil(5_000) { posted.isNotEmpty() || boards.publishedIds.isNotEmpty() || boards.rankings.isNotEmpty() }
         compose.onNodeWithTag("publication_preview").assertDoesNotExist()
-        compose.runOnIdle {
-            assertTrue(posted.isEmpty())
-            assertTrue(boards.publishedIds.isEmpty())
-            assertTrue(boards.rankings.isEmpty())
-        }
     }
 
     // SPEC 14.11 п.4: somebody else's list does not go out as a separate list.
@@ -93,10 +83,5 @@ class PublicationPreviewUiTest {
         compose.setContent { TierYourLifeTheme { TierDetailScreen(onBack = {}, viewModel = vm, originalLinks = links) } }
         compose.waitUntil(5_000) { vm.screen.value.board is TierDetailUiState.Success }
         return boards
-    }
-
-    private fun askToPublish() {
-        compose.runOnIdle { vm.setPublic(true) }
-        compose.onNodeWithTag("publication_preview").assertIsDisplayed()
     }
 }

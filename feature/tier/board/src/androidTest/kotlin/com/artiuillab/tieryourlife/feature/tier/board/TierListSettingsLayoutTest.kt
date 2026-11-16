@@ -58,7 +58,7 @@ class TierListSettingsLayoutTest {
 
         composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertIsDisplayed()
         val newTierTop = composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).getBoundsInRoot().top
-        val publishTop = composeRule.onNodeWithTag(TierDetailTestTags.PUBLIC_SWITCH).getBoundsInRoot().top
+        val publishTop = composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_PUBLISH).getBoundsInRoot().top
         assertTrue("New tier stands above Publish", newTierTop < publishTop)
     }
 
