@@ -28,9 +28,12 @@ internal fun board(vararg tiers: Pair<Long, List<Long>>, id: Long = 1): TierList
 
 internal fun TierList.ids(): List<Pair<Long, List<Long>>> = tiers.map { tier -> tier.id to tier.items.map { it.id } }
 
-/** A repository holding one board that moves its cards the way the database does, and remembers every move. */
+/**
+ * A repository holding one board that moves its cards the way the database does, and remembers every move.
+ * The board is written on the main thread and read from the test's own, so each write is seen at once.
+ */
 internal class MovingTierRepository(
-    var board: TierList,
+    @Volatile var board: TierList,
     private val rest: TierRepository = RecordingTierRepository(),
 ) : TierRepository by rest {
 
