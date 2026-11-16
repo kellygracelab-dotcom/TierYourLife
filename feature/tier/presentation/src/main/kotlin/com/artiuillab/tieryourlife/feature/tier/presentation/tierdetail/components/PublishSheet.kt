@@ -70,6 +70,8 @@ object PublishSheetTags {
     const val AS_SECTION = "publish_sheet_as_section"
     const val PUBLISH = "publish_sheet_publish"
     const val ERROR = "publish_sheet_error"
+    const val COVER = "publish_sheet_cover"
+    const val CHANGE_COVER = "publish_sheet_change_cover"
 
     fun section(id: String) = "publish_sheet_section_$id"
     fun topic(name: String) = "publish_sheet_topic_$name"
@@ -84,6 +86,8 @@ data class PublishSheetCalls(
     val onProposeSection: ((String) -> Unit)? = null,
     val onPublish: () -> Unit = {},
     val onDismiss: () -> Unit = {},
+    /** The cover picker, back to this sheet after; null leaves the cover out. */
+    val onChangeCover: (() -> Unit)? = null,
 )
 
 /**
@@ -106,6 +110,12 @@ fun PublishSheet(
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
                 Heading(list)
+                calls.onChangeCover?.let { change ->
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        BlockHead(stringResource(R.string.publish_sheet_cover))
+                        CoverBlock(list, enabled = !busy, onChange = change)
+                    }
+                }
                 SectionBlock(list.category, state.sectionWanted, enabled = !busy, onSection = calls.onSection)
                 TopicBlock(list, state.topics, enabled = !busy, calls = calls)
                 Explanation()
