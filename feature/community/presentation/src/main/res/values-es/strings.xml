@@ -52,6 +52,7 @@
     <string name="community_tile_reported">Denunciado. Una persona lo revisará.</string>
     <string name="feed_sort_popular">Populares</string>
     <string name="feed_sort_recent">Recientes</string>
+    <string name="feed_chip_new">Nuevas</string>
     <string name="feed_source_everyone">Todas</string>
     <string name="feed_source_following">Siguiendo</string>
     <string name="home_community_empty">Todavía no hay nada publicado</string>
@@ -153,7 +154,6 @@
     <string name="community_drag_any_card">Arrastra una tarjeta</string>
     <string name="community_based_on">Basada en «%1$s» de %2$s</string>
     <string name="community_list_source">Fuente: %1$s</string>
-    <string name="explore_tab_explore">Explorar</string>
     <string name="explore_tab_following">Siguiendo</string>
     <string name="explore_title_community">Comunidad</string>
     <string name="explore_follow_section">Seguir %1$s</string>
@@ -183,6 +183,7 @@
     <string name="explore_search_nothing">No hay resultados.</string>
     <string name="search_sections">Secciones</string>
     <string name="search_lists">Listas</string>
+    <string name="search_popular_topics">Temas populares</string>
     <string name="section_topics">Temas</string>
     <string name="section_tier_lists">Tier lists</string>
     <string name="section_show_fewer">Mostrar menos</string>
@@ -207,7 +208,7 @@
     <string name="following_pick_follow">Seguir · %1$d</string>
     <string name="following_pick_none">Elige al menos una</string>
     <string name="following_nothing_published">Nadie a quien sigues ha publicado nada todavía.</string>
-    <string name="following_go_explore">Ir a Explorar</string>
+    <string name="following_see_all_lists">Ver todas las listas</string>
     <string name="manage_sections">Secciones · %1$d</string>
     <string name="manage_topics">Temas · %1$d</string>
     <string name="manage_people">Personas · %1$d</string>

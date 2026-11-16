@@ -53,6 +53,7 @@
     <string name="community_tile_reported">Zgłoszono. Człowiek to sprawdzi.</string>
     <string name="feed_sort_popular">Popularne</string>
     <string name="feed_sort_recent">Najnowsze</string>
+    <string name="feed_chip_new">Nowe</string>
     <string name="feed_source_everyone">Wszystkie</string>
     <string name="feed_source_following">Obserwowani</string>
     <string name="home_community_empty">Nic jeszcze nie opublikowano</string>
@@ -155,7 +156,6 @@
     <string name="community_drag_any_card">Przeciągnij kartę</string>
     <string name="community_based_on">Na podstawie „%1$s” od %2$s</string>
     <string name="community_list_source">Źródło: %1$s</string>
-    <string name="explore_tab_explore">Odkrywaj</string>
     <string name="explore_tab_following">Obserwowane</string>
     <string name="explore_title_community">Społeczność</string>
     <string name="explore_follow_section">Obserwuj: %1$s</string>
@@ -185,6 +185,7 @@
     <string name="explore_search_nothing">Nic nie pasuje.</string>
     <string name="search_sections">Działy</string>
     <string name="search_lists">Listy</string>
+    <string name="search_popular_topics">Popularne tematy</string>
     <string name="section_topics">Tematy</string>
     <string name="section_tier_lists">Tier listy</string>
     <string name="section_show_fewer">Pokaż mniej</string>
@@ -210,7 +211,7 @@
     <string name="following_pick_follow">Obserwuj · %1$d</string>
     <string name="following_pick_none">Wybierz co najmniej jeden</string>
     <string name="following_nothing_published">Obserwowani nie opublikowali jeszcze niczego.</string>
-    <string name="following_go_explore">Przejdź do Odkrywaj</string>
+    <string name="following_see_all_lists">Zobacz wszystkie listy</string>
     <string name="manage_sections">Działy · %1$d</string>
     <string name="manage_topics">Tematy · %1$d</string>
     <string name="manage_people">Osoby · %1$d</string>

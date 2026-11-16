@@ -14,21 +14,16 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +39,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedAuthor
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowedSection
@@ -59,15 +53,11 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Dashed
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.HomeLayout
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.NearEndWatcher
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScrolledDownWatcher
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.SectionTile
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.TileRows
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.TileStyle
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.WideContentMax
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.feedItems
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.rememberSkeletonAlpha
 import com.artiuillab.tieryourlife.feature.community.presentation.section.ProposalNotices
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionArt
 import com.artiuillab.tieryourlife.feature.community.presentation.section.SectionIcon
@@ -92,81 +82,60 @@ internal class FollowingActions(
     val onManage: () -> Unit = {},
     val onTogglePick: (String) -> Unit = {},
     val onFollowPicked: () -> Unit = {},
+    /** Back to the popular lists, from a Following that has none. */
     val onGoToExplore: () -> Unit = {},
     val onOpenAllSections: () -> Unit = {},
     val onOpenWaitingSection: (Section) -> Unit = {},
     val onDismissNotice: (String) -> Unit = {},
 )
 
-/** The Following tab (§4): what is followed, then everything new from it, newest first, each card saying why. */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun FollowingTab(
+/**
+ * What the Following chip shows under Community's chips (§4): what is
+ * followed, then everything new from it, newest first, each card saying why;
+ * or, following nothing, every section to pick from.
+ */
+internal fun LazyGridScope.followingItems(
     state: FollowingFeedUiState,
     layout: HomeLayout,
-    gridState: LazyGridState,
+    skeletonAlpha: () -> Float,
     actions: FollowingActions,
     cards: CardActions,
-    onRefresh: () -> Unit,
     onRetry: () -> Unit,
-    onLoadMore: () -> Unit,
-    onScrolledDown: (Boolean) -> Unit,
 ) {
-    val skeletonAlpha = rememberSkeletonAlpha(running = state.feed.phase == FeedPhase.Loading)
-    ScrolledDownWatcher(gridState, onScrolledDown)
-    NearEndWatcher(gridState, state.feed.lists.size, onLoadMore)
-    PullToRefreshBox(isRefreshing = state.feed.refreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(layout.feedColumns),
-                state = gridState,
-                modifier = Modifier
-                    .testTag(ExploreTestTags.FOLLOWING_FEED)
-                    .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
-                    .fillMaxSize(),
-                contentPadding = systemBarsContentPadding(start = 16.dp, end = 16.dp, bottom = if (state.followsNothing) PickBarRoom else 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                if (state.followsNothing) {
-                    item(key = "empty", span = { GridItemSpan(maxLineSpan) }) {
-                        FollowsNothing(state.picked, actions)
-                    }
-                    return@LazyVerticalGrid
-                }
-                val following = state.following
-                if (state.proposalNotices.isNotEmpty()) {
-                    item(key = "notices", span = { GridItemSpan(maxLineSpan) }) {
-                        ProposalNotices(state.proposalNotices, onDismiss = actions.onDismissNotice, modifier = Modifier.padding(top = 12.dp))
-                    }
-                }
-                if (following != null) {
-                    item(key = "strip", span = { GridItemSpan(maxLineSpan) }) {
-                        FollowedStrip(following, state.waiting, actions, state.waitingSections)
-                    }
-                }
-                if (state.feed.phase == FeedPhase.Ready && state.feed.lists.isEmpty()) {
-                    item(key = "nothing", span = { GridItemSpan(maxLineSpan) }) {
-                        NothingPublished(actions.onGoToExplore)
-                    }
-                } else {
-                    feedItems(state.feed, layout, skeletonAlpha, cards, onRetry) { summary ->
-                        following?.let { reasonFor(summary, it) }?.let { reasonText(it) }
-                    }
-                }
-            }
-            if (state.followsNothing) {
-                PickBar(state.picked.size, state.followingPicked, actions.onFollowPicked, Modifier.align(Alignment.BottomCenter))
-            }
+    if (state.followsNothing) {
+        item(key = "empty", span = { GridItemSpan(maxLineSpan) }) {
+            FollowsNothing(state.picked, actions)
+        }
+        return
+    }
+    val following = state.following
+    if (state.proposalNotices.isNotEmpty()) {
+        item(key = "notices", span = { GridItemSpan(maxLineSpan) }) {
+            ProposalNotices(state.proposalNotices, onDismiss = actions.onDismissNotice)
+        }
+    }
+    if (following != null) {
+        item(key = "strip", span = { GridItemSpan(maxLineSpan) }) {
+            FollowedStrip(following, state.waiting, actions, state.waitingSections)
+        }
+    }
+    if (state.feed.phase == FeedPhase.Ready && state.feed.lists.isEmpty()) {
+        item(key = "nothing", span = { GridItemSpan(maxLineSpan) }) {
+            NothingPublished(actions.onGoToExplore)
+        }
+    } else {
+        feedItems(state.feed, layout, skeletonAlpha, cards, onRetry) { summary ->
+            following?.let { reasonFor(summary, it) }?.let { reasonText(it) }
         }
     }
 }
 
-private val PickBarRoom = 96.dp
+/** Room under the grid for [PickBar], which stands over its end. */
+internal val PickBarRoom = 96.dp
 
-/** Under the empty tab's sections: Follow, once something is picked. */
+/** Under the empty Following's sections: Follow, once something is picked. */
 @Composable
-private fun PickBar(count: Int, busy: Boolean, onFollow: () -> Unit, modifier: Modifier) {
+internal fun PickBar(count: Int, busy: Boolean, onFollow: () -> Unit, modifier: Modifier) {
     Column(modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         Button(
@@ -376,6 +345,6 @@ private fun NothingPublished(onGoToExplore: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        TextButton(onClick = onGoToExplore) { Text(stringResource(R.string.following_go_explore)) }
+        TextButton(onClick = onGoToExplore) { Text(stringResource(R.string.following_see_all_lists)) }
     }
 }

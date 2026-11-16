@@ -32,6 +32,9 @@ data class SearchResults(
 
 private const val SEARCH_DELAY_MILLIS = 300L
 
+/** As many as the empty search has room for above the keyboard. */
+private const val POPULAR_TOPICS = 4
+
 /** Where a search looks when it is not everywhere. */
 sealed interface SearchScope {
     /** The section's topics and lists. */
@@ -61,12 +64,24 @@ class ExploreSearch(
     /** Where the search looks; null for everywhere. */
     val within: StateFlow<SearchScope?> = _within.asStateFlow()
 
+    private val _popularTopics = MutableStateFlow<List<Topic>>(emptyList())
+
+    /** What a search everywhere offers before anything is typed: the biggest approved topics, whatever their section. */
+    val popularTopics: StateFlow<List<Topic>> = _popularTopics.asStateFlow()
+
     private var job: Job? = null
 
     fun enter(within: SearchScope? = null) {
         _within.value = within
         _query.value = ""
         _results.value = SearchResults()
+        if (within == null && _popularTopics.value.isEmpty()) {
+            scope.launch {
+                community.topics().onSuccess { topics ->
+                    _popularTopics.value = topics.filter { it.status == TopicStatus.Approved }.take(POPULAR_TOPICS)
+                }
+            }
+        }
     }
 
     /** From one section or topic to everywhere, asking again for what is typed. */

@@ -50,6 +50,7 @@
     <string name="community_tile_reported">通報しました。人が確認します。</string>
     <string name="feed_sort_popular">人気</string>
     <string name="feed_sort_recent">新着</string>
+    <string name="feed_chip_new">新着</string>
     <string name="feed_source_everyone">すべて</string>
     <string name="feed_source_following">フォロー中</string>
     <string name="home_community_empty">まだ何も公開されていません</string>
@@ -149,7 +150,6 @@
     <string name="community_drag_any_card">カードをドラッグ</string>
     <string name="community_based_on">%2$sの「%1$s」をもとに</string>
     <string name="community_list_source">出典：%1$s</string>
-    <string name="explore_tab_explore">見つける</string>
     <string name="explore_tab_following">フォロー中</string>
     <string name="explore_title_community">コミュニティ</string>
     <string name="explore_follow_section">%1$sをフォロー</string>
@@ -179,6 +179,7 @@
     <string name="explore_search_nothing">一致するものがありません。</string>
     <string name="search_sections">セクション</string>
     <string name="search_lists">リスト</string>
+    <string name="search_popular_topics">人気のトピック</string>
     <string name="section_topics">トピック</string>
     <string name="section_tier_lists">ティア表</string>
     <string name="section_show_fewer">閉じる</string>
@@ -201,7 +202,7 @@
     <string name="following_pick_follow">フォロー · %1$d</string>
     <string name="following_pick_none">1つ以上選んでください</string>
     <string name="following_nothing_published">フォロー中の人はまだ何も公開していません。</string>
-    <string name="following_go_explore">見つけるへ</string>
+    <string name="following_see_all_lists">すべてのリストを見る</string>
     <string name="manage_sections">セクション · %1$d</string>
     <string name="manage_topics">トピック · %1$d</string>
     <string name="manage_people">人 · %1$d</string>
