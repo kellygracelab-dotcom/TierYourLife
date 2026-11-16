@@ -272,9 +272,13 @@
     <string name="publish_sheet_topic_plain">Tema · opcional</string>
     <string name="publish_sheet_pick_section">Escolha uma seção para ver os temas dela.</string>
     <string name="publish_sheet_propose_topic">Propor um tema</string>
-    <string name="publish_sheet_topic_name">Nome do novo tema</string>
+    <string name="publish_sheet_topic_name">Dê nome a um novo tema</string>
     <string name="publish_sheet_add">Adicionar</string>
     <string name="publish_sheet_as_section">Propor como seção separada, não como tema</string>
     <string name="publish_sheet_moderator">Um moderador vai analisar. Até lá, a lista fica em %1$s com este rótulo.</string>
     <string name="publish_sheet_how">Ela aparece em Comunidade com o seu nome. Qualquer pessoa com o link pode organizá-la. Você continua podendo editá-la.</string>
+    <string name="publish_sheet_new">novo</string>
+    <string name="publish_sheet_new_section">Nova seção</string>
+    <string name="publish_sheet_continue">Continuar</string>
+    <string name="publish_sheet_section_note">Uma seção precisa de um ícone e de uma imagem 16:10 com pelo menos 960 px de largura. Você adiciona isso a seguir. Até um moderador decidir, a lista fica em %1$s.</string>
 </resources>

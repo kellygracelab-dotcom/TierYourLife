@@ -287,9 +287,13 @@
     <string name="publish_sheet_topic_plain">Temat · opcjonalnie</string>
     <string name="publish_sheet_pick_section">Wybierz dział, aby zobaczyć jego tematy.</string>
     <string name="publish_sheet_propose_topic">Zaproponuj temat</string>
-    <string name="publish_sheet_topic_name">Nazwa nowego tematu</string>
+    <string name="publish_sheet_topic_name">Nazwij nowy temat</string>
     <string name="publish_sheet_add">Dodaj</string>
     <string name="publish_sheet_as_section">Zaproponuj jako osobny dział, nie temat</string>
     <string name="publish_sheet_moderator">Sprawdzi go moderator. Do tego czasu lista zostaje w dziale %1$s z tą etykietą.</string>
     <string name="publish_sheet_how">Pojawi się w Społeczności pod Twoim imieniem. Każdy, kto ma link, może ją ułożyć. Nadal możesz ją edytować.</string>
+    <string name="publish_sheet_new">nowy</string>
+    <string name="publish_sheet_new_section">Nowy dział</string>
+    <string name="publish_sheet_continue">Dalej</string>
+    <string name="publish_sheet_section_note">Dział potrzebuje ikony i obrazu 16:10 o szerokości co najmniej 960 px. Dodasz je w następnym kroku. Dopóki moderator nie zdecyduje, lista zostaje w dziale %1$s.</string>
 </resources>

@@ -272,9 +272,13 @@
     <string name="publish_sheet_topic_plain">Tema · opcional</string>
     <string name="publish_sheet_pick_section">Elige una sección para ver sus temas.</string>
     <string name="publish_sheet_propose_topic">Proponer un tema</string>
-    <string name="publish_sheet_topic_name">Nombre del tema nuevo</string>
+    <string name="publish_sheet_topic_name">Nombra un tema nuevo</string>
     <string name="publish_sheet_add">Añadir</string>
     <string name="publish_sheet_as_section">Proponer como sección aparte, no como tema</string>
     <string name="publish_sheet_moderator">Lo revisa un moderador. Hasta entonces la lista queda en %1$s con esta etiqueta.</string>
     <string name="publish_sheet_how">Aparece en Comunidad con tu nombre. Cualquiera con el enlace puede ordenarla. Puedes seguir editándola.</string>
+    <string name="publish_sheet_new">nuevo</string>
+    <string name="publish_sheet_new_section">Nueva sección</string>
+    <string name="publish_sheet_continue">Continuar</string>
+    <string name="publish_sheet_section_note">Una sección necesita un icono y una imagen 16:10 de al menos 960 px de ancho. Los añades a continuación. Hasta que un moderador decida, la lista queda en %1$s.</string>
 </resources>

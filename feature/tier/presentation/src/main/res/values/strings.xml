@@ -263,4 +263,8 @@
     <string name="publish_sheet_as_section">Propose as a separate section, not a topic</string>
     <string name="publish_sheet_moderator">A moderator looks at it. Until then the list stays in %1$s with this label.</string>
     <string name="publish_sheet_how">It shows in Community under your name. Anyone with the link can rank it. This board stays yours to edit.</string>
+    <string name="publish_sheet_new">new</string>
+    <string name="publish_sheet_new_section">New section</string>
+    <string name="publish_sheet_continue">Continue</string>
+    <string name="publish_sheet_section_note">A section needs an icon and a picture, 16:10, at least 960 px wide. You add them next. Until a moderator decides, the list stays in %1$s.</string>
 </resources>

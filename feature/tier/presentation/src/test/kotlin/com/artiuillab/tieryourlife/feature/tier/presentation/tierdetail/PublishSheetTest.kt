@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -78,9 +79,18 @@ class PublishSheetTest {
         composeRule.onNodeWithTag(PublishSheetTags.PROPOSE_TOPIC).performClick()
         composeRule.onNodeWithTag(PublishSheetTags.TOPIC_NAME).performTextInput("Directors")
         composeRule.onNodeWithTag(PublishSheetTags.AS_SECTION).performClick()
+        composeRule.onNodeWithText("Continue").assertExists()
+        capture("publish_sheet_propose_section")
         composeRule.onNodeWithTag(PublishSheetTags.ADD_TOPIC).performClick()
 
         assertEquals(listOf("propose A24 horror", "section form Directors"), said)
+    }
+
+    @Test
+    fun aProposedTopic_isMarkedNew_andATapTakesItOff() {
+        show(board.copy(category = "film_tv", newTopicName = "A24 horror"), PublishSheetState(topics = topics))
+        composeRule.onNodeWithTag(PublishSheetTags.topic("A24 horror")).assertTextContains("A24 horror · new").performClick()
+        assertEquals(listOf("topic null"), said)
     }
 
     @Test
@@ -111,6 +121,7 @@ class PublishSheetTest {
 
     @OptIn(ExperimentalRoborazziApi::class)
     private fun capture(name: String) {
+        composeRule.mainClock.advanceTimeBy(1_000)
         composeRule.waitForIdle()
         captureScreenRoboImage("src/test/screenshots/$name.png", roborazziOptions = OPTIONS)
     }

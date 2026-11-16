@@ -48,6 +48,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PublishIcon
+import com.artiuillab.tieryourlife.feature.community.domain.model.MAX_SECTION_NAME
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.tier.board.common.choosableSections
@@ -201,7 +202,8 @@ private fun TopicBlock(list: TierList, topics: List<Topic>?, enabled: Boolean, c
             // Chosen before, or proposed: shown, whether or not the section's first few hold it.
             val own = list.newTopicName ?: list.topicName?.takeIf { name -> list.topicId != null && shown.none { it.id == list.topicId } }
             if (own != null) {
-                Chip(label = own, selected = true, enabled = enabled, onClick = { calls.onTopic(null) }, modifier = Modifier.testTag(PublishSheetTags.topic(own)))
+                val label = if (list.newTopicName != null) "$own · ${stringResource(R.string.publish_sheet_new)}" else own
+                Chip(label = label, selected = true, enabled = enabled, onClick = { calls.onTopic(null) }, modifier = Modifier.testTag(PublishSheetTags.topic(own)))
             }
             FilterChip(
                 selected = proposing,
@@ -226,7 +228,8 @@ private fun TopicBlock(list: TierList, topics: List<Topic>?, enabled: Boolean, c
 private fun ProposeTopic(sectionName: String, enabled: Boolean, calls: PublishSheetCalls, onDone: () -> Unit) {
     var typed by rememberSaveable { mutableStateOf("") }
     var asSection by rememberSaveable { mutableStateOf(false) }
-    val name = cleanTopicName(typed)
+    val limit = if (asSection) MAX_SECTION_NAME else MAX_TOPIC_NAME_LENGTH
+    val name = cleanTopicName(typed.take(limit))
     val add = {
         if (name != null) {
             if (asSection) calls.onProposeSection?.invoke(name) else calls.onProposeTopic(name)
@@ -238,17 +241,17 @@ private fun ProposeTopic(sectionName: String, enabled: Boolean, calls: PublishSh
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
                 value = typed,
-                onValueChange = { typed = it.take(MAX_TOPIC_NAME_LENGTH) },
+                onValueChange = { typed = it.take(limit) },
                 modifier = Modifier.weight(1f).testTag(PublishSheetTags.TOPIC_NAME),
                 enabled = enabled,
                 singleLine = true,
-                placeholder = { Text(stringResource(R.string.publish_sheet_topic_name)) },
-                supportingText = { Text("${typed.length}/$MAX_TOPIC_NAME_LENGTH") },
+                placeholder = { Text(stringResource(if (asSection) R.string.publish_sheet_new_section else R.string.publish_sheet_topic_name)) },
+                supportingText = { Text("${minOf(typed.length, limit)}/$limit") },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { add() }),
             )
             FilledTonalButton(onClick = add, enabled = enabled && name != null, modifier = Modifier.testTag(PublishSheetTags.ADD_TOPIC)) {
-                Text(stringResource(R.string.publish_sheet_add))
+                Text(stringResource(if (asSection) R.string.publish_sheet_continue else R.string.publish_sheet_add))
             }
         }
         if (calls.onProposeSection != null) {
@@ -258,7 +261,7 @@ private fun ProposeTopic(sectionName: String, enabled: Boolean, calls: PublishSh
             }
         }
         Text(
-            stringResource(R.string.publish_sheet_moderator, sectionName),
+            stringResource(if (asSection) R.string.publish_sheet_section_note else R.string.publish_sheet_moderator, sectionName),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

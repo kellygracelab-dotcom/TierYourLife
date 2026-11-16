@@ -242,9 +242,13 @@
     <string name="publish_sheet_topic_plain">トピック・任意</string>
     <string name="publish_sheet_pick_section">セクションを選ぶとトピックが表示されます。</string>
     <string name="publish_sheet_propose_topic">トピックを提案</string>
-    <string name="publish_sheet_topic_name">新しいトピックの名前</string>
+    <string name="publish_sheet_topic_name">新しいトピックを名付ける</string>
     <string name="publish_sheet_add">追加</string>
     <string name="publish_sheet_as_section">トピックではなく別のセクションとして提案</string>
     <string name="publish_sheet_moderator">モデレーターが確認します。それまでリストはこのラベル付きで%1$sに置かれます。</string>
     <string name="publish_sheet_how">あなたの名前でコミュニティに表示されます。リンクを知っている人なら誰でも並べられます。このボードは引き続き編集できます。</string>
+    <string name="publish_sheet_new">新規</string>
+    <string name="publish_sheet_new_section">新しいセクション</string>
+    <string name="publish_sheet_continue">次へ</string>
+    <string name="publish_sheet_section_note">セクションにはアイコンと、幅960px以上の16:10の画像が必要です。次の画面で追加します。モデレーターが決めるまで、リストは%1$sに置かれます。</string>
 </resources>

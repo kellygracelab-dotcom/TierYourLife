@@ -317,9 +317,13 @@
     <string name="publish_sheet_topic_plain">الموضوع · اختياري</string>
     <string name="publish_sheet_pick_section">اختر قسمًا لترى مواضيعه.</string>
     <string name="publish_sheet_propose_topic">اقترح موضوعًا</string>
-    <string name="publish_sheet_topic_name">اسم الموضوع الجديد</string>
+    <string name="publish_sheet_topic_name">سمِّ موضوعًا جديدًا</string>
     <string name="publish_sheet_add">إضافة</string>
     <string name="publish_sheet_as_section">اقترحه قسمًا مستقلًا، لا موضوعًا</string>
     <string name="publish_sheet_moderator">سيراجعه مشرف. حتى ذلك الحين تبقى القائمة في %1$s بهذه التسمية.</string>
     <string name="publish_sheet_how">تظهر في المجتمع باسمك. يمكن لأي شخص لديه الرابط ترتيبها. ويمكنك مواصلة تعديلها.</string>
+    <string name="publish_sheet_new">جديد</string>
+    <string name="publish_sheet_new_section">قسم جديد</string>
+    <string name="publish_sheet_continue">متابعة</string>
+    <string name="publish_sheet_section_note">يحتاج القسم إلى أيقونة وصورة بنسبة 16:10 وعرض 960 بكسل على الأقل. ستضيفهما في الخطوة التالية. إلى أن يقرر المشرف، تبقى القائمة في %1$s.</string>
 </resources>
