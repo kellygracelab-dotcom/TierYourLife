@@ -57,7 +57,6 @@
     <string name="home_community_empty_body">Hier erscheinen Listen, die andere öffentlich gemacht haben.</string>
     <string name="home_community_failed">Community konnte nicht geladen werden</string>
     <string name="home_community_failed_body">Prüfe deine Verbindung.</string>
-    <string name="home_community_unverified">Diese Kopie ließ sich nicht bestätigen</string>
     <string name="home_community_unverified_body">Google Play bestätigt die Installation, bevor die Community aufgeht. Bei einer Installation aus Play erledigt sich das meist von selbst.</string>
     <string name="home_following_empty">Niemand, dem du folgst, hat ein Board in %1$s.</string>
     <string name="home_following_empty_all">Wem du folgst, hat noch nichts veröffentlicht.</string>
@@ -326,4 +325,5 @@
     <string name="community_remove_ranking_title">Deine Rangliste aus den Ranglisten entfernen?</string>
     <string name="community_remove_ranking_body">Sie verschwindet aus den Ranglisten dieser Liste. Dein Board bleibt in deinen Listen.</string>
     <string name="community_remove_ranking_confirm">Entfernen</string>
+    <string name="feed_unverified">Diese App konnte nicht geprüft werden, deshalb laden die Listen nicht.</string>
 </resources>

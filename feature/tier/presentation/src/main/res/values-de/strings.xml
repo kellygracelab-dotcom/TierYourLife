@@ -278,4 +278,7 @@
         <item quantity="one">Deine Collage · Bilder: %d</item>
         <item quantity="other">Deine Collage · Bilder: %d</item>
     </plurals>
+    <string name="publish_sheet_name">Titel</string>
+    <string name="publish_sheet_name_hint">Worum geht es in dieser Liste?</string>
+    <string name="publish_sheet_name_first">Gib der Liste zuerst einen Titel.</string>
 </resources>

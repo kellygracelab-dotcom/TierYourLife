@@ -310,4 +310,7 @@
         <item quantity="many">Twój kolaż · obrazy: %d</item>
         <item quantity="other">Twój kolaż · obrazy: %d</item>
     </plurals>
+    <string name="publish_sheet_name">Tytuł</string>
+    <string name="publish_sheet_name_hint">Co to za lista?</string>
+    <string name="publish_sheet_name_first">Najpierw nadaj liście tytuł.</string>
 </resources>

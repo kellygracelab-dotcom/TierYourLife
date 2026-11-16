@@ -294,4 +294,7 @@
         <item quantity="many">Tu collage · imágenes: %d</item>
         <item quantity="other">Tu collage · imágenes: %d</item>
     </plurals>
+    <string name="publish_sheet_name">Nombre</string>
+    <string name="publish_sheet_name_hint">¿De qué es esta lista?</string>
+    <string name="publish_sheet_name_first">Primero ponle un nombre a la lista.</string>
 </resources>

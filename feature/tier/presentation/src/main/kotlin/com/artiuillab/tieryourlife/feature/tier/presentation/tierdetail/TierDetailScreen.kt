@@ -238,6 +238,7 @@ private fun BoardPublishSheet(
                 }
             },
             onPublish = viewModel::publishFromSheet,
+            onName = viewModel::nameFromSheet,
             onDismiss = viewModel::closePublishSheet,
             onChangeCover = {
                 viewModel.leavePublishSheetForCover()

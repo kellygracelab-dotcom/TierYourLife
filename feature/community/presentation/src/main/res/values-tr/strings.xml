@@ -57,7 +57,6 @@
     <string name="home_community_empty_body">İnsanların herkese açık yaptığı listeler burada görünür.</string>
     <string name="home_community_failed">Topluluk yüklenemedi</string>
     <string name="home_community_failed_body">Bağlantınızı kontrol edin.</string>
-    <string name="home_community_unverified">Bu kopya doğrulanamadı</string>
     <string name="home_community_unverified_body">Google Play, topluluk açılmadan önce kurulumu doğrular. Play’den kurduysanız genellikle kendiliğinden geçer.</string>
     <string name="home_following_empty">Takip ettiklerinizin %1$s kategorisinde panosu yok.</string>
     <string name="home_following_empty_all">Takip ettikleriniz henüz bir şey yayımlamadı.</string>
@@ -326,4 +325,5 @@
     <string name="community_remove_ranking_title">Sıralamanız Sıralamalardan kaldırılsın mı?</string>
     <string name="community_remove_ranking_body">Bu listenin sıralamalarından kalkar. Panonuz listelerinizde kalır.</string>
     <string name="community_remove_ranking_confirm">Kaldır</string>
+    <string name="feed_unverified">Uygulama doğrulanamadı, bu yüzden listeler yüklenemiyor.</string>
 </resources>

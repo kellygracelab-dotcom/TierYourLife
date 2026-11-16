@@ -279,4 +279,7 @@
         <item quantity="one">Your collage · %d picture</item>
         <item quantity="other">Your collage · %d pictures</item>
     </plurals>
+    <string name="publish_sheet_name">Name</string>
+    <string name="publish_sheet_name_hint">What is this list?</string>
+    <string name="publish_sheet_name_first">Give the list a name first.</string>
 </resources>

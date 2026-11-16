@@ -342,4 +342,7 @@
         <item quantity="many">كولاجك · الصور: %d</item>
         <item quantity="other">كولاجك · الصور: %d</item>
     </plurals>
+    <string name="publish_sheet_name">الاسم</string>
+    <string name="publish_sheet_name_hint">ما هذه القائمة؟</string>
+    <string name="publish_sheet_name_first">أعطِ القائمة اسمًا أولًا.</string>
 </resources>

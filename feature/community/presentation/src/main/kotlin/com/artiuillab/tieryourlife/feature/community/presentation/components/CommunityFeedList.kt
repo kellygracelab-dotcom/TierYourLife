@@ -163,7 +163,7 @@ internal fun CommunityFeedList(
 
             // No Try again: nothing the reader does on this screen can change the answer.
             CommunityFeed.Unverified -> CommunityMessage(
-                title = stringResource(R.string.home_community_unverified),
+                title = stringResource(R.string.feed_unverified),
                 body = stringResource(R.string.home_community_unverified_body),
                 testTag = CommunityTestTags.COMMUNITY_UNVERIFIED,
             )

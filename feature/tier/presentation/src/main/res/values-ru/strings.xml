@@ -310,4 +310,7 @@
         <item quantity="many">Ваш коллаж · картинок: %d</item>
         <item quantity="other">Ваш коллаж · картинок: %d</item>
     </plurals>
+    <string name="publish_sheet_name">Название</string>
+    <string name="publish_sheet_name_hint">Что это за список?</string>
+    <string name="publish_sheet_name_first">Сначала дайте списку название.</string>
 </resources>

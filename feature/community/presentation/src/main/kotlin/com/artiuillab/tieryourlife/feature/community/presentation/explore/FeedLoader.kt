@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.explore
 
+import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedFreshness
 import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
@@ -39,6 +40,8 @@ data class FeedPane(
     val followingNobody: Boolean = false,
     /** Put away in this sitting, id to whether it was reported: a quiet note where the card was. */
     val justHidden: Map<String, Boolean> = emptyMap(),
+    /** The proxy would not vouch for this installation: not the connection, so the block says so. */
+    val unverified: Boolean = false,
 )
 
 sealed interface FeedNotice {
@@ -214,12 +217,12 @@ class FeedLoader(
     private fun holds(pulled: Boolean, different: Boolean): Boolean = scrolledDown && !pulled && different && shown.isNotEmpty()
 
     private suspend fun failed(error: Throwable, now: Long, pulled: Boolean) {
-        // A refused App Check token is a failure like any other here: the person never sees the term.
+        // A refused App Check token is told apart from a lost connection, in plain words: "check your connection" would send the person the wrong way.
         Timber.w(error, "Loading %s failed", key)
         lastAttemptFailed = true
         val keptAt = fetchedAt
         if (keptAt == null) {
-            _pane.update { it.copy(phase = FeedPhase.Failed, refreshing = false, retrying = false) }
+            _pane.update { it.copy(phase = FeedPhase.Failed, refreshing = false, retrying = false, unverified = error is AppUnverified) }
             return
         }
         _pane.update {
@@ -241,6 +244,7 @@ class FeedLoader(
             it.copy(
                 lists = shown.filter(visible),
                 phase = FeedPhase.Ready,
+                unverified = false,
                 canLoadMore = cursor != null,
                 loadingMore = false,
                 refreshing = false,

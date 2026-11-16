@@ -270,6 +270,7 @@ private fun TopicBackdrop(section: Section, picture: String?, focus: CoverFocus?
 private fun CommunityFeed.asPane(): FeedPane = when (this) {
     CommunityFeed.Loading -> FeedPane()
     is CommunityFeed.Ready -> FeedPane(lists = lists, phase = FeedPhase.Ready, canLoadMore = canLoadMore, loadingMore = loadingMore)
+    CommunityFeed.Unverified -> FeedPane(phase = FeedPhase.Failed, unverified = true)
     else -> FeedPane(phase = FeedPhase.Failed)
 }
 

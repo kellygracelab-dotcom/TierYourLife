@@ -160,6 +160,16 @@ class CommunityScreenshotTest {
     }
 
     @Test
+    fun explore_unverified_saysSoRatherThanBlamingTheConnection() = capture("explore_unverified") {
+        CommunityHomeContent(explore.copy(feed = FeedPane(phase = FeedPhase.Failed, unverified = true)), FollowingFeedUiState())
+    }
+
+    @Test
+    fun explore_unverified_dark() = capture("explore_unverified_dark", dark = true) {
+        CommunityHomeContent(explore.copy(feed = FeedPane(phase = FeedPhase.Failed, unverified = true)), FollowingFeedUiState())
+    }
+
+    @Test
     fun explore_offlineWithAnOldFeedAndNewListsWaiting() = capture("explore_offline") {
         CommunityHomeContent(
             explore.copy(feed = explore.feed.copy(offlineSinceMillis = NOW - 2 * 60 * 60 * 1000L, newListsWaiting = true)),
