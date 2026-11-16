@@ -4,7 +4,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import kotlin.math.floor
 
-/** The cells stay put while the cards make room for the insertion slot. */
+/**
+ * The cells stay put while the cards make room for the insertion slot. The
+ * carried card's centre picks the cell it is over, gaps split down the middle,
+ * so a move by half a card either way shifts it one place, as on the web.
+ */
 internal data class WrappedDropGrid(
     val bounds: Rect,
     val cellWidth: Int,
@@ -17,7 +21,7 @@ internal data class WrappedDropGrid(
         val x = if (rightToLeft) bounds.right - pointer.x else pointer.x - bounds.left
         val y = pointer.y - bounds.top
         val row = floor((y + gap / 2f) / (cellHeight + gap)).toInt().coerceAtLeast(0)
-        val column = floor((x + cellWidth / 2f) / (cellWidth + gap)).toInt().coerceIn(0, columns)
+        val column = floor((x + gap / 2f) / (cellWidth + gap)).toInt().coerceIn(0, columns)
         val count = itemIds.size - if (liftedId in itemIds) 1 else 0
         return (row * columns + column).coerceIn(0, count)
     }
