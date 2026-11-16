@@ -13,7 +13,6 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -30,7 +29,7 @@ class WrappedDragReturnTest : TierDetailScreenTestBase() {
         val board = listOf(tier(1, "S", cards), tier(6, "Pool", emptyList(), isPool = true)).asTierList()
         var moved: Triple<Long, Long, Int>? = null
         composeRule.setContent {
-            TierYourLifeTheme {
+            BoardTestTheme {
                 CompositionLocalProvider(LocalLayoutDirection provides direction) {
                     Box(Modifier.width(380.dp).fillMaxHeight()) {
                         TierDetailScreenContent(

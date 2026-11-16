@@ -9,7 +9,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -59,7 +58,7 @@ class TierDetailPoolSheetTest {
 
     private fun setScreen(list: TierList, readOnly: Boolean) {
         composeRule.setContent {
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(list),
                     actions = TierDetailActions(),
