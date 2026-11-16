@@ -206,19 +206,10 @@
     <string name="list_settings_cover_adjust">ضبط الموضع</string>
     <string name="list_settings_cover_adjust_sub">أي جزء من الصورة يظهر</string>
     <string name="one_by_one_toggle">واحدة تلو الأخرى</string>
-    <string name="one_by_one_on">التصنيف بطاقةً بطاقة</string>
     <string name="one_by_one_skip">تخطَّ</string>
     <string name="one_by_one_to_pool">إلى المجمّع</string>
     <string name="one_by_one_done">كل البطاقات في أماكنها</string>
     <string name="one_by_one_exit">خروج</string>
-    <plurals name="one_by_one_left">
-        <item quantity="zero">لم يبقَ شيء</item>
-        <item quantity="one">بقيت بطاقة واحدة</item>
-        <item quantity="two">بقيت بطاقتان</item>
-        <item quantity="few">بقيت %d بطاقات</item>
-        <item quantity="many">بقيت %d بطاقة</item>
-        <item quantity="other">بقيت %d بطاقة</item>
-    </plurals>
     <string name="board_publish">نشر</string>
     <string name="board_publish_update">تحديث</string>
     <string name="board_publish_ranking">عرض في الترتيبات</string>
@@ -233,5 +224,31 @@
     <string name="board_published_view">عرض</string>
     <string name="board_publishing">جارٍ النشر…</string>
     <string name="board_updating">جارٍ التحديث…</string>
-    <string name="list_settings_manual_add_sub">صورتك أو اسم من عندك</string>
+    <plurals name="pool_cards_left">
+        <item quantity="zero">لم تبقَ بطاقات</item>
+        <item quantity="one">بقيت بطاقة واحدة</item>
+        <item quantity="two">بقيت بطاقتان</item>
+        <item quantity="few">بقيت %d بطاقات</item>
+        <item quantity="many">بقيت %d بطاقة</item>
+        <item quantity="other">بقيت %d بطاقة</item>
+    </plurals>
+    <string name="one_by_one_place_in">وضع %1$s في %2$s</string>
+    <plurals name="board_cards_count">
+        <item quantity="zero">لا بطاقات</item>
+        <item quantity="one">بطاقة واحدة</item>
+        <item quantity="two">بطاقتان</item>
+        <item quantity="few">%d بطاقات</item>
+        <item quantity="many">%d بطاقة</item>
+        <item quantity="other">%d بطاقة</item>
+    </plurals>
+    <plurals name="board_cards_placed">
+        <item quantity="zero">وُضع %d</item>
+        <item quantity="one">وُضع %d</item>
+        <item quantity="two">وُضع %d</item>
+        <item quantity="few">وُضع %d</item>
+        <item quantity="many">وُضع %d</item>
+        <item quantity="other">وُضع %d</item>
+    </plurals>
+    <string name="board_nothing_placed">لم يوضع شيء بعد</string>
+    <string name="board_header_counts">%1$s · %2$s</string>
 </resources>

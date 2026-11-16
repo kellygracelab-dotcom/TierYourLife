@@ -208,7 +208,7 @@ fun PoolColumn(
             )
         }
         // At the foot, so the head leaves a short window's cards their room.
-        oneByOneSwitch(offered = oneByOnePanel != null, memory = memory)?.let { Box(Modifier.padding(bottom = 10.dp)) { it() } }
+        oneByOneSwitch(offered = oneByOnePanel != null, memory = memory)?.let { Box(Modifier.padding(bottom = 10.dp)) { it(true) } }
     }
 }
 

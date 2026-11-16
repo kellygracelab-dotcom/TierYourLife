@@ -50,10 +50,10 @@
 
 
 
-    <string name="item_search_field_label">ابحث أو الصق رابطًا</string>
+    <string name="item_search_field_label">ابحث أو اكتب اسمًا</string>
     <string name="item_search_close_content_description">إغلاق البحث</string>
     <string name="item_search_clear_content_description">مسح البحث</string>
-    <string name="item_search_source_caption">تُضاف إلى مجمّع %1$s</string>
+    <string name="item_search_source_caption">الإضافة إلى %1$s</string>
     <string name="item_search_min_query">أدخل حرفين على الأقل للبحث.</string>
     <string name="item_search_empty_title">لم يُعثر على شيء لـ \"%1$s\"</string>
     <string name="item_search_error_title">تعذّر تحميل النتائج</string>
@@ -342,4 +342,11 @@
         <item quantity="many">كولاجك · الصور: %d</item>
         <item quantity="other">كولاجك · الصور: %d</item>
     </plurals>
+    <string name="item_search_add_own">أو أضف بنفسك</string>
+    <string name="item_search_own_link">الصق رابط صورة</string>
+    <string name="item_search_own_link_sub">من أي موقع — تأخذ البطاقة تلك الصورة</string>
+    <string name="item_search_own_photo">صورتك</string>
+    <string name="item_search_own_photo_sub">من المعرض أو الكاميرا</string>
+    <string name="item_search_own_name">اسم فقط</string>
+    <string name="item_search_own_name_sub">اكتبه في الحقل أعلاه، ثم اضغط إضافة</string>
 </resources>

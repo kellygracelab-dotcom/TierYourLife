@@ -13,6 +13,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -32,6 +34,7 @@ internal fun SearchField(
     onSearchClick: () -> Unit,
     onClose: () -> Unit,
     fill: Color,
+    focusRequester: FocusRequester? = null,
 ) {
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val closeDescription = stringResource(R.string.item_search_close_content_description)
@@ -76,6 +79,7 @@ internal fun SearchField(
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp, bottom = 8.dp)
             .height(56.dp)
+            .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
             .testTag(CatalogueSearchTestTags.ITEM_SEARCH_FIELD),
     )
 }

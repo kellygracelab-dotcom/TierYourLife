@@ -38,10 +38,10 @@
 
 
 
-    <string name="item_search_field_label">Ara veya bağlantı yapıştır</string>
+    <string name="item_search_field_label">Arayın ya da bir ad yazın</string>
     <string name="item_search_close_content_description">Aramayı kapat</string>
     <string name="item_search_clear_content_description">Aramayı temizle</string>
-    <string name="item_search_source_caption">%1$s havuzuna ekleniyor</string>
+    <string name="item_search_source_caption">%1$s listesine ekleniyor</string>
     <string name="item_search_min_query">Aramak için en az iki harf girin.</string>
     <string name="item_search_empty_title">\"%1$s\" için bir şey bulunamadı</string>
     <string name="item_search_error_title">Sonuçlar yüklenemedi</string>
@@ -278,4 +278,11 @@
         <item quantity="one">Kendi kolajın · resim: %d</item>
         <item quantity="other">Kendi kolajın · resim: %d</item>
     </plurals>
+    <string name="item_search_add_own">Ya da kendiniz ekleyin</string>
+    <string name="item_search_own_link">Bir görsel bağlantısı yapıştırın</string>
+    <string name="item_search_own_link_sub">Herhangi bir siteden — kart o görseli alır</string>
+    <string name="item_search_own_photo">Kendi fotoğrafınız</string>
+    <string name="item_search_own_photo_sub">Galeriden ya da kameradan</string>
+    <string name="item_search_own_name">Yalnızca bir ad</string>
+    <string name="item_search_own_name_sub">Yukarıdaki alana yazın, sonra Ekle’ye dokunun</string>
 </resources>

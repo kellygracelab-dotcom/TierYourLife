@@ -35,10 +35,10 @@
 
 
 
-    <string name="item_search_field_label">検索、またはリンクを貼り付け</string>
+    <string name="item_search_field_label">検索、または名前を入力</string>
     <string name="item_search_close_content_description">検索を閉じる</string>
     <string name="item_search_clear_content_description">検索をクリア</string>
-    <string name="item_search_source_caption">%1$s のプールに追加</string>
+    <string name="item_search_source_caption">%1$s に追加</string>
     <string name="item_search_min_query">検索するには2文字以上入力してください。</string>
     <string name="item_search_empty_title">「%1$s」に一致するものは見つかりませんでした</string>
     <string name="item_search_error_title">結果を読み込めませんでした</string>
@@ -262,4 +262,11 @@
     <plurals name="publish_sheet_cover_collage">
         <item quantity="other">自分のコラージュ · %d 枚</item>
     </plurals>
+    <string name="item_search_add_own">または自分で追加</string>
+    <string name="item_search_own_link">画像のリンクを貼り付け</string>
+    <string name="item_search_own_link_sub">どのサイトからでも — カードにその画像が付きます</string>
+    <string name="item_search_own_photo">自分の写真</string>
+    <string name="item_search_own_photo_sub">ギャラリーまたはカメラから</string>
+    <string name="item_search_own_name">名前だけ</string>
+    <string name="item_search_own_name_sub">上の欄に入力して「追加」</string>
 </resources>

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.artiuillab.tieryourlife.feature.tier.board
 
 import android.content.res.Resources
@@ -25,11 +27,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +53,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -86,7 +91,9 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.CardPicking
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalCardPicking
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTierRowDensity
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OWN_BAR_BESIDE_PUBLISH
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OneByOnePanel
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OwnBoardTopBar
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_COLUMN_MARGIN
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PlayButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolColumn
@@ -98,6 +105,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.ViewButton
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.boardCounts
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.everyCardPlaced
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishingOf
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberOneByOne
@@ -367,10 +375,6 @@ private fun TierScreenBody(
                 listSettingsVisible = false
                 actions.onAddClick?.invoke()
             },
-            onManualAdd = {
-                listSettingsVisible = false
-                onManualAddClick()
-            },
             onShare = {
                 scope.launch {
                     if (!shareBoard(context, list, palette, shareCaption, shareFooter)) {
@@ -541,12 +545,44 @@ private fun TierScreenBody(
             if (oneByOneOn) CardPicking(oneByOne.selectedId, oneByOne::pick) else null
         }
         val oneByOnePanel: (@Composable (Boolean) -> Unit)? = if (oneByOneOffered) {
-            { beside -> OneByOnePanel(list, oneByOne, onExit = { layoutMemory.oneCardAtATime = false }, beside = beside) }
+            { beside ->
+                OneByOnePanel(
+                    list,
+                    oneByOne,
+                    onExit = { layoutMemory.oneCardAtATime = false },
+                    beside = beside,
+                    // The phone's tray: neither docked under the rows nor in the column beside them.
+                    strip = beside && !docked && !poolBeside,
+                )
+            }
         } else {
             null
         }
 
-        val bar: @Composable () -> Unit = {
+        // One's own board on a phone held upright: the bar in two storeys, the lower folding as the rows scroll.
+        val ownTwoStorey = barMode == null && !readOnly && onReaderMoreClick == null && !glanceable
+        val ownBarScroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        val playButton = actions.onPlay?.takeUnless { glanceable }?.let { onPlay ->
+            PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
+        }
+        val ownView = ViewButton(list.displayMode, onSetDisplayMode).takeIf { actions.onPublish != null && !glanceable && !readOnly }
+        val bar: @Composable () -> Unit = if (ownTwoStorey) {
+            {
+                OwnBoardTopBar(
+                    title = list.title,
+                    counts = boardCounts(list),
+                    state = ownBarScroll.state,
+                    onBack = onBack,
+                    onManualAdd = onManualAddClick,
+                    onMoreClick = { listSettingsVisible = true },
+                    onRenameList = onRenameList,
+                    play = playButton,
+                    publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - OWN_BAR_BESIDE_PUBLISH),
+                    view = ownView,
+                )
+            }
+        } else {
+            {
             TierScreenTopBar(
                 title = list.title,
                 onBack = onBack,
@@ -567,13 +603,12 @@ private fun TierScreenBody(
                     else -> DOCKED_BAR_HEIGHT
                 },
                 subline = readerSubline,
-                play = actions.onPlay?.takeUnless { glanceable }?.let { onPlay ->
-                    PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
-                },
+                play = playButton,
                 publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - BAR_BESIDE_PUBLISH)?.takeUnless { glanceable || readOnly },
                 // One's own board only: a reader's page keeps the author's choice.
-                view = ViewButton(list.displayMode, onSetDisplayMode).takeIf { actions.onPublish != null && !glanceable && !readOnly },
+                view = ownView,
             )
+            }
         }
         val board: @Composable (Modifier) -> Unit = { boardModifier ->
             Row(boardModifier) {
@@ -710,6 +745,7 @@ private fun TierScreenBody(
                             side = actions.poolSide,
                             countWhenEmpty = actions.emptyPoolCounted,
                             oneByOnePanel = oneByOnePanel,
+                            countsCardsLeft = actions.poolCountsCardsLeft,
                         )
                     }
                 }
@@ -745,7 +781,7 @@ private fun TierScreenBody(
                     board(Modifier.fillMaxSize())
                 }
             } else {
-                Column(Modifier.fillMaxSize()) {
+                Column(Modifier.fillMaxSize().then(if (ownTwoStorey) Modifier.nestedScroll(ownBarScroll.nestedScrollConnection) else Modifier)) {
                     bar()
                     // Under the bar, never over it: the bar carries the status-bar
                     // inset, so anything placed above it sits beneath the clock.
