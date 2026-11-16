@@ -10,6 +10,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.BoardLayoutMemory
 internal class PreferencesBoardLayoutMemory(private val preferences: AppPreferences) : BoardLayoutMemory {
     private var collapsed by mutableStateOf(preferences.poolColumnCollapsed())
     private var dockRows by mutableStateOf(preferences.poolDockRows())
+    private var oneByOne by mutableStateOf(preferences.oneCardAtATime())
 
     override var poolColumnCollapsed: Boolean?
         get() = collapsed
@@ -23,5 +24,12 @@ internal class PreferencesBoardLayoutMemory(private val preferences: AppPreferen
         set(value) {
             dockRows = value
             preferences.setPoolDockRows(value)
+        }
+
+    override var oneCardAtATime: Boolean
+        get() = oneByOne
+        set(value) {
+            oneByOne = value
+            preferences.setOneCardAtATime(value)
         }
 }

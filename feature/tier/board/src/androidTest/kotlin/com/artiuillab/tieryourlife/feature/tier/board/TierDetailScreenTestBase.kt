@@ -12,7 +12,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.platform.app.InstrumentationRegistry
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -148,7 +147,7 @@ abstract class TierDetailScreenTestBase {
         onRenameList: (title: String) -> Unit = {},
     ) {
         composeRule.setContent {
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(
                     state = state,
                     actions = TierDetailActions(

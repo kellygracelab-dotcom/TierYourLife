@@ -1,11 +1,14 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -26,7 +29,8 @@ class TierDetailPoolSheetTest {
 
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertIsDisplayed()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.POOL_TOGGLE).performClick()
+        // By the handle: the middle of an own pool's head is the One at a time switch.
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_TOGGLE).performTouchInput { click(Offset(centerX, 8.dp.toPx())) }
 
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertDoesNotExist()
         composeRule.onNodeWithTag(TierDetailTestTags.ADD_CHIP).assertIsDisplayed()
@@ -54,7 +58,7 @@ class TierDetailPoolSheetTest {
 
     private fun setScreen(list: TierList, readOnly: Boolean) {
         composeRule.setContent {
-            TierYourLifeTheme {
+            BoardTestTheme {
                 TierDetailScreenContent(
                     state = TierDetailUiState.Success(list),
                     actions = TierDetailActions(),

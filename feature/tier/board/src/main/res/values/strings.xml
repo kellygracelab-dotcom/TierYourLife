@@ -173,6 +173,16 @@
     <string name="list_settings_public_changed_elsewhere">This list changed on another device. Try publishing again.</string>
     <string name="list_settings_cover_adjust">Adjust position</string>
     <string name="list_settings_cover_adjust_sub">Which part of the picture shows</string>
+    <string name="one_by_one_toggle">One at a time</string>
+    <string name="one_by_one_on">Ranking one card at a time</string>
+    <string name="one_by_one_skip">Skip</string>
+    <string name="one_by_one_to_pool">To pool</string>
+    <string name="one_by_one_done">Every card is placed</string>
+    <string name="one_by_one_exit">Exit</string>
+    <plurals name="one_by_one_left">
+        <item quantity="one">%d left</item>
+        <item quantity="other">%d left</item>
+    </plurals>
     <string name="board_publish">Publish</string>
     <string name="board_publish_update">Update</string>
     <string name="board_publish_ranking">Show in Rankings</string>

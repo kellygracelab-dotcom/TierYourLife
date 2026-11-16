@@ -192,6 +192,18 @@
     <string name="list_settings_public_changed_elsewhere">Список изменился на другом устройстве. Повторите публикацию.</string>
     <string name="list_settings_cover_adjust">Настроить положение</string>
     <string name="list_settings_cover_adjust_sub">Какая часть картинки видна</string>
+    <string name="one_by_one_toggle">По одной</string>
+    <string name="one_by_one_on">Ранжирование по одной карточке</string>
+    <string name="one_by_one_skip">Пропустить</string>
+    <string name="one_by_one_to_pool">В пул</string>
+    <string name="one_by_one_done">Все карточки на местах</string>
+    <string name="one_by_one_exit">Выйти</string>
+    <plurals name="one_by_one_left">
+        <item quantity="one">осталась %d</item>
+        <item quantity="few">осталось %d</item>
+        <item quantity="many">осталось %d</item>
+        <item quantity="other">осталось %d</item>
+    </plurals>
     <string name="board_publish">Опубликовать</string>
     <string name="board_publish_update">Обновить</string>
     <string name="board_publish_ranking">Показать в рейтингах</string>

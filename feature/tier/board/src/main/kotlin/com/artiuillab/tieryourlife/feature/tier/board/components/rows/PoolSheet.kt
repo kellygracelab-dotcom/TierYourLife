@@ -124,11 +124,14 @@ fun PoolSheet(
     side: Any? = null,
     /** False leaves the count out of a folded, empty strip, for [accessories] to say what it means. */
     countWhenEmpty: Boolean = true,
+    /** The pool ranked one card at a time, offered by a switch in the head; null where the board is not one's own. */
+    oneByOnePanel: (@Composable (beside: Boolean) -> Unit)? = null,
 ) {
     var expanded by rememberSaveable(pool.id, side) { mutableStateOf(poolOpensOnItsOwn(side, readOnly, pool.items.size)) }
     val memory = LocalBoardLayoutMemory.current
     val dockRows = memory.poolDockRows.takeIf { it in BoardLayoutMemory.DockRowChoices } ?: BoardLayoutMemory.DEFAULT_DOCK_ROWS
     val lifting = docked && dragController.draggedPayload != null && !readOnly
+    val toggle = oneByOneSwitch(offered = oneByOnePanel != null, memory = memory, compact = !docked)
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
     val count = pool.items.size
     val description = pluralStringResource(
@@ -210,32 +213,71 @@ fun PoolSheet(
                     note = note,
                     onAddClick = onAddClick,
                     onGenerateClick = onGenerateClick,
+                    toggle = toggle,
                 )
                 return@Column
             }
             accessories?.invoke(!expanded)
             if (stripCounts(countWhenEmpty, count, readOnly)) {
-                StripHead(pool = pool, expanded = expanded, readOnly = readOnly, onAddClick = onAddClick, onGenerateClick = onGenerateClick)
+                StripHead(
+                    pool = pool,
+                    expanded = expanded,
+                    readOnly = readOnly,
+                    onAddClick = onAddClick,
+                    onGenerateClick = onGenerateClick,
+                    toggle = toggle,
+                )
             }
         }
-        if (expanded && docked) {
-            PoolCardsWrapped(
-                pool = pool,
-                lines = dockRows,
-                dragController = dragController,
-                onMoveItem = onMoveItem,
-                onDeleteItem = onDeleteItem,
-                onDoubleTap = onDoubleTap,
-            )
-        } else if (expanded) {
-            PoolCards(
-                pool = pool,
-                dragController = dragController,
-                onMoveItem = onMoveItem,
-                onDeleteItem = onDeleteItem,
-                onDoubleTap = onDoubleTap,
-            )
-        }
+        SheetCards(
+            pool = pool,
+            expanded = expanded,
+            docked = docked,
+            lines = dockRows,
+            panel = oneByOnePanel.takeIf { memory.oneCardAtATime },
+            onOpen = { expanded = true },
+            dragController = dragController,
+            onMoveItem = onMoveItem,
+            onDeleteItem = onDeleteItem,
+            onDoubleTap = onDoubleTap,
+        )
+    }
+}
+
+/** What the open sheet holds: the panel while ranking one at a time, which opens it, or the cards. */
+@Composable
+private fun SheetCards(
+    pool: Tier,
+    expanded: Boolean,
+    docked: Boolean,
+    lines: Int,
+    panel: (@Composable (beside: Boolean) -> Unit)?,
+    onOpen: () -> Unit,
+    dragController: TierDragController,
+    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDeleteItem: (itemId: Long) -> Unit,
+    onDoubleTap: (itemId: Long) -> Unit,
+) {
+    val oneByOne = panel != null
+    LaunchedEffect(oneByOne) { if (oneByOne) onOpen() }
+    when {
+        !expanded -> Unit
+        panel != null -> panel(true)
+        docked -> PoolCardsWrapped(
+            pool = pool,
+            lines = lines,
+            dragController = dragController,
+            onMoveItem = onMoveItem,
+            onDeleteItem = onDeleteItem,
+            onDoubleTap = onDoubleTap,
+        )
+        else -> PoolCards(
+            pool = pool,
+            dragController = dragController,
+            onMoveItem = onMoveItem,
+            onDeleteItem = onDeleteItem,
+            onDoubleTap = onDoubleTap,
+        )
     }
 }
 
@@ -368,7 +410,14 @@ internal fun stripEdgeSpeed(fromLeft: Float, fromRight: Float, edge: Float, fast
 /** The phone's strip under the handle: the count, a glimpse while folded, Add. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun StripHead(pool: Tier, expanded: Boolean, readOnly: Boolean, onAddClick: (() -> Unit)?, onGenerateClick: () -> Unit) {
+private fun StripHead(
+    pool: Tier,
+    expanded: Boolean,
+    readOnly: Boolean,
+    onAddClick: (() -> Unit)?,
+    onGenerateClick: () -> Unit,
+    toggle: (@Composable () -> Unit)?,
+) {
     val count = pool.items.size
     // The count and the two chips sit on one line while they fit and take
     // two when they do not. Given weight instead, the count was squeezed
@@ -398,14 +447,18 @@ private fun StripHead(pool: Tier, expanded: Boolean, readOnly: Boolean, onAddCli
             }
         }
         // Someone else's pool is material to rank, not a place to add to.
-        if (!readOnly && onAddClick != null) {
+        val adds = !readOnly && onAddClick != null
+        if (adds || toggle != null) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                AddChip(onClick = onAddClick)
-                if (Features.GENERATION_OFFERED) {
-                    GenerateChip(onClick = onGenerateClick)
+                toggle?.invoke()
+                if (adds && onAddClick != null) {
+                    AddChip(onClick = onAddClick)
+                    if (Features.GENERATION_OFFERED) {
+                        GenerateChip(onClick = onGenerateClick)
+                    }
                 }
             }
         }
@@ -441,6 +494,7 @@ private fun DockedHead(
     note: (@Composable () -> Unit)?,
     onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
+    toggle: (@Composable () -> Unit)?,
 ) {
     Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         if (lifting) {
@@ -454,6 +508,7 @@ private fun DockedHead(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            toggle?.let { Box(Modifier.padding(end = 12.dp)) { it() } }
             if (!readOnly && onAddClick != null) {
                 AddCardField(onAddClick = onAddClick, onGenerateClick = onGenerateClick, modifier = Modifier.width(DOCKED_ADD_FIELD_WIDTH))
             }
