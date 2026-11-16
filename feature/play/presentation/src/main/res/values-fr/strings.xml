@@ -6,6 +6,19 @@
         <item quantity="many">%1$d cartes de %2$s</item>
         <item quantity="other">%1$d cartes de %2$s</item>
     </plurals>
+    <string name="play_how_it_works">Choisissez la meilleure de deux cartes. Les rangs se remplissent tout seuls.</string>
+    <string name="play_game_kept">Partez quand vous voulez : la partie est gardée.</string>
+    <string name="play_other_ways">Autres façons de jouer</string>
+    <plurals name="play_about_duels">
+        <item quantity="one">environ %1$d duel</item>
+        <item quantity="many">environ %1$d duels</item>
+        <item quantity="other">environ %1$d duels</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="one">%1$d min</item>
+        <item quantity="many">%1$d min</item>
+        <item quantity="other">%1$d min</item>
+    </plurals>
     <string name="play_choose_cards">Choisir les cartes</string>
     <string name="play_game_smart">Choix malin</string>
     <string name="play_game_swiss">Les perdants restent</string>
@@ -44,7 +57,7 @@
     <string name="play_too_few_to_start_again">Les cartes ont changé et il en reste trop peu pour recommencer cette partie.</string>
     <string name="play_tier_gone">Un niveau de cette partie n’existe plus.</string>
     <string name="play_start_again">Recommencer</string>
-    <string name="play_into_mine_note">Le résultat va dans « Le mien ». « Le sien » ne change pas.</string>
+    <string name="play_into_mine_note">Le résultat va dans « Le mien ». Le classement de l’auteur ne change pas.</string>
     <string name="play_cancel">Annuler</string>
     <string name="play_start">Commencer</string>
     <string name="play_continue">Continuer</string>
@@ -64,6 +77,7 @@
     <string name="play_ranked">Classées</string>
     <string name="play_quit">Quitter</string>
     <string name="play_duel_of">Duel %1$d sur %2$d</string>
+    <string name="play_duel_of_about">Duel %1$d sur environ %2$d</string>
     <string name="play_round_of">Manche %1$d sur %2$d</string>
     <string name="play_refine_of">Affiner · %1$d sur %2$d</string>
     <string name="play_undo_pick">Annuler le dernier choix</string>

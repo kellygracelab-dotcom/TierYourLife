@@ -4,8 +4,10 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.play.domain.FakeSavedGames
+import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -48,6 +50,23 @@ class PlayLayerTest {
 
         assertEquals(1, tagged(PlayTestTags.DUEL))
         assertEquals(0, tagged(PlayTestTags.PICKER))
+    }
+
+    @Test
+    fun otherWaysToPlay_listsTheFourGames_andStartPlaysTheOneChosen() {
+        val viewModel = PlayViewModel(FakeSavedGames(), MovingTierRepository(unranked))
+        composeRule.setContent { TierYourLifeTheme { PlayLayer(request, open = true, onArranged = { _, _ -> }, onClose = {}, viewModel = viewModel) } }
+        composeRule.onNodeWithTag(PlayTestTags.SUMMARY).assertExists()
+
+        composeRule.onNodeWithTag(PlayTestTags.OTHER_WAYS).performClick()
+        PlayGames.forEach { composeRule.onNodeWithTag(PlayTestTags.game(it)).assertExists() }
+        composeRule.onNodeWithTag(PlayTestTags.game(GameKind.Hill)).performScrollTo().performClick()
+        composeRule.onNodeWithTag(PlayTestTags.START).performClick()
+        composeRule.waitForIdle()
+
+        val duel = (viewModel.state.value.stage as PlayStage.Dueling).duel
+        assertEquals(GameKind.Hill, duel.kind)
+        assertEquals(5, duel.total)
     }
 
     private fun tagged(tag: String): Int =

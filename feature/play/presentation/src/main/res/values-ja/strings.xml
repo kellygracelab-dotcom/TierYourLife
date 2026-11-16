@@ -4,6 +4,15 @@
     <plurals name="play_cards_from">
         <item quantity="other">「%2$s」のカード %1$d 枚</item>
     </plurals>
+    <string name="play_how_it_works">2 枚のカードから良いほうを選びます。ティアは自動で埋まります。</string>
+    <string name="play_game_kept">いつでも中断できます。ゲームは保存されます。</string>
+    <string name="play_other_ways">ほかの遊び方</string>
+    <plurals name="play_about_duels">
+        <item quantity="other">約 %1$d 回の対戦</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="other">%1$d 分</item>
+    </plurals>
     <string name="play_choose_cards">カードを選ぶ</string>
     <string name="play_game_smart">スマート</string>
     <string name="play_game_swiss">敗者も残る</string>
@@ -34,7 +43,7 @@
     <string name="play_too_few_to_start_again">カードが変わり、このゲームをやり直すには残りが少なすぎます。</string>
     <string name="play_tier_gone">このゲームのティアの一つがなくなりました。</string>
     <string name="play_start_again">最初から</string>
-    <string name="play_into_mine_note">結果は「自分」に入ります。「作者」は変わりません。</string>
+    <string name="play_into_mine_note">結果は「自分」に入ります。作者のランキングは変わりません。</string>
     <string name="play_cancel">キャンセル</string>
     <string name="play_start">開始</string>
     <string name="play_continue">次へ</string>
@@ -50,6 +59,7 @@
     <string name="play_ranked">ランク付け済み</string>
     <string name="play_quit">終了</string>
     <string name="play_duel_of">対戦 %1$d / %2$d</string>
+    <string name="play_duel_of_about">対戦 %1$d / 約 %2$d</string>
     <string name="play_round_of">ラウンド %1$d / %2$d</string>
     <string name="play_refine_of">仕上げ · %1$d / %2$d</string>
     <string name="play_undo_pick">最後の選択を取り消す</string>

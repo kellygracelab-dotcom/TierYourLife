@@ -6,6 +6,19 @@
         <item quantity="many">%1$d tarjetas de %2$s</item>
         <item quantity="other">%1$d tarjetas de %2$s</item>
     </plurals>
+    <string name="play_how_it_works">Elige la mejor de dos tarjetas. Los niveles se llenan solos.</string>
+    <string name="play_game_kept">Sal cuando quieras: la partida se guarda.</string>
+    <string name="play_other_ways">Otras formas de jugar</string>
+    <plurals name="play_about_duels">
+        <item quantity="one">unos %1$d duelo</item>
+        <item quantity="many">unos %1$d duelos</item>
+        <item quantity="other">unos %1$d duelos</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="one">%1$d min</item>
+        <item quantity="many">%1$d min</item>
+        <item quantity="other">%1$d min</item>
+    </plurals>
     <string name="play_choose_cards">Elegir tarjetas</string>
     <string name="play_game_smart">Elección inteligente</string>
     <string name="play_game_swiss">Los perdedores siguen</string>
@@ -44,7 +57,7 @@
     <string name="play_too_few_to_start_again">Las tarjetas cambiaron y quedan muy pocas para empezar esta partida de nuevo.</string>
     <string name="play_tier_gone">Ya no existe un nivel de esta partida.</string>
     <string name="play_start_again">Empezar de nuevo</string>
-    <string name="play_into_mine_note">El resultado va a «Mío». «Suyo» no cambia.</string>
+    <string name="play_into_mine_note">El resultado va a «Mío». La clasificación del autor no cambia.</string>
     <string name="play_cancel">Cancelar</string>
     <string name="play_start">Empezar</string>
     <string name="play_continue">Continuar</string>
@@ -64,6 +77,7 @@
     <string name="play_ranked">Clasificadas</string>
     <string name="play_quit">Salir</string>
     <string name="play_duel_of">Duelo %1$d de %2$d</string>
+    <string name="play_duel_of_about">Duelo %1$d de unos %2$d</string>
     <string name="play_round_of">Ronda %1$d de %2$d</string>
     <string name="play_refine_of">Afinar · %1$d de %2$d</string>
     <string name="play_undo_pick">Deshacer la última elección</string>
