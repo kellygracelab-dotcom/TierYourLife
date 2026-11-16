@@ -134,6 +134,10 @@ class TierDetailViewModel @Inject constructor(
     internal val publishSheet = sheet.state
 
     fun openPublishSheet() = sheet.open()
+
+    fun leavePublishSheetForCover() = sheet.leaveForCover()
+
+    fun backToPublishSheet() = sheet.back()
     fun chooseSection(section: String) = sheet.chooseSection(section)
     fun chooseTopic(topic: Topic?) = sheet.chooseTopic(topic)
     fun proposeTopic(name: String) = sheet.proposeTopic(name)

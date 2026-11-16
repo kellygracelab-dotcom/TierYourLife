@@ -7,7 +7,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CoverKind
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PublishSheetController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.coverKind
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -82,6 +84,29 @@ class PublishSheetControllerTest {
         h.sheet.open()
         advanceUntilIdle()
         assertEquals(listOf("film", "film"), h.community.asked)
+    }
+
+    @Test
+    fun outToTheCoverPicker_itStepsAside_andComesBackAsItWas() = runTest {
+        val h = Harness(this, board().copy(category = "film"))
+        h.sheet.open()
+        advanceUntilIdle()
+        h.sheet.leaveForCover()
+        assertTrue(h.sheet.state.value!!.away)
+        h.sheet.back()
+        val back = h.sheet.state.value!!
+        assertFalse(back.away)
+        assertEquals(listOf("A24"), back.topics!!.map { it.name })
+    }
+
+    @Test
+    fun theCover_isNamedByWhatItIsMadeOf() {
+        val withPicture = board().let { b -> b.copy(tiers = b.tiers.map { t -> t.copy(items = t.items.map { it.copy(imageUrl = "https://x/moonlight.jpg") }) }) }
+        assertEquals(CoverKind.Colours, board().coverKind())
+        assertEquals(CoverKind.Auto, withPicture.coverKind())
+        assertEquals(CoverKind.Collage, withPicture.copy(coverImageUrls = listOf("https://a", "https://b")).coverKind())
+        assertEquals(CoverKind.CardPicture, withPicture.copy(coverImageUrl = "https://x/moonlight.jpg").coverKind())
+        assertEquals(CoverKind.Photo, withPicture.copy(coverImageUrl = "file:///covers/1.jpg").coverKind())
     }
 
     private class Harness(scope: CoroutineScope, var visible: TierList = board()) {
