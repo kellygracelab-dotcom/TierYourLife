@@ -69,21 +69,25 @@ class PublishSheetTest {
     }
 
     @Test
-    fun aProposedTopic_isAdded_orGoesToTheSectionFormWhenTicked() {
+    fun aProposedTopic_isAdded() {
         show(board.copy(category = "film_tv"), PublishSheetState(topics = topics))
         composeRule.onNodeWithTag(PublishSheetTags.PROPOSE_TOPIC).performClick()
         composeRule.onNodeWithTag(PublishSheetTags.TOPIC_NAME).performTextInput("A24 horror")
         capture("publish_sheet_propose")
         composeRule.onNodeWithTag(PublishSheetTags.ADD_TOPIC).performClick()
+        assertEquals(listOf("propose A24 horror"), said)
+    }
 
+    @Test
+    fun ticked_itIsANewSection_andGoesToTheSectionForm() {
+        show(board.copy(category = "film_tv"), PublishSheetState(topics = topics))
         composeRule.onNodeWithTag(PublishSheetTags.PROPOSE_TOPIC).performClick()
         composeRule.onNodeWithTag(PublishSheetTags.TOPIC_NAME).performTextInput("Directors")
         composeRule.onNodeWithTag(PublishSheetTags.AS_SECTION).performClick()
         composeRule.onNodeWithText("Continue").assertExists()
         capture("publish_sheet_propose_section")
         composeRule.onNodeWithTag(PublishSheetTags.ADD_TOPIC).performClick()
-
-        assertEquals(listOf("propose A24 horror", "section form Directors"), said)
+        assertEquals(listOf("section form Directors"), said)
     }
 
     @Test
