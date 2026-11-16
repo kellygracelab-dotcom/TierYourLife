@@ -475,8 +475,11 @@ class AccountViewModelTest {
         viewModel.state.firstWithin { it.account is Account.SignedIn }
 
         viewModel.signOut()
-        withTimeout(5_000) { while (preferences.hiddenLists().isNotEmpty()) delay(10) }
+        // Signing out forgets the person and then says it is done. Read while it was still
+        // forgetting, the lists could be gone and the authors not yet, or the list change mid-read.
+        viewModel.state.firstWithin { !it.signingOut }
 
+        assertEquals(emptyList<HiddenEntry>(), preferences.hiddenLists())
         assertEquals(emptyList<HiddenEntry>(), preferences.hiddenAuthors())
     }
 
