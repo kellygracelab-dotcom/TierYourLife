@@ -3,9 +3,11 @@ import copy
 import base64
 import hashlib
 import io
+import itertools
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import tempfile
 import shutil
@@ -17,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from play_internal.artifacts import checkpoint_cipher, command, compare_payloads, extract_data, java_tool, sign, verify_signature, seal, unseal, seal_intent, unseal_intent
 from play_internal.__main__ import main as workflow_main, validate_sealed, cache_snapshot
 from workflow_lint import normalize
-from play_internal.github import GitHub, verify_gates
+from play_internal.github import ALWAYS_REQUIRED, REQUIRED_FOR_CODE, GitHub, verify_gates
 from play_internal.play import ApiError, Publisher
 from play_internal.policy import (CD_PATH, CI_PATH, OWNER_ID, PACKAGE, PROXY_URL,
                                   REPO_ID, Stop, artifact_name, validate_provenance,
@@ -41,10 +43,37 @@ def run(cd=False):
 def gates(code="true"):
     receipt = {"schema": 1, "source": SOURCE, "code": code, "build": "success", "changes": "success",
                "e2e": "success" if code == "true" else "skipped", "instrumentation": "success" if code == "true" else "skipped"}
-    names = ["Build, unit tests, lint", "What changed", "Android CI passed"]
+    names = ["Build, unit tests, lint", "Release bundle", "What changed", "Android CI passed"]
     if code == "true":
         names += ["End-to-end against the proxy", "Instrumentation tests (26)", "Instrumentation tests (34)"]
     return [{"name": name, "conclusion": "success"} for name in names], receipt
+
+
+def ci_jobs():
+    """ci.yml's jobs, id to text, told apart by indentation: the runner's Python has no YAML parser to count on."""
+    workflow = Path(__file__).resolve().parents[2] / "workflows/ci.yml"
+    parts = re.split(r"(?m)^  ([a-z][a-z0-9-]*):\n", workflow.read_text(encoding="utf-8").split("\njobs:\n", 1)[1])
+    return dict(zip(parts[1::2], parts[2::2]))
+
+
+def shown_names(job):
+    """The names GitHub lists a job under: its own, once for every combination of its matrix."""
+    name = re.search(r"(?m)^    name: (.+)$", job).group(1).strip()
+    matrix = [(key, [value.strip() for value in values.split(",")]) for key, values in re.findall(r"(?m)^        ([a-z-]+): \[([^\]]+)\]$", job)]
+    if ("matrix:" in job) != bool(matrix):
+        raise AssertionError("A matrix this test cannot read")
+    if not matrix:
+        return [name]
+    shown = []
+    for combination in itertools.product(*(values for _, values in matrix)):
+        if "${{" in name:
+            one = name
+            for (key, _), value in zip(matrix, combination):
+                one = one.replace("${{ matrix.%s }}" % key, value)
+            shown.append(one)
+        else:
+            shown.append(f"{name} ({', '.join(combination)})")
+    return shown
 
 
 class TrustTests(unittest.TestCase):
@@ -79,6 +108,36 @@ class TrustTests(unittest.TestCase):
                 next(item for item in broken if item["name"] == name)["conclusion"] = result
                 with self.subTest(name=name, result=result), self.assertRaises(Stop):
                     verify_gates(broken, receipt, SOURCE)
+
+    def test_every_job_of_every_main_push_must_pass_and_a_skipped_or_absent_one_has_not(self):
+        for code in ("true", "false"):
+            for name in ("Build, unit tests, lint", "Release bundle", "What changed", "Android CI passed"):
+                for result in ("failure", "cancelled", "skipped", "timed_out", "absent"):
+                    jobs, receipt = gates(code)
+                    if result == "absent":
+                        jobs = [item for item in jobs if item["name"] != name]
+                    else:
+                        next(item for item in jobs if item["name"] == name)["conclusion"] = result
+                    with self.subTest(code=code, name=name, result=result), self.assertRaises(Stop):
+                        verify_gates(jobs, receipt, SOURCE)
+
+    def test_a_code_job_absent_from_the_run_has_not_passed(self):
+        for name in ("End-to-end against the proxy", "Instrumentation tests (26)", "Instrumentation tests (34)"):
+            jobs, receipt = gates()
+            jobs = [item for item in jobs if item["name"] != name]
+            with self.subTest(name=name), self.assertRaises(Stop):
+                verify_gates(jobs, receipt, SOURCE)
+
+    def test_the_required_jobs_are_exactly_the_jobs_of_ci_yml(self):
+        jobs = ci_jobs()
+        only_for_code = {job for job, text in jobs.items() if re.search(r"(?m)^    if: needs\.changes\.outputs\.code == 'true'$", text)}
+        always = [name for job, text in jobs.items() if job not in only_for_code for name in shown_names(text)]
+        for_code = [name for job in only_for_code for name in shown_names(jobs[job])]
+        self.assertEqual(sorted(ALWAYS_REQUIRED), sorted(always))
+        self.assertEqual(sorted(REQUIRED_FOR_CODE), sorted(for_code))
+        # The final gate waits for every other job: one left out of its `needs` would not be asked for.
+        needs = re.search(r"(?m)^    needs: \[(.+)\]$", jobs["ci-passed"]).group(1)
+        self.assertEqual(sorted(set(jobs) - {"ci-passed"}), sorted(job.strip() for job in needs.split(",")))
 
     def test_docs_only_skip_needs_explicit_gate_receipt(self):
         jobs, receipt = gates("false")
