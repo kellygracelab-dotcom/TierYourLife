@@ -1,8 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -98,6 +100,21 @@ class PublishSheetTest {
     }
 
     @Test
+    fun theCover_comesFirst_andChangeOpensThePicker() {
+        show(board.copy(category = "film_tv"), PublishSheetState(topics = topics), calls = calls.copy(onChangeCover = { said += "cover" }))
+        composeRule.onNodeWithText("Tier colours · auto").assertExists()
+        capture("publish_sheet_cover")
+        composeRule.onNodeWithTag(PublishSheetTags.CHANGE_COVER).assertContentDescriptionEquals("Change the cover").performClick()
+        assertEquals(listOf("cover"), said)
+    }
+
+    @Test
+    fun withNoWayToThePicker_thereIsNoCover() {
+        show(board.copy(category = "film_tv"), PublishSheetState(topics = topics))
+        assertEquals(0, composeRule.onAllNodesWithTag(PublishSheetTags.COVER).fetchSemanticsNodes().size)
+    }
+
+    @Test
     fun whileItGoes_theButtonTurns_andTakesNoSecondTap() {
         show(board.copy(category = "film_tv"), PublishSheetState(topics = topics), busy = true)
         composeRule.onNodeWithText("Publishing…").assertExists()
@@ -114,7 +131,14 @@ class PublishSheetTest {
         assertEquals(listOf("publish"), said)
     }
 
-    private fun show(list: TierList, state: PublishSheetState, busy: Boolean = false, error: PublishError? = null, dark: Boolean = false) {
+    private fun show(
+        list: TierList,
+        state: PublishSheetState,
+        busy: Boolean = false,
+        error: PublishError? = null,
+        dark: Boolean = false,
+        calls: PublishSheetCalls = this.calls,
+    ) {
         composeRule.setContent {
             TierYourLifeTheme(darkTheme = dark) {
                 PublishSheet(list = list, state = state, busy = busy, error = error, calls = calls)

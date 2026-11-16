@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
@@ -157,7 +158,9 @@ fun TierDetailScreen(
         onSignIn = onSignIn,
     )
 
-    if (loadedList != null) BoardPublishSheet(viewModel, loadedList, publish.publishing, publish.error, onProposeSection)
+    if (loadedList != null) {
+        BoardPublishSheet(viewModel, loadedList, publish.publishing, publish.error, onProposeSection, onChooseCover)
+    }
 
     if (playRequest != null) {
         play.Layer(
@@ -210,11 +213,18 @@ private fun BoardPublishSheet(
     busy: Boolean,
     error: PublishError?,
     onProposeSection: ((fileUnder: String?, name: String?) -> Unit)?,
+    onChooseCover: () -> Unit,
 ) {
     val sheet by viewModel.publishSheet.collectAsStateWithLifecycle()
+    // Back from the cover picker, with or without a new cover.
+    LifecycleResumeEffect(Unit) {
+        viewModel.backToPublishSheet()
+        onPauseOrDispose {}
+    }
+    val open = sheet?.takeUnless { it.away } ?: return
     PublishSheet(
         list = list,
-        state = sheet ?: return,
+        state = open,
         busy = busy,
         error = error,
         calls = PublishSheetCalls(
@@ -229,6 +239,10 @@ private fun BoardPublishSheet(
             },
             onPublish = viewModel::publishFromSheet,
             onDismiss = viewModel::closePublishSheet,
+            onChangeCover = {
+                viewModel.leavePublishSheetForCover()
+                onChooseCover()
+            },
         ),
     )
 }
