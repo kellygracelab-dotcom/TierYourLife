@@ -51,6 +51,7 @@ object TierDetailTestTags {
     const val UNPUBLISHED_CHANGES = "tier_detail_unpublished_changes"
     const val PUBLISH_PROGRESS = "tier_detail_publish_progress"
     const val VIEW_MODE = "tier_detail_view_mode"
+    const val MEASUREMENT_ONLY = "run 1"
 
     fun viewMode(mode: String) = "tier_detail_view_mode_$mode"
     const val OPEN_ORIGINAL_ROW = "tier_detail_open_original_row"
