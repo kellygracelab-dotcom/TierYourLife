@@ -128,8 +128,9 @@ class AllSectionsViewModelTest {
         viewModel.selectSort(SectionSort.Name)
         viewModel.updateQuery("car")
 
-        val state = viewModel.state.firstWithin { it.query == "car" }
-        assertEquals(SectionSort.Name, state.sort)
+        // Each reaches the state through its own flow, so the search can show a moment before the order does.
+        viewModel.state.firstWithin { it.sort == SectionSort.Name && it.query == "car" }
+        Unit
     }
 
     @Test
