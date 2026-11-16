@@ -281,13 +281,15 @@ class PlayViewModelTest {
         val viewModel = viewModel(games = games, boards = MovingTierRepository(left), request = PlayRequest.ownBoard(left))
         viewModel.open()
         viewModel.state.firstWithin { picker(it)?.resume != null }
-        viewModel.notices.discardStored()
+        // On the main thread, as the phone presses it; from the test's thread it raced the picker's
+        // second read of the saved game, as the test above did (red main CI on b61c9d86).
+        withContext(Dispatchers.Main) { viewModel.notices.discardStored() }
 
         viewModel.picker.dismiss()
 
         val said = viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said
         assertEquals(PlayNotice.SavedGameDiscarded, said.notice)
-        viewModel.notices.undoDiscard()
+        withContext(Dispatchers.Main) { viewModel.notices.undoDiscard() }
         viewModel.state.firstWithin { KEY in it.saved }
         assertEquals(saved.ids, games.games.getValue(KEY).ids)
     }
