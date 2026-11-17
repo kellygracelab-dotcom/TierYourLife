@@ -138,8 +138,10 @@ class PlayViewModelTest {
 
         viewModel.playToTheEnd()
 
-        assertEquals(PlayStage.Closed, viewModel.state.value.stage)
+        // The duels go at once; the window at the game's end follows as soon as the result is on the board.
+        assertFalse(viewModel.state.value.stage is PlayStage.Dueling)
         val arranged = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
+        viewModel.state.firstWithin { it.stage is PlayStage.Ready }
         val placed = arranged.board.tiers.filterNot { it.isPool }
         assertEquals((1L..6L).toSet(), placed.flatMap { tier -> tier.items.map { it.id } }.toSet())
         assertEquals(listOf(1L, 2L, 3L), placed.map { it.id })

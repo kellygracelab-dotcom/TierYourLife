@@ -46,7 +46,9 @@ class PlayMishapsTest {
         viewModel.open()
         viewModel.state.firstWithin { picker(it)?.resume != null }
         viewModel.picker.resume()
-        assertEquals(PlayStage.Closed, viewModel.state.value.stage)
+        // Finished, it applies again at once: the picker goes, and the window at the game's end may already stand.
+        val stage = viewModel.state.value.stage
+        assertTrue(stage == PlayStage.Closed || stage is PlayStage.Ready)
     }
 
     @Test
