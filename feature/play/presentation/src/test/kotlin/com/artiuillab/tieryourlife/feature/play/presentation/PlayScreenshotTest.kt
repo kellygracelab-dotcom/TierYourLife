@@ -11,12 +11,19 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.AsyncImagePainter
+import coil3.compose.AsyncImagePreviewHandler
+import coil3.compose.LocalAsyncImagePreviewHandler
+import coil3.request.ErrorResult
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -180,13 +187,26 @@ class PlayScreenshotTest {
     @Test
     @Config(qualifiers = FLIP_LANDSCAPE)
     fun landscape_aDuel_skipBetweenTheCards() = capture("play_landscape_duel") {
-        DuelScreen(duel = pictureDuel, onPick = {}, onSkip = {}, onUndo = {}, onQuit = {})
+        PictureNeverLoads { DuelScreen(duel = pictureDuel, onPick = {}, onSkip = {}, onUndo = {}, onQuit = {}) }
     }
 
     @Test
     @Config(qualifiers = FLIP_LANDSCAPE)
     fun landscape_aDuel_dark() = capture("play_landscape_duel_dark", dark = true) {
-        DuelScreen(duel = pictureDuel, onPick = {}, onSkip = {}, onUndo = {}, onQuit = {})
+        PictureNeverLoads { DuelScreen(duel = pictureDuel, onPick = {}, onSkip = {}, onUndo = {}, onQuit = {}) }
+    }
+
+    // The address can't load; without this the shot races the failed request and catches the card still loading.
+    @OptIn(ExperimentalCoilApi::class)
+    @Composable
+    private fun PictureNeverLoads(content: @Composable () -> Unit) {
+        CompositionLocalProvider(
+            LocalInspectionMode provides true,
+            LocalAsyncImagePreviewHandler provides AsyncImagePreviewHandler { _, request ->
+                AsyncImagePainter.State.Error(null, ErrorResult(null, request, IllegalStateException("never loads")))
+            },
+            content = content,
+        )
     }
 
     private companion object {
