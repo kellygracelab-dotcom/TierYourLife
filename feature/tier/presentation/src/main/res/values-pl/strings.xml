@@ -310,6 +310,9 @@
         <item quantity="many">Twój kolaż · obrazy: %d</item>
         <item quantity="other">Twój kolaż · obrazy: %d</item>
     </plurals>
+    <string name="publish_sheet_name">Tytuł</string>
+    <string name="publish_sheet_name_hint">Co to za lista?</string>
+    <string name="publish_sheet_name_first">Najpierw nadaj liście tytuł.</string>
     <string name="item_search_add_own">Albo dodaj własną</string>
     <string name="item_search_own_link">Wklej link do obrazu</string>
     <string name="item_search_own_link_sub">Z dowolnej strony — karta dostanie ten obraz</string>

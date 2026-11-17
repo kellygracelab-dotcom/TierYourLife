@@ -262,6 +262,9 @@
     <plurals name="publish_sheet_cover_collage">
         <item quantity="other">自分のコラージュ · %d 枚</item>
     </plurals>
+    <string name="publish_sheet_name">名前</string>
+    <string name="publish_sheet_name_hint">どんなリストですか？</string>
+    <string name="publish_sheet_name_first">先にリストに名前を付けてください。</string>
     <string name="item_search_add_own">または自分で追加</string>
     <string name="item_search_own_link">画像のリンクを貼り付け</string>
     <string name="item_search_own_link_sub">どのサイトからでも — カードにその画像が付きます</string>

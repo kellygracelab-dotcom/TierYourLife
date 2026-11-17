@@ -52,6 +52,33 @@ class PublishSheetControllerTest {
     }
 
     @Test
+    fun aNameTypedForAnUntitledList_isWrittenBeforeItGoesOut() = runTest {
+        val h = Harness(this, board().copy(title = "Untitled list", category = "film"))
+        h.sheet.open()
+        h.sheet.name("A24, ranked")
+        h.sheet.publish()
+        assertEquals(0, h.sent)
+
+        advanceUntilIdle()
+
+        assertEquals(listOf(1L to "A24, ranked"), h.boards.renames)
+        assertEquals(1, h.sent)
+    }
+
+    @Test
+    fun theSameOrABlankName_writesNothing() = runTest {
+        val h = Harness(this, board().copy(category = "film"))
+        h.sheet.open()
+        h.sheet.name("A24 films")
+        h.sheet.name(" ")
+        h.sheet.publish()
+        advanceUntilIdle()
+
+        assertTrue(h.boards.renames.isEmpty())
+        assertEquals(1, h.sent)
+    }
+
+    @Test
     fun anotherSection_takesOffTheTopicChosenUnderTheLast() = runTest {
         val h = Harness(this, board().copy(category = "film", topicId = "t1", topicName = "A24"))
         h.sheet.open()

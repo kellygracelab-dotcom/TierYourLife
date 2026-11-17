@@ -310,6 +310,9 @@
         <item quantity="many">Ваш коллаж · картинок: %d</item>
         <item quantity="other">Ваш коллаж · картинок: %d</item>
     </plurals>
+    <string name="publish_sheet_name">Название</string>
+    <string name="publish_sheet_name_hint">Что это за список?</string>
+    <string name="publish_sheet_name_first">Сначала дайте списку название.</string>
     <string name="item_search_add_own">Или добавьте своё</string>
     <string name="item_search_own_link">Вставьте ссылку на картинку</string>
     <string name="item_search_own_link_sub">С любого сайта — карточка возьмёт эту картинку</string>

@@ -294,6 +294,9 @@
         <item quantity="many">Sua colagem · imagens: %d</item>
         <item quantity="other">Sua colagem · imagens: %d</item>
     </plurals>
+    <string name="publish_sheet_name">Nome</string>
+    <string name="publish_sheet_name_hint">Do que é esta lista?</string>
+    <string name="publish_sheet_name_first">Dê um nome à lista primeiro.</string>
     <string name="item_search_add_own">Ou adicione o seu</string>
     <string name="item_search_own_link">Cole o link de uma imagem</string>
     <string name="item_search_own_link_sub">De qualquer site — o cartão usa essa imagem</string>

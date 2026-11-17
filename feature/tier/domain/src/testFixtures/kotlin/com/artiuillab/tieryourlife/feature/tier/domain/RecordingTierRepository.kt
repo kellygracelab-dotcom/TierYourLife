@@ -127,7 +127,11 @@ class RecordingTierRepository(
         .orEmpty()
     override suspend fun createTierList(title: String, captions: List<String>): Long = 0
     override suspend fun setTierListDisplayMode(id: Long, displayMode: TierListDisplayMode) = Unit
-    override suspend fun renameTierList(id: Long, title: String) = Unit
+    val renames = mutableListOf<Pair<Long, String>>()
+
+    override suspend fun renameTierList(id: Long, title: String) {
+        renames += id to title
+    }
     override suspend fun addItemToPool(
         tierListId: Long,
         title: String,

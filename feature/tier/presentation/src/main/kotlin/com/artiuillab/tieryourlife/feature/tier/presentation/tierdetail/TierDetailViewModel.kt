@@ -143,6 +143,8 @@ class TierDetailViewModel @Inject constructor(
     fun proposeTopic(name: String) = sheet.proposeTopic(name)
     fun publishFromSheet() = sheet.publish()
 
+    fun nameFromSheet(title: String) = sheet.name(title)
+
     /** Closed by hand: what it said of a refusal goes with it, rather than opening the settings after. */
     fun closePublishSheet() {
         sheet.close()

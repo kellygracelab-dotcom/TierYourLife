@@ -278,6 +278,9 @@
         <item quantity="one">Kendi kolajın · resim: %d</item>
         <item quantity="other">Kendi kolajın · resim: %d</item>
     </plurals>
+    <string name="publish_sheet_name">Ad</string>
+    <string name="publish_sheet_name_hint">Bu liste ne hakkında?</string>
+    <string name="publish_sheet_name_first">Önce listeye bir ad ver.</string>
     <string name="item_search_add_own">Ya da kendiniz ekleyin</string>
     <string name="item_search_own_link">Bir görsel bağlantısı yapıştırın</string>
     <string name="item_search_own_link_sub">Herhangi bir siteden — kart o görseli alır</string>

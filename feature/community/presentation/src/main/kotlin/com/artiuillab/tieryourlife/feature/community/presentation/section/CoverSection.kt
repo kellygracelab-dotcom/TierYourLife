@@ -75,7 +75,7 @@ internal fun CoverSection(
         }
         when {
             rows.isNotEmpty() -> items(rows, key = { it.id }) { summary -> CoverRow(summary) { onOpenList(summary) } }
-            feed.phase == FeedPhase.Failed -> item(key = "failed") { CoverFailed(onRetry) }
+            feed.phase == FeedPhase.Failed -> item(key = "failed") { CoverFailed(feed.unverified, onRetry) }
             else -> items(SKELETON_ROWS) { CoverSkeletonRow(alpha) }
         }
     }
@@ -134,7 +134,7 @@ private fun CoverSkeletonRow(alpha: () -> Float) {
 
 /** Nothing kept and nothing loaded: say so, and offer the one thing that can help. */
 @Composable
-private fun CoverFailed(onRetry: () -> Unit) {
+private fun CoverFailed(unverified: Boolean, onRetry: () -> Unit) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -144,11 +144,19 @@ private fun CoverFailed(onRetry: () -> Unit) {
     ) {
         CloudOffIcon(28.dp, MaterialTheme.colorScheme.outline)
         Text(
-            stringResource(R.string.explore_failed_title),
+            stringResource(if (unverified) R.string.feed_unverified else R.string.explore_failed_title),
             style = CoverType.SectionRowTitle,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
         )
+        if (unverified) {
+            Text(
+                stringResource(R.string.home_community_unverified_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
         OutlinedButton(onClick = onRetry, modifier = Modifier.height(36.dp).testTag(SectionTestTags.COVER_RETRY)) {
             Text(stringResource(R.string.explore_try_again), style = CoverType.Button)
         }

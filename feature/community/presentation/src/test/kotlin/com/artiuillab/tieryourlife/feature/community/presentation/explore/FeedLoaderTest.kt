@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.explore
 
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityFeedCache
+import com.artiuillab.tieryourlife.feature.community.domain.model.AppUnverified
 import com.artiuillab.tieryourlife.feature.community.domain.model.CommunityPage
 import com.artiuillab.tieryourlife.feature.community.domain.model.PageGone
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -199,6 +200,26 @@ class FeedLoaderTest {
         advanceUntilIdle()
 
         assertEquals(FeedPhase.Failed, loader.pane.value.phase)
+        assertFalse(loader.pane.value.unverified)
+    }
+
+    @Test
+    fun anInstallationTheProxyWillNotVouchFor_failsSayingSo_notAsALostConnection() = runTest {
+        answers += Result.failure(AppUnverified())
+        answers += Result.success(page("a"))
+        val loader = loader()
+
+        loader.open()
+        advanceUntilIdle()
+
+        assertEquals(FeedPhase.Failed, loader.pane.value.phase)
+        assertTrue(loader.pane.value.unverified)
+
+        loader.retry()
+        advanceUntilIdle()
+
+        assertEquals(FeedPhase.Ready, loader.pane.value.phase)
+        assertFalse(loader.pane.value.unverified)
     }
 
     @Test
