@@ -55,6 +55,7 @@
     <string name="community_tile_reported">تم الإبلاغ. سيطّلع عليه شخص.</string>
     <string name="feed_sort_popular">الأكثر رواجًا</string>
     <string name="feed_sort_recent">الأحدث</string>
+    <string name="feed_chip_new">الجديدة</string>
     <string name="feed_source_everyone">الكل</string>
     <string name="feed_source_following">المتابَعون</string>
     <string name="home_community_empty">لا شيء منشور بعد</string>
@@ -158,7 +159,6 @@
     <string name="community_drag_any_card">اسحب أي بطاقة</string>
     <string name="community_based_on">مبني على «%1$s» لـ %2$s</string>
     <string name="community_list_source">المصدر: %1$s</string>
-    <string name="explore_tab_explore">استكشاف</string>
     <string name="explore_tab_following">المتابَعة</string>
     <string name="explore_title_community">المجتمع</string>
     <string name="explore_follow_section">متابعة %1$s</string>
@@ -188,6 +188,7 @@
     <string name="explore_search_nothing">لا شيء يطابق ذلك.</string>
     <string name="search_sections">الأقسام</string>
     <string name="search_lists">القوائم</string>
+    <string name="search_popular_topics">مواضيع رائجة</string>
     <string name="section_topics">المواضيع</string>
     <string name="section_tier_lists">قوائم التصنيف</string>
     <string name="section_show_fewer">عرض أقل</string>
@@ -215,7 +216,7 @@
     <string name="following_pick_follow">متابعة · %1$d</string>
     <string name="following_pick_none">اختر قسمًا واحدًا على الأقل</string>
     <string name="following_nothing_published">لم ينشر أحد ممن تتابعهم شيئًا بعد.</string>
-    <string name="following_go_explore">الانتقال إلى الاستكشاف</string>
+    <string name="following_see_all_lists">عرض كل القوائم</string>
     <string name="manage_sections">الأقسام · %1$d</string>
     <string name="manage_topics">المواضيع · %1$d</string>
     <string name="manage_people">الأشخاص · %1$d</string>

@@ -9,6 +9,25 @@
         <item quantity="many">%1$d بطاقة من %2$s</item>
         <item quantity="other">%1$d بطاقة من %2$s</item>
     </plurals>
+    <string name="play_how_it_works">اختر الأفضل من بطاقتين. تمتلئ المستويات من تلقاء نفسها.</string>
+    <string name="play_game_kept">يمكنك المغادرة في أي وقت — تُحفظ اللعبة.</string>
+    <string name="play_other_ways">طرق أخرى للعب</string>
+    <plurals name="play_about_duels">
+        <item quantity="zero">لا مواجهات</item>
+        <item quantity="one">نحو مواجهة واحدة</item>
+        <item quantity="two">نحو مواجهتين</item>
+        <item quantity="few">نحو %1$d مواجهات</item>
+        <item quantity="many">نحو %1$d مواجهة</item>
+        <item quantity="other">نحو %1$d مواجهة</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="zero">أقل من دقيقة</item>
+        <item quantity="one">دقيقة واحدة</item>
+        <item quantity="two">دقيقتان</item>
+        <item quantity="few">%1$d دقائق</item>
+        <item quantity="many">%1$d دقيقة</item>
+        <item quantity="other">%1$d دقيقة</item>
+    </plurals>
     <string name="play_choose_cards">اختيار البطاقات</string>
     <string name="play_game_smart">اختيار ذكي</string>
     <string name="play_game_swiss">الخاسرون يبقون</string>
@@ -59,7 +78,7 @@
     <string name="play_too_few_to_start_again">تغيّرت البطاقات، ولم يبقَ منها ما يكفي لبدء هذه اللعبة من جديد.</string>
     <string name="play_tier_gone">لم يعد أحد مستويات هذه اللعبة موجودًا.</string>
     <string name="play_start_again">البدء من جديد</string>
-    <string name="play_into_mine_note">تذهب النتيجة إلى «ترتيبي». «ترتيبه» لا يتغيّر.</string>
+    <string name="play_into_mine_note">تذهب النتيجة إلى «ترتيبي». أما ترتيب المؤلف فلا يتغيّر.</string>
     <string name="play_cancel">إلغاء</string>
     <string name="play_start">ابدأ</string>
     <string name="play_continue">التالي</string>
@@ -85,6 +104,7 @@
     <string name="play_ranked">المصنَّفة</string>
     <string name="play_quit">خروج</string>
     <string name="play_duel_of">المواجهة %1$d من %2$d</string>
+    <string name="play_duel_of_about">المواجهة %1$d من نحو %2$d</string>
     <string name="play_round_of">الجولة %1$d من %2$d</string>
     <string name="play_refine_of">تحسين · %1$d من %2$d</string>
     <string name="play_undo_pick">التراجع عن آخر اختيار</string>

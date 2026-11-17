@@ -5,6 +5,17 @@
         <item quantity="one">%1$d Karte aus %2$s</item>
         <item quantity="other">%1$d Karten aus %2$s</item>
     </plurals>
+    <string name="play_how_it_works">Wähle die bessere von zwei Karten. Die Stufen füllen sich von selbst.</string>
+    <string name="play_game_kept">Jederzeit aufhören — das Spiel bleibt erhalten.</string>
+    <string name="play_other_ways">Andere Spielarten</string>
+    <plurals name="play_about_duels">
+        <item quantity="one">etwa %1$d Duell</item>
+        <item quantity="other">etwa %1$d Duelle</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="one">%1$d Min.</item>
+        <item quantity="other">%1$d Min.</item>
+    </plurals>
     <string name="play_choose_cards">Karten wählen</string>
     <string name="play_game_smart">Clevere Auswahl</string>
     <string name="play_game_swiss">Verlierer bleiben</string>
@@ -39,7 +50,7 @@
     <string name="play_too_few_to_start_again">Die Karten haben sich geändert, und es sind zu wenige übrig, um dieses Spiel neu zu starten.</string>
     <string name="play_tier_gone">Eine Stufe aus diesem Spiel gibt es nicht mehr.</string>
     <string name="play_start_again">Neu beginnen</string>
-    <string name="play_into_mine_note">Das Ergebnis landet in „Meine“. „Ihre“ bleibt, wie sie ist.</string>
+    <string name="play_into_mine_note">Das Ergebnis kommt in „Meine“. Die Rangliste des Autors bleibt, wie sie ist.</string>
     <string name="play_cancel">Abbrechen</string>
     <string name="play_start">Starten</string>
     <string name="play_continue">Weiter</string>
@@ -57,6 +68,7 @@
     <string name="play_ranked">Eingestuft</string>
     <string name="play_quit">Beenden</string>
     <string name="play_duel_of">Duell %1$d von %2$d</string>
+    <string name="play_duel_of_about">Duell %1$d von etwa %2$d</string>
     <string name="play_round_of">Runde %1$d von %2$d</string>
     <string name="play_refine_of">Verfeinern · %1$d von %2$d</string>
     <string name="play_undo_pick">Letzte Wahl rückgängig machen</string>

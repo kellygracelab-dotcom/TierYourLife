@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +24,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.AddYourOwn
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CaptionLine
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CenteredMessage
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.LinkChoice
@@ -60,9 +63,16 @@ fun CatalogueSearchScreenContent(
     scopes: ScopeChoice? = null,
     onSearchEverywhere: () -> Unit = {},
     links: LinkChoice? = null,
+    /** A card from a photo of one's own; null where the screen has no way to take one. */
+    onOwnPhoto: (() -> Unit)? = null,
+    /** A card of the typed name alone, when nothing in the results is picked; null leaves Add waiting for a pick. */
+    onAddName: ((String) -> Unit)? = null,
 ) {
     val isDark = TierYourLifeMedia.current.isDark
     val fieldFill = if (isDark) FieldFillDark else FieldFillLight
+    val field = remember { FocusRequester() }
+    val ownWays = showsOwnWays(state, query, links)
+    val focusField = { runCatching { field.requestFocus() } }
 
     Column(
         modifier = Modifier
@@ -76,6 +86,7 @@ fun CatalogueSearchScreenContent(
                 onSearchClick = onSearchClick,
                 onClose = onClose,
                 fill = fieldFill,
+                focusRequester = field,
             )
 
             if (state is CatalogueSearchUiState.Loading) {
@@ -90,7 +101,7 @@ fun CatalogueSearchScreenContent(
 
             CaptionLine(listTitle = listTitle)
         }
-        if (links != null && links.pasteOffered && links.state == null) PasteLinkChip(links.onPaste)
+        if (links != null && offersPasteChip(links, ownWays)) PasteLinkChip(links.onPaste)
         scopes?.let { ScopeChips(first = it.first, selected = it.selected, onSelect = it.onSelect) }
 
         Box(modifier = Modifier.weight(1f)) {
@@ -100,9 +111,7 @@ fun CatalogueSearchScreenContent(
                 return@Box
             }
             when (state) {
-                is CatalogueSearchUiState.Initial -> {
-                    CenteredMessage(text = stringResource(R.string.item_search_min_query))
-                }
+                is CatalogueSearchUiState.Initial -> BeforeAnyResults(ownWays, fieldFill, links, onOwnPhoto) { focusField() }
 
                 is CatalogueSearchUiState.Loading -> {
                 }
@@ -147,14 +156,43 @@ fun CatalogueSearchScreenContent(
         }
 
         // The link's card has its own button, and it brings whatever was picked along.
-        if (links?.state == null) {
-            SelectionBar(
-                selectedCount = selectedIds.size,
-                fill = fieldFill,
-                onConfirm = onConfirmSelection,
-            )
-        }
+        if (links?.state == null) AddBar(query, selectedIds, fieldFill, onConfirmSelection, onAddName)
     }
+}
+
+/** Nothing typed yet: the other ways in stand where the results will be. */
+private fun showsOwnWays(state: CatalogueSearchUiState, query: String, links: LinkChoice?): Boolean =
+    state is CatalogueSearchUiState.Initial && query.isBlank() && links?.state == null
+
+/** The chip under the field, unless the own ways already offer the clipboard's link. */
+private fun offersPasteChip(links: LinkChoice, ownWays: Boolean): Boolean = links.pasteOffered && links.state == null && !ownWays
+
+@Composable
+private fun BeforeAnyResults(ownWays: Boolean, fill: Color, links: LinkChoice?, onOwnPhoto: (() -> Unit)?, focusField: () -> Unit) {
+    if (!ownWays) {
+        CenteredMessage(text = stringResource(R.string.item_search_min_query))
+        return
+    }
+    AddYourOwn(
+        fill = fill,
+        // With an address on the clipboard it goes straight in; without one, the field waits for it.
+        onPasteLink = { if (links?.pasteOffered == true) links.onPaste() else focusField() },
+        onOwnPhoto = onOwnPhoto,
+        onJustAName = focusField,
+    )
+}
+
+/** Add takes what is picked; with nothing picked, a typed name becomes a card of its own. */
+@Composable
+private fun AddBar(query: String, selectedIds: Set<String>, fill: Color, onConfirmSelection: () -> Unit, onAddName: ((String) -> Unit)?) {
+    val name = query.trim().takeIf { it.isNotEmpty() && selectedIds.isEmpty() }
+    val addName = onAddName?.takeIf { name != null }
+    SelectionBar(
+        selectedCount = selectedIds.size,
+        fill = fill,
+        onConfirm = if (addName != null && name != null) ({ addName(name) }) else onConfirmSelection,
+        addsAName = addName != null,
+    )
 }
 
 private val previewItems = listOf(

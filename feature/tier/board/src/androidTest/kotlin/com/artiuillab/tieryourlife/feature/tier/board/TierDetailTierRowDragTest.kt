@@ -24,7 +24,7 @@ class TierDetailTierRowDragTest : TierDetailScreenTestBase() {
     @Test
     fun liftingATierRow_collapsesAllRankedRowsToOneHeight() {
         val list = listOf(
-            tier(id = 1, label = "S", items = List(24) { tierItem(it) }),
+            tier(id = 1, label = "S", items = List(12) { tierItem(it) }),
             tier(id = 2, label = "A", items = List(1) { tierItem(it + 100) }),
             tier(id = 3, label = "B", items = List(6) { tierItem(it + 200) }),
             tier(id = 6, label = "Pool", items = emptyList(), isPool = true),

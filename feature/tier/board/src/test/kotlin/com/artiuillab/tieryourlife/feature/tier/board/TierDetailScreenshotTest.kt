@@ -1,9 +1,15 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheetContent
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -51,6 +57,50 @@ class TierDetailScreenshotTest {
 
     @Test
     fun aBoardThatFailedToLoad_light() = capture("board_error_light", dark = false, TierDetailUiState.Error)
+
+    @Test
+    fun oneByOne_onAPhone_light() = oneByOne("board_one_by_one_light", dark = false)
+
+    @Test
+    fun oneByOne_onAPhone_dark() = oneByOne("board_one_by_one_dark", dark = true)
+
+    private fun oneByOne(name: String, dark: Boolean) {
+        val memory = InMemoryBoardLayoutMemory().apply { oneCardAtATime = true }
+        composeRule.setContent {
+            CompositionLocalProvider(LocalBoardLayoutMemory provides memory) {
+                TierYourLifeTheme(darkTheme = dark) {
+                    TierDetailScreenContent(state = TierDetailUiState.Success(previewTierList))
+                }
+            }
+        }
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/$name.png", roborazziOptions = OPTIONS)
+    }
+
+    @Test
+    fun aCardsSheet_light() = cardSheet("card_sheet_light", dark = false)
+
+    @Test
+    fun aCardsSheet_dark() = cardSheet("card_sheet_dark", dark = true)
+
+    private fun cardSheet(name: String, dark: Boolean) {
+        val ranked = previewTierList.tiers.filterNot { it.isPool }
+        composeRule.setContent {
+            TierYourLifeTheme(darkTheme = dark) {
+                Surface(color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                    MoveItemSheetContent(
+                        item = ranked.first().items.first(),
+                        currentTierId = ranked.first().id,
+                        rankedTiers = ranked,
+                        pool = previewTierList.tiers.first { it.isPool },
+                        onMoveToTier = { _, _ -> },
+                        onRemove = {},
+                        onAdjustPicture = {},
+                    )
+                }
+            }
+        }
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/$name.png", roborazziOptions = OPTIONS)
+    }
 
     private companion object {
         // Text antialiasing differs a little between the Windows that records

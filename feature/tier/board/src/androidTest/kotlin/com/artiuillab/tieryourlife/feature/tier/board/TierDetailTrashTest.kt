@@ -223,7 +223,7 @@ class TierDetailTrashTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.tile(200)).performTouchInput { doubleClick() }
 
-        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertIsDisplayed()
     }
 
     @Test

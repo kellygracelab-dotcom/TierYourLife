@@ -71,4 +71,41 @@ class ProgressTest {
         assertEquals("the first round of three and the second", 6, progress.planned)
         assertEquals(0, progress.round)
     }
+
+    @Test
+    fun theWholeGamesCount_atTheStart_isWhatThePickerPromises() {
+        for (kind in GameKind.entries) {
+            for (count in listOf(3, 6, 25, 34, 91)) {
+                val spec = GameSpec(kind, count, seed = 7, tiers = 5)
+                assertEquals("$kind over $count", estimatedDuels(kind, count), expectedDuels(spec, emptyList()))
+            }
+        }
+    }
+
+    @Test
+    fun duringAGame_theCountIsOfTheWholeGame_andNoDuelPassesIt() {
+        for (kind in GameKind.entries) {
+            val spec = GameSpec(kind, 25, seed = 3, tiers = 5)
+            val history = mutableListOf<Outcome>()
+            val totals = mutableSetOf<Int>()
+            while (true) {
+                val (first, second) = nextPair(spec, history) ?: break
+                val total = expectedDuels(spec, history)
+                assertTrue("$kind: duel ${history.size + 1} of $total", history.size + 1 <= total)
+                assertTrue("$kind never promises fewer than the picker", total >= estimatedDuels(kind, 25))
+                totals += total
+                // The better card is the one listed first in the deck; a few close calls go the other way.
+                history += Outcome(first, second, winner = if (history.size % 7 == 3) maxOf(first, second) else minOf(first, second))
+            }
+            assertEquals(history.size, expectedDuels(spec, history))
+            if (!kind.isRough) assertEquals("$kind keeps one exact count", setOf(estimatedDuels(kind, 25)), totals)
+        }
+    }
+
+    @Test
+    fun smart_overTwentyFiveCards_saysSixtyThree_notItsFirstRound() {
+        val spec = GameSpec(GameKind.Smart, 25, seed = 1, tiers = 5)
+        assertEquals(24, progress(spec, emptyList()).planned)
+        assertEquals(63, expectedDuels(spec, emptyList()))
+    }
 }

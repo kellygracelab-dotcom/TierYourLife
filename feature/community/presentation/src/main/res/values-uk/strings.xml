@@ -53,6 +53,7 @@
     <string name="community_tile_reported">Скаргу надіслано. Людина подивиться.</string>
     <string name="feed_sort_popular">Популярні</string>
     <string name="feed_sort_recent">Нові</string>
+    <string name="feed_chip_new">Нові</string>
     <string name="feed_source_everyone">Усі</string>
     <string name="feed_source_following">Підписки</string>
     <string name="home_community_empty">Поки нічого не опубліковано</string>
@@ -154,7 +155,6 @@
     <string name="community_drag_any_card">Перетягніть картку</string>
     <string name="community_based_on">За мотивами «%1$s» від %2$s</string>
     <string name="community_list_source">Джерело: %1$s</string>
-    <string name="explore_tab_explore">Огляд</string>
     <string name="explore_tab_following">Підписки</string>
     <string name="explore_title_community">Спільнота</string>
     <string name="explore_follow_section">Підписатися на «%1$s»</string>
@@ -184,6 +184,7 @@
     <string name="explore_search_nothing">Нічого не знайдено.</string>
     <string name="search_sections">Розділи</string>
     <string name="search_lists">Списки</string>
+    <string name="search_popular_topics">Популярні теми</string>
     <string name="section_topics">Теми</string>
     <string name="section_tier_lists">Тір-листи</string>
     <string name="section_show_fewer">Згорнути</string>
@@ -209,7 +210,7 @@
     <string name="following_pick_follow">Підписатися · %1$d</string>
     <string name="following_pick_none">Виберіть хоча б один</string>
     <string name="following_nothing_published">Ті, на кого ви підписані, ще нічого не опублікували.</string>
-    <string name="following_go_explore">Перейти до огляду</string>
+    <string name="following_see_all_lists">Дивитися всі списки</string>
     <string name="manage_sections">Розділи · %1$d</string>
     <string name="manage_topics">Теми · %1$d</string>
     <string name="manage_people">Люди · %1$d</string>

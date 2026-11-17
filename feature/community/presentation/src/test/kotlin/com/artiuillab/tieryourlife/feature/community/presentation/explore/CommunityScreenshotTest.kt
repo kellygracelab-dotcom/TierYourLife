@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
@@ -211,6 +212,39 @@ class CommunityScreenshotTest {
             ),
             following,
         )
+    }
+
+    private val browsing = explore.copy(
+        query = "",
+        popularTopics = listOf(
+            Topic("b1", "Bleach", ListCategory.Anime.id, TopicStatus.Approved),
+            Topic("b2", "Coffee", ListCategory.Food.id, TopicStatus.Approved),
+            Topic("b3", "One-Punch Man", ListCategory.Anime.id, TopicStatus.Approved),
+            Topic("b4", "Fast food", ListCategory.Food.id, TopicStatus.Approved),
+        ),
+    )
+
+    @Test
+    fun search_beforeAnythingIsTyped_offersSectionsAndPopularTopics() = capture("search_browse_light") {
+        CommunityHomeContent(browsing, following)
+    }
+
+    @Test
+    fun search_beforeAnythingIsTyped_dark() = capture("search_browse_dark", dark = true) {
+        CommunityHomeContent(browsing, following)
+    }
+
+    @Test
+    fun explore_theNewChip_showsTheNewestLists() {
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CompositionLocalProvider(LocalWindowShape provides WindowShape.of(411.dp, 891.dp)) {
+                    CommunityHomeContent(explore.copy(newest = FeedPane(lists = Popular.reversed(), phase = FeedPhase.Ready)), following)
+                }
+            }
+        }
+        composeRule.onNodeWithTag(ExploreTestTags.chip(HomeChip.New)).performClick()
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/explore_new.png", roborazziOptions = OPTIONS)
     }
 
     @Test

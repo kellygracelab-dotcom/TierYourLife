@@ -146,7 +146,8 @@ class GitHub:
 # Every job of ci.yml, by the name GitHub gives it: those that must pass on
 # each main push, and those that must pass whenever code changed. A test reads
 # ci.yml and fails when a job there is in neither list, or a name here is not there.
-ALWAYS_REQUIRED = ("Build, unit tests, lint", "Release bundle", "What changed", "Android CI passed")
+ALWAYS_REQUIRED = ("Build, static analysis, lint", "Unit tests, screenshots, coverage", "Release bundle",
+                   "What changed", "Android CI passed")
 REQUIRED_FOR_CODE = ("End-to-end against the proxy",
                      "Instrumentation tests (26, named)", "Instrumentation tests (26, rest)",
                      "Instrumentation tests (34, named)", "Instrumentation tests (34, rest)")

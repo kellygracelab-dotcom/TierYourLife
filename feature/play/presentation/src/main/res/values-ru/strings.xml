@@ -7,6 +7,21 @@
         <item quantity="many">%1$d карточек из списка «%2$s»</item>
         <item quantity="other">%1$d карточки из списка «%2$s»</item>
     </plurals>
+    <string name="play_how_it_works">Выбирайте лучшую из двух карточек. Уровни заполнятся сами.</string>
+    <string name="play_game_kept">Можно выйти в любой момент — игра сохранится.</string>
+    <string name="play_other_ways">Другие способы игры</string>
+    <plurals name="play_about_duels">
+        <item quantity="one">около %1$d дуэли</item>
+        <item quantity="few">около %1$d дуэлей</item>
+        <item quantity="many">около %1$d дуэлей</item>
+        <item quantity="other">около %1$d дуэли</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="one">%1$d мин</item>
+        <item quantity="few">%1$d мин</item>
+        <item quantity="many">%1$d мин</item>
+        <item quantity="other">%1$d мин</item>
+    </plurals>
     <string name="play_choose_cards">Выбрать карточки</string>
     <string name="play_game_smart">Умный выбор</string>
     <string name="play_game_swiss">Проигравшие остаются</string>
@@ -49,7 +64,7 @@
     <string name="play_too_few_to_start_again">Карточки изменились, и их осталось слишком мало, чтобы начать эту игру заново.</string>
     <string name="play_tier_gone">Тира из этой игры больше нет.</string>
     <string name="play_start_again">Начать заново</string>
-    <string name="play_into_mine_note">Результат попадёт в «Моя». «Его» не изменится.</string>
+    <string name="play_into_mine_note">Результат попадёт в «Моя». Расстановка автора не изменится.</string>
     <string name="play_cancel">Отмена</string>
     <string name="play_start">Начать</string>
     <string name="play_continue">Далее</string>
@@ -71,6 +86,7 @@
     <string name="play_ranked">Расставленные</string>
     <string name="play_quit">Выйти</string>
     <string name="play_duel_of">Дуэль %1$d из %2$d</string>
+    <string name="play_duel_of_about">Дуэль %1$d из примерно %2$d</string>
     <string name="play_round_of">Раунд %1$d из %2$d</string>
     <string name="play_refine_of">Уточнение · %1$d из %2$d</string>
     <string name="play_undo_pick">Отменить последний выбор</string>

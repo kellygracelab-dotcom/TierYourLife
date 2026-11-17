@@ -5,7 +5,7 @@ import com.artiuillab.tieryourlife.feature.play.domain.MIN_PLAY_CARDS
 import com.artiuillab.tieryourlife.feature.play.domain.Resumption
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import com.artiuillab.tieryourlife.feature.play.domain.duels
-import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
+import com.artiuillab.tieryourlife.feature.play.domain.expectedDuels
 import com.artiuillab.tieryourlife.feature.play.domain.isDashed
 import com.artiuillab.tieryourlife.feature.play.domain.isThin
 import com.artiuillab.tieryourlife.feature.play.domain.lostTier
@@ -52,15 +52,8 @@ internal fun cardsOf(board: TierList): List<CardOption> =
 internal fun quickCounts(available: Int): List<Int> =
     generateSequence(FIRST_QUICK_COUNT) { if (it <= Int.MAX_VALUE / 2) it * 2 else null }.takeWhile { it <= available }.toList()
 
-/** Duels a game will take: the estimate while it runs, what it took once the main game is over. */
-internal fun totalOf(game: SavedGame): Int {
-    val progress = progress(game.spec, game.history)
-    return if (progress.mainOver) progress.played else runningTotal(game.spec.kind, game.spec.count, progress.planned)
-}
-
-/** Smart's length follows its answers, so it says what it plans as it stands; the others keep their estimate. */
-private fun runningTotal(kind: GameKind, count: Int, planned: Int): Int =
-    if (kind == GameKind.Smart) planned else estimatedDuels(kind, count)
+/** Duels a game will take, the number the picker promised: see [expectedDuels]. */
+internal fun totalOf(game: SavedGame): Int = expectedDuels(game.spec, game.history)
 
 internal fun offerFor(saved: SavedGame, board: TierList): ResumeOffer {
     val cards = board.cardsIn(null)
@@ -92,7 +85,7 @@ internal fun stageOf(session: Session): PlayStage.Dueling? {
             first = session.card(pair.first),
             second = session.card(pair.second),
             number = if (refining) progress.refineAsked + 1 else progress.played + 1,
-            total = if (refining) progress.refineTotal else runningTotal(spec.kind, spec.count, progress.planned),
+            total = if (refining) progress.refineTotal else expectedDuels(spec, progress),
             round = progress.round,
             rounds = if (spec.kind == GameKind.Swiss) swissRounds(spec.count) else 0,
             refining = refining,

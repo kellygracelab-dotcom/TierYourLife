@@ -44,10 +44,10 @@
 
 
 
-    <string name="item_search_field_label">Знайти або вставити посилання</string>
+    <string name="item_search_field_label">Пошукайте або введіть назву</string>
     <string name="item_search_close_content_description">Закрити пошук</string>
     <string name="item_search_clear_content_description">Очистити пошук</string>
-    <string name="item_search_source_caption">Додається в пул %1$s</string>
+    <string name="item_search_source_caption">Додається до «%1$s»</string>
     <string name="item_search_min_query">Введіть принаймні дві літери для пошуку.</string>
     <string name="item_search_empty_title">Нічого не знайдено за запитом \"%1$s\"</string>
     <string name="item_search_error_title">Не вдалося завантажити результати</string>
@@ -313,4 +313,11 @@
     <string name="publish_sheet_name">Назва</string>
     <string name="publish_sheet_name_hint">Що це за список?</string>
     <string name="publish_sheet_name_first">Спершу дайте списку назву.</string>
+    <string name="item_search_add_own">Або додайте своє</string>
+    <string name="item_search_own_link">Вставте посилання на картинку</string>
+    <string name="item_search_own_link_sub">З будь-якого сайту — картка візьме цю картинку</string>
+    <string name="item_search_own_photo">Своє фото</string>
+    <string name="item_search_own_photo_sub">З галереї або з камери</string>
+    <string name="item_search_own_name">Лише назва</string>
+    <string name="item_search_own_name_sub">Введіть її в поле вище й натисніть «Додати»</string>
 </resources>

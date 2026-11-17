@@ -53,6 +53,7 @@
     <string name="community_tile_reported">Жалоба отправлена. Человек посмотрит.</string>
     <string name="feed_sort_popular">Популярные</string>
     <string name="feed_sort_recent">Новые</string>
+    <string name="feed_chip_new">Новые</string>
     <string name="feed_source_everyone">Все</string>
     <string name="feed_source_following">Подписки</string>
     <string name="home_community_empty">Пока ничего не опубликовано</string>
@@ -154,7 +155,6 @@
     <string name="community_drag_any_card">Перетащите карточку</string>
     <string name="community_based_on">По мотивам «%1$s» от %2$s</string>
     <string name="community_list_source">Источник: %1$s</string>
-    <string name="explore_tab_explore">Обзор</string>
     <string name="explore_tab_following">Подписки</string>
     <string name="explore_title_community">Сообщество</string>
     <string name="explore_follow_section">Подписаться на «%1$s»</string>
@@ -184,6 +184,7 @@
     <string name="explore_search_nothing">Ничего не нашлось.</string>
     <string name="search_sections">Разделы</string>
     <string name="search_lists">Списки</string>
+    <string name="search_popular_topics">Популярные темы</string>
     <string name="section_topics">Темы</string>
     <string name="section_tier_lists">Тир-листы</string>
     <string name="section_show_fewer">Свернуть</string>
@@ -209,7 +210,7 @@
     <string name="following_pick_follow">Подписаться · %1$d</string>
     <string name="following_pick_none">Выберите хотя бы один</string>
     <string name="following_nothing_published">Те, на кого вы подписаны, пока ничего не опубликовали.</string>
-    <string name="following_go_explore">Перейти в обзор</string>
+    <string name="following_see_all_lists">Смотреть все списки</string>
     <string name="manage_sections">Разделы · %1$d</string>
     <string name="manage_topics">Темы · %1$d</string>
     <string name="manage_people">Люди · %1$d</string>

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
@@ -42,6 +41,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.DeleteOutlineIcon
+import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.core.theme.ui.SouthIcon
 import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
@@ -53,14 +53,13 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.BandText
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 
-private val BADGE_SIZE = 40.dp
+private val BADGE_SIZE = 36.dp
 private val BADGE_PADDING = 3.dp
+private val ACTION_ICON_WIDTH = 36.dp
 private const val LETTER_LIKE_LENGTH = 3
 
 private val CurrentTierTintLight = Color(0xFFEDEBFA)
 private val CurrentTierTintDark = Color(0xFF2E2F45)
-private val RemoveCircleLight = Color(0xFFF9DEDC)
-private val RemoveCircleDark = Color(0xFF601410)
 private val RemoveIconLight = Color(0xFF8C1D18)
 private val RemoveIconDark = Color(0xFFF9DEDC)
 private val RemoveTitleLight = Color(0xFFB3261E)
@@ -111,9 +110,15 @@ fun MoveItemSheetContent(
         AboutThePicture(item, onDismiss = { aboutVisible = false })
         return
     }
+    // The tiers first, then the gentler ways out, and removing last, apart:
+    // five tiers and all of it fit without scrolling.
     Column(Modifier.testTag(TierDetailTestTags.MOVE_SHEET)) {
         MoveSheetHeader(item, onAbout = { aboutVisible = true })
-        Column(Modifier.padding(top = 8.dp)) {
+        Column(Modifier.padding(top = 8.dp, bottom = 12.dp)) {
+            SectionLabel(
+                text = stringResource(R.string.tier_detail_move_sheet_subtitle),
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 4.dp),
+            )
             rankedTiers.forEach { tier ->
                 val isCurrent = tier.id == currentTierId
                 MoveSheetTierRow(
@@ -123,45 +128,45 @@ fun MoveItemSheetContent(
                 )
             }
 
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
+            val backToPool = pool?.takeIf { it.id != currentTierId }
+            val adjusts = onAdjustPicture != null && item.imageUrl != null
+            if (backToPool != null || adjusts) {
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp))
+            }
 
-            if (onAdjustPicture != null && item.imageUrl != null) {
+            if (backToPool != null) {
+                MoveSheetActionRow(
+                    testTag = TierDetailTestTags.MOVE_SHEET_POOL,
+                    icon = { SouthIcon(22.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
+                    title = stringResource(R.string.tier_detail_move_sheet_pool_title),
+                    titleColor = MaterialTheme.colorScheme.onSurface,
+                    subtitle = stringResource(R.string.tier_detail_move_sheet_pool_subtitle),
+                    onClick = { onMoveToTier(backToPool.id, backToPool.items.size) },
+                )
+            }
+
+            if (adjusts && onAdjustPicture != null) {
                 MoveSheetActionRow(
                     testTag = TierDetailTestTags.MOVE_SHEET_ADJUST,
-                    iconCircleColor = MaterialTheme.colorScheme.surfaceContainerLow,
                     icon = { TuneIcon(22.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
                     title = stringResource(R.string.tier_detail_move_sheet_adjust_title),
                     titleColor = MaterialTheme.colorScheme.onSurface,
                     subtitle = stringResource(R.string.tier_detail_move_sheet_adjust_subtitle),
                     onClick = onAdjustPicture,
-                    bottomPadding = 10.dp,
                 )
             }
+
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp))
 
             val isDark = TierYourLifeMedia.current.isDark
             MoveSheetActionRow(
                 testTag = TierDetailTestTags.MOVE_SHEET_REMOVE,
-                iconCircleColor = if (isDark) RemoveCircleDark else RemoveCircleLight,
                 icon = { DeleteOutlineIcon(22.dp, if (isDark) RemoveIconDark else RemoveIconLight) },
                 title = stringResource(R.string.tier_detail_move_sheet_remove_title),
                 titleColor = if (isDark) RemoveTitleDark else RemoveTitleLight,
                 subtitle = stringResource(R.string.tier_detail_move_sheet_remove_subtitle),
                 onClick = onRemove,
-                bottomPadding = 10.dp,
             )
-
-            if (pool != null && pool.id != currentTierId) {
-                MoveSheetActionRow(
-                    testTag = TierDetailTestTags.MOVE_SHEET_POOL,
-                    iconCircleColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                    icon = { SouthIcon(22.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
-                    title = stringResource(R.string.tier_detail_move_sheet_pool_title),
-                    titleColor = MaterialTheme.colorScheme.onSurface,
-                    subtitle = stringResource(R.string.tier_detail_move_sheet_pool_subtitle),
-                    onClick = { onMoveToTier(pool.id, pool.items.size) },
-                    bottomPadding = 12.dp,
-                )
-            }
         }
     }
 }
@@ -190,11 +195,6 @@ private fun MoveSheetHeader(item: TierItem, onAbout: () -> Unit) {
                     modifier = Modifier.testTag(TierDetailTestTags.MOVE_SHEET_ABOUT_PICTURE),
                 ) { Text(stringResource(R.string.tier_detail_about_picture)) }
             }
-            Text(
-                text = stringResource(R.string.tier_detail_move_sheet_subtitle),
-                style = TierYourLifeType.current.supportingLabel,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }
@@ -227,7 +227,7 @@ private fun MoveSheetTierRow(tier: Tier, isCurrent: Boolean, onClick: (() -> Uni
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
+            .heightIn(min = 48.dp)
             .background(rowBackground)
             .then(
                 if (onClick != null) {
@@ -237,14 +237,14 @@ private fun MoveSheetTierRow(tier: Tier, isCurrent: Boolean, onClick: (() -> Uni
                 },
             )
             .testTag(TierDetailTestTags.moveSheetTierOption(tier.id))
-            .padding(horizontal = 20.dp, vertical = 10.dp),
+            .padding(horizontal = 20.dp, vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
                 .size(BADGE_SIZE)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(9.dp))
                 .background(colors.band)
                 .padding(BADGE_PADDING),
             contentAlignment = Alignment.Center,
@@ -265,7 +265,7 @@ private fun MoveSheetTierRow(tier: Tier, isCurrent: Boolean, onClick: (() -> Uni
         Column(Modifier.weight(1f)) {
             Text(
                 text = if (named) tier.label else tier.caption ?: tier.label,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             tier.caption?.takeIf { named }?.let { caption ->
@@ -292,13 +292,11 @@ private fun MoveSheetTierRow(tier: Tier, isCurrent: Boolean, onClick: (() -> Uni
 @Composable
 private fun MoveSheetActionRow(
     testTag: String,
-    iconCircleColor: Color,
     icon: @Composable () -> Unit,
     title: String,
     titleColor: Color,
     subtitle: String,
     onClick: () -> Unit,
-    bottomPadding: Dp,
 ) {
     Row(
         modifier = Modifier
@@ -306,19 +304,13 @@ private fun MoveSheetActionRow(
             .heightIn(min = 56.dp)
             .clickable(onClick = onClick)
             .testTag(testTag)
-            .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = bottomPadding),
+            .padding(horizontal = 20.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(iconCircleColor),
-            contentAlignment = Alignment.Center,
-        ) { icon() }
+        Box(Modifier.width(ACTION_ICON_WIDTH), contentAlignment = Alignment.Center) { icon() }
         Column(Modifier.weight(1f)) {
-            Text(text = title, style = MaterialTheme.typography.titleMedium, color = titleColor)
+            Text(text = title, style = MaterialTheme.typography.bodyLarge, color = titleColor)
             Text(
                 text = subtitle,
                 style = TierYourLifeType.current.supportingLabel,

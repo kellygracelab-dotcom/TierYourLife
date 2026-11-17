@@ -136,11 +136,8 @@ class PlayViewModel @Inject constructor(
     inner class PickerControls {
         fun choose(kind: GameKind) = updatePicker { it.copy(kind = kind) }
 
-        fun showCards() = updatePicker { it.copy(page = PickerPage.Cards) }
-
-        fun showGames() = updatePicker { it.copy(page = PickerPage.Games, cardsFirst = false) }
-
-        fun showIndividual() = updatePicker { it.copy(page = PickerPage.Individual) }
+        /** Back on the games page, the cards are no longer what the sheet opened on. */
+        fun show(page: PickerPage) = updatePicker { it.copy(page = page, cardsFirst = it.cardsFirst && page != PickerPage.Games) }
 
         fun toggle(tierId: Long) = updatePicker {
             it.copy(chosen = if (tierId in it.chosen) it.chosen - tierId else it.chosen + tierId, selectedIds = null)

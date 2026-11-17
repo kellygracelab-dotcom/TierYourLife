@@ -13,13 +13,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,13 +54,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.layout.BoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
@@ -156,43 +162,41 @@ internal fun rememberOneByOne(move: (itemId: Long, toTierId: Long, toPosition: I
     return remember { OneByOne { itemId, toTierId, toPosition -> latest(itemId, toTierId, toPosition) } }
 }
 
-/** The pool's switch where one at a time is [offered], or null; [compact] on the phone's tray, whose head keeps one line. */
-internal fun oneByOneSwitch(offered: Boolean, memory: BoardLayoutMemory, compact: Boolean = false): (@Composable () -> Unit)? = if (offered) {
-    { OneByOneToggle(on = memory.oneCardAtATime, onToggle = { memory.oneCardAtATime = !memory.oneCardAtATime }, compact = compact) }
+/** The pool's switch where one at a time is [offered], or null. */
+internal fun oneByOneSwitch(offered: Boolean, memory: BoardLayoutMemory): (@Composable (worded: Boolean) -> Unit)? = if (offered) {
+    { worded -> OneByOneToggle(on = memory.oneCardAtATime, onToggle = { memory.oneCardAtATime = !memory.oneCardAtATime }, worded = worded) }
 } else {
     null
 }
 
-/** The switch in the pool's head between dragging and one card at a time. */
+/**
+ * The switch between dragging and one card at a time: a chip with its word,
+ * as on the site, since the picture alone said nothing. 32 to see, 48 to touch.
+ */
 @Composable
-internal fun OneByOneToggle(on: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, compact: Boolean = false) {
-    val description = stringResource(R.string.one_by_one_on)
-    val tint = if (on) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(100.dp))
-            .background(if (on) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface)
-            .clickable(onClick = onToggle)
-            .semantics {
-                role = Role.Switch
-                selected = on
-                contentDescription = description
-            }
-            .testTag(TierDetailTestTags.ONE_BY_ONE_TOGGLE)
-            .padding(horizontal = if (compact) 8.dp else 12.dp, vertical = 6.dp),
-    ) {
-        if (compact) {
-            ViewCarouselIcon(20.dp, tint)
-        } else {
-            Text(text = stringResource(R.string.one_by_one_toggle), style = MaterialTheme.typography.labelLarge, color = tint)
-        }
+internal fun OneByOneToggle(on: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, worded: Boolean = true) {
+    val word = stringResource(R.string.one_by_one_toggle)
+    val icon: @Composable () -> Unit = {
+        ViewCarouselIcon(FilterChipDefaults.IconSize, if (on) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant)
     }
+    FilterChip(
+        selected = on,
+        onClick = onToggle,
+        // Where the pool's count would break across lines, the picture stays, centred, and the word is only said.
+        label = { if (worded) Text(text = word, maxLines = 1) else icon() },
+        modifier = modifier
+            .then(if (worded) Modifier else Modifier.semantics { contentDescription = word })
+            .testTag(TierDetailTestTags.ONE_BY_ONE_TOGGLE),
+        leadingIcon = icon.takeIf { worded },
+    )
 }
 
 /**
  * The pool while ranking one card at a time: the card large, a button in each
  * tier's colour, Skip, and Undo once something was placed. [beside] lays the
  * buttons beside the card, as under the rows; a narrow column puts them under it.
+ * On a phone's tray ([strip]) the card's name and what is left stand beside it,
+ * the switch comes down from the tray's head, and the tiers take one row.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -202,6 +206,7 @@ internal fun OneByOnePanel(
     onExit: () -> Unit,
     modifier: Modifier = Modifier,
     beside: Boolean = true,
+    strip: Boolean = false,
 ) {
     val ranked = list.ranked()
     val left = list.pool()?.items?.size ?: 0
@@ -222,6 +227,10 @@ internal fun OneByOnePanel(
             AllPlaced(canUndo = state.canUndo, onUndo = state::undo, onExit = onExit)
             return@Column
         }
+        if (strip) {
+            StripPanel(list = list, ranked = ranked, card = card, left = left, state = state, onExit = onExit)
+            return@Column
+        }
         val buttons: @Composable () -> Unit = {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 ranked.forEach { tier -> TierButton(tier) { state.place(list, card, tier) } }
@@ -238,25 +247,130 @@ internal fun OneByOnePanel(
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = pluralStringResource(R.plurals.one_by_one_left, left, left),
+                text = pluralStringResource(R.plurals.pool_cards_left, left, left),
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            if (state.canUndo) {
-                TextButton(onClick = state::undo, modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_UNDO)) {
-                    Text(stringResource(R.string.tier_detail_snackbar_undo))
+            UndoAndToPool(list, card, state)
+            SkipButton { state.skip(list, card) }
+        }
+    }
+}
+
+/**
+ * The phone's tray: the card, beside it its name, what is left, the switch
+ * and Skip; under them every tier in one row of equal buttons, or two rows
+ * when there are more than six, each still a thumb wide.
+ */
+@Composable
+private fun StripPanel(list: TierList, ranked: List<Tier>, card: TierItem, left: Int, state: OneByOne, onExit: () -> Unit) {
+    Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+        BigCard(card, picked = state.isPicked)
+        // Sized by its content, at least the card's height: a weighted spacer here would stretch the tray to the screen.
+        Column(Modifier.weight(1f).heightIn(min = BIG_CARD_HEIGHT), verticalArrangement = Arrangement.SpaceBetween) {
+            Column {
+                Text(
+                    text = card.title,
+                    modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_NAME),
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 22.sp, lineHeight = 28.sp),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = pluralStringResource(R.plurals.pool_cards_left, left, left),
+                        modifier = Modifier.weight(1f).testTag(TierDetailTestTags.POOL_COUNT),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    UndoAndToPool(list, card, state)
                 }
             }
-            if (state.isPicked) {
-                TextButton(onClick = { state.toPool(list, card) }, modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_TO_POOL)) {
-                    Text(stringResource(R.string.one_by_one_to_pool))
-                }
-            }
-            TextButton(onClick = { state.skip(list, card) }, modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_SKIP)) {
-                Text(stringResource(R.string.one_by_one_skip))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                OneByOneToggle(on = true, onToggle = onExit)
+                Spacer(Modifier.weight(1f))
+                SkipButton { state.skip(list, card) }
             }
         }
+    }
+    TierButtonRows(ranked, card) { tier -> state.place(list, card, tier) }
+}
+
+@Composable
+private fun UndoAndToPool(list: TierList, card: TierItem, state: OneByOne) {
+    if (state.canUndo) {
+        TextButton(onClick = state::undo, contentPadding = TIGHT_TEXT_BUTTON, modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_UNDO)) {
+            Text(stringResource(R.string.tier_detail_snackbar_undo), maxLines = 1)
+        }
+    }
+    if (state.isPicked) {
+        TextButton(onClick = { state.toPool(list, card) }, contentPadding = TIGHT_TEXT_BUTTON, modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_TO_POOL)) {
+            Text(stringResource(R.string.one_by_one_to_pool), maxLines = 1)
+        }
+    }
+}
+
+@Composable
+private fun SkipButton(onClick: () -> Unit) {
+    TextButton(onClick = onClick, modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_SKIP)) {
+        Text(stringResource(R.string.one_by_one_skip), maxLines = 1)
+    }
+}
+
+/** Equal buttons, at most six to a row, the rows as even as the count allows. */
+@Composable
+private fun TierButtonRows(ranked: List<Tier>, card: TierItem, onPlace: (Tier) -> Unit) {
+    val rows = tierButtonRows(ranked.size)
+    Column(Modifier.padding(top = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        ranked.chunked(rows.perRow).forEach { line ->
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                line.forEach { tier ->
+                    WideTierButton(tier, card, Modifier.weight(1f)) { onPlace(tier) }
+                }
+                repeat(rows.perRow - line.size) { Spacer(Modifier.weight(1f)) }
+            }
+        }
+    }
+}
+
+/** How many rows the tier buttons take and how many stand in each. */
+internal data class TierButtonLayout(val rows: Int, val perRow: Int)
+
+internal fun tierButtonRows(tiers: Int): TierButtonLayout {
+    val rows = ((tiers + MAX_TIER_BUTTONS_IN_A_ROW - 1) / MAX_TIER_BUTTONS_IN_A_ROW).coerceAtLeast(1)
+    return TierButtonLayout(rows = rows, perRow = ((tiers + rows - 1) / rows).coerceAtLeast(1))
+}
+
+@Composable
+private fun WideTierButton(tier: Tier, card: TierItem, modifier: Modifier, onClick: () -> Unit) {
+    val colors = tierRowColors(tier.colorLight, tier.colorDark)
+    val description = stringResource(R.string.one_by_one_place_in, card.title, tier.label)
+    Box(
+        modifier = modifier
+            .height(TIER_BUTTON_ROW_HEIGHT)
+            .clip(RoundedCornerShape(12.dp))
+            .background(colors.band)
+            .clickable(onClick = onClick)
+            .semantics {
+                role = Role.Button
+                contentDescription = description
+            }
+            .testTag(TierDetailTestTags.oneByOneTier(tier.id))
+            .padding(horizontal = 4.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = tier.label,
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+            color = colors.onBand,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.clearAndSetSemantics {},
+        )
     }
 }
 
@@ -345,6 +459,9 @@ internal fun PickedOutline(width: Dp, height: Dp) {
 
 private val BIG_CARD_WIDTH = 96.dp
 private val BIG_CARD_HEIGHT = 136.dp
+private val TIER_BUTTON_ROW_HEIGHT = 48.dp
+private const val MAX_TIER_BUTTONS_IN_A_ROW = 6
+private val TIGHT_TEXT_BUTTON = PaddingValues(horizontal = 8.dp)
 private val TIER_BUTTON_HEIGHT = 44.dp
 private val TIER_BUTTON_WIDTH = 52.dp
 private val TIER_BUTTON_MAX_WIDTH = 140.dp

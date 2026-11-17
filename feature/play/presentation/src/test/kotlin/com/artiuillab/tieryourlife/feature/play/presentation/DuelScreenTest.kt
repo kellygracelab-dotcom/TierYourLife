@@ -61,6 +61,16 @@ class DuelScreenTest {
     }
 
     @Test
+    fun aGameThatMayStopSoonerOrRunOn_countsAbout_theWholeGamesDuels() {
+        composeRule.setContent {
+            TierYourLifeTheme { DuelScreen(duel = duel.copy(kind = GameKind.Smart, total = 63), onPick = {}, onSkip = {}, onUndo = {}, onQuit = {}) }
+        }
+
+        composeRule.onNodeWithText("Duel 1 of about 63").assertExists()
+        composeRule.onNodeWithText("Smart").assertExists()
+    }
+
+    @Test
     fun skipAndQuit_doWhatTheySay_andTheFirstDuelHasNothingToUndo() {
         var skipped = 0
         var quit = 0

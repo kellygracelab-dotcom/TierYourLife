@@ -77,6 +77,7 @@ import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.core.theme.ui.CardLabel
 import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
+import com.artiuillab.tieryourlife.feature.play.domain.isRough
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -118,22 +119,18 @@ private fun UprightDuel(duel: DuelState, metrics: DuelMetrics, actions: DuelActi
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
         PlayHeader(
-            title = stringResource(duel.kind.nameRes),
-            line = duelLine(duel),
+            title = duelLine(duel),
+            line = gameLine(duel),
             onQuit = actions.quit,
-            trailing = {
-                if (duel.rounds > 0 && !duel.refining) {
-                    Text(
-                        text = stringResource(R.string.play_round_of, duel.round, duel.rounds),
-                        modifier = Modifier.padding(horizontal = 4.dp),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                UndoButton(duel.canUndo, actions.undo)
-            },
+            trailing = { UndoButton(duel.canUndo, actions.undo) },
         )
-        DuelProgress(duel)
+        DuelProgress(
+            duel,
+            Modifier
+                .padding(horizontal = 16.dp)
+                .clip(RoundedCornerShape(UPRIGHT_PROGRESS / 2)),
+            height = UPRIGHT_PROGRESS,
+        )
         Box(
             Modifier
                 .weight(1f)
@@ -209,13 +206,8 @@ private fun DuelCentre(duel: DuelState, height: Dp, onSkip: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
         )
-        val name = stringResource(duel.kind.nameRes)
         Text(
-            text = if (duel.rounds > 0 && !duel.refining) {
-                name + " · " + stringResource(R.string.play_round_of, duel.round, duel.rounds)
-            } else {
-                name
-            },
+            text = gameLine(duel),
             modifier = Modifier.padding(top = 2.dp),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -229,14 +221,15 @@ private fun DuelCentre(duel: DuelState, height: Dp, onSkip: () -> Unit) {
 
 private val CENTRE_COUNT = TextStyle(fontSize = 16.sp, lineHeight = 24.sp, fontWeight = FontWeight.Medium)
 
+/** Over every duel the game is expected to take, the same count the header and the picker give. */
 @Composable
-private fun DuelProgress(duel: DuelState) {
+private fun DuelProgress(duel: DuelState, modifier: Modifier = Modifier, height: Dp = 4.dp) {
     val progress by animateFloatAsState(duel.progress, tween(PROGRESS_MILLIS), label = "duel progress")
     LinearProgressIndicator(
         progress = { progress },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(4.dp),
+            .height(height),
         color = MaterialTheme.colorScheme.primary,
         trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         gapSize = 0.dp,
@@ -245,6 +238,9 @@ private fun DuelProgress(duel: DuelState) {
 }
 
 private const val PROGRESS_MILLIS = 200
+
+/** Upright there is height to spare for a bar that reads at a glance; sideways it stays thin. */
+private val UPRIGHT_PROGRESS = 6.dp
 
 @Composable
 internal fun QuitButton(onQuit: () -> Unit) {
@@ -274,21 +270,29 @@ private fun UndoButton(canUndo: Boolean, onUndo: () -> Unit) {
     }
 }
 
+/** "Duel 1 of about 63": the total the picker promised, "about" where the game may stop sooner or run on. */
 @Composable
-private fun duelLine(duel: DuelState): String = if (duel.refining) {
-    stringResource(R.string.play_refine_of, duel.number, duel.total)
-} else {
-    stringResource(R.string.play_duel_of, duel.number, duel.total)
+private fun duelLine(duel: DuelState): String = when {
+    duel.refining -> stringResource(R.string.play_refine_of, duel.number, duel.total)
+    duel.kind.isRough -> stringResource(R.string.play_duel_of_about, duel.number, duel.total)
+    else -> stringResource(R.string.play_duel_of, duel.number, duel.total)
 }
 
-/** The bar over the duels: Quit, the game's name, and a line under it. */
+/** The game's name, and Losers stay's round beside it. */
+@Composable
+private fun gameLine(duel: DuelState): String {
+    val name = stringResource(duel.kind.nameRes)
+    return if (duel.rounds > 0 && !duel.refining) name + " · " + stringResource(R.string.play_round_of, duel.round, duel.rounds) else name
+}
+
+/** The bar over the duels: Quit, the count, and the game under it. */
 @Composable
 private fun PlayHeader(title: String, line: String, onQuit: () -> Unit, trailing: @Composable () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .height(56.dp)
+            .height(64.dp)
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -297,18 +301,19 @@ private fun PlayHeader(title: String, line: String, onQuit: () -> Unit, trailing
             Modifier
                 .weight(1f)
                 .padding(horizontal = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(1.dp),
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                // Read out as it changes, so a pick is heard to have counted.
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                style = HEADER_TITLE,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = line,
-                // Read out as it changes, so a pick is heard to have counted.
-                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                 style = HEADER_LINE,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
@@ -319,7 +324,8 @@ private fun PlayHeader(title: String, line: String, onQuit: () -> Unit, trailing
     }
 }
 
-private val HEADER_LINE = TextStyle(fontSize = 13.sp, lineHeight = 18.sp)
+private val HEADER_TITLE = TextStyle(fontSize = 18.sp, lineHeight = 24.sp)
+private val HEADER_LINE = TextStyle(fontSize = 12.sp, lineHeight = 16.sp)
 
 /** How big the cards are drawn, by the window: the design's sizes. */
 internal data class DuelMetrics(

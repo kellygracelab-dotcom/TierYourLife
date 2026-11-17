@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -30,6 +31,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,7 +61,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.settings.Features
@@ -126,14 +131,17 @@ fun PoolSheet(
     countWhenEmpty: Boolean = true,
     /** The pool ranked one card at a time, offered by a switch in the head; null where the board is not one's own. */
     oneByOnePanel: (@Composable (beside: Boolean) -> Unit)? = null,
+    /** A reader's pool is the cards still to place: its head counts what is left rather than naming the pool. */
+    countsCardsLeft: Boolean = false,
 ) {
     var expanded by rememberSaveable(pool.id, side) { mutableStateOf(poolOpensOnItsOwn(side, readOnly, pool.items.size)) }
     val memory = LocalBoardLayoutMemory.current
     val dockRows = memory.poolDockRows.takeIf { it in BoardLayoutMemory.DockRowChoices } ?: BoardLayoutMemory.DEFAULT_DOCK_ROWS
     val lifting = docked && dragController.draggedPayload != null && !readOnly
-    val toggle = oneByOneSwitch(offered = oneByOnePanel != null, memory = memory, compact = !docked)
+    val toggle = oneByOneSwitch(offered = oneByOnePanel != null, memory = memory)
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
     val count = pool.items.size
+    val panelInTray = panelInTray(docked, offered = oneByOnePanel != null, memory.oneCardAtATime, expanded, count)
     val description = pluralStringResource(
         if (expanded) {
             R.plurals.tier_detail_ranked_pool_expanded_description
@@ -214,20 +222,12 @@ fun PoolSheet(
                     onAddClick = onAddClick,
                     onGenerateClick = onGenerateClick,
                     toggle = toggle,
+                    countsCardsLeft = countsCardsLeft,
                 )
                 return@Column
             }
             accessories?.invoke(!expanded)
-            if (stripCounts(countWhenEmpty, count, readOnly)) {
-                StripHead(
-                    pool = pool,
-                    expanded = expanded,
-                    readOnly = readOnly,
-                    onAddClick = onAddClick,
-                    onGenerateClick = onGenerateClick,
-                    toggle = toggle,
-                )
-            }
+            TrayHead(pool, expanded, readOnly, onAddClick, onGenerateClick, toggle, panelInTray, countWhenEmpty, countsCardsLeft)
         }
         SheetCards(
             pool = pool,
@@ -242,6 +242,37 @@ fun PoolSheet(
             onDoubleTap = onDoubleTap,
         )
     }
+}
+
+/** On a phone's open tray the one-at-a-time panel stands in for the cards. */
+private fun panelInTray(docked: Boolean, offered: Boolean, oneCardAtATime: Boolean, expanded: Boolean, count: Int): Boolean =
+    !docked && offered && oneCardAtATime && expanded && count > 0
+
+/** The strip's head; with the panel in the tray it keeps only Add, the panel bringing its own switch and count. */
+@Composable
+private fun TrayHead(
+    pool: Tier,
+    expanded: Boolean,
+    readOnly: Boolean,
+    onAddClick: (() -> Unit)?,
+    onGenerateClick: () -> Unit,
+    toggle: (@Composable (worded: Boolean) -> Unit)?,
+    panelInTray: Boolean,
+    countWhenEmpty: Boolean,
+    countsCardsLeft: Boolean,
+) {
+    val count = pool.items.size
+    val adds = !readOnly && onAddClick != null
+    if (!stripCounts(countWhenEmpty, count, readOnly) || panelInTray && !adds) return
+    StripHead(
+        pool = pool,
+        expanded = expanded,
+        readOnly = readOnly,
+        onAddClick = onAddClick,
+        onGenerateClick = onGenerateClick,
+        toggle = toggle.takeUnless { panelInTray },
+        title = if (panelInTray) null else poolTitle(count, countsCardsLeft),
+    )
 }
 
 /** What the open sheet holds: the panel while ranking one at a time, which opens it, or the cards. */
@@ -286,6 +317,14 @@ internal fun poolOpensOnItsOwn(side: Any?, readOnly: Boolean, cards: Int): Boole
 
 /** A count of none with nothing to add beside it says nothing the accessories cannot say better. */
 private fun stripCounts(countWhenEmpty: Boolean, cards: Int, readOnly: Boolean): Boolean = countWhenEmpty || cards > 0 || !readOnly
+
+/** The pool's name and count, or, on a reader's pool, how many cards are left to place. */
+@Composable
+internal fun poolTitle(count: Int, countsCardsLeft: Boolean): String = if (countsCardsLeft) {
+    pluralStringResource(R.plurals.pool_cards_left, count, count)
+} else {
+    pluralStringResource(R.plurals.tier_detail_pool_unranked_count, count, count)
+}
 
 /** The first few pictures, small, so a folded pool still says what is in it. */
 @Composable
@@ -407,7 +446,7 @@ internal fun stripEdgeSpeed(fromLeft: Float, fromRight: Float, edge: Float, fast
     else -> 0f
 }
 
-/** The phone's strip under the handle: the count, a glimpse while folded, Add. */
+/** The phone's strip under the handle: the count, a glimpse while folded, Add; no [title] while the panel says it. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun StripHead(
@@ -416,8 +455,11 @@ private fun StripHead(
     readOnly: Boolean,
     onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
-    toggle: (@Composable () -> Unit)?,
-) {
+    toggle: (@Composable (worded: Boolean) -> Unit)?,
+    title: String?,
+) = BoxWithConstraints(Modifier.fillMaxWidth()) {
+    val adds = !readOnly && onAddClick != null
+    val worded = toggleKeepsItsWord(title, adds, maxWidth)
     val count = pool.items.size
     // The count and the two chips sit on one line while they fit and take
     // two when they do not. Given weight instead, the count was squeezed
@@ -437,23 +479,25 @@ private fun StripHead(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = pluralStringResource(R.plurals.tier_detail_pool_unranked_count, count, count),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            if (!expanded) {
+            if (title != null) {
+                Text(
+                    text = title,
+                    modifier = Modifier.testTag(TierDetailTestTags.POOL_COUNT),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            if (!expanded && title != null) {
                 Glimpse(pool.items)
             }
         }
         // Someone else's pool is material to rank, not a place to add to.
-        val adds = !readOnly && onAddClick != null
         if (adds || toggle != null) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                toggle?.invoke()
+                toggle?.invoke(worded)
                 if (adds && onAddClick != null) {
                     AddChip(onClick = onAddClick)
                     if (Features.GENERATION_OFFERED) {
@@ -494,7 +538,8 @@ private fun DockedHead(
     note: (@Composable () -> Unit)?,
     onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
-    toggle: (@Composable () -> Unit)?,
+    toggle: (@Composable (worded: Boolean) -> Unit)?,
+    countsCardsLeft: Boolean,
 ) {
     Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         if (lifting) {
@@ -503,12 +548,12 @@ private fun DockedHead(
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = stringResource(R.string.tier_detail_pool_count, count),
+                text = if (countsCardsLeft) pluralStringResource(R.plurals.pool_cards_left, count, count) else stringResource(R.string.tier_detail_pool_count, count),
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            toggle?.let { Box(Modifier.padding(end = 12.dp)) { it() } }
+            toggle?.let { Box(Modifier.padding(end = 12.dp)) { it(true) } }
             if (!readOnly && onAddClick != null) {
                 AddCardField(onAddClick = onAddClick, onGenerateClick = onGenerateClick, modifier = Modifier.width(DOCKED_ADD_FIELD_WIDTH))
             }
@@ -575,6 +620,19 @@ private fun PoolCardsWrapped(
 private fun Int.moreLines(): Int = BoardLayoutMemory.DockRowChoices.firstOrNull { it > this } ?: this
 
 private fun Int.fewerLines(): Int = BoardLayoutMemory.DockRowChoices.lastOrNull { it < this } ?: this
+
+/** The switch keeps its word while the count, the switch and Add stand on one line, the count unbroken. */
+@Composable
+private fun toggleKeepsItsWord(title: String?, adds: Boolean, width: Dp): Boolean {
+    if (title == null) return true
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    fun wide(text: String, style: TextStyle): Dp = with(density) { measurer.measure(text, style, maxLines = 1).size.width.toDp() }
+    val titleWidth = wide(title, MaterialTheme.typography.titleSmall)
+    val toggleWidth = 8.dp + FilterChipDefaults.IconSize + 8.dp + wide(stringResource(R.string.one_by_one_toggle), MaterialTheme.typography.labelLarge) + 16.dp
+    val addWidth = if (adds) 8.dp + 12.dp + 18.dp + 4.dp + wide(stringResource(R.string.tier_detail_add), TierYourLifeType.current.supportingLabel) + 12.dp else 0.dp
+    return 32.dp + titleWidth + 8.dp + toggleWidth + addWidth <= width
+}
 
 @Composable
 private fun AddChip(onClick: () -> Unit) {

@@ -38,10 +38,10 @@
 
 
 
-    <string name="item_search_field_label">Find or paste a link</string>
+    <string name="item_search_field_label">Search or type a name</string>
     <string name="item_search_close_content_description">Close search</string>
     <string name="item_search_clear_content_description">Clear search</string>
-    <string name="item_search_source_caption">Adding to %1$s pool</string>
+    <string name="item_search_source_caption">Adding to %1$s</string>
     <string name="item_search_min_query">Type at least two letters to search.</string>
     <string name="item_search_empty_title">Nothing found for \"%1$s\"</string>
     <string name="item_search_error_title">Couldn’t load results</string>
@@ -282,4 +282,11 @@
     <string name="publish_sheet_name">Name</string>
     <string name="publish_sheet_name_hint">What is this list?</string>
     <string name="publish_sheet_name_first">Give the list a name first.</string>
+    <string name="item_search_add_own">Or add your own</string>
+    <string name="item_search_own_link">Paste a picture link</string>
+    <string name="item_search_own_link_sub">From any site — the card takes that picture</string>
+    <string name="item_search_own_photo">Your photo</string>
+    <string name="item_search_own_photo_sub">From the gallery or the camera</string>
+    <string name="item_search_own_name">Just a name</string>
+    <string name="item_search_own_name_sub">Type it in the field above, then Add</string>
 </resources>

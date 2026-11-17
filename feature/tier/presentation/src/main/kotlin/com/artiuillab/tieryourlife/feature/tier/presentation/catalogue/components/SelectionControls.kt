@@ -53,7 +53,7 @@ internal fun SelectionCheckbox(isSelected: Boolean) {
 }
 
 @Composable
-internal fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit) {
+internal fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit, addsAName: Boolean = false) {
     Column(modifier = Modifier.testTag(CatalogueSearchTestTags.ITEM_SEARCH_BOTTOM_BAR)) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
         Row(
@@ -76,7 +76,8 @@ internal fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit
                 modifier = Modifier.testTag(CatalogueSearchTestTags.ITEM_SEARCH_SELECTED_COUNT),
             )
 
-            val hasSelection = selectedCount > 0
+            // A name typed and nothing picked is a card too: Add makes it.
+            val hasSelection = selectedCount > 0 || addsAName
             val containerColor = if (hasSelection) {
                 MaterialTheme.colorScheme.primary
             } else {
@@ -87,7 +88,7 @@ internal fun SelectionBar(selectedCount: Int, fill: Color, onConfirm: () -> Unit
             } else {
                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             }
-            val buttonLabel = if (hasSelection) {
+            val buttonLabel = if (selectedCount > 0) {
                 pluralStringResource(R.plurals.item_search_add_button, selectedCount, selectedCount)
             } else {
                 stringResource(R.string.item_search_add_disabled)

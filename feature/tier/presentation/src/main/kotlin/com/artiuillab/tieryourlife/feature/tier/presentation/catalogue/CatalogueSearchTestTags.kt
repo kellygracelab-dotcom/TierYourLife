@@ -1,6 +1,10 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.catalogue
 
 internal object CatalogueSearchTestTags {
+    const val ITEM_SEARCH_ADD_OWN = "item_search_add_own"
+    const val ITEM_SEARCH_OWN_LINK = "item_search_own_link"
+    const val ITEM_SEARCH_OWN_PHOTO = "item_search_own_photo"
+    const val ITEM_SEARCH_OWN_NAME = "item_search_own_name"
     const val ITEM_SEARCH_FIELD = "tier_detail_item_search_field"
     const val ITEM_SEARCH_CLOSE = "tier_detail_item_search_close"
     const val ITEM_SEARCH_CLEAR = "tier_detail_item_search_clear"

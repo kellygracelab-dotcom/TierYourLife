@@ -51,6 +51,7 @@
     <string name="community_tile_reported">Bildirildi. Bir kişi inceleyecek.</string>
     <string name="feed_sort_popular">Popüler</string>
     <string name="feed_sort_recent">En yeni</string>
+    <string name="feed_chip_new">Yeni</string>
     <string name="feed_source_everyone">Tümü</string>
     <string name="feed_source_following">Takip</string>
     <string name="home_community_empty">Henüz hiçbir şey yayımlanmadı</string>
@@ -150,7 +151,6 @@
     <string name="community_drag_any_card">Bir kartı sürükleyin</string>
     <string name="community_based_on">%2$s tarafından “%1$s” temel alınarak</string>
     <string name="community_list_source">Kaynak: %1$s</string>
-    <string name="explore_tab_explore">Keşfet</string>
     <string name="explore_tab_following">Takip</string>
     <string name="explore_title_community">Topluluk</string>
     <string name="explore_follow_section">%1$s bölümünü takip et</string>
@@ -180,6 +180,7 @@
     <string name="explore_search_nothing">Eşleşen bir şey yok.</string>
     <string name="search_sections">Bölümler</string>
     <string name="search_lists">Listeler</string>
+    <string name="search_popular_topics">Popüler konular</string>
     <string name="section_topics">Konular</string>
     <string name="section_tier_lists">Seviye listeleri</string>
     <string name="section_show_fewer">Daha az göster</string>
@@ -203,7 +204,7 @@
     <string name="following_pick_follow">Takip et · %1$d</string>
     <string name="following_pick_none">En az birini seçin</string>
     <string name="following_nothing_published">Takip ettikleriniz henüz bir şey yayımlamadı.</string>
-    <string name="following_go_explore">Keşfet’e git</string>
+    <string name="following_see_all_lists">Tüm listeleri gör</string>
     <string name="manage_sections">Bölümler · %1$d</string>
     <string name="manage_topics">Konular · %1$d</string>
     <string name="manage_people">Kişiler · %1$d</string>

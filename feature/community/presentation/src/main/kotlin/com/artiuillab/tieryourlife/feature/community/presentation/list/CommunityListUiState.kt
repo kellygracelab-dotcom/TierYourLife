@@ -132,6 +132,13 @@ sealed interface CommunityListUiState {
 
         /** Somebody else's list, arranged the reader's way, by hand or by a game. */
         val canShowRanking: Boolean get() = !own && arranged
+
+        /**
+         * Save my list, and the sentence that it is not saved, wait for the first
+         * card the reader places: on an untouched board they promised work not done.
+         */
+        val nothingToSaveYet: Boolean
+            get() = !own && savedId == null && !savesTheAuthors && mine.tiers.none { !it.isPool && it.items.isNotEmpty() }
     }
 
     data object Error : CommunityListUiState

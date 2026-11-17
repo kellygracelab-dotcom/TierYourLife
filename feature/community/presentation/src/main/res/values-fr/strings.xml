@@ -52,6 +52,7 @@
     <string name="community_tile_reported">Signalé. Une personne va regarder.</string>
     <string name="feed_sort_popular">Populaires</string>
     <string name="feed_sort_recent">Récents</string>
+    <string name="feed_chip_new">Nouvelles</string>
     <string name="feed_source_everyone">Toutes</string>
     <string name="feed_source_following">Abonnements</string>
     <string name="home_community_empty">Rien de publié pour l’instant</string>
@@ -152,7 +153,6 @@
     <string name="community_drag_any_card">Faites glisser une carte</string>
     <string name="community_based_on">D’après « %1$s » de %2$s</string>
     <string name="community_list_source">Source : %1$s</string>
-    <string name="explore_tab_explore">Explorer</string>
     <string name="explore_tab_following">Abonnements</string>
     <string name="explore_title_community">Communauté</string>
     <string name="explore_follow_section">Suivre %1$s</string>
@@ -182,6 +182,7 @@
     <string name="explore_search_nothing">Aucun résultat.</string>
     <string name="search_sections">Rubriques</string>
     <string name="search_lists">Listes</string>
+    <string name="search_popular_topics">Thèmes populaires</string>
     <string name="section_topics">Thèmes</string>
     <string name="section_tier_lists">Tier lists</string>
     <string name="section_show_fewer">Afficher moins</string>
@@ -206,7 +207,7 @@
     <string name="following_pick_follow">Suivre · %1$d</string>
     <string name="following_pick_none">Choisissez-en au moins une</string>
     <string name="following_nothing_published">Personne parmi vos abonnements n’a encore rien publié.</string>
-    <string name="following_go_explore">Aller à Explorer</string>
+    <string name="following_see_all_lists">Voir toutes les listes</string>
     <string name="manage_sections">Rubriques · %1$d</string>
     <string name="manage_topics">Thèmes · %1$d</string>
     <string name="manage_people">Personnes · %1$d</string>

@@ -51,6 +51,7 @@
     <string name="community_tile_reported">Gemeldet. Ein Mensch sieht es sich an.</string>
     <string name="feed_sort_popular">Beliebt</string>
     <string name="feed_sort_recent">Neueste</string>
+    <string name="feed_chip_new">Neu</string>
     <string name="feed_source_everyone">Alle</string>
     <string name="feed_source_following">Abos</string>
     <string name="home_community_empty">Noch nichts veröffentlicht</string>
@@ -150,7 +151,6 @@
     <string name="community_drag_any_card">Zieh eine Karte</string>
     <string name="community_based_on">Nach „%1$s“ von %2$s</string>
     <string name="community_list_source">Quelle: %1$s</string>
-    <string name="explore_tab_explore">Entdecken</string>
     <string name="explore_tab_following">Gefolgt</string>
     <string name="explore_title_community">Community</string>
     <string name="explore_follow_section">%1$s folgen</string>
@@ -180,6 +180,7 @@
     <string name="explore_search_nothing">Nichts gefunden.</string>
     <string name="search_sections">Rubriken</string>
     <string name="search_lists">Listen</string>
+    <string name="search_popular_topics">Beliebte Themen</string>
     <string name="section_topics">Themen</string>
     <string name="section_tier_lists">Tierlisten</string>
     <string name="section_show_fewer">Weniger anzeigen</string>
@@ -203,7 +204,7 @@
     <string name="following_pick_follow">Folgen · %1$d</string>
     <string name="following_pick_none">Wähle mindestens einen</string>
     <string name="following_nothing_published">Wem du folgst, hat noch nichts veröffentlicht.</string>
-    <string name="following_go_explore">Zu Entdecken</string>
+    <string name="following_see_all_lists">Alle Listen ansehen</string>
     <string name="manage_sections">Rubriken · %1$d</string>
     <string name="manage_topics">Themen · %1$d</string>
     <string name="manage_people">Personen · %1$d</string>

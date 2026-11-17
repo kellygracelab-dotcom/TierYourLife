@@ -27,7 +27,7 @@ class TierDetailMoveSheetTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
 
-        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertIsDisplayed()
     }
 
     @Test
@@ -40,7 +40,7 @@ class TierDetailMoveSheetTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.tile(100)).performTouchInput { doubleClick() }
 
-        composeRule.onNodeWithText("Move to a tier").assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.MOVE_SHEET).assertIsDisplayed()
     }
 
     @Test

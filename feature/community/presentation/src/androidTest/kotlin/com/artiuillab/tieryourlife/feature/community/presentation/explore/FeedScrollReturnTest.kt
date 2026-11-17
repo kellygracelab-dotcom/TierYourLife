@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -35,9 +34,9 @@ import org.junit.runner.RunWith
 class FeedScrollReturnTest {
     @get:Rule val compose = createComposeRule()
 
-    @Test fun followingKeepsItsTabAndScrollAcrossRealBack() = probeReturn(following = true)
+    @Test fun followingKeepsItsChipAndScrollAcrossRealBack() = probeReturn(following = true)
 
-    @Test fun exploreKeepsItsTabAndScrollAcrossRealBack() = probeReturn(following = false)
+    @Test fun popularKeepsItsChipAndScrollAcrossRealBack() = probeReturn(following = false)
 
     private fun probeReturn(following: Boolean) {
         val lists = List(35) { index ->
@@ -63,7 +62,7 @@ class FeedScrollReturnTest {
                 }
             }
         }
-        if (following) compose.onNodeWithTag(ExploreTestTags.TAB_FOLLOWING).performClick()
+        if (following) compose.onNodeWithTag(ExploreTestTags.chip(HomeChip.Following)).performClick()
         val feed = compose.onNodeWithTag(if (following) ExploreTestTags.FOLLOWING_FEED else ExploreTestTags.SCREEN)
         feed.performScrollToIndex(21)
         val tag = ExploreTestTags.card("f20")
@@ -78,7 +77,8 @@ class FeedScrollReturnTest {
         compose.onNodeWithTag("audit_detail").assertIsDisplayed()
         InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         compose.waitForIdle()
-        compose.onNodeWithTag(if (following) ExploreTestTags.TAB_FOLLOWING else ExploreTestTags.TAB_EXPLORE).assertIsSelected()
+        // The chips are scrolled away; each chip draws its own grid.
+        compose.onNodeWithTag(if (following) ExploreTestTags.FOLLOWING_FEED else ExploreTestTags.SCREEN).assertExists()
         val after = compose.onNodeWithTag(tag).fetchSemanticsNode().boundsInRoot
         assertEquals(before.top, after.top, 1f)
         feed.performTouchInput {

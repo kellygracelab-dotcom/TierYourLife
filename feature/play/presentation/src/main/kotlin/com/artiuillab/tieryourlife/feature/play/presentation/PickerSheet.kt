@@ -25,6 +25,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
@@ -47,14 +48,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,6 +75,7 @@ internal data class PickerActions(
     val onShowCards: () -> Unit = {},
     val onShowGames: () -> Unit = {},
     val onShowIndividual: () -> Unit = {},
+    val onShowModes: () -> Unit = {},
     val onSample: (Int) -> Unit = {},
     val onToggleCard: (Long) -> Unit = {},
     val onSelectCandidates: (Boolean) -> Unit = {},
@@ -124,20 +121,29 @@ internal fun ColumnScope.PickerContent(picker: Picker, actions: PickerActions, w
     }
     when {
         picker.page == PickerPage.Individual -> IndividualCardsPage(picker, actions)
-        wide && picker.page == PickerPage.Games -> WideGamesPage(picker, actions)
+        // Sideways every game already stands in view: Modes is the same page.
+        wide && picker.page in GAME_PAGES -> WideGamesPage(picker, actions)
         wide -> WideCardsPage(picker, actions)
         picker.page == PickerPage.Games -> GamesPage(picker, actions)
+        picker.page == PickerPage.Modes -> ModesPage(picker, actions)
         else -> CardsPage(picker, actions)
     }
 }
 
+private val GAME_PAGES = setOf(PickerPage.Games, PickerPage.Modes)
+
+/**
+ * One way in: what a game is, what this one will take, and Start. The cards
+ * and the other games are a tap away beneath it; a game put down stays on top.
+ */
 @Composable
 private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
     Column(
         Modifier
             .weight(1f, fill = false)
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp)
+            .navigationBarsPadding()
+            .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
             .testTag(PlayTestTags.PICKER),
     ) {
         Text(
@@ -145,7 +151,12 @@ private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        CardsFromLine(picker, onShowCards = actions.onShowCards)
+        Text(
+            text = stringResource(R.string.play_how_it_works),
+            modifier = Modifier.padding(top = 4.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         Spacer(Modifier.height(16.dp))
         if (picker.resume != null || picker.discarded) {
             SavedGameRow(picker, minHeight = 56.dp, actions)
@@ -156,6 +167,101 @@ private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        GameSummary(picker)
+        Spacer(Modifier.height(12.dp))
+        BigStartButton(picker, actions.onStart)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            TextButton(
+                onClick = actions.onShowCards,
+                modifier = Modifier
+                    .heightIn(min = 48.dp)
+                    .testTag(PlayTestTags.CHOOSE_CARDS),
+            ) { Text(stringResource(R.string.play_choose_cards)) }
+            TextButton(
+                onClick = actions.onShowModes,
+                modifier = Modifier
+                    .heightIn(min = 48.dp)
+                    .testTag(PlayTestTags.OTHER_WAYS),
+            ) { Text(stringResource(R.string.play_other_ways)) }
+        }
+        if (picker.intoMine) IntoMineNote(top = 4.dp)
+    }
+}
+
+/** "25 cards · about 63 duels · 2 min" and that the game waits; the game named when it is not the usual one. */
+@Composable
+private fun GameSummary(picker: Picker) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag(PlayTestTags.SUMMARY),
+    ) {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            if (picker.kind != PlayGames.first()) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    GameIcon(picker.kind, 18.dp, MaterialTheme.colorScheme.onSurface)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(picker.kind.nameRes), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
+            Text(text = summaryText(picker), style = SUMMARY_LINE, color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = stringResource(R.string.play_game_kept),
+                style = SUMMARY_NOTE,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+private val SUMMARY_LINE = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
+private val SUMMARY_NOTE = TextStyle(fontSize = 13.sp, lineHeight = 18.sp)
+
+/** The cards, and from where when not the whole board, then the duels and minutes the game is expected to take. */
+@Composable
+private fun summaryText(picker: Picker): String {
+    val count = picker.count
+    val cards = if (picker.everything) {
+        pluralStringResource(R.plurals.play_cards, count, count)
+    } else {
+        pluralStringResource(R.plurals.play_cards_from, count, count, picker.areaName())
+    }
+    val duels = estimatedDuels(picker.kind, count)
+    val duelsText = if (picker.kind.isRough) {
+        pluralStringResource(R.plurals.play_about_duels, duels, duels)
+    } else {
+        pluralStringResource(R.plurals.play_estimate_duels, duels, duels)
+    }
+    val minutes = estimatedMinutes(duels)
+    return listOf(cards, duelsText, pluralStringResource(R.plurals.play_minutes, minutes, minutes)).joinToString(" · ")
+}
+
+/** Every way to play, Smart first, with what each will take; Start here plays the one chosen. */
+@Composable
+private fun ColumnScope.ModesPage(picker: Picker, actions: PickerActions) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 24.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val back = stringResource(ThemeR.string.tier_detail_content_description_back)
+        IconButton(onClick = actions.onShowGames, modifier = Modifier.semantics { contentDescription = back }) { BackIcon() }
+        Text(
+            text = stringResource(R.string.play_other_ways),
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+    Column(
+        Modifier
+            .weight(1f, fill = false)
+            .verticalScroll(rememberScrollState())
+            .padding(start = 24.dp, end = 24.dp, top = 8.dp)
+            .testTag(PlayTestTags.MODES_PAGE),
+    ) {
         Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             PlayGames.forEach { kind ->
                 GameOption(kind = kind, count = picker.count, selected = kind == picker.kind, onSelect = { actions.onChoose(kind) })
@@ -163,34 +269,13 @@ private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
         }
         if (picker.intoMine) IntoMineNote()
     }
-    SheetActions {
-        TextButton(onClick = actions.onDismiss) { Text(stringResource(R.string.play_cancel)) }
-        StartButton(picker, actions.onStart)
-    }
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 16.dp),
+    ) { BigStartButton(picker, actions.onStart) }
 }
-
-/** "34 cards from Sci-fi films · Choose cards", the link in the sentence it belongs to. */
-@Composable
-private fun CardsFromLine(picker: Picker, onShowCards: () -> Unit) {
-    val from = pluralStringResource(R.plurals.play_cards_from, picker.count, picker.count, picker.areaName())
-    val choose = stringResource(R.string.play_choose_cards)
-    val link = TextLinkStyles(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Medium))
-    val text = buildAnnotatedString {
-        append(from)
-        append(" · ")
-        withLink(LinkAnnotation.Clickable(tag = CHOOSE_LINK, styles = link) { onShowCards() }) { append(choose) }
-    }
-    Text(
-        text = text,
-        modifier = Modifier
-            .padding(top = 4.dp)
-            .testTag(PlayTestTags.CHOOSE_CARDS),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-private const val CHOOSE_LINK = "choose_cards"
 
 /** What the game is played over, as the first page says it: the pool, the ranked tiers, one tier, or the board. */
 @Composable
@@ -202,10 +287,10 @@ private fun Picker.areaName(): String = when {
 }
 
 @Composable
-private fun IntoMineNote() {
+private fun IntoMineNote(top: Dp = 12.dp) {
     Text(
         text = stringResource(R.string.play_into_mine_note),
-        modifier = Modifier.padding(top = 12.dp),
+        modifier = Modifier.padding(top = top),
         style = FOOTNOTE,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -213,15 +298,28 @@ private fun IntoMineNote() {
 
 private val FOOTNOTE = TextStyle(fontSize = 12.sp, lineHeight = 17.sp)
 
+/** Sideways, beside Cancel. Filled there too: of everything in the dialog it is what the dialog is for. */
 @Composable
 private fun StartButton(picker: Picker, onStart: () -> Unit) {
-    FilledTonalButton(
+    Button(
         onClick = onStart,
         enabled = picker.canPlay,
         modifier = Modifier
             .height(40.dp)
             .testTag(PlayTestTags.START),
     ) { Text(stringResource(R.string.play_start)) }
+}
+
+@Composable
+private fun BigStartButton(picker: Picker, onStart: () -> Unit) {
+    Button(
+        onClick = onStart,
+        enabled = picker.canPlay,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .testTag(PlayTestTags.START),
+    ) { Text(stringResource(R.string.play_start), style = MaterialTheme.typography.titleMedium) }
 }
 
 @Composable

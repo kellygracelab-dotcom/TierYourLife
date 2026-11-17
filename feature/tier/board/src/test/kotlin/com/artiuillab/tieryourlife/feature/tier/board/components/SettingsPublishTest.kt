@@ -108,18 +108,6 @@ class SettingsPublishTest {
     }
 
     @Test
-    fun theCamerasCardByHand_isHereToo() {
-        var asked = 0
-        composeRule.setContent {
-            TierYourLifeTheme {
-                TierListSettingsScreenContent(list = previewTierList, onBack = {}, onAddTier = { _, _, _, _ -> }, onSetDisplayMode = {}, onManualAdd = { asked++ })
-            }
-        }
-        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_MANUAL_ADD).performClick()
-        assertEquals(1, asked)
-    }
-
-    @Test
     @Config(qualifiers = "+ru")
     fun inRankings_inRussian() {
         show(previewTierList.copy(takenFrom = "source", rankingOf = "source", publishedId = "p", authorName = "Ann"))
