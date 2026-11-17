@@ -12,8 +12,8 @@ class ProgressTest {
         assertEquals(136, estimatedDuels(GameKind.Swiss, 34))
         assertEquals(33, estimatedDuels(GameKind.Hill, 34))
         assertEquals(33, estimatedDuels(GameKind.Bracket, 34))
-        assertEquals(5, estimatedMinutes(136))
-        assertEquals(1, estimatedMinutes(33))
+        assertEquals(9, estimatedMinutes(136))
+        assertEquals(2, estimatedMinutes(33))
         assertEquals(1, estimatedMinutes(2))
     }
 

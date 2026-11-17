@@ -45,22 +45,34 @@ internal fun fitCardTitle(
 /** One size for the names on a row, so neighbours look alike: the smallest any of them needs. */
 internal fun sharedCardTitleSize(titles: List<String>, fit: (String) -> CardTitle): Float? = titles.minOfOrNull { fit(it).size }
 
-/** Words to lines, each as long as fits; a word wider than [width] stands alone. */
+/**
+ * Words to lines, each as long as fits. A word wider than [width] breaks after
+ * its hyphens ("Detroit-" over "style"); a piece still wider stands alone.
+ */
 internal fun wrapWords(words: List<String>, width: Int, measure: (String) -> Int): List<String> {
     val lines = mutableListOf<String>()
     var line = ""
     for (word in words) {
-        val joined = if (line.isEmpty()) word else "$line $word"
-        if (line.isEmpty() || measure(joined) <= width) {
-            line = joined
-        } else {
-            lines += line
-            line = word
+        val pieces = if (measure(word) > width) word.split(AFTER_HYPHEN) else listOf(word)
+        pieces.forEachIndexed { index, piece ->
+            val joined = when {
+                line.isEmpty() -> piece
+                index > 0 -> line + piece
+                else -> "$line $piece"
+            }
+            if (line.isEmpty() || measure(joined) <= width) {
+                line = joined
+            } else {
+                lines += line
+                line = piece
+            }
         }
     }
     if (line.isNotEmpty()) lines += line
     return lines
 }
+
+private val AFTER_HYPHEN = Regex("(?<=\\p{L}-)(?=\\p{L})")
 
 internal const val CARD_TITLE_MAX_LINES = 3
 internal const val CARD_TITLE_SMALLEST_SP = 9f

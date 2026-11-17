@@ -34,9 +34,9 @@ fun expectedDuels(spec: GameSpec, history: List<Outcome>): Int = expectedDuels(s
 /** Swiss and smart may stop early: their counts are only roughly. */
 val GameKind.isRough: Boolean get() = this == GameKind.Swiss || this == GameKind.Smart
 
-/** At 2.2 seconds a duel, in whole minutes rounded half up, never under one. */
+/** At 4 seconds a duel, the pace a person keeps looking at two pictures, in whole minutes rounded half up, never under one. */
 fun estimatedMinutes(duels: Int): Int =
     maxOf(1, (duels * TENTHS_PER_DUEL + TENTHS_PER_MINUTE / 2) / TENTHS_PER_MINUTE)
 
-private const val TENTHS_PER_DUEL = 22
+private const val TENTHS_PER_DUEL = 40
 private const val TENTHS_PER_MINUTE = 600

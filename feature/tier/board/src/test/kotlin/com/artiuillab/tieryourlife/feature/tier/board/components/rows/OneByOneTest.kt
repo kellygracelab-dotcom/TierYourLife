@@ -14,6 +14,8 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.pressKey
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
@@ -139,6 +141,14 @@ class OneByOneTest {
         assertEquals(TierButtonLayout(rows = 1, perRow = 6), tierButtonRows(6))
         assertEquals(TierButtonLayout(rows = 2, perRow = 4), tierButtonRows(7))
         assertEquals(TierButtonLayout(rows = 3, perRow = 5), tierButtonRows(13))
+    }
+
+    @Test
+    fun aShortColumn_takesHeightFromTheCard_beforeTheButtons() {
+        assertEquals(100.dp, columnCardHeight(400.dp, tierRows = 1))
+        assertEquals(80.dp, columnCardHeight(192.dp, tierRows = 1))
+        assertEquals(56.dp, columnCardHeight(150.dp, tierRows = 2))
+        assertEquals(100.dp, columnCardHeight(Dp.Infinity, tierRows = 1))
     }
 
     @Test

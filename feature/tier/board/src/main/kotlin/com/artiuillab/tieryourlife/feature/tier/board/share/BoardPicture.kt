@@ -17,6 +17,7 @@ import com.artiuillab.tieryourlife.core.settings.wholeCutAtOrBefore
 import com.artiuillab.tieryourlife.feature.tier.board.common.parseTierColor
 import com.artiuillab.tieryourlife.feature.tier.board.common.rowTintFor
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.BAND_CAPTION_PADDING
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.wrapWords
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlin.math.max
@@ -259,16 +260,11 @@ object BoardPicture {
             textAlign = Paint.Align.CENTER
         }
         val maxWidth = frame.width() - 2 * NAME_PADDING
-        val lines = mutableListOf<String>()
-        var rest = title.trim()
-        while (rest.isNotEmpty() && lines.size < 2) {
-            val cut = lineEnd(rest, text.breakText(rest, true, maxWidth, null))
-            lines += rest.substring(0, cut).trim()
-            rest = rest.substring(cut).trim()
-        }
-        if (rest.isNotEmpty() && lines.isNotEmpty()) {
-            lines[lines.lastIndex] = TextUtils.ellipsize(lines.last() + " " + rest, text, maxWidth, TextUtils.TruncateAt.END).toString()
-        }
+        val words = title.split(' ', '\n', '\t').filter { it.isNotEmpty() }
+        val wrapped = wrapWords(words, maxWidth.toInt()) { text.measureText(it).toInt() }
+        // Between words, as on the board; what does not fit in two lines ends in an ellipsis.
+        val lines = listOfNotNull(wrapped.firstOrNull(), wrapped.drop(1).joinToString(" ").takeIf { it.isNotEmpty() })
+            .map { TextUtils.ellipsize(it, text, maxWidth, TextUtils.TruncateAt.END).toString() }
         val lineHeight = NAME_TEXT_SIZE * 1.15f
         val stripTop = frame.bottom - lines.size * lineHeight - NAME_SHADE_RISE
         val shade = Paint().apply {

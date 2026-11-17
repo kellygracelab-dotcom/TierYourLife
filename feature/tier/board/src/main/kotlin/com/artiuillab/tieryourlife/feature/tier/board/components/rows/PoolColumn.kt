@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -194,7 +195,7 @@ fun PoolColumn(
             cardsLeft = panelOwnsHead,
         )
         if (panel != null) {
-            Box(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) { panel(false) }
+            Box(Modifier.weight(1f, fill = false).scrollUnless(panelOwnsHead, rememberScrollState())) { panel(false) }
         } else {
             PoolColumnCards(
                 pool = pool,
@@ -275,6 +276,9 @@ private fun openColumnWidth(roomy: Boolean, indexBeside: Boolean, panelOwnsHead:
 }
 
 private fun panelOwnsHead(panelShown: Boolean, roomy: Boolean): Boolean = panelShown && !roomy
+
+/** A short window's panel fits itself to the height left and scrolls only past that. */
+private fun Modifier.scrollUnless(fitsItself: Boolean, state: ScrollState): Modifier = if (fitsItself) this else verticalScroll(state)
 
 /** The dashed ring a hovering card draws round the column it would drop into. */
 @Composable
