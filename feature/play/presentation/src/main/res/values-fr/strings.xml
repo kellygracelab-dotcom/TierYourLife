@@ -62,7 +62,7 @@
     <string name="play_start">Commencer</string>
     <string name="play_continue">Continuer</string>
     <string name="play_back">Retour</string>
-    <string name="play_pool">La réserve</string>
+    <string name="play_pool">La pioche</string>
     <string name="play_everything">Tout</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d carte</item>
@@ -74,7 +74,7 @@
         <item quantity="many">%1$d sur %2$d sélectionnées</item>
         <item quantity="other">%1$d sur %2$d sélectionnées</item>
     </plurals>
-    <string name="play_ranked">Classées</string>
+    <string name="play_ranked">Placées</string>
     <string name="play_quit">Quitter</string>
     <string name="play_duel_of">Duel %1$d sur %2$d</string>
     <string name="play_duel_of_about">Duel %1$d sur environ %2$d</string>
@@ -87,13 +87,13 @@
     <string name="play_snack_game_saved">Partie enregistrée · %1$d sur %2$d</string>
     <string name="play_snack_discard">Supprimer</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Tableau classé d’après %1$d duel</item>
-        <item quantity="many">Tableau classé d’après %1$d duels</item>
-        <item quantity="other">Tableau classé d’après %1$d duels</item>
+        <item quantity="one">Liste classée d’après %1$d duel</item>
+        <item quantity="many">Liste classée d’après %1$d duels</item>
+        <item quantity="other">Liste classée d’après %1$d duels</item>
     </plurals>
     <string name="play_snack_saved_discarded">Partie enregistrée supprimée</string>
     <string name="play_snack_undo">Annuler</string>
-    <string name="play_snack_game_undone">Retour au tableau d’avant la partie</string>
+    <string name="play_snack_game_undone">Retour à la liste d’avant la partie</string>
     <string name="play_snack_redo">Rétablir</string>
     <string name="play_snack_nothing_answered">Aucun duel répondu, rien n’a bougé</string>
     <string name="play_snack_not_saved">Impossible d’enregistrer la partie</string>

@@ -1,7 +1,7 @@
 ﻿<resources>
     <string name="tier_lists_private">privado</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · nada classificado ainda</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · nada posicionado ainda</string>
     <string name="tier_lists_status_start_dragging">Arraste para classificar</string>
 
     <plurals name="search_results_count">
@@ -64,9 +64,9 @@
         <item quantity="other">%1$d selecionados</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="one">Adicionar %1$d item</item>
-        <item quantity="many">Adicionar %1$d itens</item>
-        <item quantity="other">Adicionar %1$d itens</item>
+        <item quantity="one">Adicionar %1$d cartão</item>
+        <item quantity="many">Adicionar %1$d cartões</item>
+        <item quantity="other">Adicionar %1$d cartões</item>
     </plurals>
     <string name="item_search_add_disabled">Adicionar</string>
 
@@ -100,11 +100,6 @@
     <string name="action_empty_trash">Esvaziar lixeira</string>
     <string name="empty_trash_dialog_title">Esvaziar a lixeira?</string>
     <string name="empty_trash_dialog_body">%1$s serão excluídos deste dispositivo. Isso não pode ser desfeito.</string>
-    <plurals name="trash_entry_count">
-        <item quantity="one">%1$d registro</item>
-        <item quantity="many">%1$d registros</item>
-        <item quantity="other">%1$d registros</item>
-    </plurals>
     <string name="trash_empty_title">A lixeira está vazia</string>
     <string name="trash_empty_body">Listas que você excluir aparecem aqui. Elas permanecem até que você as remova.</string>
     <string name="cd_more">Mais opções</string>
@@ -113,7 +108,7 @@
     <string name="cd_trash_back">Voltar</string>
 
     <string name="home_start_with">Comece com</string>
-    <string name="home_start_hint">Cria o quadro na hora. Toque no título para renomear.</string>
+    <string name="home_start_hint">Cria a lista na hora. Toque no título para renomear.</string>
     <string name="home_new_list">Nova lista</string>
     <string name="home_suggestion_films">Filmes</string>
     <string name="home_suggestion_games">Jogos</string>
@@ -126,21 +121,21 @@
     <string name="lists_sort_oldest">Mais antigas</string>
     <string name="lists_filter">Filtrar listas</string>
     <string name="lists_filters_title">Filtro</string>
-    <string name="lists_filter_category">Categoria</string>
+    <string name="lists_filter_category">Seção</string>
     <string name="lists_filter_any">Qualquer</string>
     <string name="lists_filter_visibility">Visibilidade</string>
     <string name="lists_filter_public">Públicas</string>
     <string name="lists_filter_private">Privadas</string>
     <string name="lists_filter_clear">Limpar tudo</string>
     <string name="lists_group_favourites">Favoritas</string>
-    <string name="lists_group_others">Todos os quadros</string>
+    <string name="lists_group_others">Todas as listas</string>
     <string name="lists_favourite_add">Adicionar aos favoritos</string>
     <string name="lists_favourite_remove">Remover dos favoritos</string>
     <string name="snack_published_list_still_public">Mantida, não excluída: não foi possível retirar a cópia pública. Tente de novo quando estiver online.</string>
     <plurals name="board_count">
-        <item quantity="one">%1$d quadro</item>
-        <item quantity="many">%1$d quadros</item>
-        <item quantity="other">%1$d quadros</item>
+        <item quantity="one">%1$d lista</item>
+        <item quantity="many">%1$d listas</item>
+        <item quantity="other">%1$d listas</item>
     </plurals>
     <string name="local_only_footer">%1$s, só neste telefone</string>
     <string name="local_only_notice_keep_one">Entre para mantê-lo ao trocar de telefone.</string>
@@ -208,7 +203,7 @@
     <string name="cover_tap_fold">Toque para recolher</string>
     <string name="cover_hand_off_title">Abra o celular para continuar</string>
     <string name="cover_hand_off_list">“%1$s” vai abrir na tela principal.</string>
-    <string name="cover_hand_off_card">“%1$s” vai abrir no quadro.</string>
+    <string name="cover_hand_off_card">“%1$s” vai abrir na lista.</string>
     <string name="cover_hand_off_community">“%1$s” da Comunidade vai abrir na tela principal.</string>
     <string name="cover_hand_off_app">O app vai abrir na tela principal.</string>
     <plurals name="cover_cards_count">
@@ -246,16 +241,16 @@
     <string name="add_to_list_new">Nova lista…</string>
     <string name="add_to_list_new_name">Nome da lista</string>
     <string name="add_to_list_cancel">Cancelar</string>
-    <string name="add_to_list_to_pool">Para o pool</string>
+    <string name="add_to_list_to_pool">Para o monte</string>
     <string name="add_to_list_added">Adicionado a “%1$s”</string>
-    <string name="add_to_list_sign_in">Imagens de links ficam na sua conta. Entre no TierYourLife para adicioná-las, ou adicione o card sem imagem.</string>
+    <string name="add_to_list_sign_in">Imagens de links ficam na sua conta. Entre no TierYourLife para adicioná-las, ou adicione o cartão sem imagem.</string>
     <string name="cover_adjust_title">Ajustar capa</string>
     <string name="cover_adjust_zoom">Zoom</string>
     <string name="cover_adjust_preview">Prévia</string>
     <string name="cover_adjust_feed">Feed</string>
     <string name="cover_adjust_square">Quadrado</string>
     <string name="cover_adjust_picture_title">Ajustar imagem</string>
-    <string name="cover_adjust_card">Carta</string>
+    <string name="cover_adjust_card">Cartão</string>
     <string name="cover_adjust_collage">Colagem</string>
     <string name="cover_adjust_header">Cabeçalho</string>
     <string name="cover_adjust_close">Fechar</string>

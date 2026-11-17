@@ -3,19 +3,27 @@
     <string name="cd_clear_query">مسح البحث</string>
     <string name="cd_close_search">إغلاق البحث</string>
     <string name="home_search_hint">البحث في قوائمك</string>
-    <string name="tier_lists_content_description_as_pictures">عرض اللوحات كصور</string>
-    <string name="tier_lists_content_description_as_rows">عرض اللوحات كقائمة</string>
+    <string name="tier_lists_content_description_as_pictures">عرض القوائم كصور</string>
+    <string name="tier_lists_content_description_as_rows">عرض القوائم كصفوف</string>
     <string name="tier_lists_content_description_search">البحث في قوائمك</string>
     <string name="tier_lists_content_description_settings">الإعدادات</string>
     <string name="action_cancel">إلغاء</string>
     <string name="action_try_again">المحاولة مرة أخرى</string>
     <plurals name="list_items_count">
-        <item quantity="zero">لا عناصر</item>
-        <item quantity="one">عنصر واحد</item>
-        <item quantity="two">عنصران</item>
-        <item quantity="few">%1$d عناصر</item>
-        <item quantity="many">%1$d عنصرًا</item>
-        <item quantity="other">%1$d عنصر</item>
+        <item quantity="zero">لا بطاقات</item>
+        <item quantity="one">بطاقة واحدة</item>
+        <item quantity="two">بطاقتان</item>
+        <item quantity="few">%1$d بطاقات</item>
+        <item quantity="many">%1$d بطاقة</item>
+        <item quantity="other">%1$d بطاقة</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="zero">لا سجلات</item>
+        <item quantity="one">سجل واحد</item>
+        <item quantity="two">سجلان</item>
+        <item quantity="few">%1$d سجلات</item>
+        <item quantity="many">%1$d سجلًا</item>
+        <item quantity="other">%1$d سجل</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="zero">لا تصنيفات</item>
@@ -37,12 +45,12 @@
         <item quantity="other">%d قائمة</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="zero">لم يُصنَّف شيء</item>
-        <item quantity="one">مصنَّف واحد</item>
-        <item quantity="two">مصنَّفان</item>
-        <item quantity="few">%d مصنَّفة</item>
-        <item quantity="many">%d مصنَّفًا</item>
-        <item quantity="other">%d مصنَّف</item>
+        <item quantity="zero">لا شيء موضوع</item>
+        <item quantity="one">واحدة موضوعة</item>
+        <item quantity="two">اثنتان موضوعتان</item>
+        <item quantity="few">%d موضوعة</item>
+        <item quantity="many">%d موضوعة</item>
+        <item quantity="other">%d موضوعة</item>
     </plurals>
     <string name="tier_lists_title">قوائمك</string>
     <string name="snack_published_under_review">تم الحفظ. تنتظر موافقة مشرف قبل أن يراها الآخرون.</string>
@@ -57,10 +65,10 @@
         <item quantity="many">نُشرت. تعذّرت إضافة %1$d صورة من مواقع أخرى.</item>
         <item quantity="other">نُشرت. تعذّرت إضافة %1$d صورة من مواقع أخرى.</item>
     </plurals>
-    <string name="community_return_all_to_pool">إعادة جميع البطاقات إلى المجموعة</string>
-    <string name="community_return_to_pool_title">إعادة جميع البطاقات إلى المجموعة؟</string>
+    <string name="community_return_all_to_pool">إعادة جميع البطاقات إلى الرزمة</string>
+    <string name="community_return_to_pool_title">هل تريد إعادة جميع البطاقات إلى الرزمة؟</string>
     <string name="community_return_to_pool_explanation">ستتم إعادة ضبط ترتيب المستويات.</string>
-    <string name="community_return_to_pool_confirm">إعادة إلى المجموعة</string>
+    <string name="community_return_to_pool_confirm">إعادة إلى الرزمة</string>
     <string name="ranking_choice_sign_in">تسجيل الدخول للنشر</string>
     <string name="ranking_offer_title">هل تريد أن تعرض للآخرين كيف رتبتها؟</string>
     <string name="ranking_offer_show">اعرض في التصنيفات</string>
@@ -74,5 +82,5 @@
     <string name="ranking_choice_storage_guest">تُحفظ نسختك الخاصة في مكتبة هذا الجهاز. سجّل الدخول لمزامنتها.</string>
     <string name="publication_preview_independent">ستُنشر كقائمة عامة مستقلة. ستبقى نسختك الخاصة قابلة للتعديل.</string>
     <string name="source_changed_recheck">المقارنة مع الأصل الحالي</string>
-    <string name="publication_limit_until">يمكنك نشر قائمة جديدة بعد %1$s. يمكنك الاستمرار في حفظ اللوحات الخاصة ونشر الترتيبات.</string>
+    <string name="publication_limit_until">يمكنك نشر قائمة جديدة بعد %1$s. يمكنك الاستمرار في حفظ القوائم الخاصة ونشر الترتيبات.</string>
 </resources>

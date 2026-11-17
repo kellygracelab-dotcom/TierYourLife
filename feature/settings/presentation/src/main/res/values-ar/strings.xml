@@ -9,7 +9,7 @@
     <string name="export_tier_empty">(فارغ)</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">غير مصنَّف</string>
+    <string name="export_unranked_heading">غير موضوعة</string>
     <string name="hidden_empty_body">تنتظر هنا القوائم والأشخاص الذين أخفيتهم في المجتمع، في حال غيّرت رأيك.</string>
     <string name="hidden_empty_title">كل شيء ظاهر</string>
     <string name="hidden_lists">القوائم</string>
@@ -50,9 +50,9 @@
         <item quantity="many">تم تسجيل الدخول · %1$d رصيدًا</item>
         <item quantity="other">تم تسجيل الدخول · %1$d رصيد</item>
     </plurals>
-    <string name="settings_backup_label">احتفظ بنسخة من لوحاتي</string>
+    <string name="settings_backup_label">احتفظ بنسخة من قوائمي</string>
     <string name="settings_backup_note">تنتقل صورك وبطاقاتك المُولّدة إلى حسابك، ولا يراها سواك. والنشر ينسخ صور القائمة إلى المجتمع حيث يراها الجميع.</string>
-    <string name="settings_backup_off_body">لا يُحذف شيء من هذا الهاتف: تبقى لوحاتك هنا. تُحذف النسخة في حسابك، وتنتقل اللوحات على أجهزتك الأخرى إلى سلة المهملات، وسيبدأ الهاتف الجديد فارغًا. أعد تشغيله فتُرفع من جديد.</string>
+    <string name="settings_backup_off_body">لا يُحذف شيء من هذا الهاتف: تبقى قوائمك هنا. تُحذف النسخة في حسابك، وتنتقل القوائم على أجهزتك الأخرى إلى سلة المهملات، وسيبدأ الهاتف الجديد فارغًا. أعد تشغيله فتُرفع من جديد.</string>
     <string name="settings_backup_off_cancel">إلغاء</string>
     <string name="settings_backup_off_confirm">إيقاف وحذف</string>
     <string name="settings_backup_off_title">إيقاف النسخ الاحتياطي؟</string>
@@ -60,8 +60,8 @@
     <string name="settings_backup_pictures_sub">%1$s في حسابك</string>
     <string name="settings_backup_refused_not_accepted">لا توجد نسخة من «%1$s»: لا يقبل الحساب شيئًا موجودًا فيها.</string>
     <string name="settings_backup_refused_too_large">لا توجد نسخة من «%1$s»: إنها أكبر مما يحفظه الحساب. أزل منها بعض البطاقات.</string>
-    <string name="settings_backup_refused_too_many">لا توجد نسخة من «%1$s»: يحفظ الحساب 200 لوحة على الأكثر. احذف ما لم تعد تحتاجه.</string>
-    <string name="settings_backup_refused_too_many_tiers">لا توجد نسخة من «%1$s»: فيها مستويات أكثر مما يحفظه الحساب، 19 إلى جانب المجمّع. احذف منها مستوى.</string>
+    <string name="settings_backup_refused_too_many">لا توجد نسخة من «%1$s»: يحفظ الحساب 200 قائمة على الأكثر. احذف ما لم تعد تحتاجه.</string>
+    <string name="settings_backup_refused_too_many_tiers">لا توجد نسخة من «%1$s»: فيها مستويات أكثر مما يحفظه الحساب، 19 إلى جانب الرزمة. احذف منها مستوى.</string>
     <string name="settings_backup_stuck">لا توجد نسخة منذ %1$s. تحقق من اتصالك.</string>
     <string name="settings_backup_sub">المستويات والبطاقات والملاحظات</string>
     <string name="settings_export">تصدير البيانات</string>
@@ -94,11 +94,11 @@
     <string name="theme_light">فاتح</string>
     <string name="theme_system">النظام</string>
     <plurals name="unranked_count">
-        <item quantity="zero">لا شيء غير مصنَّف</item>
-        <item quantity="one">عنصر واحد غير مصنَّف</item>
-        <item quantity="two">عنصران غير مصنَّفين</item>
-        <item quantity="few">%1$d غير مصنَّفة</item>
-        <item quantity="many">%1$d غير مصنَّف</item>
-        <item quantity="other">%1$d غير مصنَّف</item>
+        <item quantity="zero">لا بطاقات متبقية</item>
+        <item quantity="one">بطاقة واحدة متبقية</item>
+        <item quantity="two">بطاقتان متبقيتان</item>
+        <item quantity="few">%1$d بطاقات متبقية</item>
+        <item quantity="many">%1$d بطاقة متبقية</item>
+        <item quantity="other">%1$d بطاقة متبقية</item>
     </plurals>
 </resources>

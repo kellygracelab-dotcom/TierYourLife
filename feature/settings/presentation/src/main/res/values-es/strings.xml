@@ -9,7 +9,7 @@
     <string name="export_tier_empty">(vacío)</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">Sin clasificar</string>
+    <string name="export_unranked_heading">Sin colocar</string>
     <string name="hidden_empty_body">Las listas y personas que ocultes en la comunidad esperan aquí, por si cambias de idea.</string>
     <string name="hidden_empty_title">Todo está a la vista</string>
     <string name="hidden_lists">LISTAS</string>
@@ -44,9 +44,9 @@
         <item quantity="many">Sesión iniciada · %1$d créditos</item>
         <item quantity="other">Sesión iniciada · %1$d créditos</item>
     </plurals>
-    <string name="settings_backup_label">Guardar copia de mis tableros</string>
+    <string name="settings_backup_label">Guardar copia de mis listas</string>
     <string name="settings_backup_note">Tus fotos y tarjetas generadas van a tu cuenta, donde solo tú las ves. Publicar copia las imágenes al feed, donde las ve cualquiera.</string>
-    <string name="settings_backup_off_body">No se elimina nada de este teléfono: tus tableros siguen aquí. La copia de tu cuenta se elimina, en tus otros dispositivos los tableros pasan a la papelera y un teléfono nuevo empezará vacío. Si vuelves a activarlo, se suben de nuevo.</string>
+    <string name="settings_backup_off_body">No se elimina nada de este teléfono: tus listas siguen aquí. La copia de tu cuenta se elimina, en tus otros dispositivos las listas pasan a la papelera y un teléfono nuevo empezará vacío. Si vuelves a activarlo, se suben de nuevo.</string>
     <string name="settings_backup_off_cancel">Cancelar</string>
     <string name="settings_backup_off_confirm">Detener y eliminar</string>
     <string name="settings_backup_off_title">¿Dejar de guardar copia?</string>
@@ -54,8 +54,8 @@
     <string name="settings_backup_pictures_sub">%1$s en tu cuenta</string>
     <string name="settings_backup_refused_not_accepted">«%1$s» no tiene copia: la cuenta no acepta algo que contiene.</string>
     <string name="settings_backup_refused_too_large">«%1$s» no tiene copia: es más grande de lo que guarda la cuenta. Quítale algunas tarjetas.</string>
-    <string name="settings_backup_refused_too_many">«%1$s» no tiene copia: la cuenta guarda 200 tableros como máximo. Elimina los que ya no necesites.</string>
-    <string name="settings_backup_refused_too_many_tiers">«%1$s» no tiene copia: tiene más niveles de los que guarda la cuenta, 19 más la reserva. Quítale un nivel.</string>
+    <string name="settings_backup_refused_too_many">«%1$s» no tiene copia: la cuenta guarda 200 listas como máximo. Elimina las que ya no necesites.</string>
+    <string name="settings_backup_refused_too_many_tiers">«%1$s» no tiene copia: tiene más niveles de los que guarda la cuenta, 19 más el mazo. Quítale un nivel.</string>
     <string name="settings_backup_stuck">Sin copia desde %1$s. Revisa tu conexión.</string>
     <string name="settings_backup_sub">Niveles, tarjetas y notas</string>
     <string name="settings_export">Exportar datos</string>
@@ -85,8 +85,8 @@
     <string name="theme_light">Claro</string>
     <string name="theme_system">Sistema</string>
     <plurals name="unranked_count">
-        <item quantity="one">%1$d sin clasificar</item>
-        <item quantity="many">%1$d sin clasificar</item>
-        <item quantity="other">%1$d sin clasificar</item>
+        <item quantity="one">%1$d tarjeta por colocar</item>
+        <item quantity="many">%1$d tarjetas por colocar</item>
+        <item quantity="other">%1$d tarjetas por colocar</item>
     </plurals>
 </resources>

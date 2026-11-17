@@ -3,16 +3,21 @@
     <string name="cd_clear_query">Limpar pesquisa</string>
     <string name="cd_close_search">Fechar pesquisa</string>
     <string name="home_search_hint">Pesquisar em suas listas</string>
-    <string name="tier_lists_content_description_as_pictures">Mostrar os quadros como imagens</string>
-    <string name="tier_lists_content_description_as_rows">Mostrar os quadros como linhas</string>
+    <string name="tier_lists_content_description_as_pictures">Mostrar as listas como imagens</string>
+    <string name="tier_lists_content_description_as_rows">Mostrar as listas como linhas</string>
     <string name="tier_lists_content_description_search">Pesquisar em suas listas</string>
     <string name="tier_lists_content_description_settings">Configurações</string>
     <string name="action_cancel">Cancelar</string>
     <string name="action_try_again">Tentar novamente</string>
     <plurals name="list_items_count">
-        <item quantity="one">%1$d item</item>
-        <item quantity="many">%1$d itens</item>
-        <item quantity="other">%1$d itens</item>
+        <item quantity="one">%1$d cartão</item>
+        <item quantity="many">%1$d cartões</item>
+        <item quantity="other">%1$d cartões</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d registro</item>
+        <item quantity="many">%1$d registros</item>
+        <item quantity="other">%1$d registros</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d classificação</item>
@@ -28,9 +33,9 @@
         <item quantity="other">%d listas</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d classificado</item>
-        <item quantity="many">%d classificados</item>
-        <item quantity="other">%d classificados</item>
+        <item quantity="one">%d posicionado</item>
+        <item quantity="many">%d posicionados</item>
+        <item quantity="other">%d posicionados</item>
     </plurals>
     <string name="tier_lists_title">Suas listas</string>
     <string name="snack_published_under_review">Salva. Ela espera um moderador antes que outras pessoas possam vê-la.</string>
@@ -42,10 +47,10 @@
         <item quantity="many">Publicada. Não foi possível adicionar %1$d imagens de outros sites.</item>
         <item quantity="other">Publicada. Não foi possível adicionar %1$d imagens de outros sites.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Devolver todas as cartas à reserva</string>
-    <string name="community_return_to_pool_title">Devolver todas as cartas à reserva?</string>
+    <string name="community_return_all_to_pool">Devolver todos os cartões ao monte</string>
+    <string name="community_return_to_pool_title">Devolver todos os cartões ao monte?</string>
     <string name="community_return_to_pool_explanation">A distribuição nos níveis será redefinida.</string>
-    <string name="community_return_to_pool_confirm">Devolver à reserva</string>
+    <string name="community_return_to_pool_confirm">Devolver ao monte</string>
     <string name="ranking_choice_sign_in">Entrar para publicar</string>
     <string name="ranking_offer_title">Mostrar aos outros como você classificou?</string>
     <string name="ranking_offer_show">Mostrar em Classificações</string>
@@ -59,5 +64,5 @@
     <string name="ranking_choice_storage_guest">Sua cópia particular está salva na biblioteca deste dispositivo. Entre para sincronizá-la.</string>
     <string name="publication_preview_independent">Será uma lista pública independente. Sua cópia particular continuará editável.</string>
     <string name="source_changed_recheck">Conferir com o original atual</string>
-    <string name="publication_limit_until">Você poderá publicar outra lista nova após %1$s. Ainda pode salvar quadros particulares e publicar rankings.</string>
+    <string name="publication_limit_until">Você poderá publicar outra lista nova após %1$s. Ainda pode salvar listas particulares e publicar rankings.</string>
 </resources>

@@ -9,7 +9,7 @@
     <string name="export_tier_empty">(leer)</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">Nicht eingestuft</string>
+    <string name="export_unranked_heading">Nicht platziert</string>
     <string name="hidden_empty_body">Listen und Menschen, die du in der Community ausblendest, warten hier, falls du es dir anders überlegst.</string>
     <string name="hidden_empty_title">Alles ist sichtbar</string>
     <string name="hidden_lists">LISTEN</string>
@@ -42,18 +42,18 @@
         <item quantity="one">Angemeldet · %1$d Guthaben</item>
         <item quantity="other">Angemeldet · %1$d Guthaben</item>
     </plurals>
-    <string name="settings_backup_label">Meine Boards sichern</string>
+    <string name="settings_backup_label">Meine Listen sichern</string>
     <string name="settings_backup_note">Deine Fotos und erzeugten Karten liegen in deinem Konto, wo nur du sie siehst. Beim Veröffentlichen werden die Bilder in den Feed kopiert, wo alle sie sehen.</string>
-    <string name="settings_backup_off_body">Auf diesem Telefon wird nichts gelöscht: Deine Boards bleiben hier. Die Kopie in deinem Konto wird gelöscht, auf deinen anderen Geräten landen die Boards im Papierkorb, und ein neues Telefon fängt leer an. Schaltest du es wieder ein, werden sie erneut hochgeladen.</string>
+    <string name="settings_backup_off_body">Auf diesem Telefon wird nichts gelöscht: Deine Listen bleiben hier. Die Kopie in deinem Konto wird gelöscht, auf deinen anderen Geräten landen die Listen im Papierkorb, und ein neues Telefon fängt leer an. Schaltest du es wieder ein, werden sie erneut hochgeladen.</string>
     <string name="settings_backup_off_cancel">Abbrechen</string>
     <string name="settings_backup_off_confirm">Beenden und löschen</string>
     <string name="settings_backup_off_title">Sicherung beenden?</string>
     <string name="settings_backup_pictures_label">Bilder nur über WLAN</string>
     <string name="settings_backup_pictures_sub">%1$s in deinem Konto</string>
     <string name="settings_backup_refused_not_accepted">„%1$s“ wird nicht gesichert: Etwas darauf nimmt das Konto nicht an.</string>
-    <string name="settings_backup_refused_too_large">„%1$s“ wird nicht gesichert: Das Board ist größer, als das Konto speichert. Nimm ein paar Karten herunter.</string>
-    <string name="settings_backup_refused_too_many">„%1$s“ wird nicht gesichert: Das Konto speichert höchstens 200 Boards. Lösche die, die du nicht mehr brauchst.</string>
-    <string name="settings_backup_refused_too_many_tiers">„%1$s“ wird nicht gesichert: Das Board hat mehr Stufen, als das Konto speichert, 19 plus Pool. Entferne eine Stufe.</string>
+    <string name="settings_backup_refused_too_large">„%1$s“ wird nicht gesichert: Die Liste ist größer, als das Konto speichert. Nimm ein paar Karten herunter.</string>
+    <string name="settings_backup_refused_too_many">„%1$s“ wird nicht gesichert: Das Konto speichert höchstens 200 Listen. Lösche die, die du nicht mehr brauchst.</string>
+    <string name="settings_backup_refused_too_many_tiers">„%1$s“ wird nicht gesichert: Die Liste hat mehr Stufen, als das Konto speichert, 19 plus Stapel. Entferne eine Stufe.</string>
     <string name="settings_backup_stuck">Seit %1$s nicht gesichert. Prüfe deine Verbindung.</string>
     <string name="settings_backup_sub">Stufen, Karten und Beschriftungen</string>
     <string name="settings_export">Daten exportieren</string>
@@ -82,7 +82,7 @@
     <string name="theme_light">Hell</string>
     <string name="theme_system">System</string>
     <plurals name="unranked_count">
-        <item quantity="one">%1$d nicht eingestuft</item>
-        <item quantity="other">%1$d nicht eingestuft</item>
+        <item quantity="one">Noch %1$d Karte</item>
+        <item quantity="other">Noch %1$d Karten</item>
     </plurals>
 </resources>

@@ -3,16 +3,21 @@
     <string name="cd_clear_query">Borrar búsqueda</string>
     <string name="cd_close_search">Cerrar búsqueda</string>
     <string name="home_search_hint">Buscar en tus listas</string>
-    <string name="tier_lists_content_description_as_pictures">Mostrar los tableros como imágenes</string>
-    <string name="tier_lists_content_description_as_rows">Mostrar los tableros como filas</string>
+    <string name="tier_lists_content_description_as_pictures">Mostrar las listas como imágenes</string>
+    <string name="tier_lists_content_description_as_rows">Mostrar las listas como filas</string>
     <string name="tier_lists_content_description_search">Buscar en tus listas</string>
     <string name="tier_lists_content_description_settings">Ajustes</string>
     <string name="action_cancel">Cancelar</string>
     <string name="action_try_again">Intentar de nuevo</string>
     <plurals name="list_items_count">
-        <item quantity="one">%1$d elemento</item>
-        <item quantity="many">%1$d elementos</item>
-        <item quantity="other">%1$d elementos</item>
+        <item quantity="one">%1$d tarjeta</item>
+        <item quantity="many">%1$d tarjetas</item>
+        <item quantity="other">%1$d tarjetas</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d entrada</item>
+        <item quantity="many">%1$d entradas</item>
+        <item quantity="other">%1$d entradas</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d clasificación</item>
@@ -28,9 +33,9 @@
         <item quantity="other">%d listas</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d clasificado</item>
-        <item quantity="many">%d clasificados</item>
-        <item quantity="other">%d clasificados</item>
+        <item quantity="one">%d colocada</item>
+        <item quantity="many">%d colocadas</item>
+        <item quantity="other">%d colocadas</item>
     </plurals>
     <string name="tier_lists_title">Tus listas</string>
     <string name="snack_published_under_review">Guardada. Espera a un moderador antes de que otros puedan verla.</string>
@@ -42,10 +47,10 @@
         <item quantity="many">Publicada. No se pudieron añadir %1$d imágenes de otros sitios.</item>
         <item quantity="other">Publicada. No se pudieron añadir %1$d imágenes de otros sitios.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Devolver todas las tarjetas a la reserva</string>
-    <string name="community_return_to_pool_title">¿Devolver todas las tarjetas a la reserva?</string>
+    <string name="community_return_all_to_pool">Devolver todas las tarjetas al mazo</string>
+    <string name="community_return_to_pool_title">¿Devolver todas las tarjetas al mazo?</string>
     <string name="community_return_to_pool_explanation">Se restablecerá la distribución por niveles.</string>
-    <string name="community_return_to_pool_confirm">Devolver a la reserva</string>
+    <string name="community_return_to_pool_confirm">Devolver al mazo</string>
     <string name="ranking_choice_sign_in">Iniciar sesión para publicar</string>
     <string name="ranking_offer_title">¿Mostrar a los demás cómo la ordenaste?</string>
     <string name="ranking_offer_show">Mostrar en Clasificaciones</string>
@@ -59,5 +64,5 @@
     <string name="ranking_choice_storage_guest">Tu copia privada se guarda en la biblioteca de este dispositivo. Inicia sesión para sincronizarla.</string>
     <string name="publication_preview_independent">Será una lista pública independiente. Tu copia privada seguirá siendo editable.</string>
     <string name="source_changed_recheck">Comprobar con el original actual</string>
-    <string name="publication_limit_until">Podrás publicar otra lista nueva después de %1$s. Puedes seguir guardando tableros privados y publicando clasificaciones.</string>
+    <string name="publication_limit_until">Podrás publicar otra lista nueva después de %1$s. Puedes seguir guardando listas privadas y publicando clasificaciones.</string>
 </resources>

@@ -69,7 +69,7 @@
     <string name="play_start">Начать</string>
     <string name="play_continue">Далее</string>
     <string name="play_back">Назад</string>
-    <string name="play_pool">Пул</string>
+    <string name="play_pool">Колода</string>
     <string name="play_everything">Всё</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d карточка</item>
@@ -83,7 +83,7 @@
         <item quantity="many">Выбрано %1$d из %2$d</item>
         <item quantity="other">Выбрано %1$d из %2$d</item>
     </plurals>
-    <string name="play_ranked">Расставленные</string>
+    <string name="play_ranked">Разложенные</string>
     <string name="play_quit">Выйти</string>
     <string name="play_duel_of">Дуэль %1$d из %2$d</string>
     <string name="play_duel_of_about">Дуэль %1$d из примерно %2$d</string>
@@ -96,14 +96,14 @@
     <string name="play_snack_game_saved">Игра сохранена · %1$d из %2$d</string>
     <string name="play_snack_discard">Удалить</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Доска расставлена по итогам %1$d дуэли</item>
-        <item quantity="few">Доска расставлена по итогам %1$d дуэлей</item>
-        <item quantity="many">Доска расставлена по итогам %1$d дуэлей</item>
-        <item quantity="other">Доска расставлена по итогам %1$d дуэли</item>
+        <item quantity="one">Список расставлен по итогам %1$d дуэли</item>
+        <item quantity="few">Список расставлен по итогам %1$d дуэлей</item>
+        <item quantity="many">Список расставлен по итогам %1$d дуэлей</item>
+        <item quantity="other">Список расставлен по итогам %1$d дуэли</item>
     </plurals>
     <string name="play_snack_saved_discarded">Сохранённая игра удалена</string>
     <string name="play_snack_undo">Отменить</string>
-    <string name="play_snack_game_undone">Доска как до игры</string>
+    <string name="play_snack_game_undone">Список как до игры</string>
     <string name="play_snack_redo">Вернуть</string>
     <string name="play_snack_nothing_answered">Ни одной дуэли не отвечено, ничего не сдвинулось</string>
     <string name="play_snack_not_saved">Не удалось сохранить игру</string>

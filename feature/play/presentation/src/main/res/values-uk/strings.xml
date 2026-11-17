@@ -69,7 +69,7 @@
     <string name="play_start">Почати</string>
     <string name="play_continue">Далі</string>
     <string name="play_back">Назад</string>
-    <string name="play_pool">Пул</string>
+    <string name="play_pool">Колода</string>
     <string name="play_everything">Усе</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d картка</item>
@@ -83,7 +83,7 @@
         <item quantity="many">Вибрано %1$d з %2$d</item>
         <item quantity="other">Вибрано %1$d з %2$d</item>
     </plurals>
-    <string name="play_ranked">Розставлені</string>
+    <string name="play_ranked">Розкладені</string>
     <string name="play_quit">Вийти</string>
     <string name="play_duel_of">Дуель %1$d з %2$d</string>
     <string name="play_duel_of_about">Дуель %1$d з приблизно %2$d</string>
@@ -96,14 +96,14 @@
     <string name="play_snack_game_saved">Гру збережено · %1$d з %2$d</string>
     <string name="play_snack_discard">Видалити</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Дошку розставлено за підсумками %1$d дуелі</item>
-        <item quantity="few">Дошку розставлено за підсумками %1$d дуелей</item>
-        <item quantity="many">Дошку розставлено за підсумками %1$d дуелей</item>
-        <item quantity="other">Дошку розставлено за підсумками %1$d дуелі</item>
+        <item quantity="one">Список розставлено за підсумками %1$d дуелі</item>
+        <item quantity="few">Список розставлено за підсумками %1$d дуелей</item>
+        <item quantity="many">Список розставлено за підсумками %1$d дуелей</item>
+        <item quantity="other">Список розставлено за підсумками %1$d дуелі</item>
     </plurals>
     <string name="play_snack_saved_discarded">Збережену гру видалено</string>
     <string name="play_snack_undo">Скасувати</string>
-    <string name="play_snack_game_undone">Дошка як до гри</string>
+    <string name="play_snack_game_undone">Список як до гри</string>
     <string name="play_snack_redo">Повернути</string>
     <string name="play_snack_nothing_answered">Жодної дуелі не відповіли, нічого не зрушило</string>
     <string name="play_snack_not_saved">Не вдалося зберегти гру</string>

@@ -50,6 +50,6 @@ class NewTierLimitTest {
         show(ranked = TierList.MAX_RANKED_TIERS)
 
         composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertIsNotEnabled()
-        composeRule.onNodeWithText("19 tiers plus the pool: the most a board holds").assertExists()
+        composeRule.onNodeWithText("19 tiers plus the deck: the most a list holds").assertExists()
     }
 }

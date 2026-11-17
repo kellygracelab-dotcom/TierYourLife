@@ -17,7 +17,7 @@
     <string name="author_unavailable_body">Listeleri akışta; herhangi birini oradan açabilirsiniz.</string>
     <string name="ban_forever">Sonsuza dek</string>
     <string name="ban_forever_confirm_action">Sonsuza dek yasakla</string>
-    <string name="ban_forever_confirm_body">Bir daha asla yayınlayamaz. Kendi panoları telefonunda kalır, başkalarının listelerini yine sıralayabilir.</string>
+    <string name="ban_forever_confirm_body">Bir daha asla yayınlayamaz. Kendi listeleri telefonunda kalır, başkalarının listelerini yine sıralayabilir.</string>
     <string name="ban_forever_confirm_title">%1$s sonsuza dek yasaklansın mı?</string>
     <string name="ban_forever_note">Uygulamadan önce yeniden sorar</string>
     <string name="ban_month">Bir ay</string>
@@ -60,7 +60,7 @@
     <string name="home_community_failed_body">Bağlantınızı kontrol edin.</string>
     <string name="home_community_unverified">Bu kopya doğrulanamadı</string>
     <string name="home_community_unverified_body">Google Play, topluluk açılmadan önce kurulumu doğrular. Play’den kurduysanız genellikle kendiliğinden geçer.</string>
-    <string name="home_following_empty">Takip ettiklerinizin %1$s kategorisinde panosu yok.</string>
+    <string name="home_following_empty">Takip ettiklerinizin %1$s bölümünde listesi yok.</string>
     <string name="home_following_empty_all">Takip ettikleriniz henüz bir şey yayımlamadı.</string>
     <string name="home_following_nobody">Kimseyi takip etmiyorsunuz</string>
     <string name="home_following_nobody_body">Birini takip edin, yeni listeleri önce burada görünsün.</string>
@@ -80,7 +80,7 @@
         <item quantity="one">%1$d şikayet</item>
         <item quantity="other">%1$d şikayet</item>
     </plurals>
-    <string name="moderation_take_down_body">Liste tamamen gider. Kendi panoları telefonunda kalır.</string>
+    <string name="moderation_take_down_body">Liste tamamen gider. Kendi listeleri telefonunda kalır.</string>
     <string name="moderation_take_down_title">Yayından kaldır</string>
     <string name="moderation_take_down_with">Kaldır · %1$s</string>
     <string name="moderation_taken_down">Yayından kaldırıldı</string>
@@ -288,9 +288,9 @@
     <string name="community_your_list_badge">Sizin listeniz</string>
     <string name="community_own_published">Yayında</string>
     <string name="community_own_anonymous">Anonim · sizin olduğunuzu yalnızca siz görüyorsunuz</string>
-    <string name="community_own_list_line">Ziyaretçiler bunu görür. Değişiklikler panonuzda yapılır.</string>
+    <string name="community_own_list_line">Ziyaretçiler bunu görür. Değişiklikleri Listeleriniz’de yaparsınız.</string>
     <string name="community_restore_from_trash">Çöp kutusundan geri al</string>
-    <string name="community_get_back_as_board">Pano olarak geri al</string>
+    <string name="community_get_back_as_board">Listeleriniz’e geri al</string>
     <string name="community_copy_link">Bağlantıyı kopyala</string>
     <string name="community_link_copied">Bağlantı kopyalandı</string>
     <string name="community_drop_to_start_yours">Kendi sürümünüzü başlatmak için bırakın · Benimki %1$s sıralamasıyla başlar</string>
@@ -325,6 +325,6 @@
     <string name="community_update_in_rankings">Sıralamalarda güncelle</string>
     <string name="community_remove_from_rankings">Sıralamalardan kaldır</string>
     <string name="community_remove_ranking_title">Sıralamanız Sıralamalardan kaldırılsın mı?</string>
-    <string name="community_remove_ranking_body">Bu listenin sıralamalarından kalkar. Panonuz listelerinizde kalır.</string>
+    <string name="community_remove_ranking_body">Bu listenin sıralamalarından kalkar. Listeleriniz’de sizde kalır.</string>
     <string name="community_remove_ranking_confirm">Kaldır</string>
 </resources>

@@ -1,7 +1,7 @@
 <resources>
     <string name="tier_lists_private">خاص</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · لم يتم تصنيف أي شيء بعد</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · لم يوضع أي شيء بعد</string>
     <string name="tier_lists_status_start_dragging">اسحب لتبدأ التصنيف</string>
 
     <plurals name="search_results_count">
@@ -76,12 +76,12 @@
         <item quantity="other">تم تحديد %1$d</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="zero">لا عناصر للإضافة</item>
-        <item quantity="one">إضافة عنصر واحد</item>
-        <item quantity="two">إضافة عنصرين</item>
-        <item quantity="few">إضافة %1$d عناصر</item>
-        <item quantity="many">إضافة %1$d عنصرًا</item>
-        <item quantity="other">إضافة %1$d عنصر</item>
+        <item quantity="zero">لا بطاقات للإضافة</item>
+        <item quantity="one">إضافة بطاقة واحدة</item>
+        <item quantity="two">إضافة بطاقتين</item>
+        <item quantity="few">إضافة %1$d بطاقات</item>
+        <item quantity="many">إضافة %1$d بطاقة</item>
+        <item quantity="other">إضافة %1$d بطاقة</item>
     </plurals>
     <string name="item_search_add_disabled">إضافة</string>
 
@@ -124,14 +124,6 @@
     <string name="action_empty_trash">إفراغ سلة المهملات</string>
     <string name="empty_trash_dialog_title">إفراغ سلة المهملات؟</string>
     <string name="empty_trash_dialog_body">سيتم حذف %1$s من هذا الجهاز. لا يمكن التراجع عن هذا.</string>
-    <plurals name="trash_entry_count">
-        <item quantity="zero">لا سجلات</item>
-        <item quantity="one">سجل واحد</item>
-        <item quantity="two">سجلان</item>
-        <item quantity="few">%1$d سجلات</item>
-        <item quantity="many">%1$d سجلًا</item>
-        <item quantity="other">%1$d سجل</item>
-    </plurals>
     <string name="trash_empty_title">سلة المهملات فارغة</string>
     <string name="trash_empty_body">تظهر هنا القوائم التي تحذفها. تبقى حتى تزيلها.</string>
     <string name="cd_more">خيارات أخرى</string>
@@ -140,7 +132,7 @@
     <string name="cd_trash_back">رجوع</string>
 
     <string name="home_start_with">ابدأ بـ</string>
-    <string name="home_start_hint">تُنشئ اللوحة فورًا. اضغط على العنوان لتغيير الاسم.</string>
+    <string name="home_start_hint">تُنشئ القائمة فورًا. اضغط على العنوان لتغيير الاسم.</string>
     <string name="home_new_list">قائمة جديدة</string>
     <string name="home_suggestion_films">أفلام</string>
     <string name="home_suggestion_games">ألعاب</string>
@@ -151,26 +143,26 @@
     <string name="home_tab_community">المجتمع</string>
     <string name="lists_sort_newest">الأحدث أولاً</string>
     <string name="lists_sort_oldest">الأقدم أولاً</string>
-    <string name="lists_filter">تصفية اللوحات</string>
+    <string name="lists_filter">تصفية القوائم</string>
     <string name="lists_filters_title">تصفية</string>
-    <string name="lists_filter_category">الفئة</string>
+    <string name="lists_filter_category">القسم</string>
     <string name="lists_filter_any">الكل</string>
     <string name="lists_filter_visibility">الظهور</string>
     <string name="lists_filter_public">عامة</string>
     <string name="lists_filter_private">خاصة</string>
     <string name="lists_filter_clear">مسح الكل</string>
     <string name="lists_group_favourites">المفضلة</string>
-    <string name="lists_group_others">كل اللوحات</string>
+    <string name="lists_group_others">كل القوائم</string>
     <string name="lists_favourite_add">أضف إلى المفضلة</string>
     <string name="lists_favourite_remove">أزل من المفضلة</string>
     <string name="snack_published_list_still_public">أُبقيت ولم تُحذف: تعذّر سحب نسختها العامة. أعد المحاولة عند الاتصال بالإنترنت.</string>
     <plurals name="board_count">
-        <item quantity="zero">لا لوحات</item>
-        <item quantity="one">لوحة واحدة</item>
-        <item quantity="two">لوحتان</item>
-        <item quantity="few">%1$d لوحات</item>
-        <item quantity="many">%1$d لوحة</item>
-        <item quantity="other">%1$d لوحة</item>
+        <item quantity="zero">لا قوائم</item>
+        <item quantity="one">قائمة واحدة</item>
+        <item quantity="two">قائمتان</item>
+        <item quantity="few">%1$d قوائم</item>
+        <item quantity="many">%1$d قائمة</item>
+        <item quantity="other">%1$d قائمة</item>
     </plurals>
     <string name="local_only_footer">%1$s، على هذا الهاتف فقط</string>
     <string name="local_only_notice_keep_one">سجّل الدخول لتبقى معك عند تغيير الهاتف.</string>
@@ -244,7 +236,7 @@
     <string name="cover_tap_fold">انقر للطي</string>
     <string name="cover_hand_off_title">افتح الهاتف للمتابعة</string>
     <string name="cover_hand_off_list">ستُفتح «%1$s» على الشاشة الرئيسية.</string>
-    <string name="cover_hand_off_card">ستُفتح «%1$s» على لوحتها.</string>
+    <string name="cover_hand_off_card">ستُفتح «%1$s» في قائمتها.</string>
     <string name="cover_hand_off_community">ستُفتح «%1$s» من المجتمع على الشاشة الرئيسية.</string>
     <string name="cover_hand_off_app">سيُفتح التطبيق على الشاشة الرئيسية.</string>
     <plurals name="cover_cards_count">
@@ -288,7 +280,7 @@
     <string name="add_to_list_new">قائمة جديدة…</string>
     <string name="add_to_list_new_name">اسم القائمة</string>
     <string name="add_to_list_cancel">إلغاء</string>
-    <string name="add_to_list_to_pool">إلى المجموعة</string>
+    <string name="add_to_list_to_pool">إلى الرزمة</string>
     <string name="add_to_list_added">أُضيفت إلى «%1$s»</string>
     <string name="add_to_list_sign_in">تُحفظ صور الروابط في حسابك. سجّل الدخول في TierYourLife لإضافتها، أو أضف البطاقة بدون صورة.</string>
     <string name="cover_adjust_title">ضبط الغلاف</string>

@@ -1,7 +1,7 @@
 ﻿<resources>
     <string name="tier_lists_private">privé</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · rien de classé pour l’instant</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · rien de placé pour l’instant</string>
     <string name="tier_lists_status_start_dragging">Glissez pour classer</string>
 
     <plurals name="search_results_count">
@@ -64,9 +64,9 @@
         <item quantity="other">%1$d sélectionnés</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="one">Ajouter %1$d élément</item>
-        <item quantity="many">Ajouter %1$d éléments</item>
-        <item quantity="other">Ajouter %1$d éléments</item>
+        <item quantity="one">Ajouter %1$d carte</item>
+        <item quantity="many">Ajouter %1$d cartes</item>
+        <item quantity="other">Ajouter %1$d cartes</item>
     </plurals>
     <string name="item_search_add_disabled">Ajouter</string>
 
@@ -100,11 +100,6 @@
     <string name="action_empty_trash">Vider la corbeille</string>
     <string name="empty_trash_dialog_title">Vider la corbeille ?</string>
     <string name="empty_trash_dialog_body">%1$s seront supprimés de cet appareil. Cette action est irréversible.</string>
-    <plurals name="trash_entry_count">
-        <item quantity="one">%1$d entrée</item>
-        <item quantity="many">%1$d entrées</item>
-        <item quantity="other">%1$d entrées</item>
-    </plurals>
     <string name="trash_empty_title">La corbeille est vide</string>
     <string name="trash_empty_body">Les listes que vous supprimez apparaissent ici. Elles restent jusqu’à ce que vous les retiriez.</string>
     <string name="cd_more">Plus d’options</string>
@@ -113,7 +108,7 @@
     <string name="cd_trash_back">Retour</string>
 
     <string name="home_start_with">Commencez par</string>
-    <string name="home_start_hint">Crée le tableau tout de suite. Touchez son titre pour le renommer.</string>
+    <string name="home_start_hint">Crée la liste tout de suite. Touchez son titre pour le renommer.</string>
     <string name="home_new_list">Nouvelle liste</string>
     <string name="home_suggestion_films">Films</string>
     <string name="home_suggestion_games">Jeux</string>
@@ -124,23 +119,23 @@
     <string name="home_tab_community">Communauté</string>
     <string name="lists_sort_newest">Plus récentes</string>
     <string name="lists_sort_oldest">Plus anciennes</string>
-    <string name="lists_filter">Filtrer les tableaux</string>
+    <string name="lists_filter">Filtrer les listes</string>
     <string name="lists_filters_title">Filtre</string>
-    <string name="lists_filter_category">Catégorie</string>
+    <string name="lists_filter_category">Rubrique</string>
     <string name="lists_filter_any">Toutes</string>
     <string name="lists_filter_visibility">Visibilité</string>
     <string name="lists_filter_public">Publics</string>
     <string name="lists_filter_private">Privés</string>
     <string name="lists_filter_clear">Tout effacer</string>
     <string name="lists_group_favourites">Favoris</string>
-    <string name="lists_group_others">Tous les tableaux</string>
+    <string name="lists_group_others">Toutes les listes</string>
     <string name="lists_favourite_add">Ajouter aux favoris</string>
     <string name="lists_favourite_remove">Retirer des favoris</string>
     <string name="snack_published_list_still_public">Conservée, pas supprimée : sa copie publique n’a pas pu être retirée. Réessayez une fois en ligne.</string>
     <plurals name="board_count">
-        <item quantity="one">%1$d tableau</item>
-        <item quantity="many">%1$d tableaux</item>
-        <item quantity="other">%1$d tableaux</item>
+        <item quantity="one">%1$d liste</item>
+        <item quantity="many">%1$d listes</item>
+        <item quantity="other">%1$d listes</item>
     </plurals>
     <string name="local_only_footer">%1$s, uniquement sur ce téléphone</string>
     <string name="local_only_notice_keep_one">Connectez-vous pour le garder en changeant de téléphone.</string>
@@ -208,7 +203,7 @@
     <string name="cover_tap_fold">Touchez pour replier</string>
     <string name="cover_hand_off_title">Ouvrez le téléphone pour continuer</string>
     <string name="cover_hand_off_list">« %1$s » s’ouvrira sur l’écran principal.</string>
-    <string name="cover_hand_off_card">« %1$s » s’ouvrira sur son tableau.</string>
+    <string name="cover_hand_off_card">« %1$s » s’ouvrira dans sa liste.</string>
     <string name="cover_hand_off_community">« %1$s » de la Communauté s’ouvrira sur l’écran principal.</string>
     <string name="cover_hand_off_app">L’app s’ouvrira sur l’écran principal.</string>
     <plurals name="cover_cards_count">
@@ -246,7 +241,7 @@
     <string name="add_to_list_new">Nouvelle liste…</string>
     <string name="add_to_list_new_name">Nom de la liste</string>
     <string name="add_to_list_cancel">Annuler</string>
-    <string name="add_to_list_to_pool">Dans le pool</string>
+    <string name="add_to_list_to_pool">Dans la pioche</string>
     <string name="add_to_list_added">Ajouté à « %1$s »</string>
     <string name="add_to_list_sign_in">Les images depuis des liens sont gardées dans votre compte. Connectez-vous dans TierYourLife pour les ajouter, ou ajoutez la carte sans image.</string>
     <string name="cover_adjust_title">Ajuster la couverture</string>

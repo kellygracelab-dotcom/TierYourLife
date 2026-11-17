@@ -62,7 +62,7 @@
     <string name="play_start">Começar</string>
     <string name="play_continue">Continuar</string>
     <string name="play_back">Voltar</string>
-    <string name="play_pool">A reserva</string>
+    <string name="play_pool">O monte</string>
     <string name="play_everything">Tudo</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d cartão</item>
@@ -74,7 +74,7 @@
         <item quantity="many">%1$d de %2$d selecionados</item>
         <item quantity="other">%1$d de %2$d selecionados</item>
     </plurals>
-    <string name="play_ranked">Classificadas</string>
+    <string name="play_ranked">Posicionados</string>
     <string name="play_quit">Sair</string>
     <string name="play_duel_of">Duelo %1$d de %2$d</string>
     <string name="play_duel_of_about">Duelo %1$d de cerca de %2$d</string>
@@ -87,20 +87,20 @@
     <string name="play_snack_game_saved">Jogo salvo · %1$d de %2$d</string>
     <string name="play_snack_discard">Descartar</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Quadro organizado a partir de %1$d duelo</item>
-        <item quantity="many">Quadro organizado a partir de %1$d duelos</item>
-        <item quantity="other">Quadro organizado a partir de %1$d duelos</item>
+        <item quantity="one">Lista organizada a partir de %1$d duelo</item>
+        <item quantity="many">Lista organizada a partir de %1$d duelos</item>
+        <item quantity="other">Lista organizada a partir de %1$d duelos</item>
     </plurals>
     <string name="play_snack_saved_discarded">Jogo salvo descartado</string>
     <string name="play_snack_undo">Desfazer</string>
-    <string name="play_snack_game_undone">De volta ao quadro de antes do jogo</string>
+    <string name="play_snack_game_undone">De volta à lista de antes do jogo</string>
     <string name="play_snack_redo">Refazer</string>
     <string name="play_snack_nothing_answered">Nenhum duelo respondido, então nada mudou</string>
     <string name="play_snack_not_saved">Não foi possível salvar o jogo</string>
     <string name="play_snack_list_updated">A lista foi atualizada durante o jogo, então o jogo foi descartado</string>
     <string name="play_random_sample">Seleção aleatória</string>
-    <string name="play_individual_cards">Cartas individuais</string>
+    <string name="play_individual_cards">Cartões individuais</string>
     <string name="play_select_candidates">Selecionar todas as disponíveis</string>
     <string name="play_clear_selection">Limpar seleção</string>
-    <string name="play_card_unnamed">Carta sem título</string>
+    <string name="play_card_unnamed">Cartão sem título</string>
 </resources>

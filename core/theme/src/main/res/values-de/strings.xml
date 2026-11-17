@@ -3,15 +3,19 @@
     <string name="cd_clear_query">Suche leeren</string>
     <string name="cd_close_search">Suche schließen</string>
     <string name="home_search_hint">Deine Listen durchsuchen</string>
-    <string name="tier_lists_content_description_as_pictures">Boards als Bilder zeigen</string>
-    <string name="tier_lists_content_description_as_rows">Boards als Zeilen zeigen</string>
+    <string name="tier_lists_content_description_as_pictures">Listen als Bilder zeigen</string>
+    <string name="tier_lists_content_description_as_rows">Listen als Zeilen zeigen</string>
     <string name="tier_lists_content_description_search">Deine Listen durchsuchen</string>
     <string name="tier_lists_content_description_settings">Einstellungen</string>
     <string name="action_cancel">Abbrechen</string>
     <string name="action_try_again">Erneut versuchen</string>
     <plurals name="list_items_count">
-        <item quantity="one">%1$d Element</item>
-        <item quantity="other">%1$d Elemente</item>
+        <item quantity="one">%1$d Karte</item>
+        <item quantity="other">%1$d Karten</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d Eintrag</item>
+        <item quantity="other">%1$d Einträge</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d Rangliste</item>
@@ -25,8 +29,8 @@
         <item quantity="other">%d Listen</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d eingestuft</item>
-        <item quantity="other">%d eingestuft</item>
+        <item quantity="one">%d platziert</item>
+        <item quantity="other">%d platziert</item>
     </plurals>
     <string name="tier_lists_title">Deine Listen</string>
     <string name="snack_published_under_review">Gespeichert. Sie wartet auf einen Moderator, bevor andere sie sehen können.</string>
@@ -37,10 +41,10 @@
         <item quantity="one">Veröffentlicht. %1$d Bild von einer anderen Website konnte nicht hinzugefügt werden.</item>
         <item quantity="other">Veröffentlicht. %1$d Bilder von anderen Websites konnten nicht hinzugefügt werden.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Alle Karten in den Pool zurücklegen</string>
-    <string name="community_return_to_pool_title">Alle Karten in den Pool zurücklegen?</string>
+    <string name="community_return_all_to_pool">Alle Karten zurück auf den Stapel legen</string>
+    <string name="community_return_to_pool_title">Alle Karten zurück auf den Stapel legen?</string>
     <string name="community_return_to_pool_explanation">Die Anordnung in den Stufen wird zurückgesetzt.</string>
-    <string name="community_return_to_pool_confirm">In den Pool zurücklegen</string>
+    <string name="community_return_to_pool_confirm">Zurück auf den Stapel</string>
     <string name="ranking_choice_sign_in">Zum Veröffentlichen anmelden</string>
     <string name="ranking_offer_title">Anderen zeigen, wie du sie geordnet hast?</string>
     <string name="ranking_offer_show">In Ranglisten zeigen</string>
@@ -54,5 +58,5 @@
     <string name="ranking_choice_storage_guest">Deine private Kopie ist in der Bibliothek auf diesem Gerät gespeichert. Melde dich zum Synchronisieren an.</string>
     <string name="publication_preview_independent">Dies wird eine eigene öffentliche Liste. Deine private Kopie bleibt bearbeitbar.</string>
     <string name="source_changed_recheck">Mit dem aktuellen Original abgleichen</string>
-    <string name="publication_limit_until">Du kannst nach %1$s eine weitere neue Liste veröffentlichen. Private Boards und Ranglisten sind weiterhin verfügbar.</string>
+    <string name="publication_limit_until">Du kannst nach %1$s eine weitere neue Liste veröffentlichen. Private Listen und Ranglisten sind weiterhin verfügbar.</string>
 </resources>

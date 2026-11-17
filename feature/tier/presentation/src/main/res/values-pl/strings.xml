@@ -1,7 +1,7 @@
 <resources>
     <string name="tier_lists_private">prywatne</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · jeszcze nic nieocenione</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · nic jeszcze nie umieszczono</string>
     <string name="tier_lists_status_start_dragging">Przeciągnij, aby ocenić</string>
 
     <plurals name="search_results_count">
@@ -68,10 +68,10 @@
         <item quantity="other">%1$d wybrano</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="one">Dodaj %1$d element</item>
-        <item quantity="few">Dodaj %1$d elementy</item>
-        <item quantity="many">Dodaj %1$d elementów</item>
-        <item quantity="other">Dodaj %1$d elementu</item>
+        <item quantity="one">Dodaj %1$d kartę</item>
+        <item quantity="few">Dodaj %1$d karty</item>
+        <item quantity="many">Dodaj %1$d kart</item>
+        <item quantity="other">Dodaj %1$d karty</item>
     </plurals>
     <string name="item_search_add_disabled">Dodaj</string>
 
@@ -108,12 +108,6 @@
     <string name="action_empty_trash">Opróżnij kosz</string>
     <string name="empty_trash_dialog_title">Opróżnić kosz?</string>
     <string name="empty_trash_dialog_body">%1$s zostanie usunięte z tego urządzenia. Tego nie można cofnąć.</string>
-    <plurals name="trash_entry_count">
-        <item quantity="one">%1$d wpis</item>
-        <item quantity="few">%1$d wpisy</item>
-        <item quantity="many">%1$d wpisów</item>
-        <item quantity="other">%1$d wpisu</item>
-    </plurals>
     <string name="trash_empty_title">Kosz jest pusty</string>
     <string name="trash_empty_body">Listy, które usuwasz, pojawiają się tutaj. Pozostają, dopóki ich nie usuniesz.</string>
     <string name="cd_more">Więcej opcji</string>
@@ -122,7 +116,7 @@
     <string name="cd_trash_back">Wstecz</string>
 
     <string name="home_start_with">Zacznij od</string>
-    <string name="home_start_hint">Tablica powstaje od razu. Dotknij tytułu, aby zmienić nazwę.</string>
+    <string name="home_start_hint">Lista powstaje od razu. Dotknij tytułu, aby zmienić nazwę.</string>
     <string name="home_new_list">Nowa lista</string>
     <string name="home_suggestion_films">Filmy</string>
     <string name="home_suggestion_games">Gry</string>
@@ -133,24 +127,24 @@
     <string name="home_tab_community">Społeczność</string>
     <string name="lists_sort_newest">Najnowsze</string>
     <string name="lists_sort_oldest">Najstarsze</string>
-    <string name="lists_filter">Filtruj tablice</string>
+    <string name="lists_filter">Filtruj listy</string>
     <string name="lists_filters_title">Filtr</string>
-    <string name="lists_filter_category">Kategoria</string>
+    <string name="lists_filter_category">Dział</string>
     <string name="lists_filter_any">Dowolna</string>
     <string name="lists_filter_visibility">Widoczność</string>
     <string name="lists_filter_public">Publiczne</string>
     <string name="lists_filter_private">Prywatne</string>
     <string name="lists_filter_clear">Wyczyść wszystko</string>
     <string name="lists_group_favourites">Ulubione</string>
-    <string name="lists_group_others">Wszystkie tablice</string>
+    <string name="lists_group_others">Wszystkie listy</string>
     <string name="lists_favourite_add">Dodaj do ulubionych</string>
     <string name="lists_favourite_remove">Usuń z ulubionych</string>
     <string name="snack_published_list_still_public">Zachowana, nie usunięta: nie udało się wycofać jej publicznej kopii. Spróbuj ponownie, gdy będziesz online.</string>
     <plurals name="board_count">
-        <item quantity="one">%1$d tablica</item>
-        <item quantity="few">%1$d tablice</item>
-        <item quantity="many">%1$d tablic</item>
-        <item quantity="other">%1$d tablicy</item>
+        <item quantity="one">%1$d lista</item>
+        <item quantity="few">%1$d listy</item>
+        <item quantity="many">%1$d list</item>
+        <item quantity="other">%1$d listy</item>
     </plurals>
     <string name="local_only_footer">%1$s, tylko na tym telefonie</string>
     <string name="local_only_notice_keep_one">Zaloguj się, by zachować ją po zmianie telefonu.</string>
@@ -220,7 +214,7 @@
     <string name="cover_tap_fold">Dotknij, aby zwinąć</string>
     <string name="cover_hand_off_title">Otwórz telefon, aby kontynuować</string>
     <string name="cover_hand_off_list">„%1$s” otworzy się na głównym ekranie.</string>
-    <string name="cover_hand_off_card">„%1$s” otworzy się na swojej tablicy.</string>
+    <string name="cover_hand_off_card">„%1$s” otworzy się na swojej liście.</string>
     <string name="cover_hand_off_community">„%1$s” ze Społeczności otworzy się na głównym ekranie.</string>
     <string name="cover_hand_off_app">Aplikacja otworzy się na głównym ekranie.</string>
     <plurals name="cover_cards_count">
@@ -260,7 +254,7 @@
     <string name="add_to_list_new">Nowa lista…</string>
     <string name="add_to_list_new_name">Nazwa listy</string>
     <string name="add_to_list_cancel">Anuluj</string>
-    <string name="add_to_list_to_pool">Do puli</string>
+    <string name="add_to_list_to_pool">Do talii</string>
     <string name="add_to_list_added">Dodano do „%1$s”</string>
     <string name="add_to_list_sign_in">Obrazki z linków są przechowywane na koncie. Zaloguj się w TierYourLife, aby je dodawać, albo dodaj kartę bez obrazka.</string>
     <string name="cover_adjust_title">Dopasuj okładkę</string>

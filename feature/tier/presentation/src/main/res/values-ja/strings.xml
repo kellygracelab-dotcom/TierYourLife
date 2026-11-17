@@ -1,7 +1,7 @@
 <resources>
     <string name="tier_lists_private">非公開</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · まだ何もランク付けされていません</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · まだ何も配置されていません</string>
     <string name="tier_lists_status_start_dragging">ドラッグしてランク付け</string>
 
     <plurals name="search_results_count">
@@ -56,7 +56,7 @@
         <item quantity="other">%1$d件選択</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="other">%1$d件を追加</item>
+        <item quantity="other">%1$d 枚を追加</item>
     </plurals>
     <string name="item_search_add_disabled">追加</string>
 
@@ -84,9 +84,6 @@
     <string name="action_empty_trash">ゴミ箱を空にする</string>
     <string name="empty_trash_dialog_title">ゴミ箱を空にしますか？</string>
     <string name="empty_trash_dialog_body">%1$s がこの端末から削除されます。これは元に戻せません。</string>
-    <plurals name="trash_entry_count">
-        <item quantity="other">%1$d件</item>
-    </plurals>
     <string name="trash_empty_title">ゴミ箱は空です</string>
     <string name="trash_empty_body">削除したリストはここに表示されます。削除するまで残ります。</string>
     <string name="cd_more">その他のオプション</string>
@@ -95,7 +92,7 @@
     <string name="cd_trash_back">戻る</string>
 
     <string name="home_start_with">まずは</string>
-    <string name="home_start_hint">すぐにボードを作ります。名前はタイトルをタップして変更できます。</string>
+    <string name="home_start_hint">すぐにリストを作ります。名前はタイトルをタップして変更できます。</string>
     <string name="home_new_list">新しいリスト</string>
     <string name="home_suggestion_films">映画</string>
     <string name="home_suggestion_games">ゲーム</string>
@@ -106,21 +103,21 @@
     <string name="home_tab_community">コミュニティ</string>
     <string name="lists_sort_newest">新しい順</string>
     <string name="lists_sort_oldest">古い順</string>
-    <string name="lists_filter">ボードを絞り込む</string>
+    <string name="lists_filter">リストを絞り込む</string>
     <string name="lists_filters_title">絞り込み</string>
-    <string name="lists_filter_category">カテゴリ</string>
+    <string name="lists_filter_category">セクション</string>
     <string name="lists_filter_any">すべて</string>
     <string name="lists_filter_visibility">公開設定</string>
     <string name="lists_filter_public">公開</string>
     <string name="lists_filter_private">非公開</string>
     <string name="lists_filter_clear">すべて解除</string>
     <string name="lists_group_favourites">お気に入り</string>
-    <string name="lists_group_others">すべてのボード</string>
+    <string name="lists_group_others">すべてのリスト</string>
     <string name="lists_favourite_add">お気に入りに追加</string>
     <string name="lists_favourite_remove">お気に入りから削除</string>
     <string name="snack_published_list_still_public">削除せず残しました。公開コピーを取り下げられませんでした。オンラインのときにもう一度お試しください。</string>
     <plurals name="board_count">
-        <item quantity="other">%1$d 件のボード</item>
+        <item quantity="other">%1$d 件のリスト</item>
     </plurals>
     <string name="local_only_footer">%1$s、この端末だけにあります</string>
     <string name="local_only_notice_keep_one">ログインすれば機種変更しても残ります。</string>
@@ -184,7 +181,7 @@
     <string name="cover_tap_fold">タップして折りたたむ</string>
     <string name="cover_hand_off_title">続けるには端末を開いてください</string>
     <string name="cover_hand_off_list">「%1$s」がメイン画面で開きます。</string>
-    <string name="cover_hand_off_card">「%1$s」がボードで開きます。</string>
+    <string name="cover_hand_off_card">「%1$s」がリストで開きます。</string>
     <string name="cover_hand_off_community">コミュニティの「%1$s」がメイン画面で開きます。</string>
     <string name="cover_hand_off_app">アプリがメイン画面で開きます。</string>
     <plurals name="cover_cards_count">
@@ -218,7 +215,7 @@
     <string name="add_to_list_new">新しいリスト…</string>
     <string name="add_to_list_new_name">リスト名</string>
     <string name="add_to_list_cancel">キャンセル</string>
-    <string name="add_to_list_to_pool">プールへ</string>
+    <string name="add_to_list_to_pool">山札へ</string>
     <string name="add_to_list_added">「%1$s」に追加しました</string>
     <string name="add_to_list_sign_in">リンクの画像はアカウントに保存されます。追加するには TierYourLife でログインするか、画像なしでカードを追加してください。</string>
     <string name="cover_adjust_title">カバーを調整</string>
@@ -246,7 +243,7 @@
     <string name="publish_sheet_add">追加</string>
     <string name="publish_sheet_as_section">トピックではなく別のセクションとして提案</string>
     <string name="publish_sheet_moderator">モデレーターが確認します。それまでリストはこのラベル付きで%1$sに置かれます。</string>
-    <string name="publish_sheet_how">あなたの名前でコミュニティに表示されます。リンクを知っている人なら誰でも並べられます。このボードは引き続き編集できます。</string>
+    <string name="publish_sheet_how">あなたの名前でコミュニティに表示されます。リンクを知っている人なら誰でも並べられます。このリストは引き続き編集できます。</string>
     <string name="publish_sheet_new">新規</string>
     <string name="publish_sheet_new_section">新しいセクション</string>
     <string name="publish_sheet_continue">次へ</string>

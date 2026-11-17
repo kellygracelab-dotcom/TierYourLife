@@ -36,7 +36,7 @@ class LocalOnlyCountsStarredTest {
             }
         }
 
-        composeRule.onNodeWithText("3 boards, on this phone only").assertExists()
+        composeRule.onNodeWithText("3 lists, on this phone only").assertExists()
         composeRule.onNodeWithText("Sign in to keep them when you change phones.").assertExists()
     }
 

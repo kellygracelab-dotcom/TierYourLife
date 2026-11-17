@@ -9,7 +9,7 @@
     <string name="export_tier_empty">（空）</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">未評価</string>
+    <string name="export_unranked_heading">未配置</string>
     <string name="hidden_empty_body">コミュニティで非表示にしたリストと人は、気が変わったときのためにここに残ります。</string>
     <string name="hidden_empty_title">すべて表示されています</string>
     <string name="hidden_lists">リスト</string>
@@ -40,9 +40,9 @@
     <plurals name="settings_account_signed_in_credits">
         <item quantity="other">ログイン済み · %1$d クレジット</item>
     </plurals>
-    <string name="settings_backup_label">ボードをバックアップ</string>
+    <string name="settings_backup_label">リストをバックアップ</string>
     <string name="settings_backup_note">写真と生成カードはあなたのアカウントに保存され、見られるのはあなただけです。公開すると画像はフィードに複製され、誰でも見られます。</string>
-    <string name="settings_backup_off_body">この端末からは何も削除されません。ボードはここに残ります。アカウント内のコピーは削除され、ほかの端末ではボードがゴミ箱に移り、新しい端末は空の状態から始まります。もう一度オンにすると、再びアップロードされます。</string>
+    <string name="settings_backup_off_body">この端末からは何も削除されません。リストはここに残ります。アカウント内のコピーは削除され、ほかの端末ではリストがゴミ箱に移り、新しい端末は空の状態から始まります。もう一度オンにすると、再びアップロードされます。</string>
     <string name="settings_backup_off_cancel">キャンセル</string>
     <string name="settings_backup_off_confirm">停止して削除</string>
     <string name="settings_backup_off_title">バックアップを停止しますか？</string>
@@ -50,8 +50,8 @@
     <string name="settings_backup_pictures_sub">アカウント内 %1$s</string>
     <string name="settings_backup_refused_not_accepted">「%1$s」はバックアップされていません。アカウントが受け付けない内容が含まれています。</string>
     <string name="settings_backup_refused_too_large">「%1$s」はバックアップされていません。アカウントに保存できる大きさを超えています。カードをいくつか外してください。</string>
-    <string name="settings_backup_refused_too_many">「%1$s」はバックアップされていません。アカウントに保存できるボードは200個までです。不要なボードを削除してください。</string>
-    <string name="settings_backup_refused_too_many_tiers">「%1$s」はバックアップされていません。アカウントに保存できるティア数（プールのほかに19）を超えています。ティアを1つ減らしてください。</string>
+    <string name="settings_backup_refused_too_many">「%1$s」はバックアップされていません。アカウントに保存できるリストは200個までです。不要なリストを削除してください。</string>
+    <string name="settings_backup_refused_too_many_tiers">「%1$s」はバックアップされていません。アカウントに保存できるティア数（山札のほかに19）を超えています。ティアを1つ減らしてください。</string>
     <string name="settings_backup_stuck">%1$sからバックアップされていません。接続を確認してください。</string>
     <string name="settings_backup_sub">ティア、カード、説明</string>
     <string name="settings_export">データをエクスポート</string>
@@ -79,6 +79,6 @@
     <string name="theme_light">ライト</string>
     <string name="theme_system">システム</string>
     <plurals name="unranked_count">
-        <item quantity="other">%1$d件未評価</item>
+        <item quantity="other">残りのカード %1$d 枚</item>
     </plurals>
 </resources>

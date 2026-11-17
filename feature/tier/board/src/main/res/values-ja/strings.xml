@@ -11,7 +11,7 @@
     <string name="category_people">人物</string>
     <string name="category_sport">スポーツ</string>
     <string name="cd_ai_chip">AIで画像を生成</string>
-    <string name="list_settings_category">カテゴリ</string>
+    <string name="list_settings_category">セクション</string>
     <string name="list_settings_category_none">未選択</string>
     <string name="list_settings_cover">カバー</string>
     <string name="list_settings_cover_none_set">なし</string>
@@ -34,14 +34,14 @@
     <string name="list_settings_public_too_many">公開できるリストの上限に達しました。公開を1つ取り消すと空きができます。</string>
     <string name="list_settings_public_unverified">Google Play がこのインストールを確認できないため、ここからは公開できません。</string>
     <string name="list_settings_share">画像として共有</string>
-    <string name="list_settings_share_sub">このボードの画像とアプリへのリンク</string>
+    <string name="list_settings_share_sub">このリストの画像とアプリへのリンク</string>
     <string name="list_settings_original">元のリストを開く</string>
     <string name="list_settings_original_sub">ランキングしたコミュニティのリスト</string>
     <string name="manual_dialog_add">追加</string>
     <plurals name="manual_dialog_add_many">
-        <item quantity="other">%1$d件を追加</item>
+        <item quantity="other">%1$d 枚を追加</item>
     </plurals>
-    <string name="manual_dialog_body">プールに入ります。あとでティアにドラッグできます。</string>
+    <string name="manual_dialog_body">山札に入ります。あとでティアにドラッグできます。</string>
     <string name="manual_dialog_cancel">キャンセル</string>
     <string name="manual_dialog_choose_photo">写真を選択</string>
     <string name="manual_dialog_field_name">名前</string>
@@ -53,24 +53,24 @@
     </plurals>
     <string name="manual_dialog_remove_photo">写真を削除</string>
     <string name="manual_dialog_replace_photo">写真を変更</string>
-    <string name="manual_dialog_title">アイテムを追加</string>
+    <string name="manual_dialog_title">カードを追加</string>
     <string name="my_published_action_update">更新</string>
     <string name="share_caption">%1$s — TierYourLife でランク付け\n%2$s</string>
     <string name="share_footer">TierYourLife で作成</string>
     <string name="share_failed">画像を共有できませんでした</string>
     <string name="tier_detail_add">追加</string>
     <plurals name="tier_detail_collapsed_item_count">
-        <item quantity="other">%1$d件</item>
+        <item quantity="other">カード %1$d 枚</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">リスト名を編集</string>
-    <string name="tier_detail_content_description_manual_add">手動でアイテムを追加</string>
+    <string name="tier_detail_content_description_manual_add">手動でカードを追加</string>
     <string name="tier_detail_item_removed">%1$s を削除しました</string>
     <plurals name="tier_detail_items_added_to_pool">
-        <item quantity="other">%1$d件をプールに追加しました</item>
+        <item quantity="other">%1$d枚を山札に追加しました</item>
     </plurals>
     <string name="tier_detail_move_sheet_current_tier">現在ここにあります</string>
-    <string name="tier_detail_move_sheet_pool_subtitle">未評価のまま、リストには残ります</string>
-    <string name="tier_detail_move_sheet_pool_title">プールに戻す</string>
+    <string name="tier_detail_move_sheet_pool_subtitle">未配置のまま、リストには残ります</string>
+    <string name="tier_detail_move_sheet_pool_title">山札に戻す</string>
     <string name="tier_detail_move_sheet_remove_subtitle">直後なら元に戻せます</string>
     <string name="tier_detail_move_sheet_adjust_title">画像を調整</string>
     <string name="tier_detail_move_sheet_adjust_subtitle">表示する部分を選ぶ</string>
@@ -79,17 +79,17 @@
     <string name="tier_detail_move_sheet_photo_credit">写真：%1$s</string>
     <string name="tier_detail_not_found">リストが見つかりません。</string>
     <plurals name="tier_detail_pool_unranked_count">
-        <item quantity="other">プール · 未評価%d件</item>
+        <item quantity="other">残りのカード %d 枚</item>
     </plurals>
     <plurals name="tier_detail_ranked_header">
-        <item quantity="other">%1$d件評価済み · 最高から最低</item>
+        <item quantity="other">%1$d枚配置済み · 最高から最低</item>
     </plurals>
-    <string name="tier_detail_ranked_header_empty">まだ何もランク付けされていません</string>
+    <string name="tier_detail_ranked_header_empty">まだ何も配置されていません</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
-        <item quantity="other">プール、未評価%1$d件。展開。</item>
+        <item quantity="other">残りのカード %1$d 枚。展開。</item>
     </plurals>
     <plurals name="tier_detail_ranked_pool_expanded_description">
-        <item quantity="other">プール、未評価%1$d件。折りたたむ。</item>
+        <item quantity="other">残りのカード %1$d 枚。折りたたむ。</item>
     </plurals>
     <string name="tier_detail_ranked_row_description">%1$d 位、%2$s、ティア %3$s。</string>
     <string name="tier_detail_snackbar_undo">元に戻す</string>
@@ -118,25 +118,25 @@
     <string name="tier_list_settings_mode_strip">一本のストリップ</string>
     <string name="tier_list_settings_mode_strip_sub">ティアごとに1行、横スクロール</string>
     <string name="tier_list_settings_mode_wrapped">折り返し行</string>
-    <string name="tier_list_settings_mode_wrapped_sub">すべてのアイテムが見え、行が高くなります</string>
+    <string name="tier_list_settings_mode_wrapped_sub">すべてのカードが見え、行が高くなります</string>
     <string name="tier_list_settings_new_tier_title">新しいティア</string>
-    <string name="tier_list_settings_tier_limit">プールのほかに19ティアまで。これ以上は追加できません</string>
+    <string name="tier_list_settings_tier_limit">山札のほかに19ティアまで。これ以上は追加できません</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="other">%d個のティア</item>
     </plurals>
     <string name="tier_list_settings_title">リストの設定</string>
     <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
     <plurals name="tier_lists_in_pool_count">
-        <item quantity="other">プールに%d件</item>
+        <item quantity="other">残り%d枚</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">このトピックは使えなくなりました（統合、却下、または他の人のものです）。リストのトピックは外れました。別のトピックを選ぶか、トピックなしで公開してください。</string>
     <string name="list_settings_public_ranking_body">%1$sのリストのあなたのランキングとして公開中です。フィードに2つ目のリストは出ません。</string>
     <string name="tier_detail_add_card">カードを追加</string>
-    <string name="tier_detail_pool_count">プール · %1$d</string>
+    <string name="tier_detail_pool_count">残りのカード · %1$d</string>
     <string name="tier_detail_drop_items_here">ここにドロップ</string>
     <string name="tier_detail_drop_to_delete">ドロップして削除</string>
-    <string name="tier_detail_drop_unrank_column">下のカードにドロップするとランク外に戻ります</string>
-    <string name="tier_detail_drop_unrank_dock">プールにドロップするとランク外に戻ります</string>
+    <string name="tier_detail_drop_unrank_column">下のカードにドロップすると山札に戻ります</string>
+    <string name="tier_detail_drop_unrank_dock">山札にドロップするとカードが戻ります</string>
     <string name="tier_detail_content_description_play">プレイ</string>
     <string name="tier_detail_play_needs_cards">プレイするにはカードが3枚以上必要です</string>
     <string name="list_settings_propose_section">セクションを提案</string>
@@ -157,7 +157,7 @@
     <string name="list_settings_cover_adjust_sub">画像のどの部分を表示するか</string>
     <string name="one_by_one_toggle">1枚ずつ</string>
     <string name="one_by_one_skip">スキップ</string>
-    <string name="one_by_one_to_pool">プールへ</string>
+    <string name="one_by_one_to_pool">山札へ</string>
     <string name="one_by_one_done">すべてのカードを配置しました</string>
     <string name="one_by_one_exit">終了</string>
     <string name="board_publish">公開</string>

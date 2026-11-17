@@ -10,10 +10,16 @@
     <string name="action_cancel">Anuluj</string>
     <string name="action_try_again">Spróbuj ponownie</string>
     <plurals name="list_items_count">
-        <item quantity="one">%1$d element</item>
-        <item quantity="few">%1$d elementy</item>
-        <item quantity="many">%1$d elementów</item>
-        <item quantity="other">%1$d elementu</item>
+        <item quantity="one">%1$d karta</item>
+        <item quantity="few">%1$d karty</item>
+        <item quantity="many">%1$d kart</item>
+        <item quantity="other">%1$d karty</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d wpis</item>
+        <item quantity="few">%1$d wpisy</item>
+        <item quantity="many">%1$d wpisów</item>
+        <item quantity="other">%1$d wpisu</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d ranking</item>
@@ -31,10 +37,10 @@
         <item quantity="other">%d listy</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d ocenione</item>
-        <item quantity="few">%d ocenione</item>
-        <item quantity="many">%d ocenione</item>
-        <item quantity="other">%d ocenione</item>
+        <item quantity="one">%d umieszczona</item>
+        <item quantity="few">%d umieszczone</item>
+        <item quantity="many">%d umieszczonych</item>
+        <item quantity="other">%d umieszczonej</item>
     </plurals>
     <string name="tier_lists_title">Twoje listy</string>
     <string name="snack_published_under_review">Zapisana. Czeka na moderatora, zanim inni będą mogli ją zobaczyć.</string>
@@ -47,10 +53,10 @@
         <item quantity="many">Opublikowano. Nie udało się dodać %1$d obrazów z innych stron.</item>
         <item quantity="other">Opublikowano. Nie udało się dodać %1$d obrazu z innych stron.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Zwróć wszystkie karty do puli</string>
-    <string name="community_return_to_pool_title">Zwrócić wszystkie karty do puli?</string>
+    <string name="community_return_all_to_pool">Zwróć wszystkie karty do talii</string>
+    <string name="community_return_to_pool_title">Zwrócić wszystkie karty do talii?</string>
     <string name="community_return_to_pool_explanation">Układ kart na poziomach zostanie wyzerowany.</string>
-    <string name="community_return_to_pool_confirm">Zwróć do puli</string>
+    <string name="community_return_to_pool_confirm">Zwróć do talii</string>
     <string name="ranking_choice_sign_in">Zaloguj się, aby opublikować</string>
     <string name="ranking_offer_title">Pokazać innym, jak ją ułożyłeś?</string>
     <string name="ranking_offer_show">Pokaż w Rankingach</string>
@@ -64,5 +70,5 @@
     <string name="ranking_choice_storage_guest">Prywatna kopia jest zapisana w bibliotece na tym urządzeniu. Zaloguj się, aby ją synchronizować.</string>
     <string name="publication_preview_independent">To będzie osobna publiczna lista. Prywatna kopia pozostanie edytowalna.</string>
     <string name="source_changed_recheck">Porównaj z aktualnym oryginałem</string>
-    <string name="publication_limit_until">Kolejną nową listę możesz opublikować po %1$s. Nadal możesz zapisywać prywatne tablice i publikować rankingi.</string>
+    <string name="publication_limit_until">Kolejną nową listę możesz opublikować po %1$s. Nadal możesz zapisywać prywatne listy i publikować rankingi.</string>
 </resources>

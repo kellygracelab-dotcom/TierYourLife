@@ -9,7 +9,7 @@
     <string name="export_tier_empty">(пусто)</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">Без оценки</string>
+    <string name="export_unranked_heading">Не разложены</string>
     <string name="hidden_empty_body">Списки и люди, которых вы скроете в сообществе, будут ждать здесь — вдруг передумаете.</string>
     <string name="hidden_empty_title">Всё на виду</string>
     <string name="hidden_lists">СПИСКИ</string>
@@ -46,18 +46,18 @@
         <item quantity="many">Вход выполнен · %1$d кредитов</item>
         <item quantity="other">Вход выполнен · %1$d кредита</item>
     </plurals>
-    <string name="settings_backup_label">Хранить копию досок</string>
+    <string name="settings_backup_label">Хранить копию списков</string>
     <string name="settings_backup_note">Ваши фото и сгенерированные карточки едут в ваш аккаунт, где их видите только вы. Публикация копирует картинки списка в ленту, где их видят все.</string>
-    <string name="settings_backup_off_body">С телефона ничего не удаляется: доски останутся здесь. Копия в аккаунте будет удалена, на других ваших устройствах доски уйдут в корзину, а новый телефон начнёт с пустого. Если включить снова, они загрузятся заново.</string>
+    <string name="settings_backup_off_body">С телефона ничего не удаляется: списки останутся здесь. Копия в аккаунте будет удалена, на других ваших устройствах списки уйдут в корзину, а новый телефон начнёт с пустого. Если включить снова, они загрузятся заново.</string>
     <string name="settings_backup_off_cancel">Отмена</string>
     <string name="settings_backup_off_confirm">Удалить копию</string>
     <string name="settings_backup_off_title">Перестать хранить копию?</string>
     <string name="settings_backup_pictures_label">Картинки только по Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s в вашем аккаунте</string>
-    <string name="settings_backup_refused_not_accepted">«%1$s» не сохраняется в аккаунте: что-то на доске он не принимает.</string>
-    <string name="settings_backup_refused_too_large">«%1$s» не сохраняется в аккаунте: доска больше, чем он хранит. Уберите с неё несколько карточек.</string>
-    <string name="settings_backup_refused_too_many">«%1$s» не сохраняется в аккаунте: в нём не больше 200 досок. Удалите ненужные, чтобы освободить место.</string>
-    <string name="settings_backup_refused_too_many_tiers">«%1$s» не сохраняется в аккаунте: на доске больше уровней, чем он хранит, — 19 и пул. Уберите один уровень.</string>
+    <string name="settings_backup_refused_not_accepted">«%1$s» не сохраняется в аккаунте: что-то в списке он не принимает.</string>
+    <string name="settings_backup_refused_too_large">«%1$s» не сохраняется в аккаунте: список больше, чем он хранит. Уберите из него несколько карточек.</string>
+    <string name="settings_backup_refused_too_many">«%1$s» не сохраняется в аккаунте: в нём не больше 200 списков. Удалите ненужные, чтобы освободить место.</string>
+    <string name="settings_backup_refused_too_many_tiers">«%1$s» не сохраняется в аккаунте: в списке больше уровней, чем он хранит, — 19 и колода. Уберите один уровень.</string>
     <string name="settings_backup_stuck">Нет копии с %1$s. Проверьте подключение.</string>
     <string name="settings_backup_sub">Уровни, карточки и подписи</string>
     <string name="settings_export">Экспорт данных</string>
@@ -88,9 +88,9 @@
     <string name="theme_light">Светлая</string>
     <string name="theme_system">Системная</string>
     <plurals name="unranked_count">
-        <item quantity="one">%1$d без оценки</item>
-        <item quantity="few">%1$d без оценки</item>
-        <item quantity="many">%1$d без оценки</item>
-        <item quantity="other">%1$d без оценки</item>
+        <item quantity="one">Осталась %1$d карточка</item>
+        <item quantity="few">Осталось %1$d карточки</item>
+        <item quantity="many">Осталось %1$d карточек</item>
+        <item quantity="other">Осталось %1$d карточки</item>
     </plurals>
 </resources>

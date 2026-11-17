@@ -17,7 +17,7 @@
     <string name="author_unavailable_body">قوائمه موجودة في الخلاصة ويمكنك فتح أيٍّ منها من هناك.</string>
     <string name="ban_forever">إلى الأبد</string>
     <string name="ban_forever_confirm_action">حظر إلى الأبد</string>
-    <string name="ban_forever_confirm_body">لن ينشر مرة أخرى أبدًا. تبقى لوحاته على هاتفه، ويمكنه ترتيب قوائم الآخرين.</string>
+    <string name="ban_forever_confirm_body">لن ينشر مرة أخرى أبدًا. تبقى قوائمه على هاتفه، ويمكنه ترتيب قوائم الآخرين.</string>
     <string name="ban_forever_confirm_title">حظر %1$s إلى الأبد؟</string>
     <string name="ban_forever_note">يسأل مرة أخرى قبل التطبيق</string>
     <string name="ban_month">شهر</string>
@@ -64,7 +64,7 @@
     <string name="home_community_failed_body">تحقق من اتصالك.</string>
     <string name="home_community_unverified">تعذّر التحقق من هذه النسخة</string>
     <string name="home_community_unverified_body">يتحقق Google Play من التثبيت قبل فتح المجتمع. إذا كان التثبيت من Play، فعادةً ما تُحل المسألة من تلقاء نفسها.</string>
-    <string name="home_following_empty">لا أحد ممن تتابعهم لديه لوحة في %1$s.</string>
+    <string name="home_following_empty">لا أحد ممن تتابعهم لديه قائمة في %1$s.</string>
     <string name="home_following_empty_all">لم ينشر أحد ممن تتابعهم شيئًا بعد.</string>
     <string name="home_following_nobody">أنت لا تتابع أحدًا</string>
     <string name="home_following_nobody_body">تابِع شخصًا ما، وستظهر قوائمه الجديدة هنا أولًا.</string>
@@ -88,7 +88,7 @@
         <item quantity="many">%1$d بلاغًا</item>
         <item quantity="other">%1$d بلاغ</item>
     </plurals>
-    <string name="moderation_take_down_body">ستختفي القائمة نهائيًا. تبقى لوحاته على هاتفه.</string>
+    <string name="moderation_take_down_body">ستختفي القائمة نهائيًا. تبقى قوائمه على هاتفه.</string>
     <string name="moderation_take_down_title">إزالتها</string>
     <string name="moderation_take_down_with">إزالة · %1$s</string>
     <string name="moderation_taken_down">أُلغي النشر</string>
@@ -316,9 +316,9 @@
     <string name="community_your_list_badge">قائمتك</string>
     <string name="community_own_published">منشورة</string>
     <string name="community_own_anonymous">مجهولة الاسم · أنت وحدك ترى أنها لك</string>
-    <string name="community_own_list_line">هذا ما يراه الزوار. التغييرات تتم على لوحتك.</string>
+    <string name="community_own_list_line">هذا ما يراه الزوار. تعدّلها في «قوائمك».</string>
     <string name="community_restore_from_trash">استعادة من سلة المهملات</string>
-    <string name="community_get_back_as_board">استرجعها كلوحة</string>
+    <string name="community_get_back_as_board">استرجعها إلى «قوائمك»</string>
     <string name="community_copy_link">نسخ الرابط</string>
     <string name="community_link_copied">تم نسخ الرابط</string>
     <string name="community_drop_to_start_yours">أفلتها لتبدأ نسختك · تبدأ نسختك بترتيب %1$s</string>
@@ -353,6 +353,6 @@
     <string name="community_update_in_rankings">حدّث في التصنيفات</string>
     <string name="community_remove_from_rankings">أزل من التصنيفات</string>
     <string name="community_remove_ranking_title">هل تزيل ترتيبك من التصنيفات؟</string>
-    <string name="community_remove_ranking_body">سيُزال من ترتيبات هذه القائمة. تبقى لوحتك في قوائمك.</string>
+    <string name="community_remove_ranking_body">سيُزال من ترتيبات هذه القائمة. ويبقى عندك في «قوائمك».</string>
     <string name="community_remove_ranking_confirm">إزالة</string>
 </resources>

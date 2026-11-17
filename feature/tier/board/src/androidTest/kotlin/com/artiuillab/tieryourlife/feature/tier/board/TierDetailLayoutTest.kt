@@ -38,7 +38,7 @@ class TierDetailLayoutTest : TierDetailScreenTestBase() {
             composeRule.onNodeWithTag(TierDetailTestTags.TIER_LIST).performScrollToNode(hasText(label))
             composeRule.onNodeWithText(label).assertIsDisplayed()
         }
-        composeRule.onNodeWithText("Pool · 6 unranked").assertIsDisplayed()
+        composeRule.onNodeWithText("6 cards left").assertIsDisplayed()
     }
 
     @Test

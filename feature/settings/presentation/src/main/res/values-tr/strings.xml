@@ -9,7 +9,7 @@
     <string name="export_tier_empty">(boş)</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">Sıralanmadı</string>
+    <string name="export_unranked_heading">Yerleştirilmedi</string>
     <string name="hidden_empty_body">Toplulukta gizlediğiniz listeler ve kişiler, fikrinizi değiştirirsiniz diye burada bekler.</string>
     <string name="hidden_empty_title">Her şey görünür durumda</string>
     <string name="hidden_lists">LİSTELER</string>
@@ -42,9 +42,9 @@
         <item quantity="one">Oturum açıldı · %1$d kredi</item>
         <item quantity="other">Oturum açıldı · %1$d kredi</item>
     </plurals>
-    <string name="settings_backup_label">Panolarımın yedeğini al</string>
+    <string name="settings_backup_label">Listelerimin yedeğini al</string>
     <string name="settings_backup_note">Fotoğraflarınız ve üretilen kartlar hesabınıza gider, orada yalnızca siz görürsünüz. Yayımlamak, listenin görsellerini herkesin gördüğü akışa kopyalar.</string>
-    <string name="settings_backup_off_body">Bu telefondan hiçbir şey silinmez: panolarınız burada kalır. Hesabınızdaki kopya silinir, diğer cihazlarınızda panolar çöp kutusuna taşınır ve yeni bir telefon boş başlar. Yeniden açarsanız panolar tekrar yüklenir.</string>
+    <string name="settings_backup_off_body">Bu telefondan hiçbir şey silinmez: listeleriniz burada kalır. Hesabınızdaki kopya silinir, diğer cihazlarınızda listeler çöp kutusuna taşınır ve yeni bir telefon boş başlar. Yeniden açarsanız listeler tekrar yüklenir.</string>
     <string name="settings_backup_off_cancel">İptal</string>
     <string name="settings_backup_off_confirm">Durdur ve sil</string>
     <string name="settings_backup_off_title">Yedekleme durdurulsun mu?</string>
@@ -52,8 +52,8 @@
     <string name="settings_backup_pictures_sub">Hesabınızda %1$s</string>
     <string name="settings_backup_refused_not_accepted">“%1$s” yedeklenmiyor: hesap üzerindeki bir şeyi kabul etmiyor.</string>
     <string name="settings_backup_refused_too_large">“%1$s” yedeklenmiyor: hesabınızın sakladığından büyük. Üzerinden birkaç kart kaldırın.</string>
-    <string name="settings_backup_refused_too_many">“%1$s” yedeklenmiyor: hesap en fazla 200 pano saklar. Artık gerekmeyenleri silin.</string>
-    <string name="settings_backup_refused_too_many_tiers">“%1$s” yedeklenmiyor: hesabınızın sakladığından fazla seviyesi var, havuzun yanında 19. Bir seviyesini kaldırın.</string>
+    <string name="settings_backup_refused_too_many">“%1$s” yedeklenmiyor: hesap en fazla 200 liste saklar. Artık gerekmeyenleri silin.</string>
+    <string name="settings_backup_refused_too_many_tiers">“%1$s” yedeklenmiyor: hesabınızın sakladığından fazla seviyesi var, destenin yanında 19. Bir seviyesini kaldırın.</string>
     <string name="settings_backup_stuck">%1$s tarihinden beri yedeklenmedi. Bağlantınızı kontrol edin.</string>
     <string name="settings_backup_sub">Seviyeler, kartlar ve notlar</string>
     <string name="settings_export">Verileri dışa aktar</string>
@@ -82,7 +82,7 @@
     <string name="theme_light">Açık</string>
     <string name="theme_system">Sistem</string>
     <plurals name="unranked_count">
-        <item quantity="one">%1$d sıralanmadı</item>
-        <item quantity="other">%1$d sıralanmadı</item>
+        <item quantity="one">%1$d kart kaldı</item>
+        <item quantity="other">%1$d kart kaldı</item>
     </plurals>
 </resources>

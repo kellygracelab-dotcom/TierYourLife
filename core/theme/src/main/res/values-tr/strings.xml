@@ -3,15 +3,19 @@
     <string name="cd_clear_query">Aramayı temizle</string>
     <string name="cd_close_search">Aramayı kapat</string>
     <string name="home_search_hint">Listelerinizde ara</string>
-    <string name="tier_lists_content_description_as_pictures">Panoları görsel olarak göster</string>
-    <string name="tier_lists_content_description_as_rows">Panoları satır olarak göster</string>
+    <string name="tier_lists_content_description_as_pictures">Listeleri görsel olarak göster</string>
+    <string name="tier_lists_content_description_as_rows">Listeleri satır olarak göster</string>
     <string name="tier_lists_content_description_search">Listelerinizde ara</string>
     <string name="tier_lists_content_description_settings">Ayarlar</string>
     <string name="action_cancel">İptal</string>
     <string name="action_try_again">Tekrar dene</string>
     <plurals name="list_items_count">
-        <item quantity="one">%1$d öğe</item>
-        <item quantity="other">%1$d öğe</item>
+        <item quantity="one">%1$d kart</item>
+        <item quantity="other">%1$d kart</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d kayıt</item>
+        <item quantity="other">%1$d kayıt</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d sıralama</item>
@@ -25,8 +29,8 @@
         <item quantity="other">%d liste</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d sıralandı</item>
-        <item quantity="other">%d sıralandı</item>
+        <item quantity="one">%d yerleştirildi</item>
+        <item quantity="other">%d yerleştirildi</item>
     </plurals>
     <string name="tier_lists_title">Listeleriniz</string>
     <string name="snack_published_under_review">Kaydedildi. Başkaları görmeden önce bir moderatörü bekliyor.</string>
@@ -37,10 +41,10 @@
         <item quantity="one">Yayınlandı. Başka bir siteden %1$d resim eklenemedi.</item>
         <item quantity="other">Yayınlandı. Başka sitelerden %1$d resim eklenemedi.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Tüm kartları havuza döndür</string>
-    <string name="community_return_to_pool_title">Tüm kartlar havuza döndürülsün mü?</string>
+    <string name="community_return_all_to_pool">Tüm kartları desteye geri gönder</string>
+    <string name="community_return_to_pool_title">Tüm kartlar desteye geri gönderilsin mi?</string>
     <string name="community_return_to_pool_explanation">Seviye yerleşimi sıfırlanacak.</string>
-    <string name="community_return_to_pool_confirm">Havuza döndür</string>
+    <string name="community_return_to_pool_confirm">Desteye geri gönder</string>
     <string name="ranking_choice_sign_in">Yayımlamak için giriş yap</string>
     <string name="ranking_offer_title">Nasıl sıraladığını başkalarına göstermek ister misin?</string>
     <string name="ranking_offer_show">Sıralamalarda göster</string>
@@ -54,5 +58,5 @@
     <string name="ranking_choice_storage_guest">Özel kopyan bu cihazın kitaplığına kaydedilir. Eşitlemek için giriş yap.</string>
     <string name="publication_preview_independent">Bu, ayrı bir herkese açık liste olacak. Özel kopyan düzenlenebilir kalacak.</string>
     <string name="source_changed_recheck">Güncel orijinalle karşılaştır</string>
-    <string name="publication_limit_until">%1$s sonrasında yeni bir liste daha yayımlayabilirsin. Özel panolarını kaydetmeye ve sıralamalarını yayımlamaya devam edebilirsin.</string>
+    <string name="publication_limit_until">%1$s sonrasında yeni bir liste daha yayımlayabilirsin. Özel listelerini kaydetmeye ve sıralamalarını yayımlamaya devam edebilirsin.</string>
 </resources>

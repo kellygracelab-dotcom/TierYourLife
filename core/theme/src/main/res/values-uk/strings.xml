@@ -3,17 +3,23 @@
     <string name="cd_clear_query">Очистити пошук</string>
     <string name="cd_close_search">Закрити пошук</string>
     <string name="home_search_hint">Пошук у ваших списках</string>
-    <string name="tier_lists_content_description_as_pictures">Показати дошки картинками</string>
-    <string name="tier_lists_content_description_as_rows">Показати дошки списком</string>
+    <string name="tier_lists_content_description_as_pictures">Показати списки картинками</string>
+    <string name="tier_lists_content_description_as_rows">Показати списки рядками</string>
     <string name="tier_lists_content_description_search">Пошук у ваших списках</string>
     <string name="tier_lists_content_description_settings">Налаштування</string>
     <string name="action_cancel">Скасувати</string>
     <string name="action_try_again">Спробувати ще раз</string>
     <plurals name="list_items_count">
-        <item quantity="one">%1$d елемент</item>
-        <item quantity="few">%1$d елементи</item>
-        <item quantity="many">%1$d елементів</item>
-        <item quantity="other">%1$d елемента</item>
+        <item quantity="one">%1$d картка</item>
+        <item quantity="few">%1$d картки</item>
+        <item quantity="many">%1$d карток</item>
+        <item quantity="other">%1$d картки</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d запис</item>
+        <item quantity="few">%1$d записи</item>
+        <item quantity="many">%1$d записів</item>
+        <item quantity="other">%1$d запису</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d рейтинг</item>
@@ -31,10 +37,10 @@
         <item quantity="other">%d списку</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d оцінено</item>
-        <item quantity="few">%d оцінено</item>
-        <item quantity="many">%d оцінено</item>
-        <item quantity="other">%d оцінено</item>
+        <item quantity="one">%d розкладено</item>
+        <item quantity="few">%d розкладено</item>
+        <item quantity="many">%d розкладено</item>
+        <item quantity="other">%d розкладено</item>
     </plurals>
     <string name="tier_lists_title">Ваші списки</string>
     <string name="snack_published_under_review">Збережено. Список чекає на модератора, перш ніж його побачать інші.</string>
@@ -47,10 +53,10 @@
         <item quantity="many">Опубліковано. Не вдалося додати %1$d зображень з інших сайтів.</item>
         <item quantity="other">Опубліковано. Не вдалося додати %1$d зображення з інших сайтів.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Повернути всі картки в пул</string>
-    <string name="community_return_to_pool_title">Повернути всі картки в пул?</string>
+    <string name="community_return_all_to_pool">Повернути всі картки в колоду</string>
+    <string name="community_return_to_pool_title">Повернути всі картки в колоду?</string>
     <string name="community_return_to_pool_explanation">Розташування за тірами буде скинуто.</string>
-    <string name="community_return_to_pool_confirm">Повернути в пул</string>
+    <string name="community_return_to_pool_confirm">Повернути в колоду</string>
     <string name="ranking_choice_sign_in">Увійти для публікації</string>
     <string name="ranking_offer_title">Показати іншим, як ви його розклали?</string>
     <string name="ranking_offer_show">Показати в рейтингах</string>

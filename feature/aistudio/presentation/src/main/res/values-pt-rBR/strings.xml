@@ -1,6 +1,6 @@
 <resources>
     <string name="ai_title">Gerar uma imagem</string>
-    <string name="ai_caption">Novos cartões vão para a reserva “%1$s”.</string>
+    <string name="ai_caption">Novos cartões vão para o monte de “%1$s”.</string>
     <string name="ai_empty_title">Descreva uma imagem</string>
     <string name="ai_empty_body">A IA a desenha. Guarde as que você gostar como cartões.</string>
     <string name="ai_hints_label">Experimente uma destas</string>
@@ -18,7 +18,7 @@
     <string name="ai_error_busy">Outra imagem ainda está sendo criada. Tente de novo em instantes.</string>
     <string name="ai_error_paused">A criação de imagens está pausada no momento. Tente de novo mais tarde.</string>
     <string name="ai_name_title">Nomeie este cartão</string>
-    <string name="ai_name_body">Vai para a reserva. Você pode arrastá-lo para um nível depois.</string>
+    <string name="ai_name_body">Vai para o monte. Você pode arrastá-lo para um nível depois.</string>
     <string name="ai_name_photo_note">A imagem gerada se torna a foto do cartão.</string>
     <string name="ai_name_field">Nome</string>
     <string name="action_add">Adicionar</string>

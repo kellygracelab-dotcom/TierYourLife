@@ -1,6 +1,6 @@
 <resources>
     <string name="ai_title">Générer une image</string>
-    <string name="ai_caption">Les nouvelles cartes vont dans la réserve « %1$s ».</string>
+    <string name="ai_caption">Les nouvelles cartes vont dans la pioche de « %1$s ».</string>
     <string name="ai_empty_title">Décrivez une image</string>
     <string name="ai_empty_body">L’IA la dessine. Gardez celles que vous aimez comme cartes.</string>
     <string name="ai_hints_label">Essayez l’une de ces idées</string>
@@ -18,7 +18,7 @@
     <string name="ai_error_busy">Une autre image est encore en cours de création. Réessayez dans un instant.</string>
     <string name="ai_error_paused">La création d’images est en pause pour le moment. Réessayez plus tard.</string>
     <string name="ai_name_title">Nommez cette carte</string>
-    <string name="ai_name_body">Elle va dans la réserve. Vous pourrez la glisser vers un niveau ensuite.</string>
+    <string name="ai_name_body">Elle va dans la pioche. Vous pourrez la glisser vers un niveau ensuite.</string>
     <string name="ai_name_photo_note">L’image générée devient la photo de la carte.</string>
     <string name="ai_name_field">Nom</string>
     <string name="action_add">Ajouter</string>

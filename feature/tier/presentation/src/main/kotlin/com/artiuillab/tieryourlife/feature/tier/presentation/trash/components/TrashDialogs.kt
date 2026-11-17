@@ -46,7 +46,7 @@ internal fun RemoveConfirmDialog(entry: TrashEntry.DeletedList, onDismiss: () ->
 
 @Composable
 internal fun EmptyTrashDialog(entryCount: Int, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    val entryCountText = pluralStringResource(R.plurals.trash_entry_count, entryCount, entryCount)
+    val entryCountText = pluralStringResource(ThemeR.plurals.trash_entry_count, entryCount, entryCount)
 
     AlertDialog(
         onDismissRequest = onDismiss,

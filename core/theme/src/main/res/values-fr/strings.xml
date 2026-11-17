@@ -3,16 +3,21 @@
     <string name="cd_clear_query">Effacer la recherche</string>
     <string name="cd_close_search">Fermer la recherche</string>
     <string name="home_search_hint">Rechercher dans vos listes</string>
-    <string name="tier_lists_content_description_as_pictures">Afficher les tableaux en images</string>
-    <string name="tier_lists_content_description_as_rows">Afficher les tableaux en lignes</string>
+    <string name="tier_lists_content_description_as_pictures">Afficher les listes en images</string>
+    <string name="tier_lists_content_description_as_rows">Afficher les listes en lignes</string>
     <string name="tier_lists_content_description_search">Rechercher dans vos listes</string>
     <string name="tier_lists_content_description_settings">Paramètres</string>
     <string name="action_cancel">Annuler</string>
     <string name="action_try_again">Réessayer</string>
     <plurals name="list_items_count">
-        <item quantity="one">%1$d élément</item>
-        <item quantity="many">%1$d éléments</item>
-        <item quantity="other">%1$d éléments</item>
+        <item quantity="one">%1$d carte</item>
+        <item quantity="many">%1$d cartes</item>
+        <item quantity="other">%1$d cartes</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d entrée</item>
+        <item quantity="many">%1$d entrées</item>
+        <item quantity="other">%1$d entrées</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d classement</item>
@@ -28,9 +33,9 @@
         <item quantity="other">%d listes</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d classé</item>
-        <item quantity="many">%d classés</item>
-        <item quantity="other">%d classés</item>
+        <item quantity="one">%d placée</item>
+        <item quantity="many">%d placées</item>
+        <item quantity="other">%d placées</item>
     </plurals>
     <string name="tier_lists_title">Vos listes</string>
     <string name="snack_published_under_review">Enregistrée. Elle attend un modérateur avant que d’autres puissent la voir.</string>
@@ -42,10 +47,10 @@
         <item quantity="many">Publiée. %1$d images d’autres sites n’ont pas pu être ajoutées.</item>
         <item quantity="other">Publiée. %1$d images d’autres sites n’ont pas pu être ajoutées.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Remettre toutes les cartes dans la réserve</string>
-    <string name="community_return_to_pool_title">Remettre toutes les cartes dans la réserve ?</string>
+    <string name="community_return_all_to_pool">Remettre toutes les cartes dans la pioche</string>
+    <string name="community_return_to_pool_title">Remettre toutes les cartes dans la pioche ?</string>
     <string name="community_return_to_pool_explanation">La répartition par niveau sera réinitialisée.</string>
-    <string name="community_return_to_pool_confirm">Remettre dans la réserve</string>
+    <string name="community_return_to_pool_confirm">Remettre dans la pioche</string>
     <string name="ranking_choice_sign_in">Se connecter pour publier</string>
     <string name="ranking_offer_title">Montrer aux autres comment vous l’avez classée ?</string>
     <string name="ranking_offer_show">Montrer dans Classements</string>
@@ -59,5 +64,5 @@
     <string name="ranking_choice_storage_guest">Votre copie privée est enregistrée dans la bibliothèque de cet appareil. Connectez-vous pour la synchroniser.</string>
     <string name="publication_preview_independent">Ce sera une liste publique indépendante. Votre copie privée restera modifiable.</string>
     <string name="source_changed_recheck">Comparer à l’original actuel</string>
-    <string name="publication_limit_until">Vous pourrez publier une nouvelle liste après le %1$s. Vous pouvez toujours garder des tableaux privés et publier des classements.</string>
+    <string name="publication_limit_until">Vous pourrez publier une nouvelle liste après le %1$s. Vous pouvez toujours garder des listes privées et publier des classements.</string>
 </resources>

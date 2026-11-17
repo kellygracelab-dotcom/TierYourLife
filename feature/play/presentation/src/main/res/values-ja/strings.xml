@@ -48,7 +48,7 @@
     <string name="play_start">開始</string>
     <string name="play_continue">次へ</string>
     <string name="play_back">戻る</string>
-    <string name="play_pool">プール</string>
+    <string name="play_pool">山札</string>
     <string name="play_everything">すべて</string>
     <plurals name="play_cards">
         <item quantity="other">%1$d 枚</item>
@@ -56,7 +56,7 @@
     <plurals name="play_selected">
         <item quantity="other">%2$d 枚中 %1$d 枚を選択</item>
     </plurals>
-    <string name="play_ranked">ランク付け済み</string>
+    <string name="play_ranked">配置済み</string>
     <string name="play_quit">終了</string>
     <string name="play_duel_of">対戦 %1$d / %2$d</string>
     <string name="play_duel_of_about">対戦 %1$d / 約 %2$d</string>
@@ -69,11 +69,11 @@
     <string name="play_snack_game_saved">ゲームを保存しました · %1$d / %2$d</string>
     <string name="play_snack_discard">破棄</string>
     <plurals name="play_snack_arranged">
-        <item quantity="other">%1$d 回の対戦からボードを並べました</item>
+        <item quantity="other">%1$d 回の対戦でリストを並べました</item>
     </plurals>
     <string name="play_snack_saved_discarded">保存したゲームを破棄しました</string>
     <string name="play_snack_undo">元に戻す</string>
-    <string name="play_snack_game_undone">ゲーム前のボードに戻しました</string>
+    <string name="play_snack_game_undone">ゲーム前のリストに戻しました</string>
     <string name="play_snack_redo">やり直す</string>
     <string name="play_snack_nothing_answered">対戦に1つも答えていないため、何も動いていません</string>
     <string name="play_snack_not_saved">ゲームを保存できませんでした</string>

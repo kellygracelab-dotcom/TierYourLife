@@ -11,7 +11,7 @@
     <string name="category_people">Personnes</string>
     <string name="category_sport">Sport</string>
     <string name="cd_ai_chip">Générer une image avec l’IA</string>
-    <string name="list_settings_category">Catégorie</string>
+    <string name="list_settings_category">Rubrique</string>
     <string name="list_settings_category_none">Pas encore choisie</string>
     <string name="list_settings_cover">Couverture</string>
     <string name="list_settings_cover_none_set">Aucune</string>
@@ -34,16 +34,16 @@
     <string name="list_settings_public_too_many">Vous avez publié le maximum de listes autorisé. Retirez-en une pour faire de la place.</string>
     <string name="list_settings_public_unverified">Google Play n’a pas pu confirmer cette installation, donc rien ne peut être publié depuis celle-ci.</string>
     <string name="list_settings_share">Partager en image</string>
-    <string name="list_settings_share_sub">Une image de ce tableau, avec un lien vers l’app</string>
+    <string name="list_settings_share_sub">Une image de cette liste, avec un lien vers l’app</string>
     <string name="list_settings_original">Ouvrir l’original</string>
     <string name="list_settings_original_sub">La liste de la Communauté que vous avez classée</string>
     <string name="manual_dialog_add">Ajouter</string>
     <plurals name="manual_dialog_add_many">
-        <item quantity="one">Ajouter %1$d élément</item>
-        <item quantity="many">Ajouter %1$d éléments</item>
-        <item quantity="other">Ajouter %1$d éléments</item>
+        <item quantity="one">Ajouter %1$d carte</item>
+        <item quantity="many">Ajouter %1$d cartes</item>
+        <item quantity="other">Ajouter %1$d cartes</item>
     </plurals>
-    <string name="manual_dialog_body">Va dans la réserve. Vous pourrez ensuite le glisser vers un rang.</string>
+    <string name="manual_dialog_body">Va dans la pioche. Vous pourrez ensuite la glisser vers un rang.</string>
     <string name="manual_dialog_cancel">Annuler</string>
     <string name="manual_dialog_choose_photo">Choisir une photo</string>
     <string name="manual_dialog_field_name">Nom</string>
@@ -57,28 +57,28 @@
     </plurals>
     <string name="manual_dialog_remove_photo">Retirer la photo</string>
     <string name="manual_dialog_replace_photo">Remplacer la photo</string>
-    <string name="manual_dialog_title">Ajouter un élément</string>
+    <string name="manual_dialog_title">Ajouter une carte</string>
     <string name="my_published_action_update">Mettre à jour</string>
     <string name="share_caption">%1$s — classé dans TierYourLife\n%2$s</string>
     <string name="share_footer">Fait avec TierYourLife</string>
     <string name="share_failed">Impossible de partager l’image</string>
     <string name="tier_detail_add">Ajouter</string>
     <plurals name="tier_detail_collapsed_item_count">
-        <item quantity="one">%1$d élément</item>
-        <item quantity="many">%1$d éléments</item>
-        <item quantity="other">%1$d éléments</item>
+        <item quantity="one">%1$d carte</item>
+        <item quantity="many">%1$d cartes</item>
+        <item quantity="other">%1$d cartes</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">Modifier le nom de la liste</string>
-    <string name="tier_detail_content_description_manual_add">Ajouter un élément manuellement</string>
+    <string name="tier_detail_content_description_manual_add">Ajouter une carte manuellement</string>
     <string name="tier_detail_item_removed">%1$s a été retiré</string>
     <plurals name="tier_detail_items_added_to_pool">
-        <item quantity="one">%1$d élément ajouté à la réserve</item>
-        <item quantity="many">%1$d éléments ajoutés à la réserve</item>
-        <item quantity="other">%1$d éléments ajoutés à la réserve</item>
+        <item quantity="one">%1$d carte ajoutée à la pioche</item>
+        <item quantity="many">%1$d cartes ajoutées à la pioche</item>
+        <item quantity="other">%1$d cartes ajoutées à la pioche</item>
     </plurals>
     <string name="tier_detail_move_sheet_current_tier">Actuellement ici</string>
-    <string name="tier_detail_move_sheet_pool_subtitle">Non classé, reste dans la liste</string>
-    <string name="tier_detail_move_sheet_pool_title">Remettre dans la réserve</string>
+    <string name="tier_detail_move_sheet_pool_subtitle">Non placée, reste dans la liste</string>
+    <string name="tier_detail_move_sheet_pool_title">Remettre dans la pioche</string>
     <string name="tier_detail_move_sheet_remove_subtitle">Annulable juste après</string>
     <string name="tier_detail_move_sheet_adjust_title">Ajuster l’image</string>
     <string name="tier_detail_move_sheet_adjust_subtitle">Choisir la partie visible</string>
@@ -87,25 +87,25 @@
     <string name="tier_detail_move_sheet_photo_credit">Photo : %1$s</string>
     <string name="tier_detail_not_found">Liste introuvable.</string>
     <plurals name="tier_detail_pool_unranked_count">
-        <item quantity="one">Réserve · %d non classé</item>
-        <item quantity="many">Réserve · %d non classé</item>
-        <item quantity="other">Réserve · %d non classé</item>
+        <item quantity="one">%d carte restante</item>
+        <item quantity="many">%d cartes restantes</item>
+        <item quantity="other">%d cartes restantes</item>
     </plurals>
     <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d classé · du meilleur au pire</item>
-        <item quantity="many">%1$d classés · du meilleur au pire</item>
-        <item quantity="other">%1$d classés · du meilleur au pire</item>
+        <item quantity="one">%1$d placée · du meilleur au pire</item>
+        <item quantity="many">%1$d placées · du meilleur au pire</item>
+        <item quantity="other">%1$d placées · du meilleur au pire</item>
     </plurals>
-    <string name="tier_detail_ranked_header_empty">Rien de classé pour l’instant</string>
+    <string name="tier_detail_ranked_header_empty">Rien de placé pour l’instant</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
-        <item quantity="one">Réserve, %1$d non classé. Déplier.</item>
-        <item quantity="many">Réserve, %1$d non classé. Déplier.</item>
-        <item quantity="other">Réserve, %1$d non classé. Déplier.</item>
+        <item quantity="one">%1$d carte restante. Déplier.</item>
+        <item quantity="many">%1$d cartes restantes. Déplier.</item>
+        <item quantity="other">%1$d cartes restantes. Déplier.</item>
     </plurals>
     <plurals name="tier_detail_ranked_pool_expanded_description">
-        <item quantity="one">Réserve, %1$d non classé. Replier.</item>
-        <item quantity="many">Réserve, %1$d non classé. Replier.</item>
-        <item quantity="other">Réserve, %1$d non classé. Replier.</item>
+        <item quantity="one">%1$d carte restante. Replier.</item>
+        <item quantity="many">%1$d cartes restantes. Replier.</item>
+        <item quantity="other">%1$d cartes restantes. Replier.</item>
     </plurals>
     <string name="tier_detail_ranked_row_description">Place %1$d, %2$s, rang %3$s.</string>
     <string name="tier_detail_snackbar_undo">Annuler</string>
@@ -134,9 +134,9 @@
     <string name="tier_list_settings_mode_strip">Bande unique</string>
     <string name="tier_list_settings_mode_strip_sub">Une ligne par rang, défilement latéral</string>
     <string name="tier_list_settings_mode_wrapped">Lignes avec retour</string>
-    <string name="tier_list_settings_mode_wrapped_sub">Chaque élément visible, les lignes s’agrandissent</string>
+    <string name="tier_list_settings_mode_wrapped_sub">Chaque carte visible, les lignes s’agrandissent</string>
     <string name="tier_list_settings_new_tier_title">Nouveau rang</string>
-    <string name="tier_list_settings_tier_limit">19 rangs plus la réserve : un tableau n’en contient pas plus</string>
+    <string name="tier_list_settings_tier_limit">19 rangs plus la pioche : une liste n’en contient pas plus</string>
     <plurals name="tier_list_settings_tier_count">
         <item quantity="one">%d rang</item>
         <item quantity="many">%d rangs</item>
@@ -145,18 +145,18 @@
     <string name="tier_list_settings_title">Paramètres de la liste</string>
     <string name="tier_lists_card_ranked_and_in_pool">%1$s · %2$s</string>
     <plurals name="tier_lists_in_pool_count">
-        <item quantity="one">%d dans la réserve</item>
-        <item quantity="many">%d dans la réserve</item>
-        <item quantity="other">%d dans la réserve</item>
+        <item quantity="one">%d restante</item>
+        <item quantity="many">%d restantes</item>
+        <item quantity="other">%d restantes</item>
     </plurals>
     <string name="list_settings_public_topic_unavailable">Ce thème n’est plus ouvert : fusionné, refusé ou à quelqu’un d’autre. La liste n’a plus de thème ; choisissez-en un autre ou publiez sans.</string>
     <string name="list_settings_public_ranking_body">Publiée comme votre classement de la liste de %1$s ; aucune seconde liste n’apparaît dans le fil.</string>
     <string name="tier_detail_add_card">Ajouter une carte</string>
-    <string name="tier_detail_pool_count">Réserve · %1$d</string>
-    <string name="tier_detail_drop_items_here">Déposez des éléments ici</string>
+    <string name="tier_detail_pool_count">Cartes restantes · %1$d</string>
+    <string name="tier_detail_drop_items_here">Déposez des cartes ici</string>
     <string name="tier_detail_drop_to_delete">Déposer pour supprimer</string>
-    <string name="tier_detail_drop_unrank_column">Déposez sur les cartes ci-dessous pour retirer du classement</string>
-    <string name="tier_detail_drop_unrank_dock">Déposez sur la réserve pour retirer du classement</string>
+    <string name="tier_detail_drop_unrank_column">Déposez sur les cartes ci-dessous pour la remettre dans la pioche</string>
+    <string name="tier_detail_drop_unrank_dock">Déposez sur la pioche pour y remettre la carte</string>
     <string name="tier_detail_content_description_play">Jouer</string>
     <string name="tier_detail_play_needs_cards">Il faut au moins 3 cartes pour jouer</string>
     <string name="list_settings_propose_section">Proposer une rubrique</string>
@@ -177,7 +177,7 @@
     <string name="list_settings_cover_adjust_sub">La partie de l’image qui s’affiche</string>
     <string name="one_by_one_toggle">Une par une</string>
     <string name="one_by_one_skip">Passer</string>
-    <string name="one_by_one_to_pool">Vers le pool</string>
+    <string name="one_by_one_to_pool">Dans la pioche</string>
     <string name="one_by_one_done">Toutes les cartes sont placées</string>
     <string name="one_by_one_exit">Quitter</string>
     <string name="board_publish">Publier</string>
