@@ -149,7 +149,7 @@ internal class PrivateRankingProgress(
         val original = source ?: return
         if (current.own || current.arriving || current.version != original.summary.updatedAtMillis) return
         val account = owner
-        val draft = draftOf(original, current.mine).copy(choice = choice, savedBoardUid = savedCopy?.uid)
+        val draft = draftOf(original, current.mine).copy(choice = choice, savedBoardUid = savedCopy?.uid, title = original.summary.title)
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
             messages.guard("Keeping private ranking progress") {
                 withContext(NonCancellable) {
@@ -204,7 +204,7 @@ internal class PrivateRankingProgress(
         savedCopy = tiers.getTierListById(id)
         choice = value
         state.value = (state.value as CommunityListUiState.Success).copy(mine = mine, showing = Showing.Mine, arranged = true)
-        drafts.keep(listId, draftOf(original, mine).copy(choice = choice, savedBoardUid = savedCopy?.uid), account)
+        drafts.keep(listId, draftOf(original, mine).copy(choice = choice, savedBoardUid = savedCopy?.uid, title = original.summary.title), account)
         id
     }
 

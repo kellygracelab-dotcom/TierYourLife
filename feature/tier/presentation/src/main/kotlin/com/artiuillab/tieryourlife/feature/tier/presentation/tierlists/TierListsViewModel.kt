@@ -11,6 +11,11 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.SearchWords
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
+import com.artiuillab.tieryourlife.feature.play.domain.GameKind
+import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
+import com.artiuillab.tieryourlife.feature.play.domain.SavedGames
+import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardOrder
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
@@ -45,6 +50,8 @@ class TierListsViewModel @Inject constructor(
     private val boardSync: BoardSync,
     private val pictures: PictureRestore,
     private val owner: BoardOwner,
+    private val drafts: RankingDrafts = RankingDrafts.None,
+    private val games: SavedGames = NoSavedGames,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
@@ -69,6 +76,7 @@ class TierListsViewModel @Inject constructor(
     private var syncAgain = false
 
     private var restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle
+    private var started: List<StartedList> = emptyList()
 
     init {
         offerAnswered = preferences.signInOfferAnswered()
@@ -176,6 +184,7 @@ class TierListsViewModel @Inject constructor(
 
         try {
             lastLoadedLists = repository.getTierListSummaries()
+            started = startedLists()
             loaded = true
             emitSuccess().join()
             keepBoards()
@@ -214,10 +223,11 @@ class TierListsViewModel @Inject constructor(
         val localOnly = whereTheseLive()
         val restoring = restoringPictures
         val seen = conflictsSeen
+        val begun = started
         arranging?.cancel()
         return viewModelScope.launch {
             val shown = withContext(Dispatchers.Default) { arrange(lists, mode, sort, filters, seen) }
-            _state.value = shown.copy(asPictures = asPictures, localOnly = localOnly, restoringPictures = restoring)
+            _state.value = shown.copy(asPictures = asPictures, localOnly = localOnly, restoringPictures = restoring, started = begun)
         }.also { arranging = it }
     }
 
@@ -248,6 +258,24 @@ class TierListsViewModel @Inject constructor(
             mode = mode,
         )
     }
+
+    /**
+     * Other people's lists begun on this phone by whoever is signed in now. A
+     * list that will not read leaves the block out, never the boards.
+     */
+    private suspend fun startedLists(): List<StartedList> = runSuspendCatching {
+        val who = (accounts.current() as? Account.SignedIn)?.recordKey
+        val waiting = games.keys()
+        drafts.started(who).take(MAX_STARTED).map { begun ->
+            StartedList(
+                listId = begun.listId,
+                title = begun.title,
+                placed = begun.placed,
+                total = begun.total,
+                gameSaved = PlayRequest.someoneElsesKey(begun.listId, begun.version) in waiting,
+            )
+        }
+    }.onFailure { Timber.w(it, "Reading the lists begun failed") }.getOrDefault(emptyList())
 
     /** The sign-in offer waits for a first board: with nothing to lose there is nothing to offer. */
     private fun whereTheseLive(): LocalOnly = when {
@@ -377,4 +405,17 @@ class TierListsViewModel @Inject constructor(
             loadTierListsInternal()
         }
     }
+}
+
+/** At most this many begun lists stand above one's own: the block is a way back, not a second library. */
+private const val MAX_STARTED = 3
+
+/** For tests that leave games out: none is ever put down. */
+private object NoSavedGames : SavedGames {
+    override suspend fun load(key: String): SavedGame? = null
+    override suspend fun save(key: String, game: SavedGame) = false
+    override suspend fun discard(key: String) = Unit
+    override suspend fun keys(): Set<String> = emptySet()
+    override suspend fun lastKind(): GameKind? = null
+    override suspend fun rememberKind(kind: GameKind) = Unit
 }

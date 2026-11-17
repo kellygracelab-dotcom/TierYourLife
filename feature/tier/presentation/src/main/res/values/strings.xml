@@ -279,6 +279,14 @@
         <item quantity="one">Your collage · %d picture</item>
         <item quantity="other">Your collage · %d pictures</item>
     </plurals>
+    <string name="started_title">Continue</string>
+    <plurals name="started_placed">
+        <item quantity="one">%1$d of %2$d placed</item>
+        <item quantity="other">%1$d of %2$d placed</item>
+    </plurals>
+    <string name="started_continue">Continue</string>
+    <string name="started_continue_of">Continue “%1$s”</string>
+    <string name="started_resume">Resume game</string>
     <string name="publish_sheet_name">Name</string>
     <string name="publish_sheet_name_hint">What is this list?</string>
     <string name="publish_sheet_name_first">Give the list a name first.</string>

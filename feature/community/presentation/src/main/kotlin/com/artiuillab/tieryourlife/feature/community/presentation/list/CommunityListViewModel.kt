@@ -60,6 +60,7 @@ class CommunityListViewModel @Inject constructor(
 
     private val route = savedStateHandle.communityListRoute()
     val publishedId = route.publishedId
+    val resumesGame = route.resumeGame
 
     /** What the card showed, for the screen to draw while the list is on its way. */
     val preview: ListPreview? = route.preview()
