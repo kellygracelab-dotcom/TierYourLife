@@ -175,17 +175,11 @@
     <string name="list_settings_public_changed_elsewhere">A lista mudou em outro dispositivo. Tente publicá-la novamente.</string>
     <string name="list_settings_cover_adjust">Ajustar posição</string>
     <string name="list_settings_cover_adjust_sub">Qual parte da imagem aparece</string>
-    <string name="one_by_one_toggle">Uma por vez</string>
-    <string name="one_by_one_on">Classificando uma carta por vez</string>
+    <string name="one_by_one_toggle">Um por um</string>
     <string name="one_by_one_skip">Pular</string>
     <string name="one_by_one_to_pool">Para o pool</string>
     <string name="one_by_one_done">Todas as cartas estão no lugar</string>
     <string name="one_by_one_exit">Sair</string>
-    <plurals name="one_by_one_left">
-        <item quantity="one">falta %d</item>
-        <item quantity="many">faltam %d</item>
-        <item quantity="other">faltam %d</item>
-    </plurals>
     <string name="board_publish">Publicar</string>
     <string name="board_publish_update">Atualizar</string>
     <string name="board_publish_ranking">Mostrar nas classificações</string>
@@ -200,5 +194,22 @@
     <string name="board_published_view">Ver</string>
     <string name="board_publishing">Publicando…</string>
     <string name="board_updating">Atualizando…</string>
-    <string name="list_settings_manual_add_sub">Sua própria foto ou nome</string>
+    <plurals name="pool_cards_left">
+        <item quantity="one">Falta %d cartão</item>
+        <item quantity="many">Faltam %d cartões</item>
+        <item quantity="other">Faltam %d cartões</item>
+    </plurals>
+    <string name="one_by_one_place_in">Colocar %1$s em %2$s</string>
+    <plurals name="board_cards_count">
+        <item quantity="one">%d cartão</item>
+        <item quantity="many">%d cartões</item>
+        <item quantity="other">%d cartões</item>
+    </plurals>
+    <plurals name="board_cards_placed">
+        <item quantity="one">%d colocado</item>
+        <item quantity="many">%d colocados</item>
+        <item quantity="other">%d colocados</item>
+    </plurals>
+    <string name="board_nothing_placed">nada colocado ainda</string>
+    <string name="board_header_counts">%1$s · %2$s</string>
 </resources>

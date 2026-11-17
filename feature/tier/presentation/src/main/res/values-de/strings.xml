@@ -38,10 +38,10 @@
 
 
 
-    <string name="item_search_field_label">Suchen oder Link einfügen</string>
+    <string name="item_search_field_label">Suchen oder einen Namen tippen</string>
     <string name="item_search_close_content_description">Suche schließen</string>
     <string name="item_search_clear_content_description">Suche leeren</string>
-    <string name="item_search_source_caption">Wird zum Pool von %1$s hinzugefügt</string>
+    <string name="item_search_source_caption">Wird zu %1$s hinzugefügt</string>
     <string name="item_search_min_query">Gib mindestens zwei Buchstaben zum Suchen ein.</string>
     <string name="item_search_empty_title">Nichts gefunden für \"%1$s\"</string>
     <string name="item_search_error_title">Ergebnisse konnten nicht geladen werden</string>
@@ -286,4 +286,11 @@
     <string name="started_continue">Weiter</string>
     <string name="started_continue_of">„%1$s“ fortsetzen</string>
     <string name="started_resume">Spiel fortsetzen</string>
+    <string name="item_search_add_own">Oder selbst hinzufügen</string>
+    <string name="item_search_own_link">Bildlink einfügen</string>
+    <string name="item_search_own_link_sub">Von jeder Seite – die Karte übernimmt das Bild</string>
+    <string name="item_search_own_photo">Eigenes Foto</string>
+    <string name="item_search_own_photo_sub">Aus der Galerie oder mit der Kamera</string>
+    <string name="item_search_own_name">Nur ein Name</string>
+    <string name="item_search_own_name_sub">Oben ins Feld tippen, dann Hinzufügen</string>
 </resources>

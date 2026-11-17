@@ -51,6 +51,7 @@
     <string name="community_tile_reported">Reported. A person will look at it.</string>
     <string name="feed_sort_popular">Popular</string>
     <string name="feed_sort_recent">Newest</string>
+    <string name="feed_chip_new">New</string>
     <string name="feed_source_everyone">All</string>
     <string name="feed_source_following">Following</string>
     <string name="home_community_empty">Nothing published yet</string>
@@ -151,7 +152,6 @@
     <string name="community_drag_any_card">Drag any card</string>
     <string name="community_based_on">Based on “%1$s” by %2$s</string>
     <string name="community_list_source">Source: %1$s</string>
-    <string name="explore_tab_explore">Explore</string>
     <string name="explore_tab_following">Following</string>
     <string name="explore_title_community">Community</string>
     <string name="explore_follow_section">Follow %1$s</string>
@@ -181,6 +181,7 @@
     <string name="explore_search_nothing">Nothing matches that.</string>
     <string name="search_sections">Sections</string>
     <string name="search_lists">Lists</string>
+    <string name="search_popular_topics">Popular topics</string>
     <string name="section_topics">Topics</string>
     <string name="section_tier_lists">Tier lists</string>
     <string name="section_show_fewer">Show fewer</string>
@@ -204,7 +205,7 @@
     <string name="following_pick_follow">Follow · %1$d</string>
     <string name="following_pick_none">Pick at least one</string>
     <string name="following_nothing_published">Nobody you follow has published anything yet.</string>
-    <string name="following_go_explore">Go to Explore</string>
+    <string name="following_see_all_lists">See all lists</string>
     <string name="manage_sections">Sections · %1$d</string>
     <string name="manage_topics">Topics · %1$d</string>
     <string name="manage_people">People · %1$d</string>

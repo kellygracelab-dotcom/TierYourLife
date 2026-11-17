@@ -22,17 +22,25 @@ internal data class HomeTiles(
 internal const val HOME_SECTIONS = 10
 
 /**
+ * A phone held upright shows four, two by two, so the lists start on the
+ * first screen (design audit 16.11, option B); the full-width row under them
+ * leads to the rest.
+ */
+internal const val PHONE_SECTIONS = 4
+
+/**
  * The slot rule: up to ten sections, Other last; past ten, the first ten and
  * then the way to all of them, a tile or on a phone the full-width row, with
- * Other left for that screen. A phone lays tiles two by two, so an
- * odd one out takes the full-width row: with the nine built-ins, Other, as it
- * always has. The cover scrolls through every one.
+ * Other left for that screen. An upright phone stops at four the same way.
+ * A phone lays tiles two by two, so an odd one out takes the full-width row.
+ * The cover scrolls through every one.
  */
 internal fun homeTiles(ordered: List<Section>, layout: HomeLayout): HomeTiles {
     val all = ordered.filterNot { it.isOther } + ordered.filter { it.isOther }
+    val slots = if (layout == HomeLayout.Portrait) PHONE_SECTIONS else HOME_SECTIONS
     return when {
         layout == HomeLayout.Cover -> HomeTiles(all)
-        all.size > HOME_SECTIONS -> HomeTiles(tiles = all.take(HOME_SECTIONS), allSections = true, total = all.size)
+        all.size > slots -> HomeTiles(tiles = all.take(slots), allSections = true, total = all.size)
         layout == HomeLayout.Portrait && all.size % 2 == 1 -> HomeTiles(tiles = all.dropLast(1), row = all.last(), total = all.size)
         else -> HomeTiles(all)
     }

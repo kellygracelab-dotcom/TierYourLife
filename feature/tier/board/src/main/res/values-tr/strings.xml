@@ -166,15 +166,10 @@
     <string name="list_settings_cover_adjust">Konumu ayarla</string>
     <string name="list_settings_cover_adjust_sub">Resmin hangi kısmı görünür</string>
     <string name="one_by_one_toggle">Tek tek</string>
-    <string name="one_by_one_on">Her seferinde bir kart sıralama</string>
     <string name="one_by_one_skip">Atla</string>
     <string name="one_by_one_to_pool">Havuza</string>
     <string name="one_by_one_done">Tüm kartlar yerinde</string>
     <string name="one_by_one_exit">Çık</string>
-    <plurals name="one_by_one_left">
-        <item quantity="one">%d kaldı</item>
-        <item quantity="other">%d kaldı</item>
-    </plurals>
     <string name="board_publish">Yayımla</string>
     <string name="board_publish_update">Güncelle</string>
     <string name="board_publish_ranking">Sıralamalarda göster</string>
@@ -189,5 +184,19 @@
     <string name="board_published_view">Gör</string>
     <string name="board_publishing">Yayımlanıyor…</string>
     <string name="board_updating">Güncelleniyor…</string>
-    <string name="list_settings_manual_add_sub">Kendi fotoğrafın veya adın</string>
+    <plurals name="pool_cards_left">
+        <item quantity="one">%d kart kaldı</item>
+        <item quantity="other">%d kart kaldı</item>
+    </plurals>
+    <string name="one_by_one_place_in">%1$s kartını %2$s seviyesine yerleştir</string>
+    <plurals name="board_cards_count">
+        <item quantity="one">%d kart</item>
+        <item quantity="other">%d kart</item>
+    </plurals>
+    <plurals name="board_cards_placed">
+        <item quantity="one">%d yerleştirildi</item>
+        <item quantity="other">%d yerleştirildi</item>
+    </plurals>
+    <string name="board_nothing_placed">henüz yerleştirilen yok</string>
+    <string name="board_header_counts">%1$s · %2$s</string>
 </resources>

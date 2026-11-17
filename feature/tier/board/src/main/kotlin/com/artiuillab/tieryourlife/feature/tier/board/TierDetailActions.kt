@@ -75,4 +75,6 @@ data class TierDetailActions(
     val poolSide: Any? = null,
     /** False where a folded, empty pool has something better to say than its count of none. */
     val emptyPoolCounted: Boolean = true,
+    /** A reader's pool: its head says how many cards are left to place rather than naming the pool. */
+    val poolCountsCardsLeft: Boolean = false,
 )

@@ -9,10 +9,12 @@ import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -31,11 +33,11 @@ class TierDetailLayoutTest : TierDetailScreenTestBase() {
         setScreen(TierDetailUiState.Success(defaultList()))
 
         composeRule.onNodeWithText("Sci-fi films").assertIsDisplayed()
-        composeRule.onNodeWithText("S").assertIsDisplayed()
-        composeRule.onNodeWithText("A").assertIsDisplayed()
-        composeRule.onNodeWithText("B").assertIsDisplayed()
-        composeRule.onNodeWithText("C").assertIsDisplayed()
-        composeRule.onNodeWithText("D").assertIsDisplayed()
+        // A short window has room for fewer rows under the own bar; each one is a scroll away.
+        listOf("S", "A", "B", "C", "D").forEach { label ->
+            composeRule.onNodeWithTag(TierDetailTestTags.TIER_LIST).performScrollToNode(hasText(label))
+            composeRule.onNodeWithText(label).assertIsDisplayed()
+        }
         composeRule.onNodeWithText("Pool · 6 unranked").assertIsDisplayed()
     }
 

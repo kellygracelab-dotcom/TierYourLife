@@ -44,10 +44,10 @@
 
 
 
-    <string name="item_search_field_label">Найти или вставить ссылку</string>
+    <string name="item_search_field_label">Поищите или введите название</string>
     <string name="item_search_close_content_description">Закрыть поиск</string>
     <string name="item_search_clear_content_description">Очистить поиск</string>
-    <string name="item_search_source_caption">Добавление в пул %1$s</string>
+    <string name="item_search_source_caption">Добавление в «%1$s»</string>
     <string name="item_search_min_query">Введите не менее двух букв для поиска.</string>
     <string name="item_search_empty_title">Ничего не найдено по запросу \"%1$s\"</string>
     <string name="item_search_error_title">Не удалось загрузить результаты</string>
@@ -320,4 +320,11 @@
     <string name="started_continue">Продолжить</string>
     <string name="started_continue_of">Продолжить «%1$s»</string>
     <string name="started_resume">Продолжить игру</string>
+    <string name="item_search_add_own">Или добавьте своё</string>
+    <string name="item_search_own_link">Вставьте ссылку на картинку</string>
+    <string name="item_search_own_link_sub">С любого сайта — карточка возьмёт эту картинку</string>
+    <string name="item_search_own_photo">Своё фото</string>
+    <string name="item_search_own_photo_sub">Из галереи или с камеры</string>
+    <string name="item_search_own_name">Только название</string>
+    <string name="item_search_own_name_sub">Введите его в поле выше и нажмите «Добавить»</string>
 </resources>

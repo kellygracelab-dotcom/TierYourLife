@@ -128,6 +128,55 @@ class ExploreViewModelTest {
     }
 
     @Test
+    fun theNewChip_asksForTheNewestLists_everywhere() = runBlocking {
+        val community = Community()
+        val viewModel = viewModel(community)
+
+        withContext(Dispatchers.Main) { viewModel.openNewest() }
+        val state = viewModel.state.firstWithin { it.newest.phase == FeedPhase.Ready }
+
+        assertEquals(listOf("a", "b"), state.newest.lists.map { it.id })
+        assertEquals(listOf(FeedSort.Recent), community.sorts)
+        assertEquals(FeedPhase.Loading, state.feed.phase)
+    }
+
+    @Test
+    fun hidingAListFromNew_leavesTheNoteThere_andPopularDropsItToo() = runBlocking {
+        val viewModel = viewModel(Community())
+        withContext(Dispatchers.Main) {
+            viewModel.open()
+            viewModel.openNewest()
+        }
+        val ready = viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready && it.newest.phase == FeedPhase.Ready }
+
+        withContext(Dispatchers.Main) { viewModel.hideList(ready.newest.lists.first(), fromNewest = true) }
+
+        val hidden = viewModel.state.firstWithin { it.newest.justHidden.isNotEmpty() && it.feed.lists.size == 1 }
+        assertEquals(mapOf("a" to false), hidden.newest.justHidden)
+        assertEquals(listOf("b"), hidden.feed.lists.map { it.id })
+    }
+
+    @Test
+    fun aSearchEverywhere_offersTheFourBiggestApprovedTopics_beforeAnythingIsTyped() = runBlocking {
+        val topics = (1..6).map { Topic(id = "t$it", name = "Topic $it", section = ListCategory.Anime.id, status = TopicStatus.Approved) }
+        val waiting = Topic(id = "w", name = "Waiting", section = null, status = TopicStatus.Pending)
+        val asked = mutableListOf<Pair<String?, String?>>()
+        val community = object : Community() {
+            override suspend fun topics(query: String?, section: String?): Result<List<Topic>> {
+                asked += query to section
+                return Result.success(listOf(waiting) + topics)
+            }
+        }
+        val viewModel = viewModel(community)
+
+        withContext(Dispatchers.Main) { viewModel.search.enter() }
+
+        val offered = viewModel.state.firstWithin { it.popularTopics.isNotEmpty() }
+        assertEquals(listOf("t1", "t2", "t3", "t4"), offered.popularTopics.map { it.id })
+        assertEquals(listOf<Pair<String?, String?>>(null to null), asked)
+    }
+
+    @Test
     fun reportingAStaffMembersList_saysOnlyTheOwnerActsOnIt() = runBlocking {
         val viewModel = viewModel(Community(reportRefusal = TargetIsStaff()))
         viewModel.open()

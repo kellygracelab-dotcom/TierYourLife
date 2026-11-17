@@ -20,7 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -36,6 +36,11 @@ import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.presentation.R
+import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingActions
+import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
+import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.PickBar
+import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.PickBarRoom
+import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.followingItems
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 /** What the tiles do, by section id: open a section, follow or stop following it from the long-press menu, or open them all. */
@@ -130,24 +135,37 @@ internal fun <T> TileRows(items: List<T>, columns: Int, gap: Dp, tile: @Composab
     }
 }
 
-/** The Explore tab (§2): tiles, the heading, and the popular feed in as many columns as fit. */
+/** Which lists Community shows under its sections: a chip each, where a second row of tabs used to be. */
+internal enum class HomeChip { Popular, New, Following }
+
+/** One chip's feed: what it shows and what it can be asked. */
+internal class ChipFeed(val pane: FeedPane, val calls: FeedCallbacks, val cards: CardActions)
+
+/**
+ * Community's one grid (design audit 16.11, option B): the section tiles, the
+ * way to all of them, the chips, and under them the chosen chip's lists in as
+ * many columns as fit. Following brings what is followed, or the sections to
+ * pick from when nothing is.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ExploreTab(
-    state: ExploreUiState,
+internal fun HomeFeedGrid(
+    chip: HomeChip,
+    onChip: (HomeChip) -> Unit,
+    explore: ExploreUiState,
+    following: FollowingFeedUiState,
+    feed: ChipFeed,
     layout: HomeLayout,
     gridState: LazyGridState,
     tiles: TileActions,
-    cards: CardActions,
-    onRefresh: () -> Unit,
-    onRetry: () -> Unit,
-    onLoadMore: () -> Unit,
-    onScrolledDown: (Boolean) -> Unit,
+    followingActions: FollowingActions,
 ) {
-    val skeletonAlpha = rememberSkeletonAlpha(running = state.feed.phase == FeedPhase.Loading)
-    ScrolledDownWatcher(gridState, onScrolledDown)
-    NearEndWatcher(gridState, state.feed.lists.size, onLoadMore)
-    PullToRefreshBox(isRefreshing = state.feed.refreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
+    val pane = feed.pane
+    val skeletonAlpha = rememberSkeletonAlpha(running = pane.phase == FeedPhase.Loading)
+    val picking = chip == HomeChip.Following && following.followsNothing
+    ScrolledDownWatcher(gridState, feed.calls.onScrolledDown)
+    NearEndWatcher(gridState, pane.lists.size, feed.calls.onLoadMore)
+    PullToRefreshBox(isRefreshing = pane.refreshing, onRefresh = feed.calls.onRefresh, modifier = Modifier.fillMaxSize()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(layout.feedColumns),
@@ -155,29 +173,54 @@ internal fun ExploreTab(
                 modifier = Modifier
                     .then(if (layout == HomeLayout.Wide) Modifier.widthIn(max = WideContentMax) else Modifier)
                     .fillMaxSize()
-                    .testTag(ExploreTestTags.SCREEN),
-                contentPadding = systemBarsContentPadding(start = gridSide(layout), end = gridSide(layout), bottom = 16.dp),
+                    .testTag(if (chip == HomeChip.Following) ExploreTestTags.FOLLOWING_FEED else ExploreTestTags.SCREEN),
+                contentPadding = systemBarsContentPadding(
+                    start = gridSide(layout),
+                    end = gridSide(layout),
+                    bottom = if (picking) PickBarRoom else 16.dp,
+                ),
                 horizontalArrangement = Arrangement.spacedBy(feedSpacing(layout)),
                 verticalArrangement = Arrangement.spacedBy(feedSpacing(layout)),
             ) {
                 item(key = "tiles", span = { GridItemSpan(maxLineSpan) }) {
-                    TilesBlock(layout, state.sections, tiles)
+                    TilesBlock(layout, explore.sections, tiles)
                 }
-                item(key = "heading", span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = stringResource(R.string.feed_sort_popular),
-                        modifier = Modifier
-                            .padding(top = if (layout == HomeLayout.CompactHeight) 4.dp else 10.dp)
-                            .testTag(ExploreTestTags.HEADING),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+                item(key = "chips", span = { GridItemSpan(maxLineSpan) }) {
+                    HomeChips(chip, onChip, Modifier.padding(top = if (layout == HomeLayout.CompactHeight) 0.dp else 2.dp))
                 }
-                feedItems(state.feed, layout, skeletonAlpha, cards, onRetry, reasonFor = { null })
+                when (chip) {
+                    HomeChip.Popular, HomeChip.New -> feedItems(pane, layout, skeletonAlpha, feed.cards, feed.calls.onRetry, reasonFor = { null })
+                    HomeChip.Following -> followingItems(following, layout, skeletonAlpha, followingActions, feed.cards, feed.calls.onRetry)
+                }
+            }
+            if (picking) {
+                PickBar(following.picked.size, following.followingPicked, followingActions.onFollowPicked, Modifier.align(Alignment.BottomCenter))
             }
         }
     }
 }
+
+/** Popular, New, Following: 32dp chips in a 48dp row, so each is still a whole finger's target. */
+@Composable
+private fun HomeChips(selected: HomeChip, onSelect: (HomeChip) -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        HomeChip.entries.forEach { chip ->
+            FilterChip(
+                selected = chip == selected,
+                onClick = { onSelect(chip) },
+                label = { Text(stringResource(chip.label)) },
+                modifier = Modifier.testTag(ExploreTestTags.chip(chip)),
+            )
+        }
+    }
+}
+
+private val HomeChip.label: Int
+    get() = when (this) {
+        HomeChip.Popular -> R.string.feed_sort_popular
+        HomeChip.New -> R.string.feed_chip_new
+        HomeChip.Following -> R.string.explore_tab_following
+    }
 
 private fun gridSide(layout: HomeLayout) = if (layout == HomeLayout.Wide) 24.dp else 16.dp
 

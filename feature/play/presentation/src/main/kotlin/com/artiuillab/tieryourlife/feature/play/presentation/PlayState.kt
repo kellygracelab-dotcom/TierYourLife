@@ -21,7 +21,8 @@ sealed interface PlayStage {
     data class Dueling(val duel: DuelState) : PlayStage
 }
 
-enum class PickerPage { Games, Cards, Individual }
+/** Games is the one Start; Modes lists every way to play, Smart first. */
+enum class PickerPage { Games, Modes, Cards, Individual }
 
 @Immutable
 data class CardOption(val item: TierItem, val tierId: Long)

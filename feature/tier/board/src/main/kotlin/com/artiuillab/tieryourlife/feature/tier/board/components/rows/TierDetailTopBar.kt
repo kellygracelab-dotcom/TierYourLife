@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,11 +27,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,12 +43,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -54,7 +62,9 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,6 +86,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.play.PLAY_MIN_CARDS
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
+import kotlin.math.roundToInt
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private const val TITLE_MAX_LENGTH = 80
@@ -172,7 +183,7 @@ fun TierScreenTopBar(
                 }
             }
             trailing?.invoke(this)
-            BarActions(publish, play, view)
+            BarActions(publish, play, view, playWorded = !compact)
             if (onReaderMoreClick != null) {
                 // Moving cards in Mine does not make the reader the list's editor.
                 IconButton(
@@ -266,13 +277,41 @@ data class PlayButton(val cards: Int, val saved: Boolean, val onClick: () -> Uni
     val enabled: Boolean get() = cards >= PLAY_MIN_CARDS
 }
 
+/**
+ * Play, with its word and tonal, as Publish has its word: a lone triangle read
+ * as a video. A short window's bar has room for the triangle only.
+ */
 @Composable
-private fun PlayAction(play: PlayButton) {
+private fun PlayAction(play: PlayButton, worded: Boolean) {
     val description = stringResource(if (play.enabled) R.string.tier_detail_content_description_play else R.string.tier_detail_play_needs_cards)
     val color = if (play.enabled) {
         MaterialTheme.colorScheme.onSurfaceVariant
     } else {
         MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_ALPHA)
+    }
+    if (worded) {
+        FilledTonalButton(
+            onClick = play.onClick,
+            enabled = play.enabled,
+            contentPadding = PaddingValues(start = 12.dp, end = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .heightIn(min = 40.dp)
+                .semantics { contentDescription = description }
+                .testTag(TierDetailTestTags.PLAY),
+        ) {
+            BadgedBox(badge = { if (play.saved && play.enabled) Badge(containerColor = MaterialTheme.colorScheme.primary) }) {
+                PlayArrowIcon(18.dp, LocalContentColor.current)
+            }
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = stringResource(R.string.tier_detail_content_description_play),
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
+                modifier = Modifier.clearAndSetSemantics {},
+            )
+        }
+        return
     }
     IconButton(
         onClick = play.onClick,
@@ -324,10 +363,10 @@ fun everyCardPlaced(list: TierList): Boolean =
 
 /** The bar's actions after the title: publishing, then Play. */
 @Composable
-private fun BarActions(publish: PublishButton?, play: PlayButton?, view: ViewButton?) {
+private fun BarActions(publish: PublishButton?, play: PlayButton?, view: ViewButton?, playWorded: Boolean) {
     if (view != null && publish?.narrow != true) ViewAction(view)
     publish?.let { PublishAction(it) }
-    play?.let { PlayAction(it) }
+    play?.let { PlayAction(it, worded = playWorded) }
 }
 
 @Composable
@@ -378,12 +417,151 @@ fun PublishingIcon(kind: Publishing, tint: Color) = when (kind) {
     Publishing.ShareRanking -> LeaderboardIcon(18.dp, tint)
 }
 
+/** The publish button's room in the two-storey bar: back, Play's triangle, the overflow and their margins. */
+val OWN_BAR_BESIDE_PUBLISH: Dp = 48.dp * 3 + 16.dp
+
+/**
+ * Play says its word only while Publish keeps its own on one line beside it;
+ * on a narrow phone in a long language the triangle gives way, as the view button does.
+ */
+@Composable
+private fun playKeepsItsWord(publish: PublishButton?, view: ViewButton?, width: Dp): Boolean {
+    if (publish == null) return true
+    val measurer = rememberTextMeasurer()
+    val style = MaterialTheme.typography.labelLarge
+    val density = LocalDensity.current
+    fun wide(text: String): Dp = with(density) { measurer.measure(text, style, maxLines = 1).size.width.toDp() }
+    val publishText = wide(stringResource(if (publish.busy) sendingLabel(publish.kind) else publishLabel(publish.kind)))
+    val publishWidth = 8.dp + (if (publish.narrow) 22.dp + 6.dp else 28.dp + 8.dp) + 18.dp + publishText
+    val playWidth = 8.dp + 28.dp + 18.dp + 6.dp + wide(stringResource(R.string.tier_detail_content_description_play))
+    val icons = 8.dp + 48.dp * 2 + (if (publish.narrow) 0.dp else 48.dp) + (if (view != null && !publish.narrow) 48.dp else 0.dp)
+    return icons + publishWidth + playWidth <= width
+}
+
+/**
+ * One's own board on a phone: a bar in two storeys. Above, back, Publish and
+ * Play with their words and the overflow; below, the whole name, renamed by
+ * a tap as before, and what the board holds. Scrolling the rows folds the
+ * lower storey away and brings a short title into the upper one, the
+ * standard exit-until-collapsed behaviour; [state] is that behaviour's.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OwnBoardTopBar(
+    title: String,
+    counts: String,
+    state: TopAppBarState,
+    onBack: () -> Unit,
+    onManualAdd: () -> Unit,
+    onMoreClick: () -> Unit,
+    onRenameList: (String) -> Unit,
+    play: PlayButton?,
+    publish: PublishButton?,
+    view: ViewButton?,
+) {
+    val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
+    val moreDescription = stringResource(ThemeR.string.tier_detail_content_description_more)
+    val folded = state.collapsedFraction
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .statusBarsPadding()
+            .testTag(TierDetailTestTags.OWN_BAR),
+    ) {
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val barWidth = maxWidth
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = backDescription },
+            ) { BackIcon() }
+            // The short title only once the long one is mostly gone; until then it would be said twice.
+            Box(Modifier.weight(1f).padding(horizontal = 4.dp)) {
+                if (folded > FOLDED_TITLE_FROM) {
+                    Text(
+                        text = title,
+                        modifier = Modifier.graphicsLayer { alpha = (folded - FOLDED_TITLE_FROM) / (1f - FOLDED_TITLE_FROM) },
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+            BarActions(publish, play, view, playWorded = playKeepsItsWord(publish, view, barWidth))
+            if (publish?.narrow != true) ManualAddAction(onManualAdd, stringResource(R.string.tier_detail_content_description_manual_add))
+            IconButton(
+                onClick = onMoreClick,
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics { contentDescription = moreDescription },
+            ) { MoreIcon() }
+        }
+        }
+        FoldingStorey(state) {
+            Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
+                EditableListTitle(
+                    title = title,
+                    onRename = onRenameList,
+                    style = MaterialTheme.typography.headlineSmall.copy(fontSize = 24.sp, lineHeight = 30.sp),
+                    modifier = Modifier.fillMaxWidth(),
+                    wraps = true,
+                )
+                Text(
+                    text = counts,
+                    modifier = Modifier.padding(top = 2.dp).testTag(TierDetailTestTags.OWN_BAR_COUNTS),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
+}
+
+private const val FOLDED_TITLE_FROM = 0.5f
+
+/** The lower storey, as tall as it is less what scrolling took, sliding up under the upper one. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FoldingStorey(state: TopAppBarState, content: @Composable () -> Unit) {
+    Layout(content = content, modifier = Modifier.clipToBounds()) { measurables, constraints ->
+        val placeable = measurables.first().measure(constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity))
+        val full = placeable.height
+        if (state.heightOffsetLimit != -full.toFloat()) state.heightOffsetLimit = -full.toFloat()
+        val shown = (full + state.heightOffset).roundToInt().coerceIn(0, full)
+        layout(placeable.width, shown) { placeable.place(0, shown - full) }
+    }
+}
+
+/** "12 cards · 5 placed", or "1 card · nothing placed yet". */
+@Composable
+fun boardCounts(list: TierList): String {
+    val cards = list.tiers.sumOf { it.items.size }
+    val placed = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
+    val all = pluralStringResource(R.plurals.board_cards_count, cards, cards)
+    val done = if (placed == 0) stringResource(R.string.board_nothing_placed) else pluralStringResource(R.plurals.board_cards_placed, placed, placed)
+    return stringResource(R.string.board_header_counts, all, done)
+}
+
 @Composable
 private fun EditableListTitle(
     title: String,
     onRename: (String) -> Unit,
     style: TextStyle,
     modifier: Modifier = Modifier,
+    /** The whole name on as many lines as it takes, as the two-storey bar shows it. */
+    wraps: Boolean = false,
 ) {
     var isEditing by remember { mutableStateOf(false) }
 
@@ -414,7 +592,7 @@ private fun EditableListTitle(
                 }
                 .testTag(TierDetailTestTags.HEADER_TITLE),
             textStyle = style.copy(color = MaterialTheme.colorScheme.onSurface),
-            singleLine = true,
+            singleLine = !wraps,
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = { commit() }),
@@ -430,9 +608,11 @@ private fun EditableListTitle(
                 .semantics { contentDescription = editDescription }
                 .testTag(TierDetailTestTags.HEADER_TITLE),
             style = style,
-            maxLines = 1,
+            maxLines = if (wraps) WRAPPED_TITLE_LINES else 1,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
+
+private const val WRAPPED_TITLE_LINES = 3

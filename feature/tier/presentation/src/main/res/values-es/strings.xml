@@ -41,10 +41,10 @@
 
 
 
-    <string name="item_search_field_label">Busca o pega un enlace</string>
+    <string name="item_search_field_label">Busca o escribe un nombre</string>
     <string name="item_search_close_content_description">Cerrar búsqueda</string>
     <string name="item_search_clear_content_description">Borrar búsqueda</string>
-    <string name="item_search_source_caption">Se añaden a la reserva de %1$s</string>
+    <string name="item_search_source_caption">Se añaden a %1$s</string>
     <string name="item_search_min_query">Escribe al menos dos letras para buscar.</string>
     <string name="item_search_empty_title">No se encontró nada para \"%1$s\"</string>
     <string name="item_search_error_title">No se pudieron cargar los resultados</string>
@@ -303,4 +303,11 @@
     <string name="started_continue">Continuar</string>
     <string name="started_continue_of">Continuar «%1$s»</string>
     <string name="started_resume">Reanudar partida</string>
+    <string name="item_search_add_own">O añade lo tuyo</string>
+    <string name="item_search_own_link">Pega el enlace de una imagen</string>
+    <string name="item_search_own_link_sub">De cualquier sitio: la tarjeta usa esa imagen</string>
+    <string name="item_search_own_photo">Tu foto</string>
+    <string name="item_search_own_photo_sub">De la galería o la cámara</string>
+    <string name="item_search_own_name">Solo un nombre</string>
+    <string name="item_search_own_name_sub">Escríbelo en el campo de arriba y pulsa Añadir</string>
 </resources>

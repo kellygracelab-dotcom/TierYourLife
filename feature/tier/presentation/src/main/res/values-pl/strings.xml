@@ -44,10 +44,10 @@
 
 
 
-    <string name="item_search_field_label">Szukaj lub wklej link</string>
+    <string name="item_search_field_label">Szukaj albo wpisz nazwę</string>
     <string name="item_search_close_content_description">Zamknij wyszukiwanie</string>
     <string name="item_search_clear_content_description">Wyczyść wyszukiwanie</string>
-    <string name="item_search_source_caption">Dodawanie do puli %1$s</string>
+    <string name="item_search_source_caption">Dodawanie do: %1$s</string>
     <string name="item_search_min_query">Wpisz co najmniej dwie litery, aby wyszukać.</string>
     <string name="item_search_empty_title">Nic nie znaleziono dla \"%1$s\"</string>
     <string name="item_search_error_title">Nie udało się wczytać wyników</string>
@@ -320,4 +320,11 @@
     <string name="started_continue">Kontynuuj</string>
     <string name="started_continue_of">Kontynuuj „%1$s”</string>
     <string name="started_resume">Wznów grę</string>
+    <string name="item_search_add_own">Albo dodaj własną</string>
+    <string name="item_search_own_link">Wklej link do obrazu</string>
+    <string name="item_search_own_link_sub">Z dowolnej strony — karta dostanie ten obraz</string>
+    <string name="item_search_own_photo">Własne zdjęcie</string>
+    <string name="item_search_own_photo_sub">Z galerii albo aparatu</string>
+    <string name="item_search_own_name">Sama nazwa</string>
+    <string name="item_search_own_name_sub">Wpisz ją w polu powyżej, potem Dodaj</string>
 </resources>

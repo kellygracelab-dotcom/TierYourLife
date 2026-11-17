@@ -186,17 +186,10 @@
     <string name="list_settings_cover_adjust">Налаштувати положення</string>
     <string name="list_settings_cover_adjust_sub">Яку частину зображення видно</string>
     <string name="one_by_one_toggle">По одній</string>
-    <string name="one_by_one_on">Ранжування по одній картці</string>
     <string name="one_by_one_skip">Пропустити</string>
     <string name="one_by_one_to_pool">У пул</string>
     <string name="one_by_one_done">Усі картки на місцях</string>
     <string name="one_by_one_exit">Вийти</string>
-    <plurals name="one_by_one_left">
-        <item quantity="one">лишилася %d</item>
-        <item quantity="few">лишилося %d</item>
-        <item quantity="many">лишилося %d</item>
-        <item quantity="other">лишилося %d</item>
-    </plurals>
     <string name="board_publish">Опублікувати</string>
     <string name="board_publish_update">Оновити</string>
     <string name="board_publish_ranking">Показати в рейтингах</string>
@@ -211,5 +204,25 @@
     <string name="board_published_view">Переглянути</string>
     <string name="board_publishing">Публікуємо…</string>
     <string name="board_updating">Оновлюємо…</string>
-    <string name="list_settings_manual_add_sub">Власне фото або назва</string>
+    <plurals name="pool_cards_left">
+        <item quantity="one">Залишилася %d картка</item>
+        <item quantity="few">Залишилося %d картки</item>
+        <item quantity="many">Залишилося %d карток</item>
+        <item quantity="other">Залишилося %d картки</item>
+    </plurals>
+    <string name="one_by_one_place_in">Покласти «%1$s» в %2$s</string>
+    <plurals name="board_cards_count">
+        <item quantity="one">%d картка</item>
+        <item quantity="few">%d картки</item>
+        <item quantity="many">%d карток</item>
+        <item quantity="other">%d картки</item>
+    </plurals>
+    <plurals name="board_cards_placed">
+        <item quantity="one">розкладено %d</item>
+        <item quantity="few">розкладено %d</item>
+        <item quantity="many">розкладено %d</item>
+        <item quantity="other">розкладено %d</item>
+    </plurals>
+    <string name="board_nothing_placed">ще нічого не розкладено</string>
+    <string name="board_header_counts">%1$s · %2$s</string>
 </resources>
