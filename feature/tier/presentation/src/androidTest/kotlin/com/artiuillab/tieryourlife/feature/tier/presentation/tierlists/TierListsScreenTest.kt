@@ -582,7 +582,7 @@ class TierListsScreenTest {
     private fun summary(listCount: Int, rankedCount: Int): String = string(
         R.string.tier_lists_summary,
         plural(ThemeR.plurals.tier_lists_count, listCount),
-        plural(ThemeR.plurals.tier_lists_rankings_count, rankedCount),
+        plural(ThemeR.plurals.tier_lists_ranked_count, rankedCount),
         string(R.string.tier_lists_private),
     )
 

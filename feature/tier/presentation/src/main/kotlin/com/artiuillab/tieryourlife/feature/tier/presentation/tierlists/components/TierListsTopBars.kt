@@ -42,7 +42,7 @@ internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {
 internal fun homeSummary(totalListCount: Int, rankedCount: Int): String = stringResource(
     R.string.tier_lists_summary,
     pluralStringResource(ThemeR.plurals.tier_lists_count, totalListCount, totalListCount),
-    pluralStringResource(ThemeR.plurals.tier_lists_rankings_count, rankedCount, rankedCount),
+    pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, rankedCount, rankedCount),
     stringResource(R.string.tier_lists_private),
 )
 
