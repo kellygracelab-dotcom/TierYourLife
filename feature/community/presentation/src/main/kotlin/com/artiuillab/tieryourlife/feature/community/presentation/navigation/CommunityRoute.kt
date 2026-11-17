@@ -41,6 +41,8 @@ sealed interface CommunityRoute {
         val basedOnAuthor: String? = null,
         /** Asked for from its own board: the page stays, rather than handing back to the board it came from. */
         val fromBoard: Boolean = false,
+        /** From Continue in one's lists: the game put down on this list comes up as the page opens. */
+        val resumeGame: Boolean = false,
     ) : CommunityRoute {
 
         fun preview(): ListPreview? = title?.let { known ->
@@ -175,6 +177,7 @@ internal fun SavedStateHandle.communityListRoute() = CommunityRoute.CommunityLis
     basedOnTitle = get<String>(CommunityRoute.CommunityList::basedOnTitle.name),
     basedOnAuthor = get<String>(CommunityRoute.CommunityList::basedOnAuthor.name),
     fromBoard = get<Boolean>(CommunityRoute.CommunityList::fromBoard.name) ?: false,
+    resumeGame = get<Boolean>(CommunityRoute.CommunityList::resumeGame.name) ?: false,
 )
 
 internal fun SavedStateHandle.authorRoute() = CommunityRoute.Author(

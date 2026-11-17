@@ -28,7 +28,10 @@ data class PlayRequest(
          * and a game of the old one would hold answers about other cards.
          */
         fun someoneElses(publishedId: String, version: Long, shown: TierList, mine: TierList) =
-            PlayRequest(board = shown, key = "list:$publishedId$VERSION_MARK$version", applyTo = mine)
+            PlayRequest(board = shown, key = someoneElsesKey(publishedId, version), applyTo = mine)
+
+        /** Where a game of [version] of someone else's list is kept, for whoever asks whether one is. */
+        fun someoneElsesKey(publishedId: String, version: Long): String = "list:$publishedId$VERSION_MARK$version"
 
         /** Whether two keys are of the same board or list, whatever the version. */
         fun sameBoard(key: String, other: String): Boolean = key.substringBefore(VERSION_MARK) == other.substringBefore(VERSION_MARK)

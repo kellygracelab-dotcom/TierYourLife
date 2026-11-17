@@ -193,6 +193,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController, openLis
                     onSignInClick = { navController.navigateToAccount() },
                     onNewListCreated = { id -> navController.navigateToTierDetail(id, fresh = true) },
                     tabs = tabs,
+                    onContinueStarted = { id, resume -> openList(CommunityRoute.CommunityList(publishedId = id, resumeGame = resume)) },
                     arrival = arrival,
                 )
             },

@@ -7,6 +7,14 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
+import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
+import com.artiuillab.tieryourlife.feature.community.domain.repository.StartedRanking
+import com.artiuillab.tieryourlife.feature.play.domain.FakeSavedGames
+import com.artiuillab.tieryourlife.feature.play.domain.GameKind
+import com.artiuillab.tieryourlife.feature.play.domain.GameSpec
+import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
+import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
@@ -463,6 +471,34 @@ class TierListsViewModelTest {
 
         assertTrue(community.takenDown.isEmpty())
     }
+
+    @Test
+    fun someoneElsesListsBegunHere_standAboveOnesOwn_theSignedInOnesOnly_withTheirGame() = runBlocking {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Mine")))
+        val accounts = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "uid-ann"))
+        val ann = (accounts.current() as Account.SignedIn).recordKey
+        val drafts = object : RankingDrafts {
+            override suspend fun read(listId: String, owner: String?): RankingDraft? = null
+            override suspend fun keep(listId: String, draft: RankingDraft, owner: String?) = Unit
+            override suspend fun started(owner: String?): List<StartedRanking> = if (owner == ann) {
+                listOf(StartedRanking("films", "Every A24 film", version = 7, placed = 4, total = 22, keptAt = 2), StartedRanking("games", "PS2 era", version = 3, placed = 1, total = 9, keptAt = 1))
+            } else {
+                emptyList()
+            }
+        }
+        val games = FakeSavedGames().apply { games[PlayRequest.someoneElsesKey("films", 7)] = savedGame() }
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), accounts, NoBoardSync, NoPictureRestore, NoOwnerChange, drafts, games)
+
+        viewModel.loadTierLists()
+        val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
+
+        assertEquals(
+            listOf(StartedList("films", "Every A24 film", 4, 22, gameSaved = true), StartedList("games", "PS2 era", 1, 9, gameSaved = false)),
+            state.started,
+        )
+    }
+
+    private fun savedGame() = SavedGame(spec = GameSpec(GameKind.Hill, count = 2, seed = 1), ids = listOf(1L, 2L), history = emptyList(), round = 0, startedAt = 0)
 
     private fun fakeList(id: Long, title: String, publishedId: String? = null, editedAt: Long? = null): TierList =
         TierList(id = id, title = title, tiers = emptyList(), publishedId = publishedId, editedAt = editedAt)

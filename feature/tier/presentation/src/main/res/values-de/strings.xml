@@ -274,6 +274,17 @@
         <item quantity="one">Deine Collage · Bilder: %d</item>
         <item quantity="other">Deine Collage · Bilder: %d</item>
     </plurals>
+    <string name="started_title">Weitermachen</string>
+    <plurals name="started_placed">
+        <item quantity="one">%1$d von %2$d platziert</item>
+        <item quantity="other">%1$d von %2$d platziert</item>
+    </plurals>
+    <string name="started_continue">Weiter</string>
+    <string name="started_continue_of">„%1$s“ fortsetzen</string>
+    <string name="started_resume">Spiel fortsetzen</string>
+    <string name="publish_sheet_name">Titel</string>
+    <string name="publish_sheet_name_hint">Worum geht es in dieser Liste?</string>
+    <string name="publish_sheet_name_first">Gib der Liste zuerst einen Titel.</string>
     <string name="item_search_add_own">Oder selbst hinzufügen</string>
     <string name="item_search_own_link">Bildlink einfügen</string>
     <string name="item_search_own_link_sub">Von jeder Seite – die Karte übernimmt das Bild</string>

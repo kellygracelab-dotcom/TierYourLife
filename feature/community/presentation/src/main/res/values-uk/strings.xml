@@ -60,7 +60,6 @@
     <string name="home_community_empty_body">Тут зʼявляються списки, які люди зробили публічними.</string>
     <string name="home_community_failed">Не вдалося завантажити спільноту</string>
     <string name="home_community_failed_body">Перевірте зʼєднання.</string>
-    <string name="home_community_unverified">Цю копію не вдалося перевірити</string>
     <string name="home_community_unverified_body">Google Play підтверджує встановлення, перш ніж відкрити спільноту. Якщо застосунок із Play, зазвичай минає само.</string>
     <string name="home_following_empty">Ні в кого з ваших підписок немає списків у розділі «%1$s».</string>
     <string name="home_following_empty_all">Ваші підписки поки нічого не опублікували.</string>
@@ -341,4 +340,5 @@
     <string name="community_remove_ranking_title">Прибрати вашу розстановку з рейтингів?</string>
     <string name="community_remove_ranking_body">Вона зникне з рейтингів цього списку. У вас вона залишиться у «Ваших списках».</string>
     <string name="community_remove_ranking_confirm">Прибрати</string>
+    <string name="feed_unverified">Не вдалося перевірити застосунок, тому списки не завантажуються.</string>
 </resources>

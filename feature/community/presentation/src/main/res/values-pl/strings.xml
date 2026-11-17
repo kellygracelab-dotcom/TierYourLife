@@ -60,7 +60,6 @@
     <string name="home_community_empty_body">Tu pojawiają się listy, które ktoś udostępnił publicznie.</string>
     <string name="home_community_failed">Nie udało się wczytać społeczności</string>
     <string name="home_community_failed_body">Sprawdź połączenie.</string>
-    <string name="home_community_unverified">Nie udało się zweryfikować tej kopii</string>
     <string name="home_community_unverified_body">Google Play potwierdza instalację, zanim otworzy społeczność. Jeśli aplikacja pochodzi z Play, zwykle mija samo.</string>
     <string name="home_following_empty">Nikt z obserwowanych nie ma listy w dziale %1$s.</string>
     <string name="home_following_empty_all">Obserwowani nie opublikowali jeszcze niczego.</string>
@@ -341,4 +340,5 @@
     <string name="community_remove_ranking_title">Usunąć twój ranking z Rankingów?</string>
     <string name="community_remove_ranking_body">Zniknie z rankingów tej listy. Twoja kopia zostaje w „Twoich listach”.</string>
     <string name="community_remove_ranking_confirm">Usuń</string>
+    <string name="feed_unverified">Nie udało się sprawdzić aplikacji, więc listy się nie wczytają.</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AtomicFile
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
+import com.artiuillab.tieryourlife.feature.community.domain.repository.StartedRanking
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ import javax.inject.Singleton
 @Singleton
 class FileRankingDrafts internal constructor(
     private val directory: File,
+    private val now: () -> Long = System::currentTimeMillis,
 ) : RankingDrafts {
     @Inject
     constructor(@ApplicationContext context: Context) : this(
@@ -37,7 +39,7 @@ class FileRankingDrafts internal constructor(
             withContext(Dispatchers.IO) {
                 runCatching {
                     val record = json.decodeFromString<DraftRecord>(file.readFully().toString(Charsets.UTF_8))
-                    RankingDraft(record.version, record.rows, record.pool, RankingChoice.fromWire(record.choice), record.savedBoardUid)
+                    record.draft()
                 }.getOrNull()
             }
         }
@@ -45,7 +47,18 @@ class FileRankingDrafts internal constructor(
 
     override suspend fun keep(listId: String, draft: RankingDraft, owner: String?) {
         val file = fileFor(owner, listId)
-        val encoded = json.encodeToString(DraftRecord(draft.version, draft.rows, draft.pool, draft.choice?.wireName, draft.savedBoardUid)).toByteArray()
+        val record = DraftRecord(
+            version = draft.version,
+            rows = draft.rows,
+            pool = draft.pool,
+            choice = draft.choice?.wireName,
+            savedBoardUid = draft.savedBoardUid,
+            listId = listId,
+            owner = owner,
+            title = draft.title,
+            keptAt = now(),
+        )
+        val encoded = json.encodeToString(record).toByteArray()
         mutex.withLock {
             withContext(Dispatchers.IO) {
                 check(directory.isDirectory || directory.mkdirs())
@@ -61,6 +74,14 @@ class FileRankingDrafts internal constructor(
         }
     }
 
+    override suspend fun started(owner: String?): List<StartedRanking> = mutex.withLock {
+        withContext(Dispatchers.IO) {
+            directory.listFiles { file -> file.name.endsWith(".json") }.orEmpty().mapNotNull { file ->
+                runCatching { json.decodeFromString<DraftRecord>(AtomicFile(file).readFully().toString(Charsets.UTF_8)) }.getOrNull()
+            }
+        }
+    }.mapNotNull { record -> record.started(owner) }.sortedByDescending { it.keptAt }
+
     private fun fileFor(account: String?, listId: String): AtomicFile {
         val key = MessageDigest.getInstance("SHA-256").digest("$account\u0000$listId".toByteArray()).joinToString("") { "%02x".format(it) }
         return AtomicFile(File(directory, "$key.json"))
@@ -74,4 +95,18 @@ private data class DraftRecord(
     val pool: List<Int>,
     val choice: String? = null,
     val savedBoardUid: String? = null,
-)
+    /** Kept since the list of what was begun: earlier records stay readable, and stay out of that list. */
+    val listId: String? = null,
+    val owner: String? = null,
+    val title: String = "",
+    val keptAt: Long = 0,
+) {
+    fun draft() = RankingDraft(version, rows, pool, RankingChoice.fromWire(choice), savedBoardUid, title)
+
+    fun started(account: String?): StartedRanking? {
+        val id = listId ?: return null
+        val draft = draft().takeIf { owner == account && savedBoardUid == null } ?: return null
+        if (title.isBlank() || draft.placed == 0) return null
+        return StartedRanking(id, title, version, draft.placed, draft.total, keptAt)
+    }
+}

@@ -59,7 +59,6 @@
     <string name="home_community_empty_body">Aquí aparecen las listas que la gente hace públicas.</string>
     <string name="home_community_failed">No se pudo cargar la comunidad</string>
     <string name="home_community_failed_body">Comprueba tu conexión.</string>
-    <string name="home_community_unverified">No se pudo verificar esta copia</string>
     <string name="home_community_unverified_body">Google Play confirma la instalación antes de abrir la comunidad. Si la instalaste desde Play, suele resolverse solo.</string>
     <string name="home_following_empty">Nadie a quien sigues tiene una lista en %1$s.</string>
     <string name="home_following_empty_all">Nadie a quien sigues ha publicado nada todavía.</string>
@@ -334,4 +333,5 @@
     <string name="community_remove_ranking_title">¿Quitar tu ranking de Clasificaciones?</string>
     <string name="community_remove_ranking_body">Desaparecerá de los rankings de esta lista. Lo conservas en Tus listas.</string>
     <string name="community_remove_ranking_confirm">Quitar</string>
+    <string name="feed_unverified">No se pudo verificar la app, así que las listas no pueden cargarse.</string>
 </resources>

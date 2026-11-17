@@ -76,7 +76,7 @@ internal fun OfflineStrip(sinceMillis: Long?, nowMillis: Long, retrying: Boolean
 
 /** No list kept and none arrived (§2.7): what happened, and the one thing to do. Tiles above still work. */
 @Composable
-internal fun FeedFailedBlock(retrying: Boolean, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+internal fun FeedFailedBlock(retrying: Boolean, onRetry: () -> Unit, modifier: Modifier = Modifier, unverified: Boolean = false) {
     Column(
         modifier
             .fillMaxWidth()
@@ -87,13 +87,14 @@ internal fun FeedFailedBlock(retrying: Boolean, onRetry: () -> Unit, modifier: M
             CloudOffIcon(20.dp, MaterialTheme.colorScheme.outline)
             Spacer(Modifier.width(10.dp))
             Text(
-                stringResource(R.string.explore_failed_title),
+                stringResource(if (unverified) R.string.feed_unverified else R.string.explore_failed_title),
+                modifier = Modifier.weight(1f, fill = false),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
         Text(
-            stringResource(R.string.explore_failed_body),
+            stringResource(if (unverified) R.string.home_community_unverified_body else R.string.explore_failed_body),
             modifier = Modifier.padding(top = 6.dp),
             style = Body13Style,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

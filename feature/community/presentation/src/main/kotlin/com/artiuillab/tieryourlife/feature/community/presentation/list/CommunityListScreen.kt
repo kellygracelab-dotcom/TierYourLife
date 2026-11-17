@@ -101,10 +101,19 @@ fun CommunityListScreen(
     val languageTag = currentLanguageTag()
     val state = remember(written, languageTag) { written.readIn(languageTag) }
     var playOpen by rememberSaveable { mutableStateOf(false) }
+    var resumed by rememberSaveable { mutableStateOf(false) }
     // Their own list is played on their own board, not here; blank cards are not played at all.
     val playRequest = (state as? CommunityListUiState.Success)?.takeUnless { it.own || it.arriving }?.let { loaded ->
         remember(loaded.shown, loaded.mine, loaded.version) {
             PlayRequest.someoneElses(viewModel.publishedId, loaded.version, shown = loaded.shown, mine = loaded.mine)
+        }
+    }
+
+    // Once, and only when the page can play: Play's picker then offers the game that was put down.
+    LaunchedEffect(playRequest != null) {
+        if (viewModel.resumesGame && playRequest != null && !resumed) {
+            resumed = true
+            playOpen = true
         }
     }
 

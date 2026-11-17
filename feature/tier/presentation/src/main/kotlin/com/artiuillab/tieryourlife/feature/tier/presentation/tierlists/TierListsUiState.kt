@@ -27,10 +27,15 @@ sealed interface TierListsUiState {
         val restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle,
         /** The board whose two versions have not been mentioned yet, if there is one. */
         val conflict: TierListSummary? = null,
+        /** Other people's lists begun here and not saved yet, the last touched first. */
+        val started: List<StartedList> = emptyList(),
     ) : TierListsUiState
 
     data object Error : TierListsUiState
 }
+
+/** Someone else's list begun on this phone: where it stands, and whether a game of it waits. */
+data class StartedList(val listId: String, val title: String, val placed: Int, val total: Int, val gameSaved: Boolean = false)
 
 sealed interface HomeMode {
     data object Browsing : HomeMode

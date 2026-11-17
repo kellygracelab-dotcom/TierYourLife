@@ -58,7 +58,6 @@
     <string name="home_community_empty_body">Lists people make public show up here.</string>
     <string name="home_community_failed">Could not load the community</string>
     <string name="home_community_failed_body">Check your connection.</string>
-    <string name="home_community_unverified">This copy could not be verified</string>
     <string name="home_community_unverified_body">Google Play confirms an installation before the community opens. If you installed from Play, this usually clears on its own.</string>
     <string name="home_following_empty">Nobody you follow has a list in %1$s.</string>
     <string name="home_following_empty_all">Nobody you follow has published anything yet.</string>
@@ -327,4 +326,5 @@
     <string name="community_remove_ranking_title">Remove your ranking from Rankings?</string>
     <string name="community_remove_ranking_body">It leaves this list’s rankings. You keep it in Your lists.</string>
     <string name="community_remove_ranking_confirm">Remove</string>
+    <string name="feed_unverified">Couldn’t check this app, so the lists can’t load.</string>
 </resources>

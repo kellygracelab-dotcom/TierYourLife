@@ -82,6 +82,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardFiltersSheet
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.BoardTile
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ConflictBanner
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.ContinueBlock
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeEmptyState
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeHeader
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.LocalOnlyNotice
@@ -112,6 +113,8 @@ fun TierListsScreen(
     onSignInClick: () -> Unit,
     onNewListCreated: (Long) -> Unit,
     tabs: @Composable () -> Unit = {},
+    /** Someone else's list begun here, opened where it was left, with its game when [resumeGame]. */
+    onContinueStarted: (listId: String, resumeGame: Boolean) -> Unit = { _, _ -> },
     /** From the home screen, which outlives a tab switch; null when this screen stands alone. */
     arrival: Any? = null,
     viewModel: TierListsViewModel = hiltViewModel(),
@@ -158,6 +161,7 @@ fun TierListsScreen(
         userMessages = viewModel.userMessages,
         tabs = tabs,
         picturesOnWifiOnly = viewModel::picturesOnWifiOnly,
+        onContinueStarted = onContinueStarted,
     )
 }
 
@@ -188,6 +192,7 @@ fun TierListsScreenContent(
     tabs: @Composable () -> Unit = {},
     /** Null draws without fetching any pictures ahead, as a test or a preview should. */
     picturesOnWifiOnly: (() -> Boolean)? = null,
+    onContinueStarted: (listId: String, resumeGame: Boolean) -> Unit = { _, _ -> },
 ) {
     val success = state as? TierListsUiState.Success
     val mode = success?.mode ?: HomeMode.Browsing
@@ -202,6 +207,11 @@ fun TierListsScreenContent(
     val boardFilters = success?.boardFilters ?: BoardFilters()
     val favourites = success?.favourites.orEmpty()
     val grouped = success?.grouped ?: false
+    val started = success?.started.orEmpty()
+    // Not while searching or choosing boards to delete: those are about one's own.
+    val continuing: (@Composable () -> Unit)? = started.takeIf { it.isNotEmpty() && mode == HomeMode.Browsing }?.let { begun ->
+        { ContinueBlock(begun, onContinue = { list, resume -> onContinueStarted(list.listId, resume) }) }
+    }
     var filtersOpen by rememberSaveable { mutableStateOf(false) }
     val hasRail = currentWindowShape.hasRail
     // Out here, so closing a search finds the boards where they were left.
@@ -359,6 +369,11 @@ fun TierListsScreenContent(
                             onToggleFavourite = onToggleFavourite,
                         )
 
+                        totalListCount == 0 && continuing != null -> Column {
+                            Box(Modifier.padding(horizontal = 16.dp).widthIn(max = ContentWidth.Reading)) { continuing() }
+                            HomeEmptyState(onCreateNamedList = onCreateNamedList, modifier = Modifier.weight(1f))
+                        }
+
                         totalListCount == 0 -> HomeEmptyState(onCreateNamedList = onCreateNamedList)
 
                         else -> HomeContent(
@@ -379,6 +394,7 @@ fun TierListsScreenContent(
                             onSignInClick = onSignInClick,
                             onDismissSignInOffer = onDismissSignInOffer,
                             onDismissConflictNotice = onDismissConflictNotice,
+                            continuing = continuing,
                         )
                     }
                 }
@@ -459,6 +475,7 @@ private fun HomeContent(
     onSignInClick: () -> Unit,
     onDismissSignInOffer: () -> Unit,
     onDismissConflictNotice: (String) -> Unit,
+    continuing: (@Composable () -> Unit)? = null,
 ) {
     val isSelecting = mode is HomeMode.Selecting
     val selectedIds = (mode as? HomeMode.Selecting)?.selectedIds.orEmpty()
@@ -483,6 +500,7 @@ private fun HomeContent(
             onSignInClick = onSignInClick,
             onDismissSignInOffer = onDismissSignInOffer,
             onDismissConflictNotice = onDismissConflictNotice,
+            continuing = continuing,
         )
         return
     }
@@ -512,6 +530,9 @@ private fun HomeContent(
                     )
                 }
             }
+        }
+        if (continuing != null) {
+            wide("continue") { Box(Modifier.widthIn(max = ContentWidth.Reading)) { continuing() } }
         }
         if (grouped) {
             wide("favourites-heading") {
@@ -609,6 +630,7 @@ private fun BoardTiles(
     onSignInClick: () -> Unit,
     onDismissSignInOffer: () -> Unit,
     onDismissConflictNotice: (String) -> Unit,
+    continuing: (@Composable () -> Unit)? = null,
 ) {
     BoardsGrid(columns = GridCells.Adaptive(minSize = TILE_MIN_WIDTH), scroll = scroll, aboveKeyboard = aboveKeyboard) {
         wide("top") { top() }
@@ -629,6 +651,9 @@ private fun BoardTiles(
                     onDismiss = onDismissSignInOffer,
                 )
             }
+        }
+        if (continuing != null) {
+            wide("continue") { Box(Modifier.widthIn(max = ContentWidth.Reading)) { continuing() } }
         }
         if (grouped) {
             item(key = "favourites-heading", span = { GridItemSpan(maxLineSpan) }) {

@@ -289,6 +289,18 @@
         <item quantity="many">Tu collage · imágenes: %d</item>
         <item quantity="other">Tu collage · imágenes: %d</item>
     </plurals>
+    <string name="started_title">Continuar</string>
+    <plurals name="started_placed">
+        <item quantity="one">%1$d de %2$d colocada</item>
+        <item quantity="many">%1$d de %2$d colocadas</item>
+        <item quantity="other">%1$d de %2$d colocadas</item>
+    </plurals>
+    <string name="started_continue">Continuar</string>
+    <string name="started_continue_of">Continuar «%1$s»</string>
+    <string name="started_resume">Reanudar partida</string>
+    <string name="publish_sheet_name">Nombre</string>
+    <string name="publish_sheet_name_hint">¿De qué es esta lista?</string>
+    <string name="publish_sheet_name_first">Primero ponle un nombre a la lista.</string>
     <string name="item_search_add_own">O añade lo tuyo</string>
     <string name="item_search_own_link">Pega el enlace de una imagen</string>
     <string name="item_search_own_link_sub">De cualquier sitio: la tarjeta usa esa imagen</string>

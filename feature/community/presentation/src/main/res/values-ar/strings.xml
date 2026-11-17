@@ -62,7 +62,6 @@
     <string name="home_community_empty_body">القوائم التي ينشرها الناس تظهر هنا.</string>
     <string name="home_community_failed">تعذّر تحميل المجتمع</string>
     <string name="home_community_failed_body">تحقق من اتصالك.</string>
-    <string name="home_community_unverified">تعذّر التحقق من هذه النسخة</string>
     <string name="home_community_unverified_body">يتحقق Google Play من التثبيت قبل فتح المجتمع. إذا كان التثبيت من Play، فعادةً ما تُحل المسألة من تلقاء نفسها.</string>
     <string name="home_following_empty">لا أحد ممن تتابعهم لديه قائمة في %1$s.</string>
     <string name="home_following_empty_all">لم ينشر أحد ممن تتابعهم شيئًا بعد.</string>
@@ -355,4 +354,5 @@
     <string name="community_remove_ranking_title">هل تزيل ترتيبك من التصنيفات؟</string>
     <string name="community_remove_ranking_body">سيُزال من ترتيبات هذه القائمة. ويبقى عندك في «قوائمك».</string>
     <string name="community_remove_ranking_confirm">إزالة</string>
+    <string name="feed_unverified">تعذّر التحقق من التطبيق، لذا لا يمكن تحميل القوائم.</string>
 </resources>
