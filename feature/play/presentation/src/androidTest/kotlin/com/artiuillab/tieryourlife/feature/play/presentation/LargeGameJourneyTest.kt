@@ -55,7 +55,8 @@ class LargeGameJourneyTest {
         compose.onNodeWithTag(PlayTestTags.START).performClick()
         repeat(15) { compose.onNodeWithTag(PlayTestTags.FIRST_CARD).performClick() }
         // The last answer puts the result on the board: one tier is only ordered, its unplayed cards behind.
-        compose.waitUntil(10_000) { vm.state.value.stage == PlayStage.Closed && games.games.isEmpty() }
+        seeMyList()
+        compose.waitUntil(10_000) { games.games.isEmpty() }
         compose.onNodeWithTag(PlayTestTags.DUEL).assertDoesNotExist()
         compose.runOnIdle {
             assertEquals((1L..91L).toSet(), board.tiers.flatMap { it.items }.map { it.id }.toSet())
@@ -72,13 +73,21 @@ class LargeGameJourneyTest {
         }
         compose.onNodeWithTag(PlayTestTags.START).performClick()
         repeat(90) { compose.onNodeWithTag(PlayTestTags.FIRST_CARD).performClick() }
-        compose.waitUntil(10_000) { vm.state.value.stage == PlayStage.Closed && board.tiers.first { it.isPool }.items.isEmpty() }
+        seeMyList()
+        compose.waitUntil(10_000) { board.tiers.first { it.isPool }.items.isEmpty() }
         compose.runOnIdle {
             assertEquals((1L..91L).toSet(), board.tiers.flatMap { it.items }.map { it.id }.toSet())
         }
     }
 
     private fun picking() = (vm.state.value.stage as PlayStage.Picking).picker
+
+    /** The window at the game's end, closed as a person would: the result is on the board already. */
+    private fun seeMyList() {
+        compose.waitUntil(10_000) { vm.state.value.stage is PlayStage.Ready }
+        compose.onNodeWithTag(PlayTestTags.SEE_MY_LIST).performScrollTo().performClick()
+        compose.waitUntil(10_000) { vm.state.value.stage == PlayStage.Closed }
+    }
 
     private fun open() {
         val repository = object : TierRepository by RecordingTierRepository() {

@@ -334,4 +334,5 @@
     <string name="community_remove_ranking_body">Ele sai dos rankings desta lista. Você o mantém em Suas listas.</string>
     <string name="community_remove_ranking_confirm">Remover</string>
     <string name="feed_unverified">Não foi possível verificar o app, então as listas não podem carregar.</string>
+    <string name="community_rankings_link">%1$s — veja como outros as posicionaram</string>
 </resources>

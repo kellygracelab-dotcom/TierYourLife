@@ -11,6 +11,7 @@ internal class PreferencesBoardLayoutMemory(private val preferences: AppPreferen
     private var collapsed by mutableStateOf(preferences.poolColumnCollapsed())
     private var dockRows by mutableStateOf(preferences.poolDockRows())
     private var oneByOne by mutableStateOf(preferences.oneCardAtATime())
+    private var names by mutableStateOf(preferences.namesOnCards())
 
     override var poolColumnCollapsed: Boolean?
         get() = collapsed
@@ -31,5 +32,12 @@ internal class PreferencesBoardLayoutMemory(private val preferences: AppPreferen
         set(value) {
             oneByOne = value
             preferences.setOneCardAtATime(value)
+        }
+
+    override var namesOnCards: Boolean
+        get() = names
+        set(value) {
+            names = value
+            preferences.setNamesOnCards(value)
         }
 }

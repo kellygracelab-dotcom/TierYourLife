@@ -78,6 +78,7 @@ class PlayViewModel @Inject constructor(
     val selection = SelectionControls()
     val duel = DuelControls()
     val notices = NoticeControls()
+    val ready = ReadyControls()
 
     private var stage: PlayStage
         get() = _state.value.stage
@@ -236,6 +237,22 @@ class PlayViewModel @Inject constructor(
         }
     }
 
+    inner class ReadyControls {
+        /** See my list, Back or a tap beside it: the result stays, and one's own board offers Undo where it always has. */
+        fun dismiss() {
+            val shown = (stage as? PlayStage.Ready)?.ready ?: return
+            close()
+            if (!shown.intoMine) viewModelScope.launch { say(PlayNotice.BoardArranged(shown.duels)) }
+        }
+
+        /** Play again: the picker over the board as the game left it. */
+        fun again() {
+            if (stage !is PlayStage.Ready) return
+            stage = PlayStage.Closed
+            open()
+        }
+    }
+
     inner class NoticeControls {
         /** From "Game saved": the game is not wanted after all. */
         fun discardSaved() {
@@ -377,39 +394,49 @@ class PlayViewModel @Inject constructor(
     }
 
     /**
-     * The last answer puts the result on the board, with no screen between:
-     * one step that Undo takes back and Redo puts again. A game of skips
-     * alone is no evidence and moves nothing.
+     * The last answer puts the result on the board, one step that Undo takes
+     * back and Redo puts again, and a window says what it came to. A game of
+     * skips alone is no evidence and moves nothing.
      */
     private fun finish(current: Session, shown: ResultState) {
         val request = request ?: return
         session = null
-        close()
+        // The duels go at once; the window takes their place once the result is on the board.
+        stage = PlayStage.Closed
         viewModelScope.launch {
-            if (outdated(current)) return@launch
-            if (!shown.canApply) {
-                forget(current)
-                say(PlayNotice.NothingAnswered)
-                return@launch
+            val ready = settle(current, shown, request)
+            when {
+                ready != null -> stage = PlayStage.Ready(ready)
+                // Unless the picker was opened again meanwhile, to apply it once more.
+                stage == PlayStage.Closed -> close()
             }
-            val placement = shown.tiers.associate { tier -> tier.tierId to tier.cards.map { it.item.id } }
-            val into = request.applyTo
-            val area = current.game.scope
-            val after = if (into != null) {
-                intoMine(into, placement, shown.unplayedPolicy, area, shown.duels)
-            } else {
-                ontoBoard(request.board, placement, shown.unplayedPolicy, area, shown.duels)
-            }
-            if (after == null) {
-                // Kept, finished: Resume puts the result on the board again.
-                if (persist(current) == Shelved.Kept) stored = current.game
-                return@launch
-            }
-            forget(current)
-            _events.send(PlayEvent.Arranged(after))
-            // Into Mine, the list's page has its own Undo and asks about showing it at once: a snackbar would sit under that.
-            if (into == null) say(PlayNotice.BoardArranged(shown.duels))
         }
+    }
+
+    /** The result put where it goes: what the window says, or null when nothing was put. */
+    private suspend fun settle(current: Session, shown: ResultState, request: PlayRequest): ReadyState? {
+        if (outdated(current)) return null
+        if (!shown.canApply) {
+            forget(current)
+            say(PlayNotice.NothingAnswered)
+            return null
+        }
+        val placement = shown.tiers.associate { tier -> tier.tierId to tier.cards.map { it.item.id } }
+        val into = request.applyTo
+        val area = current.game.scope
+        val after = if (into != null) {
+            intoMine(into, placement, shown.unplayedPolicy, area, shown.duels)
+        } else {
+            ontoBoard(request.board, placement, shown.unplayedPolicy, area, shown.duels)
+        }
+        if (after == null) {
+            // Kept, finished: Resume puts the result on the board again.
+            if (persist(current) == Shelved.Kept) stored = current.game
+            return null
+        }
+        forget(current)
+        _events.send(PlayEvent.Arranged(after))
+        return ReadyState(cards = current.game.ids.size, duels = shown.duels, board = after, intoMine = into != null)
     }
 
     private suspend fun persist(current: Session): Shelved =

@@ -33,6 +33,7 @@ private const val KEY_LAST_KNOWN_STORED_BYTES = "last_known_stored_bytes"
 private const val KEY_POOL_COLUMN_COLLAPSED = "poolColumnCollapsed"
 private const val KEY_POOL_DOCK_ROWS = "poolDockRows"
 private const val KEY_ONE_CARD_AT_A_TIME = "oneCardAtATime"
+private const val KEY_NAMES_ON_CARDS = "namesOnCards"
 private const val KEY_PUBLISHED_OWNERS = "published_owners"
 private const val KEY_LAST_PUBLISHING_ACCOUNT = "last_publishing_account"
 private const val KEY_ACCOUNT_ERASED_NOTICE = "account_erased_where"
@@ -152,6 +153,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setOneCardAtATime(on: Boolean) {
         prefs.edit { putBoolean(KEY_ONE_CARD_AT_A_TIME, on) }
+    }
+
+    override fun namesOnCards(): Boolean = prefs.getBoolean(KEY_NAMES_ON_CARDS, true)
+
+    override fun setNamesOnCards(on: Boolean) {
+        prefs.edit { putBoolean(KEY_NAMES_ON_CARDS, on) }
     }
 
     // Rows by default: they say how many cards are ranked and how many wait,

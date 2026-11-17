@@ -97,4 +97,13 @@
         <item quantity="one">You’ve placed %1$d card. The game rearranges it; Undo brings it back.</item>
         <item quantity="other">You’ve placed %1$d cards. The game rearranges them; Undo brings them back.</item>
     </plurals>
+    <string name="play_ready_title">Your ranking is ready</string>
+    <string name="play_ready_summary">%1$s placed from %2$s</string>
+    <string name="play_see_my_list">See my list</string>
+    <string name="play_sign_in_to_show">Sign in to show it in Rankings</string>
+    <string name="play_play_again">Play again</string>
+    <plurals name="play_more_tiers">
+        <item quantity="one">and %1$d more tier</item>
+        <item quantity="other">and %1$d more tiers</item>
+    </plurals>
 </resources>

@@ -355,4 +355,5 @@
     <string name="community_remove_ranking_body">سيُزال من ترتيبات هذه القائمة. ويبقى عندك في «قوائمك».</string>
     <string name="community_remove_ranking_confirm">إزالة</string>
     <string name="feed_unverified">تعذّر التحقق من التطبيق، لذا لا يمكن تحميل القوائم.</string>
+    <string name="community_rankings_link">%1$s — شاهد كيف رتّبها الآخرون</string>
 </resources>

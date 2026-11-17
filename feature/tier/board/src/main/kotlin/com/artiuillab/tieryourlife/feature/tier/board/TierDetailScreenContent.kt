@@ -3,7 +3,6 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
 import android.content.res.Resources
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -56,7 +55,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -69,7 +67,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
@@ -101,6 +98,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PublishButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.SubtitleLink
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
@@ -113,9 +111,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItem
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.fixedInSettings
-import com.artiuillab.tieryourlife.feature.tier.board.share.BoardPalette
-import com.artiuillab.tieryourlife.feature.tier.board.share.SHARE_LINK
-import com.artiuillab.tieryourlife.feature.tier.board.share.shareBoard
+import com.artiuillab.tieryourlife.feature.tier.board.share.rememberShareBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -124,7 +120,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /** 72 of a short window's 300 was a quarter of the board scrolling under the finger; 48 everywhere, speed rising toward the edge. */
@@ -155,6 +150,8 @@ fun TierDetailScreenContent(
     userMessages: Flow<UserMessage> = emptyFlow(),
     readOnly: Boolean = false,
     subtitle: String? = null,
+    /** Tapped at the end of [subtitle]: how many others ranked the list, which opens their rankings. */
+    subtitleLink: SubtitleLink? = null,
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
     poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
@@ -197,6 +194,7 @@ fun TierDetailScreenContent(
                 userMessages = userMessages,
                 readOnly = readOnly,
                 subtitle = subtitle,
+                subtitleLink = subtitleLink,
                 onReaderMoreClick = onReaderMoreClick,
                 belowTopBar = belowTopBar,
                 poolAccessories = poolAccessories,
@@ -221,6 +219,7 @@ private fun TierDetailPane(
     userMessages: Flow<UserMessage>,
     readOnly: Boolean,
     subtitle: String?,
+    subtitleLink: SubtitleLink?,
     onReaderMoreClick: (() -> Unit)?,
     belowTopBar: (@Composable () -> Unit)?,
     poolAccessories: (@Composable (folded: Boolean) -> Unit)?,
@@ -261,6 +260,7 @@ private fun TierDetailPane(
                     userMessages = userMessages,
                     readOnly = readOnly,
                     subtitle = subtitle,
+                    subtitleLink = subtitleLink,
                     onReaderMoreClick = onReaderMoreClick,
                     belowTopBar = belowTopBar,
                     poolAccessories = poolAccessories,
@@ -302,6 +302,7 @@ private fun TierScreenBody(
     userMessages: Flow<UserMessage> = emptyFlow(),
     readOnly: Boolean = false,
     subtitle: String? = null,
+    subtitleLink: SubtitleLink? = null,
     onReaderMoreClick: (() -> Unit)? = null,
     belowTopBar: (@Composable () -> Unit)? = null,
     poolAccessories: (@Composable (folded: Boolean) -> Unit)? = null,
@@ -334,21 +335,7 @@ private fun TierScreenBody(
     // So does a refusal put right there: the Publication row says why.
     LaunchedEffect(actions.publishError) { if (actions.publishError?.fixedInSettings() == true) listSettingsVisible = true }
 
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val media = TierYourLifeMedia.current
-    val palette = BoardPalette(
-        surface = MaterialTheme.colorScheme.surface,
-        onSurface = MaterialTheme.colorScheme.onSurface,
-        onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant,
-        outlineVariant = MaterialTheme.colorScheme.outlineVariant,
-        onBand = media.onTierBand,
-        unrankedBand = media.unrankedRibbon,
-        isDark = media.isDark,
-    )
-    val shareFailed = stringResource(R.string.share_failed)
-    val shareCaption = stringResource(R.string.share_caption, list.title, SHARE_LINK)
-    val shareFooter = stringResource(R.string.share_footer)
+    val share = rememberShareBoard()
 
     if (listSettingsVisible) {
         TierListSettingsScreenContent(
@@ -375,13 +362,7 @@ private fun TierScreenBody(
                 listSettingsVisible = false
                 actions.onAddClick?.invoke()
             },
-            onShare = {
-                scope.launch {
-                    if (!shareBoard(context, list, palette, shareCaption, shareFooter)) {
-                        Toast.makeText(context, shareFailed, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            },
+            onShare = { share(list) },
             onReturnAllToPool = actions.onReturnAllToPool,
             onSeeInCommunity = actions.onSeeInCommunity?.let { open -> list.publishedId?.let { id -> { open(id) } } },
             onOpenOriginal = actions.onOpenOriginal,
@@ -573,6 +554,7 @@ private fun TierScreenBody(
                 OwnBoardTopBar(
                     title = list.title,
                     counts = if (reader != null) subtitle.orEmpty() else boardCounts(list),
+                    countsLink = subtitleLink.takeIf { reader != null },
                     state = ownBarScroll.state,
                     onBack = onBack,
                     onManualAdd = onManualAddClick.takeIf { reader == null },
@@ -596,6 +578,7 @@ private fun TierScreenBody(
                 titleEditable = !readOnly && !glanceable,
                 readOnly = readOnly || glanceable,
                 subtitle = subtitle,
+                subtitleLink = subtitleLink,
                 onReaderMoreClick = onReaderMoreClick.takeUnless { glanceable },
                 compact = short,
                 trailing = barMode?.let { mode -> barExtras?.let { extras -> { extras(mode) } } },

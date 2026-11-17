@@ -327,4 +327,5 @@
     <string name="community_remove_ranking_body">Sie verschwindet aus den Ranglisten dieser Liste. Du behältst sie in „Deine Listen“.</string>
     <string name="community_remove_ranking_confirm">Entfernen</string>
     <string name="feed_unverified">Diese App konnte nicht geprüft werden, deshalb laden die Listen nicht.</string>
+    <string name="community_rankings_link">%1$s — sieh, wie andere sie platziert haben</string>
 </resources>

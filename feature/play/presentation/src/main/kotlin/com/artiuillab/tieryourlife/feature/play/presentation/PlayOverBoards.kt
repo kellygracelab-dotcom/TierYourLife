@@ -26,7 +26,9 @@ import com.artiuillab.tieryourlife.core.theme.layout.FullScreenTask
 import com.artiuillab.tieryourlife.core.theme.layout.isShortWindow
 import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
+import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRankings
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
+import com.artiuillab.tieryourlife.feature.tier.board.share.rememberShareBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.launch
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
@@ -42,8 +44,14 @@ object PlayOverBoards : BoardPlay {
     }
 
     @Composable
-    override fun Layer(request: PlayRequest, open: Boolean, onArranged: (board: TierList, undone: Boolean) -> Unit, onClose: () -> Unit) {
-        PlayLayer(request, open, onArranged, onClose, hiltViewModel())
+    override fun Layer(
+        request: PlayRequest,
+        open: Boolean,
+        onArranged: (board: TierList, undone: Boolean) -> Unit,
+        onClose: () -> Unit,
+        rankings: PlayRankings?,
+    ) {
+        PlayLayer(request, open, onArranged, onClose, hiltViewModel(), rankings)
     }
 }
 
@@ -54,6 +62,7 @@ internal fun PlayLayer(
     onArranged: (board: TierList, undone: Boolean) -> Unit,
     onClose: () -> Unit,
     viewModel: PlayViewModel,
+    rankings: PlayRankings? = null,
 ) {
     LaunchedEffect(viewModel, request) { viewModel.offer(request) }
     LaunchedEffect(viewModel, open) { if (open) viewModel.open() }
@@ -82,7 +91,7 @@ internal fun PlayLayer(
     val picker = pickerOver(stage)
     Box(Modifier.fillMaxSize()) {
         when (stage) {
-            PlayStage.Closed, is PlayStage.Picking -> Unit
+            PlayStage.Closed, is PlayStage.Picking, is PlayStage.Ready -> Unit
             is PlayStage.Dueling -> {
                 FullScreenTask()
                 BackHandler(onBack = viewModel.duel::quit)
@@ -117,6 +126,19 @@ internal fun PlayLayer(
                     onDiscard = viewModel.notices::discardStored,
                     onUndoDiscard = viewModel.notices::undoDiscard,
                 ),
+            )
+        }
+        if (stage is PlayStage.Ready) {
+            val share = rememberShareBoard()
+            ReadySheet(
+                ready = stage.ready,
+                rankings = rankings.takeIf { stage.ready.intoMine },
+                onDismiss = viewModel.ready::dismiss,
+                onShare = {
+                    viewModel.ready.dismiss()
+                    share(stage.ready.board)
+                },
+                onAgain = viewModel.ready::again,
             )
         }
         DeletedItemSnackbarHost(

@@ -71,9 +71,11 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.SubtitleLink
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.AboutTheCover
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
+import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRankings
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -160,7 +162,8 @@ fun CommunityListScreen(
         onTurnGame = viewModel.game::turn,
     )
     val loaded = state as? CommunityListUiState.Success
-    val offer = loaded?.rankingOffer
+    // While Play is up, its window at the game's end among it, the question waits until it is closed.
+    val offer = loaded?.rankingOffer?.takeUnless { playOpen }
     if (offer != null) {
         RankingChoiceDialog(
             signedIn = loaded.signedIn,
@@ -173,7 +176,13 @@ fun CommunityListScreen(
         ReplaceYoursDialog(name = ask.name, onReplace = viewModel.theirsStart::replace, onCancel = viewModel.theirsStart::keep)
     }
     if (playRequest != null) {
-        play.Layer(request = playRequest, open = playOpen, onArranged = viewModel::putInMine, onClose = { playOpen = false })
+        play.Layer(
+            request = playRequest,
+            open = playOpen,
+            onArranged = viewModel::putInMine,
+            onClose = { playOpen = false },
+            rankings = PlayRankings(signedIn = loaded?.signedIn == true, onShow = { viewModel.choices.choose(public = true, languageTag) }),
+        )
     }
 }
 
@@ -305,6 +314,7 @@ fun CommunityListScreenContent(
                             // on Theirs still arrives, and starts the reader's own version from it.
                             readOnly = loaded.readOnly,
                             subtitle = sectionAndCards(loaded),
+                            subtitleLink = rankingsLink(loaded, openRankings),
                             onReaderMoreClick = { actionsVisible = true },
                             belowTopBar = {
                                 UnderTheTitle(
@@ -644,6 +654,15 @@ private fun sectionAndCards(loaded: CommunityListUiState.Success): String {
     val count = pluralStringResource(BoardR.plurals.board_cards_count, cards, cards)
     val section = loaded.section?.let { sectionLabel(it) } ?: return count
     return stringResource(BoardR.string.board_header_counts, section, count)
+}
+
+/** "4 rankings — see how others placed them" after the section and cards, on someone else's list that others have ranked. */
+@Composable
+private fun rankingsLink(loaded: CommunityListUiState.Success, onOpen: () -> Unit): SubtitleLink? {
+    val count = loaded.rankingCount
+    if (count <= 0 || loaded.own) return null
+    val rankings = pluralStringResource(ThemeR.plurals.tier_lists_rankings_count, count, count)
+    return SubtitleLink(stringResource(R.string.community_rankings_link, rankings), onOpen)
 }
 
 /** Under the title: the author and the list this one was changed from. */

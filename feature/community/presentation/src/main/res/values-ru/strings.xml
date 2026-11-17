@@ -341,4 +341,5 @@
     <string name="community_remove_ranking_body">Она исчезнет из рейтингов этого списка. У вас она останется в «Ваших списках».</string>
     <string name="community_remove_ranking_confirm">Убрать</string>
     <string name="feed_unverified">Не удалось проверить приложение, поэтому списки не загружаются.</string>
+    <string name="community_rankings_link">%1$s — посмотрите, как разложили другие</string>
 </resources>

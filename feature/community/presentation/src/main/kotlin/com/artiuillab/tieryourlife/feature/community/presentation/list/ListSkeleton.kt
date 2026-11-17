@@ -31,13 +31,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
+import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorLine
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TIER_LIST_ITEM_SPACING
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OwnBoardTopBar
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_STRIP_WIDTH
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.SubtitleLink
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
 /** The board's own measures: a row of placeholders must be the row that replaces it, or the cards jump. */
@@ -134,6 +137,10 @@ private fun SkeletonFlatBar(title: String, author: String?, short: Boolean, dock
 private fun SkeletonTwoStoreyBar(preview: ListPreview, onBack: () -> Unit) {
     val cards = pluralStringResource(BoardR.plurals.board_cards_count, preview.itemCount, preview.itemCount)
     val counts = preview.section?.let { stringResource(BoardR.string.board_header_counts, sectionLabel(it), cards) } ?: cards
+    // The board's line ends in the rankings link: drawn here too, or the line grows as the board arrives.
+    val rankings = preview.rankingCount.takeIf { it > 0 }?.let { count ->
+        SubtitleLink(stringResource(R.string.community_rankings_link, pluralStringResource(ThemeR.plurals.tier_lists_rankings_count, count, count))) {}
+    }
     OwnBoardTopBar(
         title = preview.title,
         counts = counts,
@@ -145,6 +152,7 @@ private fun SkeletonTwoStoreyBar(preview: ListPreview, onBack: () -> Unit) {
         play = null,
         publish = null,
         view = null,
+        countsLink = rankings,
     )
 }
 

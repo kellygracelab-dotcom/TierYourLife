@@ -19,7 +19,23 @@ sealed interface PlayStage {
     data class Picking(val picker: Picker) : PlayStage
 
     data class Dueling(val duel: DuelState) : PlayStage
+
+    /** The game is over and its result on the board: the window that says so. */
+    data class Ready(val ready: ReadyState) : PlayStage
 }
+
+/** What a finished game put on the board, as the window at its end says it. */
+@Immutable
+data class ReadyState(
+    /** Cards the game was over. */
+    val cards: Int,
+    /** Duels answered, skips not counted. */
+    val duels: Int,
+    /** The board as the result left it; its first tiers with cards are drawn. */
+    val board: TierList,
+    /** Someone else's list: the result went into Mine, and can be shown among the list's rankings. */
+    val intoMine: Boolean,
+)
 
 /** Games is the one Start; Modes lists every way to play, Smart first. */
 enum class PickerPage { Games, Modes, Cards, Individual }

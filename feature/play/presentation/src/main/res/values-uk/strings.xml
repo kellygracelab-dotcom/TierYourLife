@@ -119,4 +119,15 @@
         <item quantity="many">Ви розклали %1$d карток. Гра їх переставить; «Скасувати» поверне.</item>
         <item quantity="other">Ви розклали %1$d картки. Гра їх переставить; «Скасувати» поверне.</item>
     </plurals>
+    <string name="play_ready_title">Ваш рейтинг готовий</string>
+    <string name="play_ready_summary">Розкладено: %1$s за %2$s</string>
+    <string name="play_see_my_list">Переглянути мій список</string>
+    <string name="play_sign_in_to_show">Увійти й показати в рейтингах</string>
+    <string name="play_play_again">Зіграти ще раз</string>
+    <plurals name="play_more_tiers">
+        <item quantity="one">і ще %1$d рівень</item>
+        <item quantity="few">і ще %1$d рівні</item>
+        <item quantity="many">і ще %1$d рівнів</item>
+        <item quantity="other">і ще %1$d рівня</item>
+    </plurals>
 </resources>

@@ -199,4 +199,6 @@
     </plurals>
     <string name="board_nothing_placed">noch nichts platziert</string>
     <string name="board_header_counts">%1$s · %2$s</string>
+    <string name="board_names_on_cards">Namen auf den Karten</string>
+    <string name="board_names_on_cards_sub">Ein Streifen mit dem Namen unten auf jedem Bild</string>
 </resources>

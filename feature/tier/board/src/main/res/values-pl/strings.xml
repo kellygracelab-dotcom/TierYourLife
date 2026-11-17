@@ -225,4 +225,6 @@
     </plurals>
     <string name="board_nothing_placed">jeszcze nic nie umieszczono</string>
     <string name="board_header_counts">%1$s · %2$s</string>
+    <string name="board_names_on_cards">Nazwy na kartach</string>
+    <string name="board_names_on_cards_sub">Pasek z nazwą u dołu każdego obrazu</string>
 </resources>

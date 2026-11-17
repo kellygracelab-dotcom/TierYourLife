@@ -26,6 +26,12 @@ object PlayTestTags {
     const val SKIP = "play_skip"
     const val UNDO = "play_undo"
     const val QUIT = "play_quit"
+    const val READY = "play_ready"
+    const val READY_SUMMARY = "play_ready_summary"
+    const val SEE_MY_LIST = "play_see_my_list"
+    const val SHARE_RESULT = "play_share_result"
+    const val READY_RANKINGS = "play_ready_rankings"
+    const val PLAY_AGAIN = "play_play_again"
 
     fun game(kind: GameKind) = "play_game_${kind.name}"
 

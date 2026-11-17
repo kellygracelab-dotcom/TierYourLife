@@ -1,6 +1,12 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -10,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performFirstLinkClick
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.presentation.components.CommunityTestTags
@@ -27,7 +34,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** "Rankings · N" leads the list's menu and opens the sheet; the page itself has no rankings line any more. */
+/** "Rankings · N" leads the list's menu and opens the sheet; under the title, the count links to it too (artboard 36). */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "en-w411dp-h891dp")
 class RankingsInTheMenuTest {
@@ -67,11 +74,57 @@ class RankingsInTheMenuTest {
     }
 
     @Test
-    fun thePage_saysNothingAboutRankings() {
+    fun underTheTitle_theRankingsCount_linksToTheSheet() {
         show(theirs)
 
-        composeRule.onNodeWithText("13 rankings").assertDoesNotExist()
-        composeRule.onNodeWithText("40 rankings").assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.OWN_BAR_COUNTS)
+            .assertTextEquals("1 card · 13 rankings — see how others placed them")
+            .performFirstLinkClick()
+
+        composeRule.runOnIdle { assertEquals(1, asked) }
+        composeRule.onNodeWithTag(CommunityListTestTags.RANKINGS_SHEET).assertExists()
+    }
+
+    @Test
+    fun withNoRankings_theLineHasNoLink() {
+        show(theirs.copy(rankingCount = 0))
+
+        composeRule.onNodeWithTag(TierDetailTestTags.OWN_BAR_COUNTS).assertTextEquals("1 card")
+    }
+
+    // Artboard 36: the check is on the placing the board shows.
+    @Test
+    fun theSheetsCheck_isOnWhatTheBoardShows() {
+        val olena = Ranking("olena", "Olena M.", null, emptyList(), listOf("S"), 1)
+        val you = Ranking("me", "Me", null, emptyList(), listOf("S"), 2, mine = true)
+        var state by mutableStateOf(theirs.copy(rankings = listOf(olena, you)))
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CommunityListScreenContent(state = state, onBack = {}, onMoveItem = { _, _, _ -> }, onSave = {}, onRetry = {})
+            }
+        }
+        composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
+        composeRule.onNodeWithTag(CommunityTestTags.ACTION_RANKINGS).performClick()
+        val author = composeRule.onNodeWithTag(CommunityListTestTags.RANKING_AUTHOR)
+        val theirsRow = composeRule.onNodeWithTag(CommunityListTestTags.ranking("olena"))
+        val yours = composeRule.onNodeWithTag(CommunityListTestTags.ranking("me"))
+
+        author.assertIsSelected()
+        theirsRow.assertIsNotSelected()
+        yours.assertIsNotSelected()
+
+        state = state.copy(chosenRanking = olena)
+        author.assertIsNotSelected()
+        theirsRow.assertIsSelected()
+
+        state = state.copy(showing = Showing.Mine)
+        author.assertIsNotSelected()
+        theirsRow.assertIsNotSelected()
+        yours.assertIsSelected()
+
+        state = state.copy(rankings = listOf(olena))
+        author.assertIsNotSelected()
+        theirsRow.assertIsNotSelected()
     }
 
     @Test
