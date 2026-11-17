@@ -1,7 +1,6 @@
 package com.artiuillab.tieryourlife.baselineprofile
 
 import android.annotation.SuppressLint
-import android.graphics.Rect
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -27,7 +26,6 @@ private const val ATTEMPTS = 3
 
 private const val EDGE_FRACTION = 5
 private const val FLING_STEPS = 8
-private const val SWIPE_STEPS = 20
 private const val DRAG_STEPS = 200
 
 private val LISTS_TAB: BySelector = By.res("home_tab_mine")
@@ -95,10 +93,9 @@ fun MacrobenchmarkScope.browseCommunity() {
     if (!device.wait(Until.hasObject(EXPLORE), LONG_WAIT)) return
     device.wait(Until.hasObject(COMMUNITY_CARD), SHORT_WAIT)
     scrollDownAndUp(EXPLORE)
-    swipeSideways(EXPLORE, towardsEnd = true)
-    device.wait(Until.hasObject(By.res("explore_tab_following").selected(true)), SHORT_WAIT)
-    swipeSideways(EXPLORE, towardsEnd = false)
-    device.wait(Until.hasObject(By.res("explore_tab_explore").selected(true)), SHORT_WAIT)
+    if (tap(By.res("explore_chip_new"))) device.wait(Until.hasObject(By.res("explore_chip_new").selected(true)), SHORT_WAIT)
+    if (tap(By.res("explore_chip_following"))) device.wait(Until.hasObject(By.res("following_feed")), SHORT_WAIT)
+    if (tap(By.res("explore_chip_popular"))) device.wait(Until.hasObject(EXPLORE), SHORT_WAIT)
 }
 
 fun MacrobenchmarkScope.openCommunityList() {
@@ -158,19 +155,6 @@ private fun MacrobenchmarkScope.scrollDownAndUp(selector: BySelector) {
     device.swipe(x, bottom, x, top, FLING_STEPS)
     device.waitForIdle()
     device.swipe(x, top, x, bottom, FLING_STEPS)
-    device.waitForIdle()
-}
-
-private fun MacrobenchmarkScope.swipeSideways(selector: BySelector, towardsEnd: Boolean) {
-    val area: Rect = fresh { device.findObject(selector)?.visibleBounds } ?: return
-    val y = area.centerY()
-    val left = area.left + area.width() / EDGE_FRACTION
-    val right = area.right - area.width() / EDGE_FRACTION
-    if (towardsEnd) {
-        device.swipe(right, y, left, y, SWIPE_STEPS)
-    } else {
-        device.swipe(left, y, right, y, SWIPE_STEPS)
-    }
     device.waitForIdle()
 }
 

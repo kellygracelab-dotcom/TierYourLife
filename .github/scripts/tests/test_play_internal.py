@@ -32,6 +32,12 @@ MANIFEST = {"schema": 1, "source": SOURCE, "repositoryId": REPO_ID, "ownerId": O
             "firebaseConfigSha256": "c" * 64, "signedSha256": "d" * 64}
 
 
+EVERY_PUSH_JOBS = ["Build, static analysis, lint", "Unit tests, screenshots, coverage", "Release bundle",
+                   "What changed", "Android CI passed"]
+EMULATOR_JOBS = ["Instrumentation tests (26, named)", "Instrumentation tests (26, rest)",
+                 "Instrumentation tests (34, named)", "Instrumentation tests (34, rest)"]
+
+
 def run(cd=False):
     repo = {"id": REPO_ID, "owner": {"id": OWNER_ID}}
     return {"path": CD_PATH if cd else CI_PATH, "event": "workflow_run" if cd else "push",
@@ -43,9 +49,9 @@ def run(cd=False):
 def gates(code="true"):
     receipt = {"schema": 1, "source": SOURCE, "code": code, "build": "success", "changes": "success",
                "e2e": "success" if code == "true" else "skipped", "instrumentation": "success" if code == "true" else "skipped"}
-    names = ["Build, unit tests, lint", "Release bundle", "What changed", "Android CI passed"]
+    names = [*EVERY_PUSH_JOBS]
     if code == "true":
-        names += ["End-to-end against the proxy", "Instrumentation tests (26)", "Instrumentation tests (34)"]
+        names += ["End-to-end against the proxy", *EMULATOR_JOBS]
     return [{"name": name, "conclusion": "success"} for name in names], receipt
 
 
@@ -99,10 +105,10 @@ class TrustTests(unittest.TestCase):
             with patch.object(github, "get", side_effect=[{"object": {"sha": sha}}, data]), self.assertRaises(Stop):
                 github.fresh(SOURCE)
 
-    def test_code_requires_both_instrumentation_devices_and_e2e(self):
+    def test_code_requires_both_halves_on_both_instrumentation_devices_and_e2e(self):
         jobs, receipt = gates()
         verify_gates(jobs, receipt, SOURCE)
-        for name in ("Instrumentation tests (26)", "Instrumentation tests (34)", "End-to-end against the proxy", "Android CI passed"):
+        for name in (*EMULATOR_JOBS, "End-to-end against the proxy", "Android CI passed"):
             for result in ("failure", "cancelled", "skipped", "timed_out"):
                 broken = copy.deepcopy(jobs)
                 next(item for item in broken if item["name"] == name)["conclusion"] = result
@@ -111,7 +117,7 @@ class TrustTests(unittest.TestCase):
 
     def test_every_job_of_every_main_push_must_pass_and_a_skipped_or_absent_one_has_not(self):
         for code in ("true", "false"):
-            for name in ("Build, unit tests, lint", "Release bundle", "What changed", "Android CI passed"):
+            for name in EVERY_PUSH_JOBS:
                 for result in ("failure", "cancelled", "skipped", "timed_out", "absent"):
                     jobs, receipt = gates(code)
                     if result == "absent":
@@ -122,7 +128,7 @@ class TrustTests(unittest.TestCase):
                         verify_gates(jobs, receipt, SOURCE)
 
     def test_a_code_job_absent_from_the_run_has_not_passed(self):
-        for name in ("End-to-end against the proxy", "Instrumentation tests (26)", "Instrumentation tests (34)"):
+        for name in ("End-to-end against the proxy", *EMULATOR_JOBS):
             jobs, receipt = gates()
             jobs = [item for item in jobs if item["name"] != name]
             with self.subTest(name=name), self.assertRaises(Stop):
@@ -135,6 +141,11 @@ class TrustTests(unittest.TestCase):
         for_code = [name for job in only_for_code for name in shown_names(jobs[job])]
         self.assertEqual(sorted(ALWAYS_REQUIRED), sorted(always))
         self.assertEqual(sorted(REQUIRED_FOR_CODE), sorted(for_code))
+        # Each half of the emulator tests is one the script knows how to run.
+        script = (Path(__file__).resolve().parents[1] / "instrumentation.sh").read_text(encoding="utf-8")
+        parts = re.search(r"(?m)^        part: \[([^\]]+)\]$", jobs["instrumentation"]).group(1)
+        self.assertEqual(sorted(part.strip() for part in parts.split(",")), sorted(re.findall(r"(?m)^  ([a-z]+)\)$", script)))
+        self.assertIn("script: bash .github/scripts/instrumentation.sh ${{ matrix.part }}\n", jobs["instrumentation"])
         # The final gate waits for every other job: one left out of its `needs` would not be asked for.
         needs = re.search(r"(?m)^    needs: \[(.+)\]$", jobs["ci-passed"]).group(1)
         self.assertEqual(sorted(set(jobs) - {"ci-passed"}), sorted(job.strip() for job in needs.split(",")))

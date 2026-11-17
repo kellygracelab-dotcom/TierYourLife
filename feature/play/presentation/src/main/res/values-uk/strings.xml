@@ -7,6 +7,21 @@
         <item quantity="many">%1$d карток зі списку «%2$s»</item>
         <item quantity="other">%1$d картки зі списку «%2$s»</item>
     </plurals>
+    <string name="play_how_it_works">Обирайте кращу з двох карток. Рівні заповняться самі.</string>
+    <string name="play_game_kept">Можна вийти будь-коли — гру буде збережено.</string>
+    <string name="play_other_ways">Інші способи гри</string>
+    <plurals name="play_about_duels">
+        <item quantity="one">близько %1$d дуелі</item>
+        <item quantity="few">близько %1$d дуелей</item>
+        <item quantity="many">близько %1$d дуелей</item>
+        <item quantity="other">близько %1$d дуелі</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="one">%1$d хв</item>
+        <item quantity="few">%1$d хв</item>
+        <item quantity="many">%1$d хв</item>
+        <item quantity="other">%1$d хв</item>
+    </plurals>
     <string name="play_choose_cards">Вибрати картки</string>
     <string name="play_game_smart">Розумний вибір</string>
     <string name="play_game_swiss">Програвші лишаються</string>
@@ -49,7 +64,7 @@
     <string name="play_too_few_to_start_again">Картки змінилися, і їх залишилося замало, щоб почати цю гру знову.</string>
     <string name="play_tier_gone">Тіру з цієї гри більше немає.</string>
     <string name="play_start_again">Почати знову</string>
-    <string name="play_into_mine_note">Результат потрапить у «Моє». «Його» не зміниться.</string>
+    <string name="play_into_mine_note">Результат потрапить у «Моє». Розстановка автора не зміниться.</string>
     <string name="play_cancel">Скасувати</string>
     <string name="play_start">Почати</string>
     <string name="play_continue">Далі</string>
@@ -71,6 +86,7 @@
     <string name="play_ranked">Розставлені</string>
     <string name="play_quit">Вийти</string>
     <string name="play_duel_of">Дуель %1$d з %2$d</string>
+    <string name="play_duel_of_about">Дуель %1$d з приблизно %2$d</string>
     <string name="play_round_of">Раунд %1$d з %2$d</string>
     <string name="play_refine_of">Уточнення · %1$d з %2$d</string>
     <string name="play_undo_pick">Скасувати останній вибір</string>

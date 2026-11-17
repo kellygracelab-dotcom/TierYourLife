@@ -27,6 +27,7 @@ object FeedFreshness {
 /** The names feeds are kept under: one per screen that opens on a feed. */
 object FeedKeys {
     const val EXPLORE = "explore"
+    const val EXPLORE_NEWEST = "explore_newest"
     const val FOLLOWING = "following"
 
     fun section(sectionId: String, topicId: String? = null): String =

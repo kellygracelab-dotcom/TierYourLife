@@ -7,6 +7,21 @@
         <item quantity="many">%1$d kart z listy %2$s</item>
         <item quantity="other">%1$d karty z listy %2$s</item>
     </plurals>
+    <string name="play_how_it_works">Wybierz lepszą z dwóch kart. Poziomy wypełnią się same.</string>
+    <string name="play_game_kept">Możesz przerwać w każdej chwili — gra zostanie zachowana.</string>
+    <string name="play_other_ways">Inne sposoby gry</string>
+    <plurals name="play_about_duels">
+        <item quantity="one">około %1$d pojedynku</item>
+        <item quantity="few">około %1$d pojedynków</item>
+        <item quantity="many">około %1$d pojedynków</item>
+        <item quantity="other">około %1$d pojedynku</item>
+    </plurals>
+    <plurals name="play_minutes">
+        <item quantity="one">%1$d min</item>
+        <item quantity="few">%1$d min</item>
+        <item quantity="many">%1$d min</item>
+        <item quantity="other">%1$d min</item>
+    </plurals>
     <string name="play_choose_cards">Wybierz karty</string>
     <string name="play_game_smart">Sprytny wybór</string>
     <string name="play_game_swiss">Przegrani zostają</string>
@@ -49,7 +64,7 @@
     <string name="play_too_few_to_start_again">Karty się zmieniły i zostało ich za mało, żeby zacząć tę grę od nowa.</string>
     <string name="play_tier_gone">Jednego z poziomów tej gry już nie ma.</string>
     <string name="play_start_again">Zacznij od nowa</string>
-    <string name="play_into_mine_note">Wynik trafi do „Mój”. „Jego” się nie zmieni.</string>
+    <string name="play_into_mine_note">Wynik trafi do „Mój”. Ranking autora się nie zmieni.</string>
     <string name="play_cancel">Anuluj</string>
     <string name="play_start">Zacznij</string>
     <string name="play_continue">Dalej</string>
@@ -71,6 +86,7 @@
     <string name="play_ranked">Sklasyfikowane</string>
     <string name="play_quit">Zakończ</string>
     <string name="play_duel_of">Pojedynek %1$d z %2$d</string>
+    <string name="play_duel_of_about">Pojedynek %1$d z około %2$d</string>
     <string name="play_round_of">Runda %1$d z %2$d</string>
     <string name="play_refine_of">Doprecyzowanie · %1$d z %2$d</string>
     <string name="play_undo_pick">Cofnij ostatni wybór</string>

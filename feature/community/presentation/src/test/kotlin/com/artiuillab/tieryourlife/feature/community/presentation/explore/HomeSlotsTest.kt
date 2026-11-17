@@ -7,7 +7,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** The slot rule: up to ten sections on Home, in the server's order, then the way to all of them. */
+/** The slot rule: up to ten sections on Home, four on an upright phone, in the server's order, then the way to all of them. */
 class HomeSlotsTest {
 
     private val nine = Section.BUILT_IN
@@ -15,33 +15,49 @@ class HomeSlotsTest {
     private fun ids(sections: List<Section>) = sections.map { it.id }
 
     @Test
-    fun aPhoneWithTheNine_keepsOtherOnTheFullWidthRow_asItAlwaysHas() {
+    fun aPhoneWithTheNine_showsTheFirstFour_andTheRowLeadsToAll() {
         val home = homeTiles(nine, HomeLayout.Portrait)
 
-        assertEquals(ids(nine.dropLast(1)), ids(home.tiles))
+        assertEquals(ids(nine.take(4)), ids(home.tiles))
+        assertNull(home.row)
+        assertTrue(home.allSections)
+        assertEquals(9, home.total)
+    }
+
+    @Test
+    fun aPhoneWithManyMore_stillShowsFour_inTheServersOrder() {
+        val sections = theirs(141) + nine
+        val home = homeTiles(sections, HomeLayout.Portrait)
+
+        assertEquals(ids(sections.take(4)), ids(home.tiles))
+        assertNull(home.row)
+        assertTrue(home.allSections)
+        assertEquals(150, home.total)
+    }
+
+    @Test
+    fun aPhoneWithFour_showsThemAll_withoutTheWayToAll() {
+        val home = homeTiles(theirs(4), HomeLayout.Portrait)
+
+        assertEquals(4, home.tiles.size)
+        assertFalse(home.allSections)
+    }
+
+    @Test
+    fun aPhoneWithThree_putsTheOddOneOnTheFullWidthRow() {
+        val home = homeTiles(theirs(2) + nine.last(), HomeLayout.Portrait)
+
+        assertEquals(listOf("s1", "s2"), ids(home.tiles))
         assertEquals("other", home.row?.id)
         assertFalse(home.allSections)
     }
 
     @Test
-    fun aPhoneWithTen_showsThemAll_withoutTheWayToAll() {
-        val sections = theirs(1) + nine
-        val home = homeTiles(sections, HomeLayout.Portrait)
+    fun onAPhone_otherIsLeftForAllSections() {
+        val home = homeTiles(listOf(nine.last()) + theirs(5), HomeLayout.Portrait)
 
-        assertEquals(10, home.tiles.size)
-        assertNull(home.row)
-        assertFalse(home.allSections)
-    }
-
-    @Test
-    fun aPhoneWithMoreThanTen_showsTheFirstTen_andTheRowLeadsToAll() {
-        val sections = theirs(141) + nine
-        val home = homeTiles(sections, HomeLayout.Portrait)
-
-        assertEquals(ids(sections.take(10)), ids(home.tiles))
-        assertNull(home.row)
+        assertFalse(home.tiles.any { it.isOther })
         assertTrue(home.allSections)
-        assertEquals(150, home.total)
     }
 
     @Test

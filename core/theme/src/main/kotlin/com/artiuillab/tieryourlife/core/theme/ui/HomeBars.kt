@@ -61,6 +61,8 @@ fun HomeTopBar(
     count: String? = null,
     contentMax: Dp = ContentWidth.Reading,
     statusBarPadding: Boolean = true,
+    /** What TalkBack says for search: whose lists it looks through. */
+    searchDescription: String = stringResource(R.string.tier_lists_content_description_search),
 ) {
     ColumnAlignedTopBar(
         title = title,
@@ -69,7 +71,7 @@ fun HomeTopBar(
         count = count,
         titleTestTag = HomeBarTestTags.TITLE,
     ) {
-        HomeIconButton(stringResource(R.string.tier_lists_content_description_search), onSearchClick) {
+        HomeIconButton(searchDescription, onSearchClick) {
             SearchIcon()
         }
         // Null once the rail is carrying it. Two ways to the same screen,

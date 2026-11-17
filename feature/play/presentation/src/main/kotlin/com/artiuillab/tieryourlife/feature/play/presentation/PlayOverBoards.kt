@@ -100,9 +100,10 @@ internal fun PlayLayer(
                 picker = picker,
                 actions = PickerActions(
                     onChoose = viewModel.picker::choose,
-                    onShowCards = viewModel.picker::showCards,
-                    onShowGames = viewModel.picker::showGames,
-                    onShowIndividual = viewModel.picker::showIndividual,
+                    onShowCards = { viewModel.picker.show(PickerPage.Cards) },
+                    onShowGames = { viewModel.picker.show(PickerPage.Games) },
+                    onShowIndividual = { viewModel.picker.show(PickerPage.Individual) },
+                    onShowModes = { viewModel.picker.show(PickerPage.Modes) },
                     onSample = viewModel.selection::sample,
                     onToggleCard = viewModel.selection::toggleCard,
                     onSelectCandidates = viewModel.selection::selectCandidates,

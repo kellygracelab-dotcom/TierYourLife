@@ -8,7 +8,6 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -55,13 +54,14 @@ class FollowingReturnTest {
                 }
             }
         }
-        compose.onNodeWithTag(ExploreTestTags.TAB_FOLLOWING).performClick()
+        compose.onNodeWithTag(ExploreTestTags.chip(HomeChip.Following)).performClick()
         compose.onNodeWithTag(ExploreTestTags.FOLLOWING_FEED).performScrollToIndex(21)
         val tag = ExploreTestTags.card("f20")
         val before = compose.onNodeWithTag(tag).fetchSemanticsNode().boundsInRoot
         compose.onNodeWithTag(tag).performClick()
         compose.onNodeWithTag("return").performClick()
-        compose.onNodeWithTag(ExploreTestTags.TAB_FOLLOWING).assertIsSelected()
+        // The chips are scrolled away; only the Following chip draws this grid.
+        compose.onNodeWithTag(ExploreTestTags.FOLLOWING_FEED).assertExists()
         val after = compose.onNodeWithTag(tag).fetchSemanticsNode().boundsInRoot
         assertEquals(before.top, after.top, 1f)
     }

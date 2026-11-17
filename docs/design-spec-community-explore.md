@@ -80,7 +80,23 @@ On section art, the same in both themes:
 
 PrimaryTabRow, h48: Your lists · Community, with a 1 dp outlineVariant divider under it.
 
-### 1.2 Community sub-tabs (new)
+### 1.2 Community chips (replaced the sub-tabs on 16.11.2026)
+
+Approved by Danylo on 16.11.2026 from the design audit (option B, `qa-results/design-audit-2026-11-16`):
+
+- The second row of tabs is gone. Under the section tiles and **All sections**, a row of FilterChips:
+  **Popular** (chosen on a cold start), **New**, **Following**. 32 dp chips in a 48 dp touch row; the
+  chosen chip is restored within a session (rememberSaveable); the chips scroll with the grid.
+- Popular is the popular feed, New everything published newest first (`sort=recent`, no section), and
+  Following what the Following tab used to show, empty state and section picker included.
+- An upright phone shows the first four sections, two by two, then the full-width **All sections** row;
+  wider windows keep their tiles. A short window's one bar keeps the title and search; its chips are in
+  the content like everywhere else.
+- Search says what it searches: **Search community lists** on Community.
+- Before anything is typed, search shows **SECTIONS** (a chip per section) and **POPULAR TOPICS**
+  (the four biggest approved topics anywhere, each with its section on the right).
+
+The rest of 1.2 and the later mentions of the sub-tabs describe what was there before:
 
 - SecondaryTabRow, h48, two equal tabs: **Explore · Following**.
 - Label titleSmall; selected onSurface, unselected onSurfaceVariant.

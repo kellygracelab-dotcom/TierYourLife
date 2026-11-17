@@ -20,6 +20,17 @@ fun estimatedDuels(kind: GameKind, count: Int): Int = when {
 /** Gives about two and a half duels a card. */
 private const val SMART_DUELS_PER_TWO_CARDS = 5
 
+/**
+ * Duels the whole game takes, before any refining, as one number for the
+ * picker, the duel's count and bar, the saved game's row and its notice: the
+ * estimate while the game runs, raised to what smart plans when its answers
+ * keep it going longer, and what it took once it is over.
+ */
+fun expectedDuels(spec: GameSpec, progress: GameProgress): Int =
+    if (progress.mainOver) progress.played else maxOf(estimatedDuels(spec.kind, spec.count), progress.planned)
+
+fun expectedDuels(spec: GameSpec, history: List<Outcome>): Int = expectedDuels(spec, progress(spec, history))
+
 /** Swiss and smart may stop early: their counts are only roughly. */
 val GameKind.isRough: Boolean get() = this == GameKind.Swiss || this == GameKind.Smart
 
