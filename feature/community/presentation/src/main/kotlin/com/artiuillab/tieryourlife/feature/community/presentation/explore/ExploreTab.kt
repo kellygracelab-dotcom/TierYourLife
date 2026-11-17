@@ -241,7 +241,7 @@ internal fun LazyGridScope.feedItems(
         }
 
         FeedPhase.Failed -> item(key = "failed", span = { GridItemSpan(maxLineSpan) }) {
-            FeedFailedBlock(retrying = pane.retrying, onRetry = onRetry)
+            FeedFailedBlock(retrying = pane.retrying, onRetry = onRetry, unverified = pane.unverified)
         }
 
         FeedPhase.Ready -> {

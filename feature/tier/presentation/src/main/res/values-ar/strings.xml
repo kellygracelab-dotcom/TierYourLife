@@ -354,6 +354,9 @@
     <string name="started_continue">متابعة</string>
     <string name="started_continue_of">متابعة «%1$s»</string>
     <string name="started_resume">استئناف اللعبة</string>
+    <string name="publish_sheet_name">الاسم</string>
+    <string name="publish_sheet_name_hint">ما هذه القائمة؟</string>
+    <string name="publish_sheet_name_first">أعطِ القائمة اسمًا أولًا.</string>
     <string name="item_search_add_own">أو أضف بنفسك</string>
     <string name="item_search_own_link">الصق رابط صورة</string>
     <string name="item_search_own_link_sub">من أي موقع — تأخذ البطاقة تلك الصورة</string>

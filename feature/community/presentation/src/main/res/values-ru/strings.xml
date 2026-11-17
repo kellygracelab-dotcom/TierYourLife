@@ -60,7 +60,6 @@
     <string name="home_community_empty_body">Здесь появляются списки, которые люди сделали публичными.</string>
     <string name="home_community_failed">Не удалось загрузить сообщество</string>
     <string name="home_community_failed_body">Проверьте соединение.</string>
-    <string name="home_community_unverified">Эту копию не удалось проверить</string>
     <string name="home_community_unverified_body">Google Play подтверждает установку, прежде чем открыть комьюнити. Если приложение из Play, обычно проходит само.</string>
     <string name="home_following_empty">Ни у кого из ваших подписок нет досок в категории «%1$s».</string>
     <string name="home_following_empty_all">Ваши подписки пока ничего не опубликовали.</string>
@@ -341,4 +340,5 @@
     <string name="community_remove_ranking_title">Убрать вашу расстановку из рейтингов?</string>
     <string name="community_remove_ranking_body">Она исчезнет из рейтингов этого списка. Доска останется в ваших списках.</string>
     <string name="community_remove_ranking_confirm">Убрать</string>
+    <string name="feed_unverified">Не удалось проверить приложение, поэтому списки не загружаются.</string>
 </resources>

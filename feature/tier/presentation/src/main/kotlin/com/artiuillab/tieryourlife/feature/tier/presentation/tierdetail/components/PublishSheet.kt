@@ -63,6 +63,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 /** Test tags of the publish sheet. */
 object PublishSheetTags {
     const val SHEET = "publish_sheet"
+    const val NAME = "publish_sheet_name"
     const val SECTION_HEAD = "publish_sheet_section_head"
     const val PROPOSE_TOPIC = "publish_sheet_propose_topic"
     const val TOPIC_NAME = "publish_sheet_topic_name"
@@ -85,6 +86,8 @@ data class PublishSheetCalls(
     /** The section proposal form with this name, the board's section to file under meanwhile; null where it cannot open. */
     val onProposeSection: ((String) -> Unit)? = null,
     val onPublish: () -> Unit = {},
+    /** The name typed for an untitled list, written before it goes out. */
+    val onName: (String) -> Unit = {},
     val onDismiss: () -> Unit = {},
     /** The cover picker, back to this sheet after; null leaves the cover out. */
     val onChangeCover: (() -> Unit)? = null,
@@ -103,6 +106,21 @@ fun PublishSheet(
     error: PublishError?,
     calls: PublishSheetCalls,
 ) {
+    // "Untitled list" is not a name to publish under: the field comes first, and Publish waits for it.
+    val untitled = isUntitled(list.title)
+    var name by rememberSaveable(list.id) { mutableStateOf("") }
+    var nameWanted by rememberSaveable(list.id) { mutableStateOf(false) }
+    val publish = {
+        val typed = name.trim()
+        when {
+            !untitled -> calls.onPublish()
+            typed.isEmpty() -> nameWanted = true
+            else -> {
+                calls.onName(typed)
+                calls.onPublish()
+            }
+        }
+    }
     AdaptiveSheet(onDismiss = calls.onDismiss, width = SheetWidth.Choosing, maxHeight = 720.dp) {
         Column(Modifier.navigationBarsPadding().padding(horizontal = 20.dp).padding(bottom = 20.dp).testTag(PublishSheetTags.SHEET)) {
             Column(
@@ -110,6 +128,12 @@ fun PublishSheet(
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
                 Heading(list)
+                if (untitled) {
+                    NameBlock(name, wanted = nameWanted, enabled = !busy) {
+                        name = it
+                        nameWanted = false
+                    }
+                }
                 calls.onChangeCover?.let { change ->
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         BlockHead(stringResource(R.string.publish_sheet_cover))
@@ -129,7 +153,7 @@ fun PublishSheet(
                 }
             }
             Spacer(Modifier.height(16.dp))
-            PublishButton(busy = busy, onClick = calls.onPublish)
+            PublishButton(busy = busy, onClick = publish)
         }
     }
 }
@@ -144,6 +168,36 @@ private fun Heading(list: TierList) {
             modifier = Modifier.padding(top = 4.dp),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/** Blank, or the name a new list is given until somebody names it, in this language or the app's first. */
+@Composable
+private fun isUntitled(title: String): Boolean =
+    title.isBlank() || title.trim() == stringResource(R.string.default_tier_list_title) || title.trim() == UNTITLED_LIST
+
+private const val UNTITLED_LIST = "Untitled list"
+private const val MAX_NAME = 120
+
+@Composable
+private fun NameBlock(name: String, wanted: Boolean, enabled: Boolean, onName: (String) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        BlockHead(stringResource(R.string.publish_sheet_name), wanted = wanted)
+        OutlinedTextField(
+            value = name,
+            onValueChange = { onName(it.take(MAX_NAME)) },
+            enabled = enabled,
+            singleLine = true,
+            isError = wanted,
+            placeholder = { Text(stringResource(R.string.publish_sheet_name_hint)) },
+            supportingText = if (wanted) {
+                { Text(stringResource(R.string.publish_sheet_name_first)) }
+            } else {
+                null
+            },
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
+            modifier = Modifier.fillMaxWidth().testTag(PublishSheetTags.NAME),
         )
     }
 }

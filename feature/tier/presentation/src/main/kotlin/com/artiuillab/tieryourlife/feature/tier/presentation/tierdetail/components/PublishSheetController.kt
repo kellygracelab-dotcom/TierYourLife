@@ -40,6 +40,7 @@ internal class PublishSheetController(
     val state: StateFlow<PublishSheetState?> = mutable.asStateFlow()
 
     private var topicsJob: Job? = null
+    private var naming: Job? = null
 
     fun open() {
         if (mutable.value != null) return
@@ -100,11 +101,30 @@ internal class PublishSheetController(
     }
 
     fun publish() {
+        val pending = naming?.takeIf { it.isActive }
+        if (pending != null) {
+            // The name typed a moment ago goes out with the list, not after it.
+            scope.launch {
+                pending.join()
+                publish()
+            }
+            return
+        }
         if (current()?.category == null) {
             mutable.update { it?.copy(sectionWanted = true) }
             return
         }
         publish.invoke()
+    }
+
+    /** The name an untitled list is published under, written onto the board first. */
+    fun name(title: String) {
+        val list = current() ?: return
+        if (title.isBlank() || title == list.title) return
+        naming = scope.launch {
+            write("Naming the list") { repository.renameTierList(list.id, title) }
+            reload()
+        }
     }
 
     private fun loadTopics(section: String) {

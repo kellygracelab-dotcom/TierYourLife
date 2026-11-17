@@ -49,7 +49,28 @@ class PublishSheetTest {
         onProposeTopic = { said += "propose $it" },
         onProposeSection = { said += "section form $it" },
         onPublish = { said += "publish" },
+        onName = { said += "name $it" },
     )
+
+    @Test
+    fun anUntitledList_asksForAName_beforeItGoesOut() {
+        show(board.copy(title = "Untitled list", category = "film_tv"), PublishSheetState(topics = topics))
+        composeRule.onNodeWithTag(PublishSheetTags.PUBLISH).performClick()
+        composeRule.onNodeWithText("Give the list a name first.").assertExists()
+        capture("publish_sheet_untitled")
+        assertEquals(emptyList<String>(), said)
+
+        composeRule.onNodeWithTag(PublishSheetTags.NAME).performTextInput("Every A24 film")
+        composeRule.onNodeWithTag(PublishSheetTags.PUBLISH).performClick()
+
+        assertEquals(listOf("name Every A24 film", "publish"), said)
+    }
+
+    @Test
+    fun aNamedList_hasNoNameField() {
+        show(board.copy(category = "film_tv"), PublishSheetState(topics = topics))
+        composeRule.onNodeWithTag(PublishSheetTags.NAME).assertDoesNotExist()
+    }
 
     @Test
     fun noSectionYet_publishPointsAtIt() {

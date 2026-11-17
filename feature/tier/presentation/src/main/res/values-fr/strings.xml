@@ -303,6 +303,9 @@
     <string name="started_continue">Continuer</string>
     <string name="started_continue_of">Continuer « %1$s »</string>
     <string name="started_resume">Reprendre la partie</string>
+    <string name="publish_sheet_name">Titre</string>
+    <string name="publish_sheet_name_hint">De quoi parle cette liste ?</string>
+    <string name="publish_sheet_name_first">Donnez d’abord un titre à la liste.</string>
     <string name="item_search_add_own">Ou ajoutez le vôtre</string>
     <string name="item_search_own_link">Collez le lien d’une image</string>
     <string name="item_search_own_link_sub">Depuis n’importe quel site — la carte prend cette image</string>
