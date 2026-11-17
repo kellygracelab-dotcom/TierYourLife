@@ -1,6 +1,6 @@
 <resources>
     <string name="ai_title">画像を生成</string>
-    <string name="ai_caption">新しいカードは「%1$s」プールに追加されます。</string>
+    <string name="ai_caption">新しいカードは「%1$s」の山札に追加されます。</string>
     <string name="ai_empty_title">画像を説明してください</string>
     <string name="ai_empty_body">AIが描きます。気に入ったものはカードとして残せます。</string>
     <string name="ai_hints_label">こちらをお試しください</string>
@@ -18,7 +18,7 @@
     <string name="ai_error_busy">別の画像をまだ作成中です。少し待ってからもう一度お試しください。</string>
     <string name="ai_error_paused">画像の作成は現在一時停止中です。後でもう一度お試しください。</string>
     <string name="ai_name_title">カードに名前を付ける</string>
-    <string name="ai_name_body">プールに追加されます。あとでティアにドラッグできます。</string>
+    <string name="ai_name_body">山札に追加されます。あとでティアにドラッグできます。</string>
     <string name="ai_name_photo_note">生成された画像がカードの写真になります。</string>
     <string name="ai_name_field">名前</string>
     <string name="action_add">追加</string>

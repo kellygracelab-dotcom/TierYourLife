@@ -1,6 +1,6 @@
 <resources>
     <string name="ai_title">توليد صورة</string>
-    <string name="ai_caption">تنتقل البطاقات الجديدة إلى مجمّع «%1$s».</string>
+    <string name="ai_caption">تنتقل البطاقات الجديدة إلى رزمة «%1$s».</string>
     <string name="ai_empty_title">صف صورة</string>
     <string name="ai_empty_body">يرسمها الذكاء الاصطناعي. احتفظ بما يعجبك منها كبطاقات.</string>
     <string name="ai_hints_label">جرّب أحد هذه</string>
@@ -18,7 +18,7 @@
     <string name="ai_error_busy">لا تزال صورة أخرى قيد الإنشاء. حاول مرة أخرى بعد قليل.</string>
     <string name="ai_error_paused">إنشاء الصور متوقف مؤقتًا. حاول مرة أخرى لاحقًا.</string>
     <string name="ai_name_title">سمِّ هذه البطاقة</string>
-    <string name="ai_name_body">تنتقل إلى المجمّع. يمكنك سحبها إلى مستوى لاحقًا.</string>
+    <string name="ai_name_body">تنتقل إلى الرزمة. يمكنك سحبها إلى مستوى لاحقًا.</string>
     <string name="ai_name_photo_note">تصبح الصورة المولَّدة صورة البطاقة.</string>
     <string name="ai_name_field">الاسم</string>
     <string name="action_add">إضافة</string>

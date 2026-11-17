@@ -132,7 +132,7 @@ class RankingsInTheMenuTest {
         composeRule.onNodeWithTag(CommunityListTestTags.RANK_IT_YOURSELF, useUnmergedTree = true).assertExists()
         composeRule.onNodeWithText("Rank it yourself", useUnmergedTree = true).assertExists()
         composeRule.onNodeWithText("Drag any card", useUnmergedTree = true).assertExists()
-        composeRule.onNodeWithText("Pool · 0 unranked", useUnmergedTree = true).assertDoesNotExist()
+        composeRule.onNodeWithText("0 cards left", useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test

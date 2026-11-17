@@ -3,17 +3,23 @@
     <string name="cd_clear_query">Очистить поиск</string>
     <string name="cd_close_search">Закрыть поиск</string>
     <string name="home_search_hint">Поиск по вашим спискам</string>
-    <string name="tier_lists_content_description_as_pictures">Показать доски картинками</string>
-    <string name="tier_lists_content_description_as_rows">Показать доски списком</string>
+    <string name="tier_lists_content_description_as_pictures">Показать списки картинками</string>
+    <string name="tier_lists_content_description_as_rows">Показать списки строками</string>
     <string name="tier_lists_content_description_search">Поиск по вашим спискам</string>
     <string name="tier_lists_content_description_settings">Настройки</string>
     <string name="action_cancel">Отмена</string>
     <string name="action_try_again">Повторить</string>
     <plurals name="list_items_count">
-        <item quantity="one">%1$d элемент</item>
-        <item quantity="few">%1$d элемента</item>
-        <item quantity="many">%1$d элементов</item>
-        <item quantity="other">%1$d элемента</item>
+        <item quantity="one">%1$d карточка</item>
+        <item quantity="few">%1$d карточки</item>
+        <item quantity="many">%1$d карточек</item>
+        <item quantity="other">%1$d карточки</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d запись</item>
+        <item quantity="few">%1$d записи</item>
+        <item quantity="many">%1$d записей</item>
+        <item quantity="other">%1$d записи</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d рейтинг</item>
@@ -31,10 +37,10 @@
         <item quantity="other">%d списка</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d оценено</item>
-        <item quantity="few">%d оценено</item>
-        <item quantity="many">%d оценено</item>
-        <item quantity="other">%d оценено</item>
+        <item quantity="one">%d разложена</item>
+        <item quantity="few">%d разложены</item>
+        <item quantity="many">%d разложено</item>
+        <item quantity="other">%d разложено</item>
     </plurals>
     <string name="tier_lists_title">Ваши списки</string>
     <string name="snack_published_under_review">Сохранено. Список ждёт модератора, прежде чем его увидят другие.</string>
@@ -47,10 +53,10 @@
         <item quantity="many">Опубликовано. Не удалось добавить %1$d картинок с других сайтов.</item>
         <item quantity="other">Опубликовано. Не удалось добавить %1$d картинки с других сайтов.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Вернуть все карточки в пул</string>
-    <string name="community_return_to_pool_title">Вернуть все карточки в пул?</string>
+    <string name="community_return_all_to_pool">Вернуть все карточки в колоду</string>
+    <string name="community_return_to_pool_title">Вернуть все карточки в колоду?</string>
     <string name="community_return_to_pool_explanation">Расстановка по тирам будет сброшена.</string>
-    <string name="community_return_to_pool_confirm">Вернуть в пул</string>
+    <string name="community_return_to_pool_confirm">Вернуть в колоду</string>
     <string name="ranking_choice_sign_in">Войти для публикации</string>
     <string name="ranking_offer_title">Показать другим, как вы его разложили?</string>
     <string name="ranking_offer_show">Показать в рейтингах</string>

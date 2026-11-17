@@ -3,13 +3,16 @@
     <string name="cd_clear_query">検索をクリア</string>
     <string name="cd_close_search">検索を閉じる</string>
     <string name="home_search_hint">リストを検索</string>
-    <string name="tier_lists_content_description_as_pictures">ボードを画像で表示</string>
-    <string name="tier_lists_content_description_as_rows">ボードをリストで表示</string>
+    <string name="tier_lists_content_description_as_pictures">リストを画像で表示</string>
+    <string name="tier_lists_content_description_as_rows">リストを行で表示</string>
     <string name="tier_lists_content_description_search">リストを検索</string>
     <string name="tier_lists_content_description_settings">設定</string>
     <string name="action_cancel">キャンセル</string>
     <string name="action_try_again">もう一度試す</string>
     <plurals name="list_items_count">
+        <item quantity="other">カード %1$d 枚</item>
+    </plurals>
+    <plurals name="trash_entry_count">
         <item quantity="other">%1$d件</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
@@ -22,7 +25,7 @@
         <item quantity="other">%dリスト</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="other">%d件評価済み</item>
+        <item quantity="other">%d枚配置済み</item>
     </plurals>
     <string name="tier_lists_title">あなたのリスト</string>
     <string name="snack_published_under_review">保存しました。他の人に表示される前に、モデレーターの確認を待っています。</string>
@@ -32,10 +35,10 @@
     <plurals name="snack_pictures_dropped">
         <item quantity="other">公開しました。他のサイトの画像%1$d枚を追加できませんでした。</item>
     </plurals>
-    <string name="community_return_all_to_pool">すべてのカードをプールに戻す</string>
-    <string name="community_return_to_pool_title">すべてのカードをプールに戻しますか？</string>
+    <string name="community_return_all_to_pool">すべてのカードを山札に戻す</string>
+    <string name="community_return_to_pool_title">すべてのカードを山札に戻しますか？</string>
     <string name="community_return_to_pool_explanation">ランクの配置がリセットされます。</string>
-    <string name="community_return_to_pool_confirm">プールに戻す</string>
+    <string name="community_return_to_pool_confirm">山札に戻す</string>
     <string name="ranking_choice_sign_in">ログインして公開</string>
     <string name="ranking_offer_title">自分の並べ方をほかの人に見せますか？</string>
     <string name="ranking_offer_show">ランキングに表示</string>
@@ -49,5 +52,5 @@
     <string name="ranking_choice_storage_guest">非公開のコピーはこの端末のライブラリに保存されます。同期するにはログインしてください。</string>
     <string name="publication_preview_independent">別の公開リストとして公開されます。非公開のコピーは引き続き編集できます。</string>
     <string name="source_changed_recheck">現在の元リストと照合</string>
-    <string name="publication_limit_until">新しいリストは%1$s以降に公開できます。非公開ボードの保存とランキングの公開は引き続き利用できます。</string>
+    <string name="publication_limit_until">新しいリストは%1$s以降に公開できます。非公開リストの保存とランキングの公開は引き続き利用できます。</string>
 </resources>

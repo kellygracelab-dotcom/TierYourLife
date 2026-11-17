@@ -1,6 +1,6 @@
 <resources>
     <string name="ai_title">Generate an image</string>
-    <string name="ai_caption">New cards go into the “%1$s” pool.</string>
+    <string name="ai_caption">New cards go into the deck of “%1$s”.</string>
     <string name="ai_empty_title">Describe an image</string>
     <string name="ai_empty_body">The AI draws it. Keep the ones you like as cards.</string>
     <string name="ai_hints_label">Try one of these</string>
@@ -18,7 +18,7 @@
     <string name="ai_error_busy">Another picture is still being made. Try again in a moment.</string>
     <string name="ai_error_paused">Making pictures is paused for now. Try again later.</string>
     <string name="ai_name_title">Name this card</string>
-    <string name="ai_name_body">Goes into the pool. You can drag it into a tier afterwards.</string>
+    <string name="ai_name_body">Goes into the deck. You can drag it into a tier afterwards.</string>
     <string name="ai_name_photo_note">The generated image becomes the card’s photo.</string>
     <string name="ai_name_field">Name</string>
     <string name="action_add">Add</string>

@@ -4,15 +4,19 @@
     <string name="cd_clear_query">Clear search</string>
     <string name="cd_close_search">Close search</string>
     <string name="home_search_hint">Search your lists</string>
-    <string name="tier_lists_content_description_as_pictures">Show boards as pictures</string>
-    <string name="tier_lists_content_description_as_rows">Show boards as rows</string>
+    <string name="tier_lists_content_description_as_pictures">Show lists as pictures</string>
+    <string name="tier_lists_content_description_as_rows">Show lists as rows</string>
     <string name="tier_lists_content_description_search">Search your lists</string>
     <string name="tier_lists_content_description_settings">Settings</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_try_again">Try again</string>
     <plurals name="list_items_count">
-        <item quantity="one">%1$d item</item>
-        <item quantity="other">%1$d items</item>
+        <item quantity="one">%1$d card</item>
+        <item quantity="other">%1$d cards</item>
+    </plurals>
+    <plurals name="trash_entry_count">
+        <item quantity="one">%1$d entry</item>
+        <item quantity="other">%1$d entries</item>
     </plurals>
     <plurals name="tier_lists_rankings_count">
         <item quantity="one">%d ranking</item>
@@ -26,8 +30,8 @@
         <item quantity="other">%d lists</item>
     </plurals>
     <plurals name="tier_lists_ranked_count">
-        <item quantity="one">%d ranked</item>
-        <item quantity="other">%d ranked</item>
+        <item quantity="one">%d placed</item>
+        <item quantity="other">%d placed</item>
     </plurals>
     <string name="tier_lists_title">Your lists</string>
     <string name="snack_published_under_review">Saved. It waits for a moderator before others can see it.</string>
@@ -38,10 +42,10 @@
         <item quantity="one">Published. %1$d picture from another site couldn’t be added.</item>
         <item quantity="other">Published. %1$d pictures from other sites couldn’t be added.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Return all cards to pool</string>
-    <string name="community_return_to_pool_title">Return all cards to the pool?</string>
+    <string name="community_return_all_to_pool">Return all cards to the deck</string>
+    <string name="community_return_to_pool_title">Return all cards to the deck?</string>
     <string name="community_return_to_pool_explanation">The tier arrangement will be reset.</string>
-    <string name="community_return_to_pool_confirm">Return to pool</string>
+    <string name="community_return_to_pool_confirm">Return to the deck</string>
     <string name="ranking_choice_sign_in">Sign in to publish</string>
     <string name="ranking_offer_title">Show others how you ranked it?</string>
     <string name="ranking_offer_show">Show in Rankings</string>
@@ -55,7 +59,7 @@
     <string name="ranking_choice_storage_guest">Your private copy is saved in the library on this device. Sign in to sync it.</string>
     <string name="publication_preview_independent">This will be a separate public list. Your private copy stays editable.</string>
     <string name="source_changed_recheck">Check against the current original</string>
-    <string name="publication_limit_until">You can publish another new list after %1$s. You can still keep private boards and publish Rankings.</string>
+    <string name="publication_limit_until">You can publish another new list after %1$s. You can still keep private lists and publish Rankings.</string>
     <string name="tmdb_attribution" translatable="false">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
     <string name="igdb_attribution" translatable="false">Game data and covers from IGDB.com</string>
 </resources>

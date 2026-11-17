@@ -1,6 +1,6 @@
 <resources>
     <string name="ai_title">Згенерувати зображення</string>
-    <string name="ai_caption">Нові картки потрапляють у пул «%1$s».</string>
+    <string name="ai_caption">Нові картки потрапляють у колоду «%1$s».</string>
     <string name="ai_empty_title">Опишіть зображення</string>
     <string name="ai_empty_body">ШІ намалює його. Ті, що сподобаються, зберігайте як картки.</string>
     <string name="ai_hints_label">Спробуйте один із варіантів</string>
@@ -18,7 +18,7 @@
     <string name="ai_error_busy">Інше зображення ще створюється. Спробуйте знову за хвилину.</string>
     <string name="ai_error_paused">Створення зображень зараз призупинено. Спробуйте пізніше.</string>
     <string name="ai_name_title">Назвіть картку</string>
-    <string name="ai_name_body">Потрапляє в пул. Потім можна перетягнути її на рівень.</string>
+    <string name="ai_name_body">Потрапляє в колоду. Потім можна перетягнути її на рівень.</string>
     <string name="ai_name_photo_note">Згенероване зображення стане фото картки.</string>
     <string name="ai_name_field">Назва</string>
     <string name="action_add">Додати</string>

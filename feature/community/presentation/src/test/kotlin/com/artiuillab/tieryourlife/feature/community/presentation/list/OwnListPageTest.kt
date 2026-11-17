@@ -75,7 +75,7 @@ class OwnListPageTest {
         composeRule.onNodeWithTag(CommunityListTestTags.showing(Showing.Mine)).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.YOUR_LIST).assertExists()
         composeRule.onNodeWithText("Published").assertExists()
-        composeRule.onNodeWithText("This is what visitors see. Changes happen on your board.").assertExists()
+        composeRule.onNodeWithText("This is what visitors see. You change it in Your lists.").assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.COPY_LINK).assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.RESTORE_BOARD).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).assertDoesNotExist()

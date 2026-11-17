@@ -55,7 +55,7 @@
     <string name="play_start">Başla</string>
     <string name="play_continue">Devam</string>
     <string name="play_back">Geri</string>
-    <string name="play_pool">Havuz</string>
+    <string name="play_pool">Deste</string>
     <string name="play_everything">Tümü</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d kart</item>
@@ -65,7 +65,7 @@
         <item quantity="one">%1$d/%2$d seçildi</item>
         <item quantity="other">%1$d/%2$d seçildi</item>
     </plurals>
-    <string name="play_ranked">Sıralananlar</string>
+    <string name="play_ranked">Yerleştirilenler</string>
     <string name="play_quit">Çık</string>
     <string name="play_duel_of">Düello %1$d/%2$d</string>
     <string name="play_duel_of_about">Düello %1$d/yaklaşık %2$d</string>
@@ -78,12 +78,12 @@
     <string name="play_snack_game_saved">Oyun kaydedildi · %1$d/%2$d</string>
     <string name="play_snack_discard">Vazgeç</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Pano %1$d düellodan düzenlendi</item>
-        <item quantity="other">Pano %1$d düellodan düzenlendi</item>
+        <item quantity="one">Liste %1$d düelloya göre dizildi</item>
+        <item quantity="other">Liste %1$d düelloya göre dizildi</item>
     </plurals>
     <string name="play_snack_saved_discarded">Kayıtlı oyun silindi</string>
     <string name="play_snack_undo">Geri al</string>
-    <string name="play_snack_game_undone">Oyundan önceki tahtaya dönüldü</string>
+    <string name="play_snack_game_undone">Oyundan önceki listeye dönüldü</string>
     <string name="play_snack_redo">Yinele</string>
     <string name="play_snack_nothing_answered">Hiç düello yanıtlanmadı, hiçbir şey taşınmadı</string>
     <string name="play_snack_not_saved">Oyun kaydedilemedi</string>

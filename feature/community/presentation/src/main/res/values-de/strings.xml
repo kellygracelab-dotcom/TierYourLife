@@ -17,7 +17,7 @@
     <string name="author_unavailable_body">Seine Listen stehen im Feed, dort kannst du jede davon öffnen.</string>
     <string name="ban_forever">Für immer</string>
     <string name="ban_forever_confirm_action">Für immer sperren</string>
-    <string name="ban_forever_confirm_body">Diese Person wird nie wieder veröffentlichen. Die eigenen Boards bleiben, fremde Listen kann sie weiterhin einordnen.</string>
+    <string name="ban_forever_confirm_body">Diese Person wird nie wieder veröffentlichen. Die eigenen Listen bleiben, fremde kann sie weiterhin einordnen.</string>
     <string name="ban_forever_confirm_title">%1$s für immer sperren?</string>
     <string name="ban_forever_note">Fragt vorher noch einmal nach</string>
     <string name="ban_month">Ein Monat</string>
@@ -59,7 +59,7 @@
     <string name="home_community_failed">Community konnte nicht geladen werden</string>
     <string name="home_community_failed_body">Prüfe deine Verbindung.</string>
     <string name="home_community_unverified_body">Google Play bestätigt die Installation, bevor die Community aufgeht. Bei einer Installation aus Play erledigt sich das meist von selbst.</string>
-    <string name="home_following_empty">Niemand, dem du folgst, hat ein Board in %1$s.</string>
+    <string name="home_following_empty">Niemand, dem du folgst, hat eine Liste in %1$s.</string>
     <string name="home_following_empty_all">Wem du folgst, hat noch nichts veröffentlicht.</string>
     <string name="home_following_nobody">Du folgst noch niemandem</string>
     <string name="home_following_nobody_body">Folge jemandem, und seine neuen Listen erscheinen hier zuerst.</string>
@@ -79,7 +79,7 @@
         <item quantity="one">%1$d Meldung</item>
         <item quantity="other">%1$d Meldungen</item>
     </plurals>
-    <string name="moderation_take_down_body">Die Liste ist endgültig weg. Die eigenen Boards bleiben auf dem Telefon.</string>
+    <string name="moderation_take_down_body">Die Liste ist endgültig weg. Die eigenen Listen bleiben auf dem Telefon.</string>
     <string name="moderation_take_down_title">Zurückziehen</string>
     <string name="moderation_take_down_with">Zurückziehen · %1$s</string>
     <string name="moderation_taken_down">Veröffentlichung aufgehoben</string>
@@ -287,9 +287,9 @@
     <string name="community_your_list_badge">Deine Liste</string>
     <string name="community_own_published">Veröffentlicht</string>
     <string name="community_own_anonymous">Anonym · nur du siehst, dass sie dir gehört</string>
-    <string name="community_own_list_line">So sehen Besucher sie. Ändern kannst du sie auf deinem Board.</string>
+    <string name="community_own_list_line">So sehen Besucher sie. Ändern kannst du sie in „Deine Listen“.</string>
     <string name="community_restore_from_trash">Aus dem Papierkorb holen</string>
-    <string name="community_get_back_as_board">Als Board zurückholen</string>
+    <string name="community_get_back_as_board">Zurück in „Deine Listen“ holen</string>
     <string name="community_copy_link">Link kopieren</string>
     <string name="community_link_copied">Link kopiert</string>
     <string name="community_drop_to_start_yours">Loslassen für deine Version · Meine beginnt mit dem Ranking von %1$s</string>
@@ -324,7 +324,7 @@
     <string name="community_update_in_rankings">In Ranglisten aktualisieren</string>
     <string name="community_remove_from_rankings">Aus Ranglisten entfernen</string>
     <string name="community_remove_ranking_title">Deine Rangliste aus den Ranglisten entfernen?</string>
-    <string name="community_remove_ranking_body">Sie verschwindet aus den Ranglisten dieser Liste. Dein Board bleibt in deinen Listen.</string>
+    <string name="community_remove_ranking_body">Sie verschwindet aus den Ranglisten dieser Liste. Du behältst sie in „Deine Listen“.</string>
     <string name="community_remove_ranking_confirm">Entfernen</string>
     <string name="feed_unverified">Diese App konnte nicht geprüft werden, deshalb laden die Listen nicht.</string>
 </resources>

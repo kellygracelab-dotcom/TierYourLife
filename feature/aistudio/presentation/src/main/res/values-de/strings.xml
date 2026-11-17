@@ -1,6 +1,6 @@
 <resources>
     <string name="ai_title">Bild generieren</string>
-    <string name="ai_caption">Neue Karten kommen in den Pool „%1$s“.</string>
+    <string name="ai_caption">Neue Karten kommen auf den Stapel von „%1$s“.</string>
     <string name="ai_empty_title">Bild beschreiben</string>
     <string name="ai_empty_body">Die KI zeichnet es. Behalte die, die dir gefallen, als Karten.</string>
     <string name="ai_hints_label">Probier eines davon</string>
@@ -18,7 +18,7 @@
     <string name="ai_error_busy">Ein anderes Bild wird noch erstellt. Versuche es gleich noch einmal.</string>
     <string name="ai_error_paused">Das Erstellen von Bildern ist gerade pausiert. Versuche es später noch einmal.</string>
     <string name="ai_name_title">Karte benennen</string>
-    <string name="ai_name_body">Kommt in den Pool. Du kannst sie später in eine Stufe ziehen.</string>
+    <string name="ai_name_body">Kommt auf den Stapel. Du kannst sie später in eine Stufe ziehen.</string>
     <string name="ai_name_photo_note">Das generierte Bild wird zum Foto der Karte.</string>
     <string name="ai_name_field">Name</string>
     <string name="action_add">Hinzufügen</string>

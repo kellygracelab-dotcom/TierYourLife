@@ -1,7 +1,7 @@
 <resources>
     <string name="tier_lists_private">gizli</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · henüz sıralanan yok</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · henüz yerleştirilen yok</string>
     <string name="tier_lists_status_start_dragging">Sıralamak için sürükleyin</string>
 
     <plurals name="search_results_count">
@@ -60,8 +60,8 @@
         <item quantity="other">%1$d seçildi</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="one">1 öğe ekle</item>
-        <item quantity="other">%1$d öğe ekle</item>
+        <item quantity="one">1 kart ekle</item>
+        <item quantity="other">%1$d kart ekle</item>
     </plurals>
     <string name="item_search_add_disabled">Ekle</string>
 
@@ -92,10 +92,6 @@
     <string name="action_empty_trash">Çöp kutusunu boşalt</string>
     <string name="empty_trash_dialog_title">Çöp kutusu boşaltılsın mı?</string>
     <string name="empty_trash_dialog_body">%1$s bu cihazdan silinecek. Bu geri alınamaz.</string>
-    <plurals name="trash_entry_count">
-        <item quantity="one">%1$d kayıt</item>
-        <item quantity="other">%1$d kayıt</item>
-    </plurals>
     <string name="trash_empty_title">Çöp kutusu boş</string>
     <string name="trash_empty_body">Sildiğiniz listeler burada görünür. Siz silene kadar kalırlar.</string>
     <string name="cd_more">Diğer seçenekler</string>
@@ -104,7 +100,7 @@
     <string name="cd_trash_back">Geri git</string>
 
     <string name="home_start_with">Şununla başla</string>
-    <string name="home_start_hint">Panoyu hemen oluşturur. Adını değiştirmek için başlığa dokunun.</string>
+    <string name="home_start_hint">Listeyi hemen oluşturur. Adını değiştirmek için başlığa dokunun.</string>
     <string name="home_new_list">Yeni liste</string>
     <string name="home_suggestion_films">Filmler</string>
     <string name="home_suggestion_games">Oyunlar</string>
@@ -115,22 +111,22 @@
     <string name="home_tab_community">Topluluk</string>
     <string name="lists_sort_newest">En yeni</string>
     <string name="lists_sort_oldest">En eski</string>
-    <string name="lists_filter">Panoları filtrele</string>
+    <string name="lists_filter">Listeleri filtrele</string>
     <string name="lists_filters_title">Filtre</string>
-    <string name="lists_filter_category">Kategori</string>
+    <string name="lists_filter_category">Bölüm</string>
     <string name="lists_filter_any">Herhangi</string>
     <string name="lists_filter_visibility">Görünürlük</string>
     <string name="lists_filter_public">Herkese açık</string>
     <string name="lists_filter_private">Özel</string>
     <string name="lists_filter_clear">Tümünü temizle</string>
     <string name="lists_group_favourites">Favoriler</string>
-    <string name="lists_group_others">Tüm panolar</string>
+    <string name="lists_group_others">Tüm listeler</string>
     <string name="lists_favourite_add">Favorilere ekle</string>
     <string name="lists_favourite_remove">Favorilerden çıkar</string>
     <string name="snack_published_list_still_public">Silinmedi, korundu: herkese açık kopyası kaldırılamadı. Çevrimiçi olduğunuzda yeniden deneyin.</string>
     <plurals name="board_count">
-        <item quantity="one">1 pano</item>
-        <item quantity="other">%1$d pano</item>
+        <item quantity="one">1 liste</item>
+        <item quantity="other">%1$d liste</item>
     </plurals>
     <string name="local_only_footer">%1$s, yalnızca bu telefonda</string>
     <string name="local_only_notice_keep_one">Telefon değiştirdiğinizde kaybolmaması için oturum açın.</string>
@@ -196,7 +192,7 @@
     <string name="cover_tap_fold">Daraltmak için dokunun</string>
     <string name="cover_hand_off_title">Devam etmek için telefonu açın</string>
     <string name="cover_hand_off_list">“%1$s” ana ekranda açılacak.</string>
-    <string name="cover_hand_off_card">“%1$s” kendi panosunda açılacak.</string>
+    <string name="cover_hand_off_card">“%1$s” kendi listesinde açılacak.</string>
     <string name="cover_hand_off_community">Topluluktan “%1$s” ana ekranda açılacak.</string>
     <string name="cover_hand_off_app">Uygulama ana ekranda açılacak.</string>
     <plurals name="cover_cards_count">
@@ -232,7 +228,7 @@
     <string name="add_to_list_new">Yeni liste…</string>
     <string name="add_to_list_new_name">Liste adı</string>
     <string name="add_to_list_cancel">İptal</string>
-    <string name="add_to_list_to_pool">Havuza</string>
+    <string name="add_to_list_to_pool">Desteye</string>
     <string name="add_to_list_added">“%1$s” listesine eklendi</string>
     <string name="add_to_list_sign_in">Bağlantıdan gelen görseller hesabında saklanır. Eklemek için TierYourLife’ta giriş yap ya da kartı görselsiz ekle.</string>
     <string name="cover_adjust_title">Kapağı ayarla</string>

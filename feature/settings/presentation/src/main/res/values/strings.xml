@@ -9,7 +9,7 @@
     <string name="export_tier_empty">(empty)</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">Unranked</string>
+    <string name="export_unranked_heading">Not placed</string>
     <string name="hidden_empty_body">Lists and people you hide in the community wait here, in case you change your mind.</string>
     <string name="hidden_empty_title">Everything is showing</string>
     <string name="hidden_lists">LISTS</string>
@@ -42,9 +42,9 @@
         <item quantity="one">Signed in · %1$d credit</item>
         <item quantity="other">Signed in · %1$d credits</item>
     </plurals>
-    <string name="settings_backup_label">Back up my boards</string>
+    <string name="settings_backup_label">Back up my lists</string>
     <string name="settings_backup_note">Your photos and generated cards go to your account, where only you can see them. Publishing a list copies its pictures into the feed, where anyone can.</string>
-    <string name="settings_backup_off_body">Nothing on this phone is deleted: your boards stay here. The copy in your account is deleted, on your other devices the boards move to their trash, and a new phone will start empty. Turn it back on and they go up again.</string>
+    <string name="settings_backup_off_body">Nothing on this phone is deleted: your lists stay here. The copy in your account is deleted, on your other devices the lists move to their trash, and a new phone will start empty. Turn it back on and they go up again.</string>
     <string name="settings_backup_off_cancel">Cancel</string>
     <string name="settings_backup_off_confirm">Stop and delete</string>
     <string name="settings_backup_off_title">Stop backing up?</string>
@@ -52,10 +52,10 @@
     <string name="settings_backup_pictures_sub">%1$s in your account</string>
     <string name="settings_backup_refused_not_accepted">“%1$s” isn’t backed up: the account won’t take something on it.</string>
     <string name="settings_backup_refused_too_large">“%1$s” isn’t backed up: it’s bigger than the account keeps. Take some cards off it.</string>
-    <string name="settings_backup_refused_too_many">“%1$s” isn’t backed up: the account keeps 200 boards at most. Delete the ones you no longer need.</string>
-    <string name="settings_backup_refused_too_many_tiers">“%1$s” isn’t backed up: it has more tiers than the account keeps, 19 plus the pool. Take a tier off it.</string>
+    <string name="settings_backup_refused_too_many">“%1$s” isn’t backed up: the account keeps 200 lists at most. Delete the ones you no longer need.</string>
+    <string name="settings_backup_refused_too_many_tiers">“%1$s” isn’t backed up: it has more tiers than the account keeps, 19 plus the deck. Take a tier off it.</string>
     <string name="settings_backup_stuck">Not backed up since %1$s. Check your connection.</string>
-    <string name="settings_backup_sub">Tiers, items and notes</string>
+    <string name="settings_backup_sub">Tiers, cards and notes</string>
     <string name="settings_export">Export data</string>
     <string name="settings_export_sub">Save a readable copy of every list</string>
     <string name="settings_group_appearance">Appearance</string>
@@ -82,7 +82,7 @@
     <string name="theme_light">Light</string>
     <string name="theme_system">System</string>
     <plurals name="unranked_count">
-        <item quantity="one">%1$d unranked</item>
-        <item quantity="other">%1$d unranked</item>
+        <item quantity="one">%1$d card left</item>
+        <item quantity="other">%1$d cards left</item>
     </plurals>
 </resources>

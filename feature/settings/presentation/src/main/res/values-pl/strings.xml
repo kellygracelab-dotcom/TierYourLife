@@ -9,7 +9,7 @@
     <string name="export_tier_empty">(puste)</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">Nieocenione</string>
+    <string name="export_unranked_heading">Nieumieszczone</string>
     <string name="hidden_empty_body">Listy i osoby ukryte w społeczności czekają tutaj, gdybyś zmienił zdanie.</string>
     <string name="hidden_empty_title">Wszystko jest widoczne</string>
     <string name="hidden_lists">LISTY</string>
@@ -46,18 +46,18 @@
         <item quantity="many">Zalogowano · %1$d kredytów</item>
         <item quantity="other">Zalogowano · %1$d kredytu</item>
     </plurals>
-    <string name="settings_backup_label">Kopia moich tablic</string>
+    <string name="settings_backup_label">Kopia moich list</string>
     <string name="settings_backup_note">Twoje zdjęcia i wygenerowane karty trafiają na twoje konto, gdzie widzisz je tylko Ty. Publikacja kopiuje obrazy listy do kanału, gdzie widzą je wszyscy.</string>
-    <string name="settings_backup_off_body">Z tego telefonu nic nie zostanie usunięte: tablice zostają tutaj. Kopia na koncie zostanie usunięta, na twoich innych urządzeniach tablice trafią do kosza, a nowy telefon zacznie od pustego. Po ponownym włączeniu trafią na konto jeszcze raz.</string>
+    <string name="settings_backup_off_body">Z tego telefonu nic nie zostanie usunięte: listy zostają tutaj. Kopia na koncie zostanie usunięta, na twoich innych urządzeniach listy trafią do kosza, a nowy telefon zacznie od pustego. Po ponownym włączeniu trafią na konto jeszcze raz.</string>
     <string name="settings_backup_off_cancel">Anuluj</string>
     <string name="settings_backup_off_confirm">Usuń kopię</string>
     <string name="settings_backup_off_title">Przestać tworzyć kopię?</string>
     <string name="settings_backup_pictures_label">Zdjęcia tylko przez Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s na twoim koncie</string>
     <string name="settings_backup_refused_not_accepted">„%1$s” nie ma kopii: konto nie przyjmuje czegoś, co na niej jest.</string>
-    <string name="settings_backup_refused_too_large">„%1$s” nie ma kopii: tablica jest większa, niż konto przechowuje. Zdejmij z niej kilka kart.</string>
-    <string name="settings_backup_refused_too_many">„%1$s” nie ma kopii: konto przechowuje najwyżej 200 tablic. Usuń te, których już nie potrzebujesz.</string>
-    <string name="settings_backup_refused_too_many_tiers">„%1$s” nie ma kopii: ma więcej poziomów, niż konto przechowuje, 19 i pula. Usuń z niej jeden poziom.</string>
+    <string name="settings_backup_refused_too_large">„%1$s” nie ma kopii: lista jest większa, niż konto przechowuje. Zdejmij z niej kilka kart.</string>
+    <string name="settings_backup_refused_too_many">„%1$s” nie ma kopii: konto przechowuje najwyżej 200 list. Usuń te, których już nie potrzebujesz.</string>
+    <string name="settings_backup_refused_too_many_tiers">„%1$s” nie ma kopii: ma więcej poziomów, niż konto przechowuje, 19 i talia. Usuń z niej jeden poziom.</string>
     <string name="settings_backup_stuck">Brak kopii od %1$s. Sprawdź połączenie.</string>
     <string name="settings_backup_sub">Poziomy, karty i podpisy</string>
     <string name="settings_export">Eksportuj dane</string>
@@ -88,9 +88,9 @@
     <string name="theme_light">Jasny</string>
     <string name="theme_system">Systemowy</string>
     <plurals name="unranked_count">
-        <item quantity="one">%1$d nieocenione</item>
-        <item quantity="few">%1$d nieocenione</item>
-        <item quantity="many">%1$d nieocenione</item>
-        <item quantity="other">%1$d nieocenione</item>
+        <item quantity="one">Została %1$d karta</item>
+        <item quantity="few">Zostały %1$d karty</item>
+        <item quantity="many">Zostało %1$d kart</item>
+        <item quantity="other">Zostało %1$d karty</item>
     </plurals>
 </resources>

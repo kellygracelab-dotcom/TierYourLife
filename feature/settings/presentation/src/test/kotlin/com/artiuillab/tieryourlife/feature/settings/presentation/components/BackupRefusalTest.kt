@@ -47,7 +47,7 @@ class BackupRefusalTest {
         show(settings(BackupRefusal("Films", BackupRefusal.Reason.TooManyTiers)))
 
         composeRule.onNodeWithTag(SettingsTestTags.BACKUP_STUCK)
-            .assertTextEquals("“Films” isn’t backed up: it has more tiers than the account keeps, 19 plus the pool. Take a tier off it.")
+            .assertTextEquals("“Films” isn’t backed up: it has more tiers than the account keeps, 19 plus the deck. Take a tier off it.")
     }
 
     @Test
@@ -55,7 +55,7 @@ class BackupRefusalTest {
         show(settings(BackupRefusal("Games", BackupRefusal.Reason.TooManyBoards)), stuckSince = "2 days ago")
 
         composeRule.onNodeWithTag(SettingsTestTags.BACKUP_STUCK)
-            .assertTextEquals("“Games” isn’t backed up: the account keeps 200 boards at most. Delete the ones you no longer need.")
+            .assertTextEquals("“Games” isn’t backed up: the account keeps 200 lists at most. Delete the ones you no longer need.")
     }
 
     @Test

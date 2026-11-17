@@ -17,7 +17,7 @@
     <string name="author_unavailable_body">Its lists are in the feed, and you can open any of them there.</string>
     <string name="ban_forever">Forever</string>
     <string name="ban_forever_confirm_action">Ban forever</string>
-    <string name="ban_forever_confirm_body">They will never publish again. Their own boards stay on their phone, and they can still rank other people’s lists.</string>
+    <string name="ban_forever_confirm_body">They will never publish again. Their own lists stay on their phone, and they can still rank other people’s lists.</string>
     <string name="ban_forever_confirm_title">Ban %1$s forever?</string>
     <string name="ban_forever_note">Asks again before it applies</string>
     <string name="ban_month">A month</string>
@@ -79,7 +79,7 @@
         <item quantity="one">%1$d report</item>
         <item quantity="other">%1$d reports</item>
     </plurals>
-    <string name="moderation_take_down_body">The list goes for good. Their own boards stay on their phone.</string>
+    <string name="moderation_take_down_body">The list goes for good. Their own lists stay on their phone.</string>
     <string name="moderation_take_down_title">Take it down</string>
     <string name="moderation_take_down_with">Take down · %1$s</string>
     <string name="moderation_taken_down">Taken down</string>
@@ -287,9 +287,9 @@
     <string name="community_your_list_badge">Your list</string>
     <string name="community_own_published">Published</string>
     <string name="community_own_anonymous">Anonymous · only you see it’s yours</string>
-    <string name="community_own_list_line">This is what visitors see. Changes happen on your board.</string>
+    <string name="community_own_list_line">This is what visitors see. You change it in Your lists.</string>
     <string name="community_restore_from_trash">Restore from trash</string>
-    <string name="community_get_back_as_board">Get it back as a board</string>
+    <string name="community_get_back_as_board">Get it back in Your lists</string>
     <string name="community_copy_link">Copy link</string>
     <string name="community_link_copied">Link copied</string>
     <string name="community_drop_to_start_yours">Drop it to start your version · Mine begins as %1$s’s</string>
@@ -324,7 +324,7 @@
     <string name="community_update_in_rankings">Update in Rankings</string>
     <string name="community_remove_from_rankings">Remove from Rankings</string>
     <string name="community_remove_ranking_title">Remove your ranking from Rankings?</string>
-    <string name="community_remove_ranking_body">It leaves this list’s rankings. Your board stays in Your lists.</string>
+    <string name="community_remove_ranking_body">It leaves this list’s rankings. You keep it in Your lists.</string>
     <string name="community_remove_ranking_confirm">Remove</string>
     <string name="feed_unverified">Couldn’t check this app, so the lists can’t load.</string>
 </resources>

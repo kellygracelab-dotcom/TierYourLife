@@ -429,7 +429,7 @@ private fun TrashRow(trashCount: Int, onClick: () -> Unit) {
     val subtitle = if (trashCount == 0) {
         stringResource(R.string.settings_trash_empty)
     } else {
-        pluralStringResource(ThemeR.plurals.list_items_count, trashCount, trashCount)
+        pluralStringResource(ThemeR.plurals.trash_entry_count, trashCount, trashCount)
     }
     SettingsRow(
         icon = { DeleteOutlineIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },

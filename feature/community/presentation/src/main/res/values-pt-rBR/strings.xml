@@ -17,7 +17,7 @@
     <string name="author_unavailable_body">As listas dele estão no feed, e você pode abrir qualquer uma por lá.</string>
     <string name="ban_forever">Para sempre</string>
     <string name="ban_forever_confirm_action">Banir para sempre</string>
-    <string name="ban_forever_confirm_body">Nunca mais vai publicar. Os quadros dele continuam no telefone e ele ainda pode ordenar listas de outros.</string>
+    <string name="ban_forever_confirm_body">Nunca mais vai publicar. As listas dele continuam no telefone e ele ainda pode ordenar as de outros.</string>
     <string name="ban_forever_confirm_title">Banir %1$s para sempre?</string>
     <string name="ban_forever_note">Pergunta de novo antes de aplicar</string>
     <string name="ban_month">Um mês</string>
@@ -60,7 +60,7 @@
     <string name="home_community_failed">Não foi possível carregar a comunidade</string>
     <string name="home_community_failed_body">Verifique sua conexão.</string>
     <string name="home_community_unverified_body">O Google Play confirma a instalação antes de abrir a comunidade. Se você instalou pela Play, costuma se resolver sozinho.</string>
-    <string name="home_following_empty">Ninguém que você segue tem um quadro em %1$s.</string>
+    <string name="home_following_empty">Ninguém que você segue tem uma lista em %1$s.</string>
     <string name="home_following_empty_all">Ninguém que você segue publicou nada ainda.</string>
     <string name="home_following_nobody">Você não segue ninguém</string>
     <string name="home_following_nobody_body">Siga alguém e as novas listas dessa pessoa aparecem aqui primeiro.</string>
@@ -81,7 +81,7 @@
         <item quantity="many">%1$d denúncias</item>
         <item quantity="other">%1$d denúncias</item>
     </plurals>
-    <string name="moderation_take_down_body">A lista some para sempre. Os quadros dele continuam no telefone.</string>
+    <string name="moderation_take_down_body">A lista some para sempre. As listas dele continuam no telefone.</string>
     <string name="moderation_take_down_title">Remover</string>
     <string name="moderation_take_down_with">Remover · %1$s</string>
     <string name="moderation_taken_down">Publicação removida</string>
@@ -294,9 +294,9 @@
     <string name="community_your_list_badge">Sua lista</string>
     <string name="community_own_published">Publicada</string>
     <string name="community_own_anonymous">Anônima · só você vê que é sua</string>
-    <string name="community_own_list_line">É isto que os visitantes veem. As mudanças acontecem no seu quadro.</string>
+    <string name="community_own_list_line">É isto que os visitantes veem. Você a altera em Suas listas.</string>
     <string name="community_restore_from_trash">Restaurar da lixeira</string>
-    <string name="community_get_back_as_board">Recuperar como quadro</string>
+    <string name="community_get_back_as_board">Recuperar em Suas listas</string>
     <string name="community_copy_link">Copiar link</string>
     <string name="community_link_copied">Link copiado</string>
     <string name="community_drop_to_start_yours">Solte para começar sua versão · Meu começa pela classificação de %1$s</string>
@@ -312,7 +312,7 @@
     <string name="community_action_undo">Desfazer</string>
     <string name="community_picture_credits">Créditos das imagens</string>
     <string name="community_picture_credit_line">%1$s — %2$s</string>
-    <string name="community_ranking_list_changed">O autor mudou esta lista depois que você posicionou as cartas. Posicione de novo para mostrar seu ranking.</string>
+    <string name="community_ranking_list_changed">O autor mudou esta lista depois que você posicionou os cartões. Posicione de novo para mostrar seu ranking.</string>
     <string name="community_ranking_banned">Um moderador removeu uma das suas listas, então por enquanto você não pode mostrar rankings.</string>
     <string name="community_ranking_own_list">Esta lista é sua, então não há um ranking seu para mostrar nela.</string>
     <string name="community_ranking_list_gone">Esta lista não está mais disponível, então seu ranking não pode ser mostrado.</string>
@@ -331,7 +331,7 @@
     <string name="community_update_in_rankings">Atualizar em Classificações</string>
     <string name="community_remove_from_rankings">Remover de Classificações</string>
     <string name="community_remove_ranking_title">Remover seu ranking de Classificações?</string>
-    <string name="community_remove_ranking_body">Ele sai dos rankings desta lista. Seu quadro continua nas suas listas.</string>
+    <string name="community_remove_ranking_body">Ele sai dos rankings desta lista. Você o mantém em Suas listas.</string>
     <string name="community_remove_ranking_confirm">Remover</string>
     <string name="feed_unverified">Não foi possível verificar o app, então as listas não podem carregar.</string>
 </resources>

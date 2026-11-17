@@ -17,7 +17,7 @@
     <string name="author_unavailable_body">Ses listes sont dans le fil, vous pouvez les ouvrir depuis là.</string>
     <string name="ban_forever">Pour toujours</string>
     <string name="ban_forever_confirm_action">Bloquer pour toujours</string>
-    <string name="ban_forever_confirm_body">Cette personne ne publiera plus jamais. Ses tableaux restent sur son téléphone et elle peut toujours classer les listes des autres.</string>
+    <string name="ban_forever_confirm_body">Cette personne ne publiera plus jamais. Ses listes restent sur son téléphone et elle peut toujours classer celles des autres.</string>
     <string name="ban_forever_confirm_title">Bloquer %1$s pour toujours ?</string>
     <string name="ban_forever_note">Redemande avant de s’appliquer</string>
     <string name="ban_month">Un mois</string>
@@ -60,7 +60,7 @@
     <string name="home_community_failed">Impossible de charger la communauté</string>
     <string name="home_community_failed_body">Vérifiez votre connexion.</string>
     <string name="home_community_unverified_body">Google Play confirme l’installation avant d’ouvrir la communauté. Si elle vient de Play, cela se règle en général tout seul.</string>
-    <string name="home_following_empty">Personne que vous suivez n’a de tableau dans %1$s.</string>
+    <string name="home_following_empty">Personne que vous suivez n’a de liste dans %1$s.</string>
     <string name="home_following_empty_all">Personne que vous suivez n’a encore rien publié.</string>
     <string name="home_following_nobody">Vous ne suivez personne</string>
     <string name="home_following_nobody_body">Suivez quelqu’un, et ses nouvelles listes arriveront ici en premier.</string>
@@ -81,7 +81,7 @@
         <item quantity="many">%1$d signalements</item>
         <item quantity="other">%1$d signalements</item>
     </plurals>
-    <string name="moderation_take_down_body">La liste disparaît définitivement. Ses propres tableaux restent sur son téléphone.</string>
+    <string name="moderation_take_down_body">La liste disparaît définitivement. Ses propres listes restent sur son téléphone.</string>
     <string name="moderation_take_down_title">La retirer</string>
     <string name="moderation_take_down_with">Retirer · %1$s</string>
     <string name="moderation_taken_down">Retirée</string>
@@ -294,9 +294,9 @@
     <string name="community_your_list_badge">Votre liste</string>
     <string name="community_own_published">Publiée</string>
     <string name="community_own_anonymous">Anonyme · vous seul voyez qu’elle est à vous</string>
-    <string name="community_own_list_line">Voici ce que voient les visiteurs. Les modifications se font sur votre tableau.</string>
+    <string name="community_own_list_line">Voici ce que voient les visiteurs. Vous la modifiez dans Vos listes.</string>
     <string name="community_restore_from_trash">Restaurer depuis la corbeille</string>
-    <string name="community_get_back_as_board">La récupérer en tableau</string>
+    <string name="community_get_back_as_board">La récupérer dans Vos listes</string>
     <string name="community_copy_link">Copier le lien</string>
     <string name="community_link_copied">Lien copié</string>
     <string name="community_drop_to_start_yours">Lâchez pour commencer votre version · Le mien part du classement de %1$s</string>
@@ -331,7 +331,7 @@
     <string name="community_update_in_rankings">Mettre à jour dans Classements</string>
     <string name="community_remove_from_rankings">Retirer de Classements</string>
     <string name="community_remove_ranking_title">Retirer votre classement de Classements ?</string>
-    <string name="community_remove_ranking_body">Il disparaîtra des classements de cette liste. Votre tableau reste dans vos listes.</string>
+    <string name="community_remove_ranking_body">Il disparaîtra des classements de cette liste. Vous le gardez dans Vos listes.</string>
     <string name="community_remove_ranking_confirm">Retirer</string>
     <string name="feed_unverified">Impossible de vérifier l’app, les listes ne peuvent donc pas se charger.</string>
 </resources>

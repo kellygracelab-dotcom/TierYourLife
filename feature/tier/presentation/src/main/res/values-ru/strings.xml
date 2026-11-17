@@ -1,7 +1,7 @@
 <resources>
     <string name="tier_lists_private">приватно</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · пока ничего не оценено</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · пока ничего не разложено</string>
     <string name="tier_lists_status_start_dragging">Перетащите, чтобы оценить</string>
 
     <plurals name="search_results_count">
@@ -68,10 +68,10 @@
         <item quantity="other">%1$d выбрано</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="one">Добавить %1$d элемент</item>
-        <item quantity="few">Добавить %1$d элемента</item>
-        <item quantity="many">Добавить %1$d элементов</item>
-        <item quantity="other">Добавить %1$d элемента</item>
+        <item quantity="one">Добавить %1$d карточку</item>
+        <item quantity="few">Добавить %1$d карточки</item>
+        <item quantity="many">Добавить %1$d карточек</item>
+        <item quantity="other">Добавить %1$d карточки</item>
     </plurals>
     <string name="item_search_add_disabled">Добавить</string>
 
@@ -108,12 +108,6 @@
     <string name="action_empty_trash">Очистить корзину</string>
     <string name="empty_trash_dialog_title">Очистить корзину?</string>
     <string name="empty_trash_dialog_body">%1$s будет удалено с этого устройства. Это нельзя отменить.</string>
-    <plurals name="trash_entry_count">
-        <item quantity="one">%1$d запись</item>
-        <item quantity="few">%1$d записи</item>
-        <item quantity="many">%1$d записей</item>
-        <item quantity="other">%1$d записи</item>
-    </plurals>
     <string name="trash_empty_title">В корзине пусто</string>
     <string name="trash_empty_body">Списки, которые вы удаляете, появляются здесь. Они остаются, пока вы их не уберёте.</string>
     <string name="cd_more">Больше опций</string>
@@ -122,7 +116,7 @@
     <string name="cd_trash_back">Назад</string>
 
     <string name="home_start_with">Начните с</string>
-    <string name="home_start_hint">Доска создастся сразу. Коснитесь названия, чтобы переименовать.</string>
+    <string name="home_start_hint">Список создастся сразу. Коснитесь названия, чтобы переименовать.</string>
     <string name="home_new_list">Новый список</string>
     <string name="home_suggestion_films">Фильмы</string>
     <string name="home_suggestion_games">Игры</string>
@@ -133,24 +127,24 @@
     <string name="home_tab_community">Сообщество</string>
     <string name="lists_sort_newest">Сначала новые</string>
     <string name="lists_sort_oldest">Сначала старые</string>
-    <string name="lists_filter">Фильтр досок</string>
+    <string name="lists_filter">Фильтр списков</string>
     <string name="lists_filters_title">Фильтр</string>
-    <string name="lists_filter_category">Категория</string>
+    <string name="lists_filter_category">Раздел</string>
     <string name="lists_filter_any">Любая</string>
     <string name="lists_filter_visibility">Видимость</string>
     <string name="lists_filter_public">Публичные</string>
     <string name="lists_filter_private">Приватные</string>
     <string name="lists_filter_clear">Сбросить всё</string>
     <string name="lists_group_favourites">Избранные</string>
-    <string name="lists_group_others">Все доски</string>
+    <string name="lists_group_others">Все списки</string>
     <string name="lists_favourite_add">В избранное</string>
     <string name="lists_favourite_remove">Убрать из избранного</string>
     <string name="snack_published_list_still_public">Список оставлен, а не удалён: публичную копию не удалось снять. Попробуйте снова, когда будет сеть.</string>
     <plurals name="board_count">
-        <item quantity="one">%1$d доска</item>
-        <item quantity="few">%1$d доски</item>
-        <item quantity="many">%1$d досок</item>
-        <item quantity="other">%1$d доски</item>
+        <item quantity="one">%1$d список</item>
+        <item quantity="few">%1$d списка</item>
+        <item quantity="many">%1$d списков</item>
+        <item quantity="other">%1$d списка</item>
     </plurals>
     <string name="local_only_footer">%1$s, только на этом телефоне</string>
     <string name="local_only_notice_keep_one">Войдите, чтобы она осталась при смене телефона.</string>
@@ -220,7 +214,7 @@
     <string name="cover_tap_fold">Нажмите, чтобы свернуть</string>
     <string name="cover_hand_off_title">Раскройте телефон, чтобы продолжить</string>
     <string name="cover_hand_off_list">«%1$s» откроется на основном экране.</string>
-    <string name="cover_hand_off_card">«%1$s» откроется на своей доске.</string>
+    <string name="cover_hand_off_card">«%1$s» откроется в своём списке.</string>
     <string name="cover_hand_off_community">«%1$s» из Сообщества откроется на основном экране.</string>
     <string name="cover_hand_off_app">Приложение откроется на основном экране.</string>
     <plurals name="cover_cards_count">
@@ -260,7 +254,7 @@
     <string name="add_to_list_new">Новый список…</string>
     <string name="add_to_list_new_name">Название списка</string>
     <string name="add_to_list_cancel">Отмена</string>
-    <string name="add_to_list_to_pool">В пул</string>
+    <string name="add_to_list_to_pool">В колоду</string>
     <string name="add_to_list_added">Добавлено в «%1$s»</string>
     <string name="add_to_list_sign_in">Картинки по ссылкам хранятся в аккаунте. Войдите в TierYourLife, чтобы их добавлять, или добавьте карточку без картинки.</string>
     <string name="cover_adjust_title">Настроить обложку</string>

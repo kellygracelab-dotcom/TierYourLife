@@ -352,7 +352,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
         ).asTierList(displayMode = TierListDisplayMode.FLAT_RANKED)
         setScreen(TierDetailUiState.Success(list))
 
-        composeRule.onNodeWithText("Pool · 3 unranked").assertIsDisplayed()
+        composeRule.onNodeWithText("3 cards left").assertIsDisplayed()
 
         composeRule.onNodeWithTag(TierDetailTestTags.RANKED_POOL_COLLAPSED).performClick()
 

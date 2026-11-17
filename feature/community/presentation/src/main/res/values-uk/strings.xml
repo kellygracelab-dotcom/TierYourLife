@@ -17,7 +17,7 @@
     <string name="author_unavailable_body">Його списки є у стрічці — відкривайте їх звідти.</string>
     <string name="ban_forever">Назавжди</string>
     <string name="ban_forever_confirm_action">Забанити назавжди</string>
-    <string name="ban_forever_confirm_body">Він більше ніколи не зможе публікувати. Свої дошки на телефоні залишаться, чужі списки розкладати зможе.</string>
+    <string name="ban_forever_confirm_body">Він більше ніколи не зможе публікувати. Свої списки на телефоні залишаться, чужі розкладати зможе.</string>
     <string name="ban_forever_confirm_title">Забанити %1$s назавжди?</string>
     <string name="ban_forever_note">Запитає ще раз перед застосуванням</string>
     <string name="ban_month">Місяць</string>
@@ -61,7 +61,7 @@
     <string name="home_community_failed">Не вдалося завантажити спільноту</string>
     <string name="home_community_failed_body">Перевірте зʼєднання.</string>
     <string name="home_community_unverified_body">Google Play підтверджує встановлення, перш ніж відкрити спільноту. Якщо застосунок із Play, зазвичай минає само.</string>
-    <string name="home_following_empty">Ні в кого з ваших підписок немає дошок у категорії «%1$s».</string>
+    <string name="home_following_empty">Ні в кого з ваших підписок немає списків у розділі «%1$s».</string>
     <string name="home_following_empty_all">Ваші підписки поки нічого не опублікували.</string>
     <string name="home_following_nobody">Ви ні на кого не підписані</string>
     <string name="home_following_nobody_body">Підпишіться — і нові списки цих людей зʼявлятимуться тут першими.</string>
@@ -83,7 +83,7 @@
         <item quantity="many">%1$d скарг</item>
         <item quantity="other">%1$d скарги</item>
     </plurals>
-    <string name="moderation_take_down_body">Список зникне назавжди. Його дошки на телефоні залишаться.</string>
+    <string name="moderation_take_down_body">Список зникне назавжди. Свої списки на телефоні в нього залишаться.</string>
     <string name="moderation_take_down_title">Зняти з публікації</string>
     <string name="moderation_take_down_with">Зняти · %1$s</string>
     <string name="moderation_taken_down">Знято з публікації</string>
@@ -301,9 +301,9 @@
     <string name="community_your_list_badge">Ваш список</string>
     <string name="community_own_published">Опубліковано</string>
     <string name="community_own_anonymous">Анонімно · лише ви бачите, що він ваш</string>
-    <string name="community_own_list_line">Так його бачать відвідувачі. Зміни — на вашій дошці.</string>
+    <string name="community_own_list_line">Так його бачать відвідувачі. Змінити його можна у «Ваших списках».</string>
     <string name="community_restore_from_trash">Повернути з кошика</string>
-    <string name="community_get_back_as_board">Повернути як дошку</string>
+    <string name="community_get_back_as_board">Повернути у «Ваші списки»</string>
     <string name="community_copy_link">Копіювати посилання</string>
     <string name="community_link_copied">Посилання скопійовано</string>
     <string name="community_drop_to_start_yours">Відпустіть, щоб почати свою версію · Моє почнеться з рейтингу: %1$s</string>
@@ -338,7 +338,7 @@
     <string name="community_update_in_rankings">Оновити в рейтингах</string>
     <string name="community_remove_from_rankings">Прибрати з рейтингів</string>
     <string name="community_remove_ranking_title">Прибрати вашу розстановку з рейтингів?</string>
-    <string name="community_remove_ranking_body">Вона зникне з рейтингів цього списку. Дошка залишиться у ваших списках.</string>
+    <string name="community_remove_ranking_body">Вона зникне з рейтингів цього списку. У вас вона залишиться у «Ваших списках».</string>
     <string name="community_remove_ranking_confirm">Прибрати</string>
     <string name="feed_unverified">Не вдалося перевірити застосунок, тому списки не завантажуються.</string>
 </resources>

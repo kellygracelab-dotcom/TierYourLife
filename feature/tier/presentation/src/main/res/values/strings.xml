@@ -1,7 +1,7 @@
 <resources>
     <string name="tier_lists_private">private</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · nothing ranked yet</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · nothing placed yet</string>
     <string name="tier_lists_status_start_dragging">Start dragging to rank these</string>
 
     <plurals name="search_results_count">
@@ -60,8 +60,8 @@
         <item quantity="other">%1$d selected</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="one">Add 1 item</item>
-        <item quantity="other">Add %1$d items</item>
+        <item quantity="one">Add 1 card</item>
+        <item quantity="other">Add %1$d cards</item>
     </plurals>
     <string name="item_search_add_disabled">Add</string>
 
@@ -92,10 +92,6 @@
     <string name="action_empty_trash">Empty trash</string>
     <string name="empty_trash_dialog_title">Empty the trash?</string>
     <string name="empty_trash_dialog_body">%1$s will be deleted from this device. This can’t be undone.</string>
-    <plurals name="trash_entry_count">
-        <item quantity="one">%1$d entry</item>
-        <item quantity="other">%1$d entries</item>
-    </plurals>
     <string name="trash_empty_title">Nothing in the trash</string>
     <string name="trash_empty_body">Lists you delete appear here. They stay until you remove them.</string>
     <string name="cd_more">More options</string>
@@ -104,7 +100,7 @@
     <string name="cd_trash_back">Navigate back</string>
 
     <string name="home_start_with">Start with</string>
-    <string name="home_start_hint">Creates a board straight away. Tap its title to rename.</string>
+    <string name="home_start_hint">Creates a list straight away. Tap its title to rename.</string>
     <string name="home_new_list">New list</string>
     <string name="home_suggestion_films">Films</string>
     <string name="home_suggestion_games">Games</string>
@@ -115,22 +111,22 @@
     <string name="home_tab_community">Community</string>
     <string name="lists_sort_newest">Newest</string>
     <string name="lists_sort_oldest">Oldest</string>
-    <string name="lists_filter">Filter boards</string>
+    <string name="lists_filter">Filter lists</string>
     <string name="lists_filters_title">Filter</string>
-    <string name="lists_filter_category">Category</string>
+    <string name="lists_filter_category">Section</string>
     <string name="lists_filter_any">Any</string>
     <string name="lists_filter_visibility">Visibility</string>
     <string name="lists_filter_public">Public</string>
     <string name="lists_filter_private">Private</string>
     <string name="lists_filter_clear">Clear all</string>
     <string name="lists_group_favourites">Favourites</string>
-    <string name="lists_group_others">All boards</string>
+    <string name="lists_group_others">All lists</string>
     <string name="lists_favourite_add">Add to favourites</string>
     <string name="lists_favourite_remove">Remove from favourites</string>
     <string name="snack_published_list_still_public">Kept, not deleted: its public copy could not be taken down. Try again when you are online.</string>
     <plurals name="board_count">
-        <item quantity="one">1 board</item>
-        <item quantity="other">%1$d boards</item>
+        <item quantity="one">1 list</item>
+        <item quantity="other">%1$d lists</item>
     </plurals>
     <string name="local_only_footer">%1$s, on this phone only</string>
     <string name="local_only_notice_keep_one">Sign in to keep it when you change phones.</string>
@@ -196,7 +192,7 @@
     <string name="cover_tap_fold">Tap to fold</string>
     <string name="cover_hand_off_title">Open the phone to continue</string>
     <string name="cover_hand_off_list">“%1$s” will open on the main screen.</string>
-    <string name="cover_hand_off_card">“%1$s” will open on its board.</string>
+    <string name="cover_hand_off_card">“%1$s” will open in its list.</string>
     <string name="cover_hand_off_community">“%1$s” from Community will open on the main screen.</string>
     <string name="cover_hand_off_app">The app will open on the main screen.</string>
     <string name="cover_more" translatable="false">+%1$d</string>
@@ -233,7 +229,7 @@
     <string name="add_to_list_new">New list…</string>
     <string name="add_to_list_new_name">List name</string>
     <string name="add_to_list_cancel">Cancel</string>
-    <string name="add_to_list_to_pool">To pool</string>
+    <string name="add_to_list_to_pool">To the deck</string>
     <string name="add_to_list_added">Added to %1$s</string>
     <string name="add_to_list_sign_in">Pictures from links are kept in your account. Sign in to TierYourLife to add them, or add the card without its picture.</string>
     <string name="cover_adjust_title">Adjust cover</string>
@@ -262,7 +258,7 @@
     <string name="publish_sheet_add">Add</string>
     <string name="publish_sheet_as_section">Propose as a separate section, not a topic</string>
     <string name="publish_sheet_moderator">A moderator looks at it. Until then the list stays in %1$s with this label.</string>
-    <string name="publish_sheet_how">It shows in Community under your name. Anyone with the link can rank it. This board stays yours to edit.</string>
+    <string name="publish_sheet_how">It shows in Community under your name. Anyone with the link can rank it. This list stays yours to edit.</string>
     <string name="publish_sheet_new">new</string>
     <string name="publish_sheet_new_section">New section</string>
     <string name="publish_sheet_continue">Continue</string>

@@ -55,7 +55,7 @@
     <string name="play_start">Starten</string>
     <string name="play_continue">Weiter</string>
     <string name="play_back">Zurück</string>
-    <string name="play_pool">Der Pool</string>
+    <string name="play_pool">Der Stapel</string>
     <string name="play_everything">Alles</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d Karte</item>
@@ -65,7 +65,7 @@
         <item quantity="one">%1$d von %2$d ausgewählt</item>
         <item quantity="other">%1$d von %2$d ausgewählt</item>
     </plurals>
-    <string name="play_ranked">Eingestuft</string>
+    <string name="play_ranked">Platziert</string>
     <string name="play_quit">Beenden</string>
     <string name="play_duel_of">Duell %1$d von %2$d</string>
     <string name="play_duel_of_about">Duell %1$d von etwa %2$d</string>
@@ -78,12 +78,12 @@
     <string name="play_snack_game_saved">Spiel gespeichert · %1$d von %2$d</string>
     <string name="play_snack_discard">Verwerfen</string>
     <plurals name="play_snack_arranged">
-        <item quantity="one">Board aus %1$d Duell geordnet</item>
-        <item quantity="other">Board aus %1$d Duellen geordnet</item>
+        <item quantity="one">Liste aus %1$d Duell geordnet</item>
+        <item quantity="other">Liste aus %1$d Duellen geordnet</item>
     </plurals>
     <string name="play_snack_saved_discarded">Gespeichertes Spiel verworfen</string>
     <string name="play_snack_undo">Rückgängig</string>
-    <string name="play_snack_game_undone">Zurück zum Board vor dem Spiel</string>
+    <string name="play_snack_game_undone">Zurück zur Liste vor dem Spiel</string>
     <string name="play_snack_redo">Wiederholen</string>
     <string name="play_snack_nothing_answered">Kein Duell beantwortet, nichts wurde verschoben</string>
     <string name="play_snack_not_saved">Spiel konnte nicht gespeichert werden</string>

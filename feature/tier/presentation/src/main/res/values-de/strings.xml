@@ -1,7 +1,7 @@
 <resources>
     <string name="tier_lists_private">privat</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
-    <string name="tier_lists_card_nothing_ranked_yet">%1$s · noch nichts eingestuft</string>
+    <string name="tier_lists_card_nothing_ranked_yet">%1$s · noch nichts platziert</string>
     <string name="tier_lists_status_start_dragging">Zum Einstufen ziehen</string>
 
     <plurals name="search_results_count">
@@ -60,8 +60,8 @@
         <item quantity="other">%1$d ausgewählt</item>
     </plurals>
     <plurals name="item_search_add_button">
-        <item quantity="one">1 Element hinzufügen</item>
-        <item quantity="other">%1$d Elemente hinzufügen</item>
+        <item quantity="one">1 Karte hinzufügen</item>
+        <item quantity="other">%1$d Karten hinzufügen</item>
     </plurals>
     <string name="item_search_add_disabled">Hinzufügen</string>
 
@@ -92,10 +92,6 @@
     <string name="action_empty_trash">Papierkorb leeren</string>
     <string name="empty_trash_dialog_title">Papierkorb leeren?</string>
     <string name="empty_trash_dialog_body">%1$s werden von diesem Gerät gelöscht. Das kann nicht rückgängig gemacht werden.</string>
-    <plurals name="trash_entry_count">
-        <item quantity="one">%1$d Eintrag</item>
-        <item quantity="other">%1$d Einträge</item>
-    </plurals>
     <string name="trash_empty_title">Papierkorb ist leer</string>
     <string name="trash_empty_body">Gelöschte Listen erscheinen hier. Sie bleiben, bis du sie entfernst.</string>
     <string name="cd_more">Weitere Optionen</string>
@@ -104,7 +100,7 @@
     <string name="cd_trash_back">Zurück</string>
 
     <string name="home_start_with">Beginne mit</string>
-    <string name="home_start_hint">Erstellt das Board sofort. Tippe auf den Titel, um ihn zu ändern.</string>
+    <string name="home_start_hint">Erstellt die Liste sofort. Tippe auf den Titel, um ihn zu ändern.</string>
     <string name="home_new_list">Neue Liste</string>
     <string name="home_suggestion_films">Filme</string>
     <string name="home_suggestion_games">Spiele</string>
@@ -115,22 +111,22 @@
     <string name="home_tab_community">Community</string>
     <string name="lists_sort_newest">Neueste zuerst</string>
     <string name="lists_sort_oldest">Älteste zuerst</string>
-    <string name="lists_filter">Boards filtern</string>
+    <string name="lists_filter">Listen filtern</string>
     <string name="lists_filters_title">Filter</string>
-    <string name="lists_filter_category">Kategorie</string>
+    <string name="lists_filter_category">Rubrik</string>
     <string name="lists_filter_any">Beliebig</string>
     <string name="lists_filter_visibility">Sichtbarkeit</string>
     <string name="lists_filter_public">Öffentlich</string>
     <string name="lists_filter_private">Privat</string>
     <string name="lists_filter_clear">Alles zurücksetzen</string>
     <string name="lists_group_favourites">Favoriten</string>
-    <string name="lists_group_others">Alle Boards</string>
+    <string name="lists_group_others">Alle Listen</string>
     <string name="lists_favourite_add">Zu Favoriten hinzufügen</string>
     <string name="lists_favourite_remove">Aus Favoriten entfernen</string>
     <string name="snack_published_list_still_public">Behalten statt gelöscht: Die öffentliche Kopie ließ sich nicht entfernen. Versuche es erneut, sobald du online bist.</string>
     <plurals name="board_count">
-        <item quantity="one">1 Board</item>
-        <item quantity="other">%1$d Boards</item>
+        <item quantity="one">1 Liste</item>
+        <item quantity="other">%1$d Listen</item>
     </plurals>
     <string name="local_only_footer">%1$s, nur auf diesem Telefon</string>
     <string name="local_only_notice_keep_one">Melde dich an, damit es einen Telefonwechsel übersteht.</string>
@@ -196,7 +192,7 @@
     <string name="cover_tap_fold">Tippen zum Einklappen</string>
     <string name="cover_hand_off_title">Klapp das Telefon auf, um weiterzumachen</string>
     <string name="cover_hand_off_list">„%1$s“ öffnet sich auf dem Hauptbildschirm.</string>
-    <string name="cover_hand_off_card">„%1$s“ öffnet sich auf seinem Board.</string>
+    <string name="cover_hand_off_card">„%1$s“ öffnet sich in ihrer Liste.</string>
     <string name="cover_hand_off_community">„%1$s“ aus der Community öffnet sich auf dem Hauptbildschirm.</string>
     <string name="cover_hand_off_app">Die App öffnet sich auf dem Hauptbildschirm.</string>
     <plurals name="cover_cards_count">
@@ -232,7 +228,7 @@
     <string name="add_to_list_new">Neue Liste…</string>
     <string name="add_to_list_new_name">Name der Liste</string>
     <string name="add_to_list_cancel">Abbrechen</string>
-    <string name="add_to_list_to_pool">In den Pool</string>
+    <string name="add_to_list_to_pool">Auf den Stapel</string>
     <string name="add_to_list_added">Zu „%1$s“ hinzugefügt</string>
     <string name="add_to_list_sign_in">Bilder über Links werden in deinem Konto gespeichert. Melde dich in TierYourLife an, um sie hinzuzufügen, oder füge die Karte ohne Bild hinzu.</string>
     <string name="cover_adjust_title">Cover anpassen</string>

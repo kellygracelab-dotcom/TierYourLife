@@ -17,7 +17,7 @@
     <string name="author_unavailable_body">Sus listas están en el feed y puedes abrir cualquiera desde allí.</string>
     <string name="ban_forever">Para siempre</string>
     <string name="ban_forever_confirm_action">Bloquear para siempre</string>
-    <string name="ban_forever_confirm_body">No volverá a publicar. Sus tableros siguen en su teléfono y aún puede ordenar listas de otros.</string>
+    <string name="ban_forever_confirm_body">No volverá a publicar. Sus listas siguen en su teléfono y aún puede ordenar las de otros.</string>
     <string name="ban_forever_confirm_title">¿Bloquear a %1$s para siempre?</string>
     <string name="ban_forever_note">Vuelve a preguntar antes de aplicarse</string>
     <string name="ban_month">Un mes</string>
@@ -60,7 +60,7 @@
     <string name="home_community_failed">No se pudo cargar la comunidad</string>
     <string name="home_community_failed_body">Comprueba tu conexión.</string>
     <string name="home_community_unverified_body">Google Play confirma la instalación antes de abrir la comunidad. Si la instalaste desde Play, suele resolverse solo.</string>
-    <string name="home_following_empty">Nadie a quien sigues tiene un tablero en %1$s.</string>
+    <string name="home_following_empty">Nadie a quien sigues tiene una lista en %1$s.</string>
     <string name="home_following_empty_all">Nadie a quien sigues ha publicado nada todavía.</string>
     <string name="home_following_nobody">No sigues a nadie</string>
     <string name="home_following_nobody_body">Sigue a alguien y sus nuevas listas aparecerán aquí primero.</string>
@@ -81,7 +81,7 @@
         <item quantity="many">%1$d denuncias</item>
         <item quantity="other">%1$d denuncias</item>
     </plurals>
-    <string name="moderation_take_down_body">La lista desaparece para siempre. Sus tableros siguen en su teléfono.</string>
+    <string name="moderation_take_down_body">La lista desaparece para siempre. Sus listas siguen en su teléfono.</string>
     <string name="moderation_take_down_title">Retirarla</string>
     <string name="moderation_take_down_with">Retirar · %1$s</string>
     <string name="moderation_taken_down">Publicación retirada</string>
@@ -294,9 +294,9 @@
     <string name="community_your_list_badge">Tu lista</string>
     <string name="community_own_published">Publicada</string>
     <string name="community_own_anonymous">Anónima · solo tú ves que es tuya</string>
-    <string name="community_own_list_line">Esto es lo que ven los visitantes. Los cambios se hacen en tu tablero.</string>
+    <string name="community_own_list_line">Esto es lo que ven los visitantes. La cambias en Tus listas.</string>
     <string name="community_restore_from_trash">Restaurar de la papelera</string>
-    <string name="community_get_back_as_board">Recuperarla como tablero</string>
+    <string name="community_get_back_as_board">Recuperarla en Tus listas</string>
     <string name="community_copy_link">Copiar enlace</string>
     <string name="community_link_copied">Enlace copiado</string>
     <string name="community_drop_to_start_yours">Suéltala para empezar tu versión · Mío empieza con la clasificación de %1$s</string>
@@ -331,7 +331,7 @@
     <string name="community_update_in_rankings">Actualizar en Clasificaciones</string>
     <string name="community_remove_from_rankings">Quitar de Clasificaciones</string>
     <string name="community_remove_ranking_title">¿Quitar tu ranking de Clasificaciones?</string>
-    <string name="community_remove_ranking_body">Desaparecerá de los rankings de esta lista. Tu tablero sigue en tus listas.</string>
+    <string name="community_remove_ranking_body">Desaparecerá de los rankings de esta lista. Lo conservas en Tus listas.</string>
     <string name="community_remove_ranking_confirm">Quitar</string>
     <string name="feed_unverified">No se pudo verificar la app, así que las listas no pueden cargarse.</string>
 </resources>

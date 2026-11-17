@@ -9,7 +9,7 @@
     <string name="export_tier_empty">(порожньо)</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">Без оцінки</string>
+    <string name="export_unranked_heading">Не розкладені</string>
     <string name="hidden_empty_body">Списки й люди, яких ви сховаєте у спільноті, чекатимуть тут — раптом передумаєте.</string>
     <string name="hidden_empty_title">Усе на видноті</string>
     <string name="hidden_lists">СПИСКИ</string>
@@ -46,18 +46,18 @@
         <item quantity="many">Вхід виконано · %1$d кредитів</item>
         <item quantity="other">Вхід виконано · %1$d кредиту</item>
     </plurals>
-    <string name="settings_backup_label">Зберігати копію дошок</string>
+    <string name="settings_backup_label">Зберігати копію списків</string>
     <string name="settings_backup_note">Ваші фото та згенеровані картки йдуть у ваш обліковий запис, де їх бачите лише ви. Публікація копіює картинки списку у стрічку, де їх бачать усі.</string>
-    <string name="settings_backup_off_body">З телефона нічого не видаляється: дошки залишаться тут. Копію в обліковому записі буде видалено, на інших ваших пристроях дошки підуть у кошик, а новий телефон почне з порожнього. Якщо ввімкнути знову, вони завантажаться заново.</string>
+    <string name="settings_backup_off_body">З телефона нічого не видаляється: списки залишаться тут. Копію в обліковому записі буде видалено, на інших ваших пристроях списки підуть у кошик, а новий телефон почне з порожнього. Якщо ввімкнути знову, вони завантажаться заново.</string>
     <string name="settings_backup_off_cancel">Скасувати</string>
     <string name="settings_backup_off_confirm">Видалити копію</string>
     <string name="settings_backup_off_title">Припинити зберігати копію?</string>
     <string name="settings_backup_pictures_label">Картинки лише через Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s у вашому обліковому записі</string>
-    <string name="settings_backup_refused_not_accepted">«%1$s» не зберігається в обліковому записі: щось на дошці він не приймає.</string>
-    <string name="settings_backup_refused_too_large">«%1$s» не зберігається в обліковому записі: дошка більша, ніж він зберігає. Приберіть із неї кілька карток.</string>
-    <string name="settings_backup_refused_too_many">«%1$s» не зберігається в обліковому записі: у ньому не більше 200 дошок. Видаліть непотрібні, щоб звільнити місце.</string>
-    <string name="settings_backup_refused_too_many_tiers">«%1$s» не зберігається в обліковому записі: на дошці більше рівнів, ніж він зберігає, — 19 і пул. Приберіть один рівень.</string>
+    <string name="settings_backup_refused_not_accepted">«%1$s» не зберігається в обліковому записі: щось у списку він не приймає.</string>
+    <string name="settings_backup_refused_too_large">«%1$s» не зберігається в обліковому записі: список більший, ніж він зберігає. Приберіть із нього кілька карток.</string>
+    <string name="settings_backup_refused_too_many">«%1$s» не зберігається в обліковому записі: у ньому не більше 200 списків. Видаліть непотрібні, щоб звільнити місце.</string>
+    <string name="settings_backup_refused_too_many_tiers">«%1$s» не зберігається в обліковому записі: у списку більше рівнів, ніж він зберігає, — 19 і колода. Приберіть один рівень.</string>
     <string name="settings_backup_stuck">Копії немає з %1$s. Перевірте зʼєднання.</string>
     <string name="settings_backup_sub">Рівні, картки та підписи</string>
     <string name="settings_export">Експорт даних</string>
@@ -88,9 +88,9 @@
     <string name="theme_light">Світла</string>
     <string name="theme_system">Системна</string>
     <plurals name="unranked_count">
-        <item quantity="one">%1$d без оцінки</item>
-        <item quantity="few">%1$d без оцінки</item>
-        <item quantity="many">%1$d без оцінки</item>
-        <item quantity="other">%1$d без оцінки</item>
+        <item quantity="one">Залишилася %1$d картка</item>
+        <item quantity="few">Залишилося %1$d картки</item>
+        <item quantity="many">Залишилося %1$d карток</item>
+        <item quantity="other">Залишилося %1$d картки</item>
     </plurals>
 </resources>

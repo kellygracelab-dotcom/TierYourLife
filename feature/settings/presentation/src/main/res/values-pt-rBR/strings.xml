@@ -9,7 +9,7 @@
     <string name="export_tier_empty">(vazio)</string>
     <string name="export_tier_plain">%1$s</string>
     <string name="export_tier_with_caption">%1$s — %2$s</string>
-    <string name="export_unranked_heading">Sem classificação</string>
+    <string name="export_unranked_heading">Não posicionados</string>
     <string name="hidden_empty_body">As listas e pessoas que você ocultar na comunidade esperam aqui, caso mude de ideia.</string>
     <string name="hidden_empty_title">Tudo está visível</string>
     <string name="hidden_lists">LISTAS</string>
@@ -44,18 +44,18 @@
         <item quantity="many">Conectado · %1$d créditos</item>
         <item quantity="other">Conectado · %1$d créditos</item>
     </plurals>
-    <string name="settings_backup_label">Guardar meus quadros</string>
+    <string name="settings_backup_label">Guardar minhas listas</string>
     <string name="settings_backup_note">Suas fotos e cartões gerados vão para sua conta, onde só você os vê. Publicar copia as imagens para o feed, onde qualquer um as vê.</string>
-    <string name="settings_backup_off_body">Nada neste telefone é apagado: seus quadros ficam aqui. A cópia na sua conta é apagada, nos seus outros dispositivos os quadros vão para a lixeira e um telefone novo começará vazio. Ao ligar de novo, eles sobem outra vez.</string>
+    <string name="settings_backup_off_body">Nada neste telefone é apagado: suas listas ficam aqui. A cópia na sua conta é apagada, nos seus outros dispositivos as listas vão para a lixeira e um telefone novo começará vazio. Ao ligar de novo, elas sobem outra vez.</string>
     <string name="settings_backup_off_cancel">Cancelar</string>
     <string name="settings_backup_off_confirm">Parar e apagar</string>
     <string name="settings_backup_off_title">Parar de guardar cópia?</string>
     <string name="settings_backup_pictures_label">Imagens só no Wi-Fi</string>
     <string name="settings_backup_pictures_sub">%1$s na sua conta</string>
-    <string name="settings_backup_refused_not_accepted">“%1$s” está sem cópia: a conta não aceita algo que está nele.</string>
-    <string name="settings_backup_refused_too_large">“%1$s” está sem cópia: é maior do que a conta guarda. Tire alguns cartões dele.</string>
-    <string name="settings_backup_refused_too_many">“%1$s” está sem cópia: a conta guarda no máximo 200 quadros. Apague os que você não usa mais.</string>
-    <string name="settings_backup_refused_too_many_tiers">“%1$s” está sem cópia: tem mais níveis do que a conta guarda, 19 mais a reserva. Tire um nível dele.</string>
+    <string name="settings_backup_refused_not_accepted">“%1$s” está sem cópia: a conta não aceita algo que está nela.</string>
+    <string name="settings_backup_refused_too_large">“%1$s” está sem cópia: é maior do que a conta guarda. Tire alguns cartões dela.</string>
+    <string name="settings_backup_refused_too_many">“%1$s” está sem cópia: a conta guarda no máximo 200 listas. Apague as que você não usa mais.</string>
+    <string name="settings_backup_refused_too_many_tiers">“%1$s” está sem cópia: tem mais níveis do que a conta guarda, 19 mais o monte. Tire um nível dela.</string>
     <string name="settings_backup_stuck">Sem cópia desde %1$s. Verifique sua conexão.</string>
     <string name="settings_backup_sub">Níveis, cartões e legendas</string>
     <string name="settings_export">Exportar dados</string>
@@ -85,8 +85,8 @@
     <string name="theme_light">Claro</string>
     <string name="theme_system">Sistema</string>
     <plurals name="unranked_count">
-        <item quantity="one">%1$d sem classificação</item>
-        <item quantity="many">%1$d sem classificação</item>
-        <item quantity="other">%1$d sem classificação</item>
+        <item quantity="one">%1$d cartão restante</item>
+        <item quantity="many">%1$d cartões restantes</item>
+        <item quantity="other">%1$d cartões restantes</item>
     </plurals>
 </resources>
