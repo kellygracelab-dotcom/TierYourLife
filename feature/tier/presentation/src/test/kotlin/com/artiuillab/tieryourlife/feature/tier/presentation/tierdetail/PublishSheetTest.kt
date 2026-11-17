@@ -50,11 +50,14 @@ class PublishSheetTest {
         onProposeSection = { said += "section form $it" },
         onPublish = { said += "publish" },
         onName = { said += "name $it" },
+        onSignInAndPublish = { said += "sign in and publish" },
     )
 
     @Test
     fun anUntitledList_asksForAName_beforeItGoesOut() {
         show(board.copy(title = "Untitled list", category = "film_tv"), PublishSheetState(topics = topics))
+        composeRule.onNodeWithText("Publish your list").assertExists()
+        composeRule.onNodeWithText("It’s still called “Untitled list”. People find lists by name.").assertExists()
         composeRule.onNodeWithTag(PublishSheetTags.PUBLISH).performClick()
         composeRule.onNodeWithText("Give the list a name first.").assertExists()
         capture("publish_sheet_untitled")
@@ -64,6 +67,26 @@ class PublishSheetTest {
         composeRule.onNodeWithTag(PublishSheetTags.PUBLISH).performClick()
 
         assertEquals(listOf("name Every A24 film", "publish"), said)
+    }
+
+    @Test
+    fun aGuest_isToldAtTheTop_andTheButtonSignsInAndPublishes() {
+        show(board.copy(title = "Untitled list", category = "film_tv"), PublishSheetState(topics = topics), signedIn = false)
+        composeRule.onNodeWithTag(PublishSheetTags.NEEDS_ACCOUNT)
+            .assertTextContains("Publishing needs a Google account. Your list stays here while you sign in.")
+        composeRule.onNodeWithTag(PublishSheetTags.PUBLISH).assertTextContains("Sign in and publish")
+        composeRule.onNodeWithTag(PublishSheetTags.NAME).performTextInput("Every A24 film")
+        capture("publish_sheet_guest")
+        composeRule.onNodeWithTag(PublishSheetTags.PUBLISH).performClick()
+
+        assertEquals(listOf("name Every A24 film", "sign in and publish"), said)
+    }
+
+    @Test
+    fun signedIn_thereIsNoWordAboutAnAccount() {
+        show(board.copy(category = "film_tv"), PublishSheetState(topics = topics))
+        composeRule.onNodeWithTag(PublishSheetTags.NEEDS_ACCOUNT).assertDoesNotExist()
+        composeRule.onNodeWithTag(PublishSheetTags.PUBLISH).assertTextContains("Publish")
     }
 
     @Test
@@ -159,10 +182,11 @@ class PublishSheetTest {
         error: PublishError? = null,
         dark: Boolean = false,
         calls: PublishSheetCalls = this.calls,
+        signedIn: Boolean = true,
     ) {
         composeRule.setContent {
             TierYourLifeTheme(darkTheme = dark) {
-                PublishSheet(list = list, state = state, busy = busy, error = error, calls = calls)
+                PublishSheet(list = list, state = state, busy = busy, error = error, calls = calls, signedIn = signedIn)
             }
         }
         composeRule.waitForIdle()

@@ -103,4 +103,9 @@
     <string name="play_select_candidates">Tout sélectionner parmi les candidates</string>
     <string name="play_clear_selection">Effacer la sélection</string>
     <string name="play_card_unnamed">Carte sans titre</string>
+    <plurals name="play_placed_warning">
+        <item quantity="one">Vous avez placé %1$d carte. Le jeu la replace ; « Annuler » la remet.</item>
+        <item quantity="many">Vous avez placé %1$d cartes. Le jeu les replace ; « Annuler » les remet.</item>
+        <item quantity="other">Vous avez placé %1$d cartes. Le jeu les replace ; « Annuler » les remet.</item>
+    </plurals>
 </resources>

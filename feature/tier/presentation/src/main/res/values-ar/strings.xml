@@ -334,7 +334,6 @@
         <item quantity="many">كولاجك · الصور: %d</item>
         <item quantity="other">كولاجك · الصور: %d</item>
     </plurals>
-    <string name="started_title">متابعة</string>
     <plurals name="started_placed">
         <item quantity="zero">%1$d من %2$d موضوعة</item>
         <item quantity="one">%1$d من %2$d موضوعة</item>
@@ -347,7 +346,7 @@
     <string name="started_continue_of">متابعة «%1$s»</string>
     <string name="started_resume">استئناف اللعبة</string>
     <string name="publish_sheet_name">الاسم</string>
-    <string name="publish_sheet_name_hint">ما هذه القائمة؟</string>
+    <string name="publish_sheet_name_hint">أعطِ القائمة اسمًا</string>
     <string name="publish_sheet_name_first">أعطِ القائمة اسمًا أولًا.</string>
     <string name="item_search_add_own">أو أضف بنفسك</string>
     <string name="item_search_own_link">الصق رابط صورة</string>
@@ -356,4 +355,17 @@
     <string name="item_search_own_photo_sub">من المعرض أو الكاميرا</string>
     <string name="item_search_own_name">اسم فقط</string>
     <string name="item_search_own_name_sub">اكتبه في الحقل أعلاه، ثم اضغط إضافة</string>
+    <string name="started_count">متابعة · %1$d</string>
+    <plurals name="started_placed_in">
+        <item quantity="zero">%1$s · %2$d من %3$d موضوعة</item>
+        <item quantity="one">%1$s · %2$d من %3$d موضوعة</item>
+        <item quantity="two">%1$s · %2$d من %3$d موضوعة</item>
+        <item quantity="few">%1$s · %2$d من %3$d موضوعة</item>
+        <item quantity="many">%1$s · %2$d من %3$d موضوعة</item>
+        <item quantity="other">%1$s · %2$d من %3$d موضوعة</item>
+    </plurals>
+    <string name="publish_sheet_title_untitled">انشر قائمتك</string>
+    <string name="publish_sheet_name_why">ما زال اسمها «%1$s». يجد الناس القوائم بأسمائها.</string>
+    <string name="publish_sheet_needs_account">النشر يحتاج إلى حساب Google. تبقى قائمتك هنا أثناء تسجيل الدخول.</string>
+    <string name="publish_sheet_sign_in_and_publish">سجّل الدخول وانشر</string>
 </resources>

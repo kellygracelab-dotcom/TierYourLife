@@ -113,4 +113,10 @@
     <string name="play_select_candidates">Вибрати всіх кандидатів</string>
     <string name="play_clear_selection">Зняти вибір</string>
     <string name="play_card_unnamed">Картка без назви</string>
+    <plurals name="play_placed_warning">
+        <item quantity="one">Ви розклали %1$d картку. Гра її переставить; «Скасувати» поверне.</item>
+        <item quantity="few">Ви розклали %1$d картки. Гра їх переставить; «Скасувати» поверне.</item>
+        <item quantity="many">Ви розклали %1$d карток. Гра їх переставить; «Скасувати» поверне.</item>
+        <item quantity="other">Ви розклали %1$d картки. Гра їх переставить; «Скасувати» поверне.</item>
+    </plurals>
 </resources>

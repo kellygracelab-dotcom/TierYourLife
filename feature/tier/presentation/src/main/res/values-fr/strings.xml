@@ -289,7 +289,6 @@
         <item quantity="many">Ton collage · images : %d</item>
         <item quantity="other">Ton collage · images : %d</item>
     </plurals>
-    <string name="started_title">Continuer</string>
     <plurals name="started_placed">
         <item quantity="one">%1$d sur %2$d placée</item>
         <item quantity="many">%1$d sur %2$d placées</item>
@@ -299,7 +298,7 @@
     <string name="started_continue_of">Continuer « %1$s »</string>
     <string name="started_resume">Reprendre la partie</string>
     <string name="publish_sheet_name">Titre</string>
-    <string name="publish_sheet_name_hint">De quoi parle cette liste ?</string>
+    <string name="publish_sheet_name_hint">Donnez un nom à la liste</string>
     <string name="publish_sheet_name_first">Donnez d’abord un titre à la liste.</string>
     <string name="item_search_add_own">Ou ajoutez le vôtre</string>
     <string name="item_search_own_link">Collez le lien d’une image</string>
@@ -308,4 +307,14 @@
     <string name="item_search_own_photo_sub">Depuis la galerie ou l’appareil photo</string>
     <string name="item_search_own_name">Juste un nom</string>
     <string name="item_search_own_name_sub">Tapez-le dans le champ ci-dessus, puis Ajouter</string>
+    <string name="started_count">Continuer · %1$d</string>
+    <plurals name="started_placed_in">
+        <item quantity="one">%1$s · %2$d sur %3$d placées</item>
+        <item quantity="many">%1$s · %2$d sur %3$d placées</item>
+        <item quantity="other">%1$s · %2$d sur %3$d placées</item>
+    </plurals>
+    <string name="publish_sheet_title_untitled">Publier votre liste</string>
+    <string name="publish_sheet_name_why">Elle s’appelle encore « %1$s ». On trouve les listes par leur nom.</string>
+    <string name="publish_sheet_needs_account">Publier demande un compte Google. Votre liste reste ici pendant la connexion.</string>
+    <string name="publish_sheet_sign_in_and_publish">Se connecter et publier</string>
 </resources>

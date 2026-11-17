@@ -93,4 +93,8 @@
     <string name="play_select_candidates">Select all candidates</string>
     <string name="play_clear_selection">Clear selection</string>
     <string name="play_card_unnamed">Untitled card</string>
+    <plurals name="play_placed_warning">
+        <item quantity="one">You’ve placed %1$d card. The game rearranges it; Undo brings it back.</item>
+        <item quantity="other">You’ve placed %1$d cards. The game rearranges them; Undo brings them back.</item>
+    </plurals>
 </resources>

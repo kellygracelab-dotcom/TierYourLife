@@ -274,7 +274,6 @@
         <item quantity="one">Kendi kolajın · resim: %d</item>
         <item quantity="other">Kendi kolajın · resim: %d</item>
     </plurals>
-    <string name="started_title">Devam et</string>
     <plurals name="started_placed">
         <item quantity="one">%1$d/%2$d yerleştirildi</item>
         <item quantity="other">%1$d/%2$d yerleştirildi</item>
@@ -283,7 +282,7 @@
     <string name="started_continue_of">“%1$s” ile devam et</string>
     <string name="started_resume">Oyuna devam et</string>
     <string name="publish_sheet_name">Ad</string>
-    <string name="publish_sheet_name_hint">Bu liste ne hakkında?</string>
+    <string name="publish_sheet_name_hint">Listeye bir ad ver</string>
     <string name="publish_sheet_name_first">Önce listeye bir ad ver.</string>
     <string name="item_search_add_own">Ya da kendiniz ekleyin</string>
     <string name="item_search_own_link">Bir görsel bağlantısı yapıştırın</string>
@@ -292,4 +291,13 @@
     <string name="item_search_own_photo_sub">Galeriden ya da kameradan</string>
     <string name="item_search_own_name">Yalnızca bir ad</string>
     <string name="item_search_own_name_sub">Yukarıdaki alana yazın, sonra Ekle’ye dokunun</string>
+    <string name="started_count">Devam et · %1$d</string>
+    <plurals name="started_placed_in">
+        <item quantity="one">%1$s · %2$d/%3$d yerleştirildi</item>
+        <item quantity="other">%1$s · %2$d/%3$d yerleştirildi</item>
+    </plurals>
+    <string name="publish_sheet_title_untitled">Listeni yayınla</string>
+    <string name="publish_sheet_name_why">Hâlâ “%1$s” adını taşıyor. Listeler adlarıyla bulunur.</string>
+    <string name="publish_sheet_needs_account">Yayınlamak için Google hesabı gerekir. Sen giriş yaparken listen burada kalır.</string>
+    <string name="publish_sheet_sign_in_and_publish">Oturum aç ve yayımla</string>
 </resources>

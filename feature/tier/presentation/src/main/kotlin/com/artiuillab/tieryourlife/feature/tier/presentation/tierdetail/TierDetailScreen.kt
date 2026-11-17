@@ -136,13 +136,7 @@ fun TierDetailScreen(
             focusTierId = focusTierId,
             onPlay = { playOpen = true },
             playSaved = playRequest?.let { play.isSaved(it.key) } == true,
-            onPublish = publishAfterSignIn(signedIn = screen.signedIn, onSignIn = onSignIn) { kind ->
-                when (kind) {
-                    Publishing.Publish -> viewModel.openPublishSheet()
-                    Publishing.Update -> viewModel.updatePublished()
-                    Publishing.ShareRanking -> viewModel.shareRanking()
-                }
-            },
+            onPublish = barPublish(viewModel, screen.signedIn, onSignIn),
         ),
     )
 
@@ -159,7 +153,7 @@ fun TierDetailScreen(
     )
 
     if (loadedList != null) {
-        BoardPublishSheet(viewModel, loadedList, publish.publishing, publish.error, onProposeSection, onChooseCover)
+        BoardPublishSheet(viewModel, loadedList, publish.publishing, publish.error, onProposeSection, onChooseCover, screen.signedIn, onSignIn)
     }
 
     if (playRequest != null) {
@@ -206,6 +200,23 @@ fun TierDetailScreen(
     }
 }
 
+/**
+ * The bar's publish. A first publish opens its sheet even for a guest: the
+ * sheet says an account is needed and signs them in. The rest ask for an
+ * account first and go on by themselves after.
+ */
+@Composable
+private fun barPublish(viewModel: TierDetailViewModel, signedIn: Boolean, onSignIn: () -> Unit): (Publishing) -> Unit {
+    val afterSignIn = publishAfterSignIn(signedIn = signedIn, onSignIn = onSignIn) { kind ->
+        when (kind) {
+            Publishing.Publish -> viewModel.openPublishSheet()
+            Publishing.Update -> viewModel.updatePublished()
+            Publishing.ShareRanking -> viewModel.shareRanking()
+        }
+    }
+    return { kind -> if (kind == Publishing.Publish) viewModel.openPublishSheet() else afterSignIn(kind) }
+}
+
 @Composable
 private fun BoardPublishSheet(
     viewModel: TierDetailViewModel,
@@ -214,8 +225,13 @@ private fun BoardPublishSheet(
     error: PublishError?,
     onProposeSection: ((fileUnder: String?, name: String?) -> Unit)?,
     onChooseCover: () -> Unit,
+    signedIn: Boolean,
+    onSignIn: () -> Unit,
 ) {
     val sheet by viewModel.publishSheet.collectAsStateWithLifecycle()
+    LaunchedEffect(signedIn, sheet?.afterSignIn) {
+        if (signedIn) viewModel.signedInForSheet()
+    }
     // Back from the cover picker, with or without a new cover.
     LifecycleResumeEffect(Unit) {
         viewModel.backToPublishSheet()
@@ -227,6 +243,7 @@ private fun BoardPublishSheet(
         state = open,
         busy = busy,
         error = error,
+        signedIn = signedIn,
         calls = PublishSheetCalls(
             onSection = viewModel::chooseSection,
             onTopic = viewModel::chooseTopic,
@@ -238,6 +255,10 @@ private fun BoardPublishSheet(
                 }
             },
             onPublish = viewModel::publishFromSheet,
+            onSignInAndPublish = {
+                viewModel.publishFromSheetAfterSignIn()
+                if (viewModel.publishSheet.value?.afterSignIn == true) onSignIn()
+            },
             onName = viewModel::nameFromSheet,
             onDismiss = viewModel::closePublishSheet,
             onChangeCover = {

@@ -66,6 +66,43 @@ class PublishSheetControllerTest {
     }
 
     @Test
+    fun aGuest_publishesOnceSignedIn_andOnlyOnce() = runTest {
+        val h = Harness(this, board().copy(category = "film"))
+        h.sheet.open()
+        h.sheet.signedIn()
+        assertEquals("nothing was asked yet", 0, h.sent)
+
+        h.sheet.publishAfterSignIn()
+        assertTrue(h.sheet.state.value!!.afterSignIn)
+        assertEquals(0, h.sent)
+
+        h.sheet.signedIn()
+        h.sheet.signedIn()
+        assertEquals(1, h.sent)
+        assertFalse(h.sheet.state.value!!.afterSignIn)
+    }
+
+    @Test
+    fun aGuestWithNoSection_isPointedAtIt_beforeSigningIn() = runTest {
+        val h = Harness(this)
+        h.sheet.open()
+        h.sheet.publishAfterSignIn()
+        val open = h.sheet.state.value!!
+        assertTrue(open.sectionWanted)
+        assertFalse(open.afterSignIn)
+    }
+
+    @Test
+    fun closedBeforeSigningIn_nothingGoesOutAfter() = runTest {
+        val h = Harness(this, board().copy(category = "film"))
+        h.sheet.open()
+        h.sheet.publishAfterSignIn()
+        h.sheet.close()
+        h.sheet.signedIn()
+        assertEquals(0, h.sent)
+    }
+
+    @Test
     fun theSameOrABlankName_writesNothing() = runTest {
         val h = Harness(this, board().copy(category = "film"))
         h.sheet.open()

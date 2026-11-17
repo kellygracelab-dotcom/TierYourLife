@@ -273,6 +273,7 @@ class TierListsViewModel @Inject constructor(
                 placed = begun.placed,
                 total = begun.total,
                 gameSaved = PlayRequest.someoneElsesKey(begun.listId, begun.version) in waiting,
+                section = begun.section,
             )
         }
     }.onFailure { Timber.w(it, "Reading the lists begun failed") }.getOrDefault(emptyList())

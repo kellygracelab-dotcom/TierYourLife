@@ -106,7 +106,7 @@ class TierListsScreenshotTest {
     }
 
     private val begun = listOf(
-        StartedList("films", "Every A24 film", placed = 14, total = 22, gameSaved = true),
+        StartedList("films", "Every A24 film", placed = 14, total = 22, gameSaved = true, section = "film_tv"),
         StartedList("games", "PS2 era", placed = 3, total = 40),
     )
 

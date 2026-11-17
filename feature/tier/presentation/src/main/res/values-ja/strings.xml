@@ -259,7 +259,6 @@
     <plurals name="publish_sheet_cover_collage">
         <item quantity="other">自分のコラージュ · %d 枚</item>
     </plurals>
-    <string name="started_title">続きから</string>
     <plurals name="started_placed">
         <item quantity="other">%2$d枚中%1$d枚配置済み</item>
     </plurals>
@@ -267,7 +266,7 @@
     <string name="started_continue_of">「%1$s」を続ける</string>
     <string name="started_resume">ゲームを再開</string>
     <string name="publish_sheet_name">名前</string>
-    <string name="publish_sheet_name_hint">どんなリストですか？</string>
+    <string name="publish_sheet_name_hint">リストに名前を付けてください</string>
     <string name="publish_sheet_name_first">先にリストに名前を付けてください。</string>
     <string name="item_search_add_own">または自分で追加</string>
     <string name="item_search_own_link">画像のリンクを貼り付け</string>
@@ -276,4 +275,12 @@
     <string name="item_search_own_photo_sub">ギャラリーまたはカメラから</string>
     <string name="item_search_own_name">名前だけ</string>
     <string name="item_search_own_name_sub">上の欄に入力して「追加」</string>
+    <string name="started_count">続きから · %1$d</string>
+    <plurals name="started_placed_in">
+        <item quantity="other">%1$s · %3$d枚中%2$d枚配置済み</item>
+    </plurals>
+    <string name="publish_sheet_title_untitled">リストを公開</string>
+    <string name="publish_sheet_name_why">まだ「%1$s」という名前です。リストは名前で探されます。</string>
+    <string name="publish_sheet_needs_account">公開には Google アカウントが必要です。ログインの間もリストはここに残ります。</string>
+    <string name="publish_sheet_sign_in_and_publish">ログインして公開</string>
 </resources>

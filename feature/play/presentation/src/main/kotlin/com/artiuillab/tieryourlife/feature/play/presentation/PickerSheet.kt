@@ -168,6 +168,7 @@ private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
             )
         }
         GameSummary(picker)
+        PlacedWarning(picker.placedChosen)
         Spacer(Modifier.height(12.dp))
         BigStartButton(picker, actions.onStart)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -214,6 +215,20 @@ private fun GameSummary(picker: Picker) {
             )
         }
     }
+}
+
+/** Cards already in tiers will be moved by the game; Undo after it puts them back. */
+@Composable
+private fun PlacedWarning(placed: Int) {
+    if (placed == 0) return
+    Text(
+        text = pluralStringResource(R.plurals.play_placed_warning, placed, placed),
+        modifier = Modifier
+            .padding(start = 4.dp, top = 8.dp)
+            .testTag(PlayTestTags.PLACED_WARNING),
+        style = SUMMARY_NOTE,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 private val SUMMARY_LINE = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)

@@ -68,6 +68,16 @@ class FileRankingDraftsTest {
     }
 
     @Test
+    fun theSection_isKeptWithTheProgress_andNoneForARecordFromBeforeIt() = runBlocking {
+        val drafts = FileRankingDrafts(folder.root)
+        drafts.keep("films", RankingDraft(7, listOf(listOf(0)), listOf(1), title = "A24", section = "film_tv"), "ann")
+        drafts.keep("games", RankingDraft(3, listOf(listOf(0)), listOf(1), title = "PS2"), "ann")
+
+        assertEquals("film_tv", drafts.read("films", "ann")!!.section)
+        assertEquals(mapOf("films" to "film_tv", "games" to null), FileRankingDrafts(folder.root).started("ann").associate { it.listId to it.section })
+    }
+
+    @Test
     fun aRecordFromBeforeTheTitle_stillReads_andStaysOutOfWhatWasBegun() = runBlocking {
         val drafts = FileRankingDrafts(folder.root)
         drafts.keep("old", RankingDraft(5, listOf(listOf(1)), listOf(0), title = "Old"), "ann")

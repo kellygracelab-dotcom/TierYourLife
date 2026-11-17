@@ -93,4 +93,8 @@
     <string name="play_select_candidates">Tüm uygun kartları seç</string>
     <string name="play_clear_selection">Seçimi temizle</string>
     <string name="play_card_unnamed">Başlıksız kart</string>
+    <plurals name="play_placed_warning">
+        <item quantity="one">%1$d kart yerleştirdin. Oyun onu yeniden dizer; “Geri al” geri getirir.</item>
+        <item quantity="other">%1$d kart yerleştirdin. Oyun onları yeniden dizer; “Geri al” geri getirir.</item>
+    </plurals>
 </resources>
