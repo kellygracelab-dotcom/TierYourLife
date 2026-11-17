@@ -66,6 +66,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.BoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.board.common.forLetterOnButton
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -347,7 +348,7 @@ internal fun tierButtonRows(tiers: Int): TierButtonLayout {
 
 @Composable
 private fun WideTierButton(tier: Tier, card: TierItem, modifier: Modifier, onClick: () -> Unit) {
-    val colors = tierRowColors(tier.colorLight, tier.colorDark)
+    val colors = tierRowColors(tier.colorLight, tier.colorDark).forLetterOnButton()
     val description = stringResource(R.string.one_by_one_place_in, card.title, tier.label)
     Box(
         modifier = modifier
@@ -408,7 +409,7 @@ private fun BigCard(card: TierItem, picked: Boolean) {
 
 @Composable
 private fun TierButton(tier: Tier, onClick: () -> Unit) {
-    val colors = tierRowColors(tier.colorLight, tier.colorDark)
+    val colors = tierRowColors(tier.colorLight, tier.colorDark).forLetterOnButton()
     Box(
         modifier = Modifier
             .heightIn(min = TIER_BUTTON_HEIGHT)

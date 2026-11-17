@@ -11,6 +11,8 @@ data class RankingDraft(
     val savedBoardUid: String? = null,
     /** The list's title when the progress was kept, for the list of what was begun. */
     val title: String = "",
+    /** The list's section id, for the same list; null in progress kept before it was. */
+    val section: String? = null,
 ) {
     val placed: Int get() = rows.sumOf { it.size }
     val total: Int get() = placed + pool.size
@@ -24,6 +26,7 @@ data class StartedRanking(
     val placed: Int,
     val total: Int,
     val keptAt: Long,
+    val section: String? = null,
 )
 
 interface RankingDrafts {

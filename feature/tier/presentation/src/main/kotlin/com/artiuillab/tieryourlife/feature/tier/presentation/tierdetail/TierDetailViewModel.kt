@@ -142,6 +142,8 @@ class TierDetailViewModel @Inject constructor(
     fun chooseTopic(topic: Topic?) = sheet.chooseTopic(topic)
     fun proposeTopic(name: String) = sheet.proposeTopic(name)
     fun publishFromSheet() = sheet.publish()
+    fun publishFromSheetAfterSignIn() = sheet.publishAfterSignIn()
+    fun signedInForSheet() = sheet.signedIn()
 
     fun nameFromSheet(title: String) = sheet.name(title)
 

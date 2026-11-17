@@ -56,6 +56,7 @@ class FileRankingDrafts internal constructor(
             listId = listId,
             owner = owner,
             title = draft.title,
+            section = draft.section,
             keptAt = now(),
         )
         val encoded = json.encodeToString(record).toByteArray()
@@ -100,13 +101,14 @@ private data class DraftRecord(
     val owner: String? = null,
     val title: String = "",
     val keptAt: Long = 0,
+    val section: String? = null,
 ) {
-    fun draft() = RankingDraft(version, rows, pool, RankingChoice.fromWire(choice), savedBoardUid, title)
+    fun draft() = RankingDraft(version, rows, pool, RankingChoice.fromWire(choice), savedBoardUid, title, section)
 
     fun started(account: String?): StartedRanking? {
         val id = listId ?: return null
         val draft = draft().takeIf { owner == account && savedBoardUid == null } ?: return null
         if (title.isBlank() || draft.placed == 0) return null
-        return StartedRanking(id, title, version, draft.placed, draft.total, keptAt)
+        return StartedRanking(id, title, version, draft.placed, draft.total, keptAt, section)
     }
 }

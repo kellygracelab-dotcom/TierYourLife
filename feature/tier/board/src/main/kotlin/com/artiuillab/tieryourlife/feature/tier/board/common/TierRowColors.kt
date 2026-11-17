@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.luminance
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 
 private const val ROW_TINT_ALPHA = 0.12f
@@ -50,3 +51,36 @@ fun tierRowColors(colorLight: String, colorDark: String): TierRowColors {
         onBand = media.onTierBand,
     )
 }
+
+/**
+ * A tier's colour as a button under a white letter (artboard 18): A's orange and
+ * B's ochre left the letter near 3.9 and 3.3 to 1. The colour is darkened, its
+ * hue kept, until the letter reaches 5 to 1. A dark letter, the dark theme's,
+ * keeps the colour as it is.
+ */
+fun TierRowColors.forLetterOnButton(): TierRowColors =
+    if (onBand.luminance() < WHITE_LETTER) this else copy(band = band.darkenedForWhite())
+
+internal fun Color.darkenedForWhite(): Color {
+    if (whiteContrast(this) >= WHITE_LETTER_FROM) return this
+    // As the site does it: each channel scaled down in steps of 2 %, so the hue stays.
+    for (step in 1 until DARKEN_STEPS) {
+        val k = 1f - step * DARKEN_STEP
+        val darker = Color(red = toByte(red * k), green = toByte(green * k), blue = toByte(blue * k), alpha = alpha)
+        if (whiteContrast(darker) >= WHITE_LETTER_FROM) return darker
+    }
+    return Color.Black.copy(alpha = alpha)
+}
+
+/** WCAG contrast of a white letter on [color], 1 to 21. */
+internal fun whiteContrast(color: Color): Float = (WHITE_LUMINANCE + FLARE) / (color.luminance() + FLARE)
+
+private fun toByte(channel: Float): Float = Math.round(channel * BYTE) / BYTE
+
+internal const val WHITE_LETTER_FROM = 5f
+private const val WHITE_LETTER = 0.5f
+private const val WHITE_LUMINANCE = 1f
+private const val FLARE = 0.05f
+private const val DARKEN_STEP = 0.02f
+private const val DARKEN_STEPS = 50
+private const val BYTE = 255f

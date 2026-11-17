@@ -70,6 +70,7 @@ object PublishSheetTags {
     const val ADD_TOPIC = "publish_sheet_add_topic"
     const val AS_SECTION = "publish_sheet_as_section"
     const val PUBLISH = "publish_sheet_publish"
+    const val NEEDS_ACCOUNT = "publish_sheet_needs_account"
     const val ERROR = "publish_sheet_error"
     const val COVER = "publish_sheet_cover"
     const val CHANGE_COVER = "publish_sheet_change_cover"
@@ -86,6 +87,8 @@ data class PublishSheetCalls(
     /** The section proposal form with this name, the board's section to file under meanwhile; null where it cannot open. */
     val onProposeSection: ((String) -> Unit)? = null,
     val onPublish: () -> Unit = {},
+    /** A guest's button: sign in, then publish what the sheet holds. */
+    val onSignInAndPublish: () -> Unit = {},
     /** The name typed for an untitled list, written before it goes out. */
     val onName: (String) -> Unit = {},
     val onDismiss: () -> Unit = {},
@@ -105,6 +108,7 @@ fun PublishSheet(
     busy: Boolean,
     error: PublishError?,
     calls: PublishSheetCalls,
+    signedIn: Boolean = true,
 ) {
     // "Untitled list" is not a name to publish under: the field comes first, and Publish waits for it.
     val untitled = isUntitled(list.title)
@@ -112,12 +116,13 @@ fun PublishSheet(
     var nameWanted by rememberSaveable(list.id) { mutableStateOf(false) }
     val publish = {
         val typed = name.trim()
+        val send = if (signedIn) calls.onPublish else calls.onSignInAndPublish
         when {
-            !untitled -> calls.onPublish()
+            !untitled -> send()
             typed.isEmpty() -> nameWanted = true
             else -> {
                 calls.onName(typed)
-                calls.onPublish()
+                send()
             }
         }
     }
@@ -127,9 +132,10 @@ fun PublishSheet(
                 Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                Heading(list)
+                Heading(list, untitled)
+                if (!signedIn) NeedsAccount()
                 if (untitled) {
-                    NameBlock(name, wanted = nameWanted, enabled = !busy) {
+                    NameBlock(name, list.title, wanted = nameWanted, enabled = !busy) {
                         name = it
                         nameWanted = false
                     }
@@ -153,16 +159,17 @@ fun PublishSheet(
                 }
             }
             Spacer(Modifier.height(16.dp))
-            PublishButton(busy = busy, onClick = publish)
+            PublishButton(busy = busy, signedIn = signedIn, onClick = publish)
         }
     }
 }
 
 @Composable
-private fun Heading(list: TierList) {
+private fun Heading(list: TierList, untitled: Boolean) {
     val cards = list.tiers.sumOf { it.items.size }
+    val title = if (untitled) stringResource(R.string.publish_sheet_title_untitled) else stringResource(R.string.publish_sheet_title, list.title)
     Column {
-        Text(stringResource(R.string.publish_sheet_title, list.title), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface)
+        Text(title, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface)
         Text(
             pluralStringResource(R.plurals.publish_sheet_cards, cards, cards),
             modifier = Modifier.padding(top = 4.dp),
@@ -181,7 +188,8 @@ private const val UNTITLED_LIST = "Untitled list"
 private const val MAX_NAME = 120
 
 @Composable
-private fun NameBlock(name: String, wanted: Boolean, enabled: Boolean, onName: (String) -> Unit) {
+private fun NameBlock(name: String, untitledAs: String, wanted: Boolean, enabled: Boolean, onName: (String) -> Unit) {
+    val calledNow = untitledAs.trim().ifEmpty { stringResource(R.string.default_tier_list_title) }
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         BlockHead(stringResource(R.string.publish_sheet_name), wanted = wanted)
         OutlinedTextField(
@@ -191,10 +199,8 @@ private fun NameBlock(name: String, wanted: Boolean, enabled: Boolean, onName: (
             singleLine = true,
             isError = wanted,
             placeholder = { Text(stringResource(R.string.publish_sheet_name_hint)) },
-            supportingText = if (wanted) {
-                { Text(stringResource(R.string.publish_sheet_name_first)) }
-            } else {
-                null
+            supportingText = {
+                Text(if (wanted) stringResource(R.string.publish_sheet_name_first) else stringResource(R.string.publish_sheet_name_why, calledNow))
             },
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
             modifier = Modifier.fillMaxWidth().testTag(PublishSheetTags.NAME),
@@ -346,8 +352,23 @@ private fun Explanation() {
     }
 }
 
+/** At the top for a guest: what Publish asks of them, and that nothing here is lost meanwhile. */
 @Composable
-private fun PublishButton(busy: Boolean, onClick: () -> Unit) {
+private fun NeedsAccount() {
+    Text(
+        text = stringResource(R.string.publish_sheet_needs_account),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(12.dp))
+            .padding(horizontal = 14.dp, vertical = 12.dp)
+            .testTag(PublishSheetTags.NEEDS_ACCOUNT),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSecondaryContainer,
+    )
+}
+
+@Composable
+private fun PublishButton(busy: Boolean, signedIn: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         enabled = !busy,
@@ -359,7 +380,15 @@ private fun PublishButton(busy: Boolean, onClick: () -> Unit) {
             PublishIcon(20.dp, LocalContentColor.current)
         }
         Spacer(Modifier.width(8.dp))
-        Text(stringResource(if (busy) BoardR.string.board_publishing else BoardR.string.board_publish))
+        Text(
+            stringResource(
+                when {
+                    busy -> BoardR.string.board_publishing
+                    signedIn -> BoardR.string.board_publish
+                    else -> R.string.publish_sheet_sign_in_and_publish
+                },
+            ),
+        )
     }
 }
 

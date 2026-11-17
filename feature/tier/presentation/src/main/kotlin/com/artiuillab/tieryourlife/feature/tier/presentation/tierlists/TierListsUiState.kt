@@ -35,7 +35,15 @@ sealed interface TierListsUiState {
 }
 
 /** Someone else's list begun on this phone: where it stands, and whether a game of it waits. */
-data class StartedList(val listId: String, val title: String, val placed: Int, val total: Int, val gameSaved: Boolean = false)
+data class StartedList(
+    val listId: String,
+    val title: String,
+    val placed: Int,
+    val total: Int,
+    val gameSaved: Boolean = false,
+    /** The list's section id; null for progress kept before it was. */
+    val section: String? = null,
+)
 
 sealed interface HomeMode {
     data object Browsing : HomeMode

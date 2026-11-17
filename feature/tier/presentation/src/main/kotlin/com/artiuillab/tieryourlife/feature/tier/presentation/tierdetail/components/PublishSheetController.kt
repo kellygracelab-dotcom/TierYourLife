@@ -21,6 +21,8 @@ data class PublishSheetState(
     val sectionWanted: Boolean = false,
     /** Out to the cover picker: the sheet is not drawn over it, and comes back as it was. */
     val away: Boolean = false,
+    /** A guest asked to sign in and publish: it goes out once the account is there. */
+    val afterSignIn: Boolean = false,
 )
 
 /**
@@ -115,6 +117,21 @@ internal class PublishSheetController(
             return
         }
         publish.invoke()
+    }
+
+    /** A guest's publish: the sheet stays as it is while they sign in, and publishes after. */
+    fun publishAfterSignIn() {
+        if (current()?.category == null) {
+            mutable.update { it?.copy(sectionWanted = true) }
+            return
+        }
+        mutable.update { it?.copy(afterSignIn = true) }
+    }
+
+    fun signedIn() {
+        if (mutable.value?.afterSignIn != true) return
+        mutable.update { it?.copy(afterSignIn = false) }
+        publish()
     }
 
     /** The name an untitled list is published under, written onto the board first. */

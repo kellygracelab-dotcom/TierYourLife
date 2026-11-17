@@ -24,6 +24,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.StartedList
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
@@ -36,11 +38,9 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
 @Composable
 internal fun ContinueBlock(started: List<StartedList>, onContinue: (StartedList, resumeGame: Boolean) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxWidth().testTag(TierListsTestTags.CONTINUE_BLOCK), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(R.string.started_title),
+        SectionLabel(
+            text = stringResource(R.string.started_count, started.size),
             modifier = Modifier.padding(top = 6.dp, bottom = 2.dp),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         started.forEach { list -> StartedRow(list, onContinue) }
     }
@@ -64,7 +64,7 @@ private fun StartedRow(list: StartedList, onContinue: (StartedList, resumeGame: 
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = pluralStringResource(R.plurals.started_placed, list.placed, list.placed, list.total),
+                    text = placedLine(list),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -89,4 +89,11 @@ private fun StartedRow(list: StartedList, onContinue: (StartedList, resumeGame: 
             ) { Text(stringResource(R.string.started_continue), maxLines = 1) }
         }
     }
+}
+
+/** "Anime · 7 of 25 placed", as on the site; progress kept before the section was stored says only the count. */
+@Composable
+private fun placedLine(list: StartedList): String {
+    val section = list.section ?: return pluralStringResource(R.plurals.started_placed, list.placed, list.placed, list.total)
+    return pluralStringResource(R.plurals.started_placed_in, list.placed, sectionLabel(section), list.placed, list.total)
 }

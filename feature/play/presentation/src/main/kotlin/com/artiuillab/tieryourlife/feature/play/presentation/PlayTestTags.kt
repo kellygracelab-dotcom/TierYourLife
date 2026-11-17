@@ -12,6 +12,7 @@ object PlayTestTags {
     const val UNDO_DISCARD = "play_undo_discard"
     const val START = "play_start"
     const val SUMMARY = "play_summary"
+    const val PLACED_WARNING = "play_placed_warning"
     const val OTHER_WAYS = "play_other_ways"
     const val MODES_PAGE = "play_modes_page"
     const val CARDS_PAGE = "play_cards_page"

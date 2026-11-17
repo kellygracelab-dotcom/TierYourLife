@@ -103,4 +103,9 @@
     <string name="play_select_candidates">Seleccionar todas las disponibles</string>
     <string name="play_clear_selection">Borrar selección</string>
     <string name="play_card_unnamed">Tarjeta sin título</string>
+    <plurals name="play_placed_warning">
+        <item quantity="one">Has colocado %1$d carta. El juego la reordena; «Deshacer» la devuelve.</item>
+        <item quantity="many">Has colocado %1$d cartas. El juego las reordena; «Deshacer» las devuelve.</item>
+        <item quantity="other">Has colocado %1$d cartas. El juego las reordena; «Deshacer» las devuelve.</item>
+    </plurals>
 </resources>

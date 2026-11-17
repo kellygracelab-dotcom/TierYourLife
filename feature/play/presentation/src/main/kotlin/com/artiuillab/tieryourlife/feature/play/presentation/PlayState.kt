@@ -101,6 +101,13 @@ data class Picker(
 
     val keepsTier: Boolean get() = singleTier != null
 
+    /** Chosen cards that already stand in a tier: the game will move them. None when it only orders one tier. */
+    val placedChosen: Int get() = when {
+        keepsTier -> 0
+        cards.isEmpty() -> groups.filter { !it.isPool && it.tierId in chosen }.sumOf { it.count }
+        else -> selectedCards.count { it.tierId in rankedIds }
+    }
+
     /** The pool alone. */
     val poolOnly: Boolean get() = chosen.singleOrNull()?.let { id -> groups.firstOrNull { it.tierId == id } }?.isPool == true
     val canPlay: Boolean get() = count >= MIN_PLAY_CARDS

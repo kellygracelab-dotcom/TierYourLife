@@ -113,4 +113,10 @@
     <string name="play_select_candidates">Wybierz wszystkie dostępne</string>
     <string name="play_clear_selection">Wyczyść wybór</string>
     <string name="play_card_unnamed">Karta bez tytułu</string>
+    <plurals name="play_placed_warning">
+        <item quantity="one">Umieszczono %1$d kartę. Gra ją przestawi; „Cofnij” ją przywróci.</item>
+        <item quantity="few">Umieszczono %1$d karty. Gra je przestawi; „Cofnij” je przywróci.</item>
+        <item quantity="many">Umieszczono %1$d kart. Gra je przestawi; „Cofnij” je przywróci.</item>
+        <item quantity="other">Umieszczono %1$d karty. Gra je przestawi; „Cofnij” je przywróci.</item>
+    </plurals>
 </resources>

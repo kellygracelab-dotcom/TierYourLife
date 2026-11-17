@@ -304,7 +304,6 @@
         <item quantity="many">Ваш колаж · картинок: %d</item>
         <item quantity="other">Ваш колаж · картинок: %d</item>
     </plurals>
-    <string name="started_title">Продовжити</string>
     <plurals name="started_placed">
         <item quantity="one">Розкладено %1$d із %2$d</item>
         <item quantity="few">Розкладено %1$d із %2$d</item>
@@ -315,7 +314,7 @@
     <string name="started_continue_of">Продовжити «%1$s»</string>
     <string name="started_resume">Продовжити гру</string>
     <string name="publish_sheet_name">Назва</string>
-    <string name="publish_sheet_name_hint">Що це за список?</string>
+    <string name="publish_sheet_name_hint">Дайте списку назву</string>
     <string name="publish_sheet_name_first">Спершу дайте списку назву.</string>
     <string name="item_search_add_own">Або додайте своє</string>
     <string name="item_search_own_link">Вставте посилання на картинку</string>
@@ -324,4 +323,15 @@
     <string name="item_search_own_photo_sub">З галереї або з камери</string>
     <string name="item_search_own_name">Лише назва</string>
     <string name="item_search_own_name_sub">Введіть її в поле вище й натисніть «Додати»</string>
+    <string name="started_count">Продовжити · %1$d</string>
+    <plurals name="started_placed_in">
+        <item quantity="one">%1$s · розкладено %2$d із %3$d</item>
+        <item quantity="few">%1$s · розкладено %2$d із %3$d</item>
+        <item quantity="many">%1$s · розкладено %2$d із %3$d</item>
+        <item quantity="other">%1$s · розкладено %2$d із %3$d</item>
+    </plurals>
+    <string name="publish_sheet_title_untitled">Опублікувати список</string>
+    <string name="publish_sheet_name_why">Він досі називається «%1$s». Списки шукають за назвою.</string>
+    <string name="publish_sheet_needs_account">Для публікації потрібен обліковий запис Google. Поки ви входите, список лишається тут.</string>
+    <string name="publish_sheet_sign_in_and_publish">Увійти й опублікувати</string>
 </resources>

@@ -481,7 +481,7 @@ class TierListsViewModelTest {
             override suspend fun read(listId: String, owner: String?): RankingDraft? = null
             override suspend fun keep(listId: String, draft: RankingDraft, owner: String?) = Unit
             override suspend fun started(owner: String?): List<StartedRanking> = if (owner == ann) {
-                listOf(StartedRanking("films", "Every A24 film", version = 7, placed = 4, total = 22, keptAt = 2), StartedRanking("games", "PS2 era", version = 3, placed = 1, total = 9, keptAt = 1))
+                listOf(StartedRanking("films", "Every A24 film", version = 7, placed = 4, total = 22, keptAt = 2, section = "film_tv"), StartedRanking("games", "PS2 era", version = 3, placed = 1, total = 9, keptAt = 1))
             } else {
                 emptyList()
             }
@@ -493,7 +493,7 @@ class TierListsViewModelTest {
         val state = viewModel.state.firstWithin { it is TierListsUiState.Success } as TierListsUiState.Success
 
         assertEquals(
-            listOf(StartedList("films", "Every A24 film", 4, 22, gameSaved = true), StartedList("games", "PS2 era", 1, 9, gameSaved = false)),
+            listOf(StartedList("films", "Every A24 film", 4, 22, gameSaved = true, section = "film_tv"), StartedList("games", "PS2 era", 1, 9, gameSaved = false)),
             state.started,
         )
     }
