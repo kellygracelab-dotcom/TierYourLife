@@ -93,6 +93,12 @@ class PlayScreenshotTest {
     }
 
     @Test
+    @Config(qualifiers = "+ru", fontScale = 1.15f)
+    fun thePicker_russian_theLinksOneAboveTheOther() = capture("play_picker_ru") {
+        Sheet(frieren)
+    }
+
+    @Test
     fun choosingCards_oneTier_ordersOnlyThatTier() = capture("play_choose_one_tier") {
         Sheet(picker.copy(page = PickerPage.Cards, chosen = setOf(1L)))
     }
@@ -170,6 +176,18 @@ class PlayScreenshotTest {
     @Config(qualifiers = FLIP_LANDSCAPE)
     fun landscape_thePicker_dark() = capture("play_landscape_picker_dark", dark = true) {
         WideDialog(picker.copy(resume = savedGame))
+    }
+
+    @Test
+    @Config(qualifiers = FLIP_LANDSCAPE)
+    fun landscape_thePicker_placedCardsWarned() = capture("play_landscape_picker_placed") {
+        WideDialog(picker.copy(page = PickerPage.Games, intoMine = true, chosen = picker.groups.filterNot { it.isPool }.map { it.tierId }.toSet()))
+    }
+
+    @Test
+    @Config(qualifiers = FLIP_LANDSCAPE)
+    fun landscape_otherWaysToPlay_theFourGamesSideBySide() = capture("play_landscape_modes") {
+        WideDialog(frieren.copy(page = PickerPage.Modes, kind = GameKind.Swiss))
     }
 
     @Test

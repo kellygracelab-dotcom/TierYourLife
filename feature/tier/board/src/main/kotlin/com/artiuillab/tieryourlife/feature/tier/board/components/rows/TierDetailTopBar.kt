@@ -149,6 +149,8 @@ fun TierScreenTopBar(
                     .size(48.dp)
                     .semantics { contentDescription = backDescription },
             ) { BackIcon() }
+            // A short window's bar keeps a reader's line too, and Play its word: held sideways the bar is wide.
+            val roomy = !compact || onReaderMoreClick != null
             val titleStyle = when {
                 compact -> MaterialTheme.typography.titleMedium
                 subline != null -> MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp, lineHeight = 26.sp)
@@ -162,28 +164,10 @@ fun TierScreenTopBar(
                     modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
                 )
             } else {
-                Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
-                    Text(
-                        text = title,
-                        style = titleStyle,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    subline?.invoke()
-                    if (subtitle != null && !compact && subline == null) {
-                        Text(
-                            text = subtitle,
-                            style = MaterialTheme.typography.bodySmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
+                ReadTitle(title, titleStyle, subline, subtitle.takeIf { roomy && subline == null })
             }
             trailing?.invoke(this)
-            BarActions(publish, play, view, playWorded = !compact)
+            BarActions(publish, play, view, playWorded = roomy)
             if (onReaderMoreClick != null) {
                 // Moving cards in Mine does not make the reader the list's editor.
                 IconButton(
@@ -202,6 +186,30 @@ fun TierScreenTopBar(
                         .semantics { contentDescription = moreDescription },
                 ) { MoreIcon() }
             }
+        }
+    }
+}
+
+/** A title only read, and the line under it: a tablet's [subline], or [subtitle]. */
+@Composable
+private fun RowScope.ReadTitle(title: String, style: TextStyle, subline: (@Composable () -> Unit)?, subtitle: String?) {
+    Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
+        Text(
+            text = title,
+            style = style,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        subline?.invoke()
+        if (subtitle != null) {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -439,11 +447,13 @@ private fun playKeepsItsWord(publish: PublishButton?, view: ViewButton?, width: 
 }
 
 /**
- * One's own board on a phone: a bar in two storeys. Above, back, Publish and
- * Play with their words and the overflow; below, the whole name, renamed by
- * a tap as before, and what the board holds. Scrolling the rows folds the
- * lower storey away and brings a short title into the upper one, the
- * standard exit-until-collapsed behaviour; [state] is that behaviour's.
+ * A board on a phone held upright: a bar in two storeys. Above, back, Publish
+ * and Play with their words and the overflow; below, the whole name and what
+ * the board holds. One's own name is renamed by a tap as before; someone
+ * else's ([onRenameList] null) is only read, with its section in the line
+ * under it. Scrolling the rows folds the lower storey away and brings a short
+ * title into the upper one, the standard exit-until-collapsed behaviour;
+ * [state] is that behaviour's.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -452,12 +462,13 @@ fun OwnBoardTopBar(
     counts: String,
     state: TopAppBarState,
     onBack: () -> Unit,
-    onManualAdd: () -> Unit,
+    onManualAdd: (() -> Unit)?,
     onMoreClick: () -> Unit,
-    onRenameList: (String) -> Unit,
+    onRenameList: ((String) -> Unit)?,
     play: PlayButton?,
     publish: PublishButton?,
     view: ViewButton?,
+    moreTag: String? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     val moreDescription = stringResource(ThemeR.string.tier_detail_content_description_more)
@@ -498,24 +509,39 @@ fun OwnBoardTopBar(
                 }
             }
             BarActions(publish, play, view, playWorded = playKeepsItsWord(publish, view, barWidth))
-            if (publish?.narrow != true) ManualAddAction(onManualAdd, stringResource(R.string.tier_detail_content_description_manual_add))
+            if (onManualAdd != null && publish?.narrow != true) {
+                ManualAddAction(onManualAdd, stringResource(R.string.tier_detail_content_description_manual_add))
+            }
             IconButton(
                 onClick = onMoreClick,
                 modifier = Modifier
                     .size(48.dp)
-                    .semantics { contentDescription = moreDescription },
+                    .semantics { contentDescription = moreDescription }
+                    .then(if (moreTag != null) Modifier.testTag(moreTag) else Modifier),
             ) { MoreIcon() }
         }
         }
         FoldingStorey(state) {
             Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
-                EditableListTitle(
-                    title = title,
-                    onRename = onRenameList,
-                    style = MaterialTheme.typography.headlineSmall.copy(fontSize = 24.sp, lineHeight = 30.sp),
-                    modifier = Modifier.fillMaxWidth(),
-                    wraps = true,
-                )
+                val titleStyle = MaterialTheme.typography.headlineSmall.copy(fontSize = 24.sp, lineHeight = 30.sp)
+                if (onRenameList != null) {
+                    EditableListTitle(
+                        title = title,
+                        onRename = onRenameList,
+                        style = titleStyle,
+                        modifier = Modifier.fillMaxWidth(),
+                        wraps = true,
+                    )
+                } else {
+                    Text(
+                        text = title,
+                        modifier = Modifier.fillMaxWidth().testTag(TierDetailTestTags.HEADER_TITLE),
+                        style = titleStyle,
+                        maxLines = WRAPPED_TITLE_LINES,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
                 Text(
                     text = counts,
                     modifier = Modifier.padding(top = 2.dp).testTag(TierDetailTestTags.OWN_BAR_COUNTS),

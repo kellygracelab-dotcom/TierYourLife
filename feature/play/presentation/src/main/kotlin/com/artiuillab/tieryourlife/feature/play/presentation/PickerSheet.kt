@@ -26,7 +26,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -42,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -121,16 +121,14 @@ internal fun ColumnScope.PickerContent(picker: Picker, actions: PickerActions, w
     }
     when {
         picker.page == PickerPage.Individual -> IndividualCardsPage(picker, actions)
-        // Sideways every game already stands in view: Modes is the same page.
-        wide && picker.page in GAME_PAGES -> WideGamesPage(picker, actions)
+        wide && picker.page == PickerPage.Games -> WideGamesPage(picker, actions)
+        wide && picker.page == PickerPage.Modes -> WideModesPage(picker, actions)
         wide -> WideCardsPage(picker, actions)
         picker.page == PickerPage.Games -> GamesPage(picker, actions)
         picker.page == PickerPage.Modes -> ModesPage(picker, actions)
         else -> CardsPage(picker, actions)
     }
 }
-
-private val GAME_PAGES = setOf(PickerPage.Games, PickerPage.Modes)
 
 /**
  * One way in: what a game is, what this one will take, and Start. The cards
@@ -171,21 +169,46 @@ private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
         PlacedWarning(picker.placedChosen)
         Spacer(Modifier.height(12.dp))
         BigStartButton(picker, actions.onStart)
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        PickerLinks(actions)
+        if (picker.intoMine) IntoMineNote(top = 4.dp)
+    }
+}
+
+/** "Choose cards" and "Other ways to play": side by side, or one above the other when a language makes them too long. */
+@Composable
+private fun PickerLinks(actions: PickerActions) {
+    Layout(
+        content = {
             TextButton(
                 onClick = actions.onShowCards,
                 modifier = Modifier
                     .heightIn(min = 48.dp)
                     .testTag(PlayTestTags.CHOOSE_CARDS),
-            ) { Text(stringResource(R.string.play_choose_cards)) }
+            ) { Text(stringResource(R.string.play_choose_cards), maxLines = 1, overflow = TextOverflow.Ellipsis) }
             TextButton(
                 onClick = actions.onShowModes,
                 modifier = Modifier
                     .heightIn(min = 48.dp)
                     .testTag(PlayTestTags.OTHER_WAYS),
-            ) { Text(stringResource(R.string.play_other_ways)) }
+            ) { Text(stringResource(R.string.play_other_ways), maxLines = 1, overflow = TextOverflow.Ellipsis) }
+        },
+        modifier = Modifier.fillMaxWidth(),
+    ) { measurables, constraints ->
+        val loose = constraints.copy(minWidth = 0, minHeight = 0)
+        val (first, second) = measurables.map { it.measure(loose) }
+        val width = constraints.maxWidth
+        if (first.width + second.width <= width) {
+            val height = maxOf(first.height, second.height)
+            layout(width, height) {
+                first.placeRelative(0, (height - first.height) / 2)
+                second.placeRelative(width - second.width, (height - second.height) / 2)
+            }
+        } else {
+            layout(width, first.height + second.height) {
+                first.placeRelative(0, 0)
+                second.placeRelative(0, first.height)
+            }
         }
-        if (picker.intoMine) IntoMineNote(top = 4.dp)
     }
 }
 
@@ -690,47 +713,79 @@ private val GameKind.lineRes: Int
 private val WIDE_TITLE = TextStyle(fontSize = 22.sp, lineHeight = 28.sp)
 private val WIDE_SUBTITLE = TextStyle(fontSize = 13.sp, lineHeight = 18.sp)
 
-/** Sideways: the three games side by side, every one of them in view without a scroll. */
+/**
+ * Sideways, the same dialog as upright in two columns: what the game is and
+ * what this one will take on the left, Start and the ways round it on the right.
+ */
 @Composable
 private fun ColumnScope.WideGamesPage(picker: Picker, actions: PickerActions) {
+    Row(
+        Modifier
+            .weight(1f, fill = false)
+            .padding(start = 24.dp, end = 24.dp, bottom = 12.dp)
+            .testTag(PlayTestTags.PICKER),
+        horizontalArrangement = Arrangement.spacedBy(28.dp),
+    ) {
+        Column(
+            Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            Text(stringResource(R.string.play_title), style = WIDE_TITLE, color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = stringResource(R.string.play_how_it_works),
+                modifier = Modifier.padding(top = 4.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(12.dp))
+            if (picker.resume != null || picker.discarded) {
+                SavedGameRow(picker, minHeight = 52.dp, actions)
+                Spacer(Modifier.height(10.dp))
+            }
+            GameSummary(picker)
+            PlacedWarning(picker.placedChosen)
+            if (picker.intoMine) IntoMineNote()
+        }
+        Column(
+            Modifier
+                .width(WIDE_START_WIDTH)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            Spacer(Modifier.height(30.dp))
+            BigStartButton(picker, actions.onStart)
+            Spacer(Modifier.height(4.dp))
+            PickerLinks(actions)
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                TextButton(onClick = actions.onDismiss) { Text(stringResource(R.string.play_cancel)) }
+            }
+        }
+    }
+}
+
+private val WIDE_START_WIDTH = 300.dp
+
+/** Sideways, "Other ways to play": every game side by side, in view without a scroll. */
+@Composable
+private fun ColumnScope.WideModesPage(picker: Picker, actions: PickerActions) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 44.dp)
+            .padding(start = 8.dp, end = 24.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val back = stringResource(ThemeR.string.tier_detail_content_description_back)
+        IconButton(onClick = actions.onShowGames, modifier = Modifier.semantics { contentDescription = back }) { BackIcon() }
+        Text(stringResource(R.string.play_other_ways), style = WIDE_TITLE, color = MaterialTheme.colorScheme.onSurface)
+    }
     Column(
         Modifier
             .weight(1f, fill = false)
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp)
-            .testTag(PlayTestTags.PICKER),
+            .padding(start = 24.dp, end = 24.dp, top = 6.dp)
+            .testTag(PlayTestTags.MODES_PAGE),
     ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = 44.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(stringResource(R.string.play_title), style = WIDE_TITLE, color = MaterialTheme.colorScheme.onSurface)
-            Spacer(Modifier.width(12.dp))
-            Text(
-                text = pluralStringResource(R.plurals.play_cards_from, picker.count, picker.count, picker.title),
-                modifier = Modifier.weight(1f),
-                style = WIDE_SUBTITLE,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            TextButton(
-                onClick = actions.onShowCards,
-                modifier = Modifier.testTag(PlayTestTags.CHOOSE_CARDS),
-                contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
-            ) {
-                ChecklistIcon(18.dp, MaterialTheme.colorScheme.primary)
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.play_choose_cards))
-            }
-        }
-        Spacer(Modifier.height(6.dp))
-        if (picker.resume != null || picker.discarded) {
-            SavedGameRow(picker, minHeight = 52.dp, actions)
-            Spacer(Modifier.height(10.dp))
-        }
         Row(
             Modifier
                 .fillMaxWidth()
@@ -750,7 +805,6 @@ private fun ColumnScope.WideGamesPage(picker: Picker, actions: PickerActions) {
                 )
             }
         }
-        if (picker.intoMine) IntoMineNote()
     }
     SheetActions {
         TextButton(onClick = actions.onDismiss) { Text(stringResource(R.string.play_cancel)) }

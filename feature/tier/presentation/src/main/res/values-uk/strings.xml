@@ -44,7 +44,7 @@
 
 
 
-    <string name="item_search_field_label">Пошукайте або введіть назву</string>
+    <string name="item_search_field_label">Пошук або своя назва</string>
     <string name="item_search_close_content_description">Закрити пошук</string>
     <string name="item_search_clear_content_description">Очистити пошук</string>
     <string name="item_search_source_caption">Додається до «%1$s»</string>

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
+import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.ui.CategoryIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
 import com.artiuillab.tieryourlife.core.theme.ui.DeleteOutlineIcon
@@ -76,11 +79,16 @@ fun ListActionsSheet(
         width = SheetWidth.Choosing,
         maxHeight = 560.dp,
     ) {
+        // In the middle of a window there is no handle above the title to keep it off the edge,
+        // and a phone held sideways is lower than the menu: it scrolls.
+        val dialog = currentWindowShape.hasRail
         Column(
             Modifier
                 .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
                 .testTag(CommunityTestTags.LIST_ACTIONS_SHEET),
         ) {
+            if (dialog) Spacer(Modifier.height(20.dp))
             SheetHead(title = title, authorName = authorName, authorPhotoUrl = authorPhotoUrl)
 
             HorizontalDivider(

@@ -553,14 +553,15 @@ private fun TierScreenBody(
                     beside = beside,
                     // The phone's tray: neither docked under the rows nor in the column beside them.
                     strip = beside && !docked && !poolBeside,
+                    column = !beside && poolBeside && short,
                 )
             }
         } else {
             null
         }
 
-        // One's own board on a phone held upright: the bar in two storeys, the lower folding as the rows scroll.
-        val ownTwoStorey = barMode == null && !readOnly && onReaderMoreClick == null && !glanceable
+        // A board on a phone held upright, one's own or a reader's: the bar in two storeys, the lower folding as the rows scroll.
+        val ownTwoStorey = barMode == null && !glanceable && (onReaderMoreClick != null || !readOnly)
         val ownBarScroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         val playButton = actions.onPlay?.takeUnless { glanceable }?.let { onPlay ->
             PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
@@ -568,17 +569,20 @@ private fun TierScreenBody(
         val ownView = ViewButton(list.displayMode, onSetDisplayMode).takeIf { actions.onPublish != null && !glanceable && !readOnly }
         val bar: @Composable () -> Unit = if (ownTwoStorey) {
             {
+                val reader = onReaderMoreClick
                 OwnBoardTopBar(
                     title = list.title,
-                    counts = boardCounts(list),
+                    counts = if (reader != null) subtitle.orEmpty() else boardCounts(list),
                     state = ownBarScroll.state,
                     onBack = onBack,
-                    onManualAdd = onManualAddClick,
-                    onMoreClick = { listSettingsVisible = true },
-                    onRenameList = onRenameList,
+                    onManualAdd = onManualAddClick.takeIf { reader == null },
+                    onMoreClick = reader ?: { listSettingsVisible = true },
+                    onRenameList = onRenameList.takeIf { reader == null },
                     play = playButton,
-                    publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - OWN_BAR_BESIDE_PUBLISH),
+                    publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - OWN_BAR_BESIDE_PUBLISH)
+                        ?.takeUnless { reader != null && readOnly },
                     view = ownView,
+                    moreTag = TierDetailTestTags.MORE.takeIf { reader != null },
                 )
             }
         } else {

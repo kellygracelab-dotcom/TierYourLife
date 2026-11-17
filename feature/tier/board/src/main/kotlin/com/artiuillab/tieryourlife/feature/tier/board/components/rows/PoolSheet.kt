@@ -459,13 +459,13 @@ private fun StripHead(
     title: String?,
 ) = BoxWithConstraints(Modifier.fillMaxWidth()) {
     val adds = !readOnly && onAddClick != null
-    val worded = toggleKeepsItsWord(title, adds, maxWidth)
-    val count = pool.items.size
-    // The count and the two chips sit on one line while they fit and take
-    // two when they do not. Given weight instead, the count was squeezed
-    // into whatever the chips left over -- about a hundred dp on a folding
-    // phone's cover screen, which is narrow enough to break "unranked"
-    // across three lines and still run into the buttons.
+    // The count and the chips sit on one line while they fit. When they do
+    // not, as in a long language, the count takes a line of its own and the
+    // chips keep their words on the next: the switch's picture alone said nothing.
+    if (!headFitsOneLine(title, adds, maxWidth)) {
+        StripHeadInTwoLines(title, onAddClick.takeIf { adds }, onGenerateClick, toggle)
+        return@BoxWithConstraints
+    }
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -485,6 +485,7 @@ private fun StripHead(
                     modifier = Modifier.testTag(TierDetailTestTags.POOL_COUNT),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
                 )
             }
             if (!expanded && title != null) {
@@ -497,14 +498,51 @@ private fun StripHead(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                toggle?.invoke(worded)
-                if (adds && onAddClick != null) {
-                    AddChip(onClick = onAddClick)
-                    if (Features.GENERATION_OFFERED) {
-                        GenerateChip(onClick = onGenerateClick)
-                    }
-                }
+                toggle?.invoke(true)
+                if (adds && onAddClick != null) StripAddChips(onAddClick, onGenerateClick)
             }
+        }
+    }
+}
+
+/** The strip's head when one line is too short: the count above, the switch and Add under it, each with its word. */
+@Composable
+private fun StripHeadInTwoLines(
+    title: String?,
+    onAddClick: (() -> Unit)?,
+    onGenerateClick: () -> Unit,
+    toggle: (@Composable (worded: Boolean) -> Unit)?,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        if (title != null) {
+            Text(
+                text = title,
+                modifier = Modifier.testTag(TierDetailTestTags.POOL_COUNT),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        if (onAddClick != null || toggle != null) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                toggle?.invoke(true)
+                Spacer(Modifier.weight(1f))
+                onAddClick?.let { StripAddChips(it, onGenerateClick) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StripAddChips(onAddClick: () -> Unit, onGenerateClick: () -> Unit) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        AddChip(onClick = onAddClick)
+        if (Features.GENERATION_OFFERED) {
+            GenerateChip(onClick = onGenerateClick)
         }
     }
 }
@@ -621,9 +659,9 @@ private fun Int.moreLines(): Int = BoardLayoutMemory.DockRowChoices.firstOrNull 
 
 private fun Int.fewerLines(): Int = BoardLayoutMemory.DockRowChoices.lastOrNull { it < this } ?: this
 
-/** The switch keeps its word while the count, the switch and Add stand on one line, the count unbroken. */
+/** Whether the count, the switch with its word and Add stand on one line, the count unbroken. */
 @Composable
-private fun toggleKeepsItsWord(title: String?, adds: Boolean, width: Dp): Boolean {
+private fun headFitsOneLine(title: String?, adds: Boolean, width: Dp): Boolean {
     if (title == null) return true
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current

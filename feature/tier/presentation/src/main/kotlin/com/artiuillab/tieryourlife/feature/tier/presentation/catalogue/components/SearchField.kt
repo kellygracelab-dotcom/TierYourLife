@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
@@ -43,7 +44,7 @@ internal fun SearchField(
     TextField(
         value = query,
         onValueChange = onQueryChange,
-        placeholder = { Text(stringResource(R.string.item_search_field_label)) },
+        placeholder = { Text(stringResource(R.string.item_search_field_label), maxLines = 1, overflow = TextOverflow.Ellipsis) },
         singleLine = true,
         shape = RoundedCornerShape(28.dp),
         leadingIcon = {

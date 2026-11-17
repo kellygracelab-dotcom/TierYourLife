@@ -131,17 +131,6 @@ internal fun InfoIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale
     drawLine(color, Offset(12f * scale, 11f * scale), Offset(12f * scale, 16.5f * scale), stroke, StrokeCap.Round)
 }
 
-/** Two ticks beside two lines: choose which cards play. */
-@Composable
-internal fun ChecklistIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
-    val stroke = 1.7f * scale
-    listOf(8f, 16f).forEach { y ->
-        drawLine(color, Offset(3.5f * scale, y * scale), Offset(5.5f * scale, (y + 2f) * scale), stroke, StrokeCap.Round)
-        drawLine(color, Offset(5.5f * scale, (y + 2f) * scale), Offset(9f * scale, (y - 2f) * scale), stroke, StrokeCap.Round)
-        drawLine(color, Offset(12.5f * scale, (y + 0.5f) * scale), Offset(20.5f * scale, (y + 0.5f) * scale), stroke, StrokeCap.Round)
-    }
-}
-
 /** A tray: the cards not placed yet. */
 @Composable
 internal fun PoolIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
