@@ -38,7 +38,7 @@
 
 
 
-    <string name="item_search_field_label">Suchen oder einen Namen tippen</string>
+    <string name="item_search_field_label">Suchen oder Namen tippen</string>
     <string name="item_search_close_content_description">Suche schließen</string>
     <string name="item_search_clear_content_description">Suche leeren</string>
     <string name="item_search_source_caption">Wird zu %1$s hinzugefügt</string>

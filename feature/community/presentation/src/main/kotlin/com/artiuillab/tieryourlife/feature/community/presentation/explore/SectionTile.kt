@@ -55,10 +55,11 @@ internal data class TileStyle(
     val showsSubline: Boolean = true,
     val corner: Dp = 16.dp,
     val showsIcon: Boolean = true,
+    val nameLines: Int = 2,
 ) {
     companion object {
-        val Cover = TileStyle(label = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium), icon = 15.dp, start = 9.dp, end = 6.dp, bottom = 8.dp, showsSubline = false, corner = 12.dp)
-        val Mini = TileStyle(label = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium), icon = 16.dp, start = 10.dp, bottom = 10.dp, showsSubline = false, corner = 14.dp)
+        val Cover = TileStyle(label = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium), icon = 15.dp, start = 9.dp, end = 6.dp, bottom = 8.dp, showsSubline = false, corner = 12.dp, nameLines = 1)
+        val Mini = TileStyle(label = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium), icon = 16.dp, start = 10.dp, bottom = 10.dp, showsSubline = false, corner = 14.dp, nameLines = 1)
 
         /** The empty Following tab's: the picture and the name, nothing on top of the picture. */
         val Pick = Mini.copy(showsIcon = false)
@@ -129,7 +130,8 @@ internal fun SectionTile(
                 horizontalArrangement = Arrangement.spacedBy(7.dp),
             ) {
                 if (style.showsIcon) SectionIcon(section, style.icon, SectionLabel)
-                Text(name, style = style.label, color = SectionLabel, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                // A long name in a long language takes a second line rather than losing its end.
+                Text(name, style = style.label, color = SectionLabel, maxLines = style.nameLines, overflow = TextOverflow.Ellipsis)
             }
         }
         DropdownMenu(

@@ -44,7 +44,7 @@
 
 
 
-    <string name="item_search_field_label">Поищите или введите название</string>
+    <string name="item_search_field_label">Поиск или своё название</string>
     <string name="item_search_close_content_description">Закрыть поиск</string>
     <string name="item_search_clear_content_description">Очистить поиск</string>
     <string name="item_search_source_caption">Добавление в «%1$s»</string>

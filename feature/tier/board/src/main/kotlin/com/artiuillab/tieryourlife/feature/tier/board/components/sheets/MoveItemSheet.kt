@@ -2,18 +2,26 @@ package com.artiuillab.tieryourlife.feature.tier.board.components.sheets
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -30,14 +38,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
+import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
+import com.artiuillab.tieryourlife.core.theme.layout.isShortWindow
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.DeleteOutlineIcon
@@ -46,6 +61,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.SouthIcon
 import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.board.common.forLetterOnButton
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
@@ -110,10 +126,27 @@ fun MoveItemSheetContent(
         AboutThePicture(item, onDismiss = { aboutVisible = false })
         return
     }
-    // The tiers first, then the gentler ways out, and removing last, apart:
-    // five tiers and all of it fit without scrolling.
+    if (isShortWindow && currentWindowShape.hasRail) {
+        WideMoveItemContent(item, currentTierId, rankedTiers, pool, onMoveToTier, onRemove, onAdjustPicture, onAbout = { aboutVisible = true })
+    } else {
+        TallMoveItemContent(item, currentTierId, rankedTiers, pool, onMoveToTier, onRemove, onAdjustPicture, onAbout = { aboutVisible = true })
+    }
+}
+
+/** The tiers first, then the gentler ways out, and removing last, apart: five tiers and all of it fit without scrolling. */
+@Composable
+private fun TallMoveItemContent(
+    item: TierItem,
+    currentTierId: Long,
+    rankedTiers: List<Tier>,
+    pool: Tier?,
+    onMoveToTier: (tierId: Long, toPosition: Int) -> Unit,
+    onRemove: () -> Unit,
+    onAdjustPicture: (() -> Unit)?,
+    onAbout: () -> Unit,
+) {
     Column(Modifier.testTag(TierDetailTestTags.MOVE_SHEET)) {
-        MoveSheetHeader(item, onAbout = { aboutVisible = true })
+        MoveSheetHeader(item, onAbout = onAbout)
         Column(Modifier.padding(top = 8.dp, bottom = 12.dp)) {
             SectionLabel(
                 text = stringResource(R.string.tier_detail_move_sheet_subtitle),
@@ -168,6 +201,154 @@ fun MoveItemSheetContent(
                 onClick = onRemove,
             )
         }
+    }
+}
+
+/**
+ * A phone held sideways: the same sheet low enough for its window. The tiers
+ * stand in one row of buttons, the ways out side by side under them, removing
+ * last; five tiers and all of it fit without scrolling.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun WideMoveItemContent(
+    item: TierItem,
+    currentTierId: Long,
+    rankedTiers: List<Tier>,
+    pool: Tier?,
+    onMoveToTier: (tierId: Long, toPosition: Int) -> Unit,
+    onRemove: () -> Unit,
+    onAdjustPicture: (() -> Unit)?,
+    onAbout: () -> Unit,
+) {
+    Column(
+        Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(top = 20.dp, bottom = 12.dp)
+            .testTag(TierDetailTestTags.MOVE_SHEET),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            MoveSheetThumbnail(item)
+            Text(
+                text = item.title,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.headlineSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (item.hasAboutThePicture()) {
+                TextButton(
+                    onClick = onAbout,
+                    modifier = Modifier.testTag(TierDetailTestTags.MOVE_SHEET_ABOUT_PICTURE),
+                ) { Text(stringResource(R.string.tier_detail_about_picture), maxLines = 1) }
+            }
+        }
+        SectionLabel(
+            text = stringResource(R.string.tier_detail_move_sheet_subtitle),
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 8.dp),
+        )
+        FlowRow(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            rankedTiers.forEach { tier ->
+                val isCurrent = tier.id == currentTierId
+                MoveSheetTierButton(tier, isCurrent, onClick = { if (!isCurrent) onMoveToTier(tier.id, tier.items.size) })
+            }
+        }
+        HorizontalDivider(modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 6.dp))
+        Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+            val backToPool = pool?.takeIf { it.id != currentTierId }
+            if (backToPool != null) {
+                WideActionCell(
+                    testTag = TierDetailTestTags.MOVE_SHEET_POOL,
+                    title = stringResource(R.string.tier_detail_move_sheet_pool_title),
+                    titleColor = MaterialTheme.colorScheme.onSurface,
+                    subtitle = stringResource(R.string.tier_detail_move_sheet_pool_subtitle),
+                    onClick = { onMoveToTier(backToPool.id, backToPool.items.size) },
+                )
+            }
+            if (onAdjustPicture != null && item.imageUrl != null) {
+                WideActionCell(
+                    testTag = TierDetailTestTags.MOVE_SHEET_ADJUST,
+                    title = stringResource(R.string.tier_detail_move_sheet_adjust_title),
+                    titleColor = MaterialTheme.colorScheme.onSurface,
+                    subtitle = stringResource(R.string.tier_detail_move_sheet_adjust_subtitle),
+                    onClick = onAdjustPicture,
+                )
+            }
+            val isDark = TierYourLifeMedia.current.isDark
+            WideActionCell(
+                testTag = TierDetailTestTags.MOVE_SHEET_REMOVE,
+                title = stringResource(R.string.tier_detail_move_sheet_remove_title),
+                titleColor = if (isDark) RemoveTitleDark else RemoveTitleLight,
+                subtitle = stringResource(R.string.tier_detail_move_sheet_remove_subtitle),
+                onClick = onRemove,
+            )
+        }
+    }
+}
+
+/** A tier as a button in its colour, a thumb wide; the card's own tier is ringed and does nothing. */
+@Composable
+private fun MoveSheetTierButton(tier: Tier, isCurrent: Boolean, onClick: () -> Unit) {
+    val colors = tierRowColors(tier.colorLight, tier.colorDark).forLetterOnButton()
+    val current = stringResource(R.string.tier_detail_move_sheet_current_tier)
+    val shape = RoundedCornerShape(12.dp)
+    Box(
+        modifier = Modifier
+            .height(48.dp)
+            .widthIn(min = 64.dp, max = 160.dp)
+            .clip(shape)
+            .background(colors.band)
+            .then(if (isCurrent) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, shape) else Modifier)
+            .clickable(enabled = !isCurrent, onClick = onClick)
+            .semantics {
+                role = Role.Button
+                selected = isCurrent
+                if (isCurrent) contentDescription = tier.label + ", " + current
+            }
+            .testTag(TierDetailTestTags.moveSheetTierOption(tier.id))
+            .padding(horizontal = 12.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = tier.label,
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+            color = colors.onBand,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun RowScope.WideActionCell(testTag: String, title: String, titleColor: Color, subtitle: String, onClick: () -> Unit) {
+    Column(
+        Modifier
+            .weight(1f)
+            .heightIn(min = 48.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .testTag(testTag)
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+    ) {
+        Text(text = title, style = MaterialTheme.typography.bodyLarge, color = titleColor, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        Text(
+            text = subtitle,
+            style = TierYourLifeType.current.supportingLabel,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

@@ -72,6 +72,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 /** Open in a short window: three cards abreast, readable and draggable. Nothing narrower is either. */
 val POOL_COLUMN_WIDTH: Dp = 216.dp
 
+/** Ranking one card at a time in a short window: wide enough for a row of tier buttons a thumb wide. */
+val POOL_COLUMN_ONE_BY_ONE_WIDTH: Dp = 320.dp
+
 /** Open beside a board held sideways on a tablet; a little narrower when the pane of boards stands beside it too. */
 val POOL_COLUMN_WIDE_WIDTH: Dp = 300.dp
 val POOL_COLUMN_WIDE_WIDTH_BESIDE_INDEX: Dp = 268.dp
@@ -142,7 +145,10 @@ fun PoolColumn(
     val choice = if (side != null) sideChoice else memory.poolColumnCollapsed
     val collapsed = choice ?: (count == 0)
     val choose: (Boolean) -> Unit = { fold -> if (side != null) sideChoice = fold else memory.poolColumnCollapsed = fold }
-    val openWidth = openColumnWidth(roomy, indexBeside)
+    val panel = oneByOnePanel.takeIf { memory.oneCardAtATime }
+    // In a short window the panel brings its own count and switch; the head keeps only the way to fold.
+    val panelOwnsHead = panelOwnsHead(panel != null, roomy)
+    val openWidth = openColumnWidth(roomy, indexBeside, panelOwnsHead)
     val width by animateDpAsState(if (collapsed) POOL_STRIP_WIDTH else openWidth, tween(WIDTH_MILLIS), label = "pool column width")
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
     val lifting = dragController.draggedPayload != null && !readOnly
@@ -161,13 +167,7 @@ fun PoolColumn(
             .onGloballyPositioned { coordinates -> dragController.registerRowBounds(pool.id, coordinates.boundsInRoot()) }
             .testTag(TierDetailTestTags.POOL_COLUMN)
             .background(MaterialTheme.colorScheme.surfaceContainer)
-            .then(
-                if (isHovered) {
-                    Modifier.dashedBorder(width = 2.dp, color = MaterialTheme.colorScheme.primary, cornerRadius = POOL_CORNER)
-                } else {
-                    Modifier
-                },
-            ),
+            .hoverOutline(isHovered),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (collapsed) {
@@ -189,10 +189,10 @@ fun PoolColumn(
             dragController = dragController,
             note = note,
             onFold = { choose(true) },
-            onAddClick = onAddClick,
+            onAddClick = onAddClick.takeUnless { panelOwnsHead },
             onGenerateClick = onGenerateClick,
+            cardsLeft = panelOwnsHead,
         )
-        val panel = oneByOnePanel.takeIf { memory.oneCardAtATime }
         if (panel != null) {
             Box(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) { panel(false) }
         } else {
@@ -208,7 +208,9 @@ fun PoolColumn(
             )
         }
         // At the foot, so the head leaves a short window's cards their room.
-        oneByOneSwitch(offered = oneByOnePanel != null, memory = memory)?.let { Box(Modifier.padding(bottom = 10.dp)) { it(true) } }
+        if (!panelOwnsHead) {
+            oneByOneSwitch(offered = oneByOnePanel != null, memory = memory)?.let { Box(Modifier.padding(bottom = 10.dp)) { it(true) } }
+        }
     }
 }
 
@@ -265,10 +267,21 @@ private fun PoolColumnCards(
 }
 
 /** The open column's head: the count and the way to fold it, the reader's line, the add field; or, while a card is lifted, the trash. */
-private fun openColumnWidth(roomy: Boolean, indexBeside: Boolean): Dp = when {
+private fun openColumnWidth(roomy: Boolean, indexBeside: Boolean, panelOwnsHead: Boolean): Dp = when {
+    panelOwnsHead -> POOL_COLUMN_ONE_BY_ONE_WIDTH
     !roomy -> POOL_COLUMN_WIDTH
     indexBeside -> POOL_COLUMN_WIDE_WIDTH_BESIDE_INDEX
     else -> POOL_COLUMN_WIDE_WIDTH
+}
+
+private fun panelOwnsHead(panelShown: Boolean, roomy: Boolean): Boolean = panelShown && !roomy
+
+/** The dashed ring a hovering card draws round the column it would drop into. */
+@Composable
+private fun Modifier.hoverOutline(hovered: Boolean): Modifier = if (hovered) {
+    dashedBorder(width = 2.dp, color = MaterialTheme.colorScheme.primary, cornerRadius = POOL_CORNER)
+} else {
+    this
 }
 
 @Composable
@@ -282,13 +295,14 @@ private fun OpenColumnHead(
     onFold: () -> Unit,
     onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
+    cardsLeft: Boolean = false,
 ) {
     Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
         if (lifting) {
             PoolHeadTrash(dragController = dragController, caption = stringResource(R.string.tier_detail_drop_unrank_column))
             return@Column
         }
-        OpenHead(count = count, roomy = roomy, onFold = onFold)
+        OpenHead(count = count, roomy = roomy, onFold = onFold, cardsLeft = cardsLeft)
         note?.let { line -> Box(Modifier.fillMaxWidth().padding(bottom = 6.dp)) { line() } }
         if (!readOnly && onAddClick != null) {
             AddCardField(onAddClick = onAddClick, onGenerateClick = onGenerateClick, modifier = Modifier.fillMaxWidth())
@@ -297,11 +311,11 @@ private fun OpenColumnHead(
 }
 
 @Composable
-private fun OpenHead(count: Int, roomy: Boolean, onFold: () -> Unit) {
+private fun OpenHead(count: Int, roomy: Boolean, onFold: () -> Unit, cardsLeft: Boolean) {
     val foldDescription = pluralStringResource(R.plurals.tier_detail_ranked_pool_expanded_description, count, count)
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = stringResource(R.string.tier_detail_pool_count, count),
+            text = if (cardsLeft) pluralStringResource(R.plurals.pool_cards_left, count, count) else stringResource(R.string.tier_detail_pool_count, count),
             modifier = Modifier.weight(1f),
             style = if (roomy) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface,

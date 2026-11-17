@@ -197,7 +197,9 @@ internal fun OneByOneToggle(on: Boolean, onToggle: () -> Unit, modifier: Modifie
  * tier's colour, Skip, and Undo once something was placed. [beside] lays the
  * buttons beside the card, as under the rows; a narrow column puts them under it.
  * On a phone's tray ([strip]) the card's name and what is left stand beside it,
- * the switch comes down from the tray's head, and the tiers take one row.
+ * the switch comes down from the tray's head, and the tiers take one row. In
+ * the column beside a short window's rows ([column]) the same, the card smaller
+ * and the count left to the column's head.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -208,6 +210,7 @@ internal fun OneByOnePanel(
     modifier: Modifier = Modifier,
     beside: Boolean = true,
     strip: Boolean = false,
+    column: Boolean = false,
 ) {
     val ranked = list.ranked()
     val left = list.pool()?.items?.size ?: 0
@@ -230,6 +233,10 @@ internal fun OneByOnePanel(
         }
         if (strip) {
             StripPanel(list = list, ranked = ranked, card = card, left = left, state = state, onExit = onExit)
+            return@Column
+        }
+        if (column) {
+            ColumnPanel(list = list, ranked = ranked, card = card, state = state, onExit = onExit)
             return@Column
         }
         val buttons: @Composable () -> Unit = {
@@ -301,6 +308,31 @@ private fun StripPanel(list: TierList, ranked: List<Tier>, card: TierItem, left:
     TierButtonRows(ranked, card) { tier -> state.place(list, card, tier) }
 }
 
+/** Beside a short window's rows: the card and its name, the tiers in a row a thumb high, the switch and Skip. */
+@Composable
+private fun ColumnPanel(list: TierList, ranked: List<Tier>, card: TierItem, state: OneByOne, onExit: () -> Unit) {
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        BigCard(card, picked = state.isPicked, width = SMALL_CARD_WIDTH, height = SMALL_CARD_HEIGHT)
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = card.title,
+                modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_NAME),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) { UndoAndToPool(list, card, state) }
+        }
+    }
+    TierButtonRows(ranked, card, top = 0.dp) { tier -> state.place(list, card, tier) }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        OneByOneToggle(on = true, onToggle = onExit)
+        Spacer(Modifier.weight(1f))
+        SkipButton { state.skip(list, card) }
+    }
+}
+
 @Composable
 private fun UndoAndToPool(list: TierList, card: TierItem, state: OneByOne) {
     if (state.canUndo) {
@@ -324,9 +356,9 @@ private fun SkipButton(onClick: () -> Unit) {
 
 /** Equal buttons, at most six to a row, the rows as even as the count allows. */
 @Composable
-private fun TierButtonRows(ranked: List<Tier>, card: TierItem, onPlace: (Tier) -> Unit) {
+private fun TierButtonRows(ranked: List<Tier>, card: TierItem, top: Dp = 12.dp, onPlace: (Tier) -> Unit) {
     val rows = tierButtonRows(ranked.size)
-    Column(Modifier.padding(top = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(Modifier.padding(top = top), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         ranked.chunked(rows.perRow).forEach { line ->
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 line.forEach { tier ->
@@ -392,17 +424,17 @@ private fun onKey(event: KeyEvent, list: TierList, ranked: List<Tier>, card: Tie
 private val DIGITS = listOf(Key.One, Key.Two, Key.Three, Key.Four, Key.Five, Key.Six, Key.Seven, Key.Eight, Key.Nine)
 
 @Composable
-private fun BigCard(card: TierItem, picked: Boolean) {
+private fun BigCard(card: TierItem, picked: Boolean, width: Dp = BIG_CARD_WIDTH, height: Dp = BIG_CARD_HEIGHT) {
     AnimatedContent(targetState = card, transitionSpec = { fadeIn() togetherWith fadeOut() }, contentKey = { it.id }, label = "current card") { shown ->
         Box(
             Modifier
                 .testTag(TierDetailTestTags.ONE_BY_ONE_CARD)
                 .semantics { contentDescription = shown.title },
         ) {
-            ProvideTextCardRoom(listOf(shown), BIG_CARD_WIDTH, BIG_CARD_HEIGHT, 0.dp) {
-                ItemTile(item = shown, width = BIG_CARD_WIDTH, height = BIG_CARD_HEIGHT)
+            ProvideTextCardRoom(listOf(shown), width, height, 0.dp) {
+                ItemTile(item = shown, width = width, height = height)
             }
-            if (picked) PickedOutline(BIG_CARD_WIDTH, BIG_CARD_HEIGHT)
+            if (picked) PickedOutline(width, height)
         }
     }
 }
@@ -460,6 +492,8 @@ internal fun PickedOutline(width: Dp, height: Dp) {
 
 private val BIG_CARD_WIDTH = 96.dp
 private val BIG_CARD_HEIGHT = 136.dp
+private val SMALL_CARD_WIDTH = 72.dp
+private val SMALL_CARD_HEIGHT = 100.dp
 private val TIER_BUTTON_ROW_HEIGHT = 48.dp
 private const val MAX_TIER_BUTTONS_IN_A_ROW = 6
 private val TIGHT_TEXT_BUTTON = PaddingValues(horizontal = 8.dp)

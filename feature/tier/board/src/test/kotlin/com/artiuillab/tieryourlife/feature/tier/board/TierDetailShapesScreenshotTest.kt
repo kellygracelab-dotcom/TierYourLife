@@ -1,13 +1,17 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -16,9 +20,13 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.layout.LocalShortWindow
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
+import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheetContent
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.github.takahirom.roborazzi.RoborazziOptions
@@ -49,18 +57,25 @@ class TierDetailShapesScreenshotTest {
         readOnly: Boolean = false,
         dark: Boolean = false,
         allLists: List<TierList> = emptyList(),
+        oneByOne: Boolean = false,
+        mine: Boolean = false,
     ) {
+        val memory = InMemoryBoardLayoutMemory().apply { oneCardAtATime = oneByOne }
+        // A reader arranging Mine: the board moves, the bar is still the reader's.
+        val reader = readOnly || mine
         composeRule.setContent {
-            CompositionLocalProvider(LocalWindowShape provides shape) {
+            CompositionLocalProvider(LocalWindowShape provides shape, LocalBoardLayoutMemory provides memory) {
                 TierYourLifeTheme(darkTheme = dark) {
                     TierDetailScreenContent(
                         allLists = allLists.map { it.summary() },
                         state = TierDetailUiState.Success(previewTierList),
+                        actions = TierDetailActions(onPlay = if (reader) ({}) else null),
                         readOnly = readOnly,
-                        onReaderMoreClick = if (readOnly) ({}) else null,
-                        barExtras = if (readOnly) ({ mode -> ReaderStandIn(mode) }) else null,
-                        titleSubline = if (readOnly) ({ Text("Artiman · Film & TV ›", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }) else null,
-                        poolNote = if (readOnly) ({ Text("Someone else's list. Rank it however you like.", style = MaterialTheme.typography.bodySmall) }) else null,
+                        subtitle = if (reader) "Film & TV · 12 cards" else null,
+                        onReaderMoreClick = if (reader) ({}) else null,
+                        barExtras = if (reader) ({ mode -> ReaderStandIn(mode) }) else null,
+                        titleSubline = if (reader) ({ Text("Artiman · Film & TV ›", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }) else null,
+                        poolNote = if (reader) ({ Text("Someone else's list. Rank it however you like.", style = MaterialTheme.typography.bodySmall) }) else null,
                     )
                 }
             }
@@ -110,6 +125,61 @@ class TierDetailShapesScreenshotTest {
     @Config(qualifiers = FLIP_COVER)
     fun readersBoard_flipCover() = capture("board_reader_flip_cover", WindowShape.of(360.dp, 380.dp), readOnly = true)
 
+    @Test
+    @Config(qualifiers = PHONE_LANDSCAPE)
+    fun oneByOne_phoneLandscape() =
+        capture("board_phone_landscape_one_by_one", WindowShape.of(914.dp, 411.dp), oneByOne = true)
+
+    @Test
+    @Config(qualifiers = PHONE_LANDSCAPE)
+    fun oneByOne_readersBoard_phoneLandscape_dark() =
+        capture("board_reader_phone_landscape_one_by_one_dark", WindowShape.of(914.dp, 411.dp), dark = true, oneByOne = true, mine = true)
+
+    @Test
+    @Config(qualifiers = PHONE_PORTRAIT)
+    fun readersBoard_phonePortrait_theWholeName() =
+        capture("board_reader_phone_portrait", WindowShape.of(411.dp, 914.dp), readOnly = true)
+
+    @Test
+    @Config(qualifiers = "ru-$PHONE_PORTRAIT", fontScale = 1.15f)
+    fun ownBoard_phonePortrait_russian_largerText() = capture("board_phone_portrait_ru", WindowShape.of(411.dp, 914.dp))
+
+    @Test
+    @Config(qualifiers = PHONE_LANDSCAPE)
+    fun cardSheet_phoneLandscape() = cardSheet("card_sheet_phone_landscape", dark = false)
+
+    @Test
+    @Config(qualifiers = PHONE_LANDSCAPE)
+    fun cardSheet_phoneLandscape_dark() = cardSheet("card_sheet_phone_landscape_dark", dark = true)
+
+    /** The sheet as a dialog frames it in a window held sideways: 360 high and 400 wide at most. */
+    private fun cardSheet(name: String, dark: Boolean) {
+        val ranked = previewTierList.tiers.filterNot { it.isPool }
+        composeRule.setContent {
+            CompositionLocalProvider(LocalWindowShape provides WindowShape.of(914.dp, 411.dp), LocalShortWindow provides true) {
+                TierYourLifeTheme(darkTheme = dark) {
+                    Surface(
+                        modifier = Modifier.widthIn(max = 400.dp).heightIn(max = 363.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    ) {
+                        Column {
+                            MoveItemSheetContent(
+                                item = ranked.first().items.first(),
+                                currentTierId = ranked.first().id,
+                                rankedTiers = ranked,
+                                pool = previewTierList.tiers.first { it.isPool },
+                                onMoveToTier = { _, _ -> },
+                                onRemove = {},
+                                onAdjustPicture = {},
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/$name.png", roborazziOptions = OPTIONS)
+    }
+
     private val yourLists = listOf(
         previewTierList,
         previewTierList.copy(id = 2, title = "Board games"),
@@ -119,6 +189,7 @@ class TierDetailShapesScreenshotTest {
 
     private companion object {
         const val PHONE_LANDSCAPE = "w914dp-h411dp-normal-long-notround-land-420dpi-keyshidden-nonav"
+        const val PHONE_PORTRAIT = "w411dp-h914dp-normal-long-notround-port-420dpi-keyshidden-nonav"
         const val TABLET_LANDSCAPE = "w1280dp-h800dp-xlarge-long-notround-land-xhdpi-keyshidden-nonav"
         const val TABLET_PORTRAIT = "w800dp-h1280dp-xlarge-long-notround-port-xhdpi-keyshidden-nonav"
         const val FLIP_COVER = "w360dp-h380dp-small-notlong-notround-port-xhdpi-keyshidden-nonav"

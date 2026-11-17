@@ -15,23 +15,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorLine
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TIER_LIST_ITEM_SPACING
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OwnBoardTopBar
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_STRIP_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
+import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
 /** The board's own measures: a row of placeholders must be the row that replaces it, or the cards jump. */
 private val ROW_CORNER = 12.dp
@@ -62,24 +69,7 @@ internal fun ListSkeleton(preview: ListPreview, onBack: () -> Unit, modifier: Mo
                 .fillMaxSize()
                 .testTag(CommunityListTestTags.SKELETON),
         ) {
-            TierScreenTopBar(
-                title = preview.title,
-                onBack = onBack,
-                onManualAdd = {},
-                readOnly = true,
-                compact = short,
-                barHeight = if (docked) 72.dp else null,
-                subline = authorName?.takeIf { docked }?.let { name ->
-                    {
-                        Text(
-                            text = name,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            maxLines = 1,
-                        )
-                    }
-                },
-            )
+            SkeletonBar(preview, authorName, short, docked, poolBeside, onBack)
             if (!short && !docked) {
                 authorName?.let { name ->
                     AuthorLine(name = name, photoUrl = null, follow = null, onOpenAuthor = {}, onToggleFollow = {})
@@ -103,6 +93,59 @@ internal fun ListSkeleton(preview: ListPreview, onBack: () -> Unit, modifier: Mo
             if (!poolBeside) PoolStripPlaceholder()
         }
     }
+}
+
+/** The bar the board will have: two storeys on a phone held upright, one storey otherwise. */
+@Composable
+private fun SkeletonBar(preview: ListPreview, authorName: String?, short: Boolean, docked: Boolean, poolBeside: Boolean, onBack: () -> Unit) {
+    if (!short && !docked && !poolBeside) {
+        SkeletonTwoStoreyBar(preview, onBack)
+    } else {
+        SkeletonFlatBar(preview.title, authorName?.takeIf { docked }, short, docked, onBack)
+    }
+}
+
+/** The board's one-storey bar: held sideways, or docked beside the rows with the author under the title. */
+@Composable
+private fun SkeletonFlatBar(title: String, author: String?, short: Boolean, docked: Boolean, onBack: () -> Unit) {
+    TierScreenTopBar(
+        title = title,
+        onBack = onBack,
+        onManualAdd = {},
+        readOnly = true,
+        compact = short,
+        barHeight = if (docked) 72.dp else null,
+        subline = author?.let { name ->
+            {
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                )
+            }
+        },
+    )
+}
+
+/** A phone held upright: the board's bar in two storeys, the whole name and its section, as the board that replaces it. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SkeletonTwoStoreyBar(preview: ListPreview, onBack: () -> Unit) {
+    val cards = pluralStringResource(BoardR.plurals.board_cards_count, preview.itemCount, preview.itemCount)
+    val counts = preview.section?.let { stringResource(BoardR.string.board_header_counts, sectionLabel(it), cards) } ?: cards
+    OwnBoardTopBar(
+        title = preview.title,
+        counts = counts,
+        state = rememberTopAppBarState(),
+        onBack = onBack,
+        onManualAdd = null,
+        onMoreClick = {},
+        onRenameList = null,
+        play = null,
+        publish = null,
+        view = null,
+    )
 }
 
 /**
