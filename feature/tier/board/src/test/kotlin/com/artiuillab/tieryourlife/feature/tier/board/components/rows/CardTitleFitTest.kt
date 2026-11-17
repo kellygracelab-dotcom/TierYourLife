@@ -104,6 +104,28 @@ class CardTitleFitTest {
     }
 
     @Test
+    fun aLongWord_breaksAfterItsHyphen_andOnlyThere() {
+        assertEquals(listOf("Detroit-", "style pie"), wrapWords(listOf("Detroit-style", "pie"), width = 9) { it.length })
+        assertEquals(listOf("Spider-Man"), wrapWords(listOf("Spider-Man"), width = 10) { it.length })
+        assertEquals(listOf("Philosophy"), wrapWords(listOf("Philosophy"), width = 6) { it.length })
+    }
+
+    @Test
+    fun aPictureName_shrinksToKeepItsWordsWhole() {
+        val fitted = fitCardTitle(
+            title = "Philosophy",
+            room = CardTitleRoom(width = 40, spill = 0, height = 24),
+            largest = 10f,
+            smallest = 7f,
+            lineHeight = { size -> (size * 1.2f).toInt() },
+            measure = { text, size -> (text.length * size * 0.5f).toInt() },
+        )
+
+        assertEquals(listOf("Philosophy"), fitted.lines)
+        assertEquals(8f, fitted.size)
+    }
+
+    @Test
     fun aBlankTitle_isLeftAsItIs() {
         val fitted = fit("  ", CardTitleRoom(width = 60, spill = 0, height = 100))
 

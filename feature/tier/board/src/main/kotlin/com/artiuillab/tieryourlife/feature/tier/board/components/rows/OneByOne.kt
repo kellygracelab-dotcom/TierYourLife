@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -22,7 +23,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -308,29 +311,44 @@ private fun StripPanel(list: TierList, ranked: List<Tier>, card: TierItem, left:
     TierButtonRows(ranked, card) { tier -> state.place(list, card, tier) }
 }
 
-/** Beside a short window's rows: the card and its name, the tiers in a row a thumb high, the switch and Skip. */
+/**
+ * Beside a short window's rows: the card and its name, the tiers in a row a
+ * thumb high, the switch and Skip. The card gives up height first, so the
+ * buttons under it stay whole in a window 360 high.
+ */
 @Composable
 private fun ColumnPanel(list: TierList, ranked: List<Tier>, card: TierItem, state: OneByOne, onExit: () -> Unit) {
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        BigCard(card, picked = state.isPicked, width = SMALL_CARD_WIDTH, height = SMALL_CARD_HEIGHT)
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = card.title,
-                modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_NAME),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 4,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) { UndoAndToPool(list, card, state) }
+    BoxWithConstraints {
+        val cardHeight = columnCardHeight(maxHeight, tierButtonRows(ranked.size).rows)
+        Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(PANEL_GAP)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                BigCard(card, picked = state.isPicked, width = cardHeight * SMALL_CARD_WIDTH.value / SMALL_CARD_HEIGHT.value, height = cardHeight)
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = card.title,
+                        modifier = Modifier.testTag(TierDetailTestTags.ONE_BY_ONE_NAME),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = if (cardHeight < SMALL_CARD_HEIGHT) 2 else 4,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) { UndoAndToPool(list, card, state) }
+                }
+            }
+            TierButtonRows(ranked, card, top = 0.dp) { tier -> state.place(list, card, tier) }
+            Row(Modifier.heightIn(min = SWITCH_ROW_HEIGHT), verticalAlignment = Alignment.CenterVertically) {
+                OneByOneToggle(on = true, onToggle = onExit)
+                Spacer(Modifier.weight(1f))
+                SkipButton { state.skip(list, card) }
+            }
         }
     }
-    TierButtonRows(ranked, card, top = 0.dp) { tier -> state.place(list, card, tier) }
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        OneByOneToggle(on = true, onToggle = onExit)
-        Spacer(Modifier.weight(1f))
-        SkipButton { state.skip(list, card) }
-    }
+}
+
+/** What is left for the card once the tier buttons and the switch's row are under it, between the smallest card and the usual one. */
+internal fun columnCardHeight(room: Dp, tierRows: Int): Dp {
+    val below = PANEL_GAP * 2 + TIER_BUTTON_ROW_HEIGHT * tierRows + TIER_ROW_GAP * (tierRows - 1) + SWITCH_ROW_HEIGHT
+    return (room - below).coerceIn(SMALLEST_CARD_HEIGHT, SMALL_CARD_HEIGHT)
 }
 
 @Composable
@@ -358,7 +376,7 @@ private fun SkipButton(onClick: () -> Unit) {
 @Composable
 private fun TierButtonRows(ranked: List<Tier>, card: TierItem, top: Dp = 12.dp, onPlace: (Tier) -> Unit) {
     val rows = tierButtonRows(ranked.size)
-    Column(Modifier.padding(top = top), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(Modifier.padding(top = top), verticalArrangement = Arrangement.spacedBy(TIER_ROW_GAP)) {
         ranked.chunked(rows.perRow).forEach { line ->
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 line.forEach { tier ->
@@ -494,6 +512,10 @@ private val BIG_CARD_WIDTH = 96.dp
 private val BIG_CARD_HEIGHT = 136.dp
 private val SMALL_CARD_WIDTH = 72.dp
 private val SMALL_CARD_HEIGHT = 100.dp
+private val SMALLEST_CARD_HEIGHT = 56.dp
+private val PANEL_GAP = 8.dp
+private val TIER_ROW_GAP = 6.dp
+private val SWITCH_ROW_HEIGHT = 48.dp
 private val TIER_BUTTON_ROW_HEIGHT = 48.dp
 private const val MAX_TIER_BUTTONS_IN_A_ROW = 6
 private val TIGHT_TEXT_BUTTON = PaddingValues(horizontal = 8.dp)
