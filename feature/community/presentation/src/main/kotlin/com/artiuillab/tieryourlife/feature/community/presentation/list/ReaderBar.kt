@@ -80,7 +80,7 @@ internal fun RowScope.ReaderBarControls(
         CopyLinkButton(onClick = onCopyLink, height = height)
         Spacer(Modifier.width(8.dp))
         OwnBoardButton(state = state, onClick = onOwnBoard, height = height, maxLines = 1)
-    } else {
+    } else if (!state.nothingToSaveYet) {
         SaveInBar(state = state, mode = mode, onSaveClick = onSaveClick, onOpenSaved = onOpenSaved)
     }
 }

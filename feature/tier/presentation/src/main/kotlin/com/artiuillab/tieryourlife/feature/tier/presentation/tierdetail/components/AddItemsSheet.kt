@@ -99,6 +99,8 @@ internal fun AddItemsSheet(
                 onSignIn = onSignIn,
                 onRetry = searchViewModel::retryLink,
             ),
+            onOwnPhoto = onUploadInstead,
+            onAddName = { name -> onItemsConfirmed(listOf(PoolItemDraft(title = name, imageUrl = null))) },
         )
     }
     if (side) {

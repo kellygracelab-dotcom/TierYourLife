@@ -68,7 +68,6 @@ import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
 import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
-import com.artiuillab.tieryourlife.core.theme.ui.AddPhotoIcon
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CategoryIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
@@ -126,8 +125,6 @@ fun TierListSettingsScreenContent(
     onAdjustCover: () -> Unit = {},
     onChooseTopic: () -> Unit = {},
     onAddCards: () -> Unit = {},
-    /** A card of one's own by hand, here as well as the bar's camera, which a phone's bar gives up for Publish. */
-    onManualAdd: (() -> Unit)? = null,
     onShare: () -> Unit = {},
     /** The published list's own page, where readers' rankings and its link are; null while it is not out. */
     onSeeInCommunity: (() -> Unit)? = null,
@@ -164,7 +161,6 @@ fun TierListSettingsScreenContent(
                         hasRoom = list.hasRoomForATier,
                         onClick = { tierEditorVisible = true },
                     )
-                    ManualAddRow(onClick = onManualAdd)
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         color = MaterialTheme.colorScheme.outlineVariant,
@@ -478,18 +474,6 @@ private fun AdjustCoverRow(onClick: () -> Unit) {
         subtitle = stringResource(R.string.list_settings_cover_adjust_sub),
         onClick = onClick,
         testTag = TierDetailTestTags.ADJUST_COVER_ROW,
-    )
-}
-
-@Composable
-private fun ManualAddRow(onClick: (() -> Unit)?) {
-    onClick ?: return
-    SettingsActionRow(
-        icon = { AddPhotoIcon() },
-        title = stringResource(R.string.tier_detail_content_description_manual_add),
-        subtitle = stringResource(R.string.list_settings_manual_add_sub),
-        onClick = onClick,
-        testTag = TierDetailTestTags.SETTINGS_MANUAL_ADD,
     )
 }
 

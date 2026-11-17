@@ -144,7 +144,7 @@ class TierDetailTileDragTest : TierDetailScreenTestBase() {
 
     @Test
     fun dragItem_ontoTileInSecondLine_landsOnReadingOrderIndexNotWithinLineIndex() {
-        val rankedItems = List(20) { index -> item((1000 + index).toLong(), "M$index") }
+        val rankedItems = List(10) { index -> item((1000 + index).toLong(), "M$index") }
         val list = listOf(
             tier(id = 1, label = "S", items = rankedItems),
             tier(id = 6, label = "Pool", items = listOf(item(2000, "NewItem")), isPool = true),

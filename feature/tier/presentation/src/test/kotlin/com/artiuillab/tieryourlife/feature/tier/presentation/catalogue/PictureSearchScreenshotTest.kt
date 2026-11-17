@@ -68,6 +68,23 @@ class PictureSearchScreenshotTest {
     }
 
     @Test
+    fun nothingTypedYet_theOtherWaysInStandWhereTheResultsWillBe() = capture("add_your_own") { OwnWays() }
+
+    @Test
+    fun nothingTypedYet_dark() = capture("add_your_own_dark", dark = true) { OwnWays() }
+
+    @Composable
+    private fun OwnWays() = CatalogueSearchScreenContent(
+        state = CatalogueSearchUiState.Initial,
+        query = "",
+        onQueryChange = {},
+        onSearchClick = {},
+        listTitle = "Sci-fi films",
+        onOwnPhoto = {},
+        onAddName = {},
+    )
+
+    @Test
     fun anEmptyScope_offersEverywhere() = capture("picture_search_empty_scope") {
         CatalogueSearchScreenContent(
             state = CatalogueSearchUiState.Empty(query = "borscht"),

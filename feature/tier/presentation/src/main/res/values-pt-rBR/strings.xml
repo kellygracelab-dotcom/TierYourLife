@@ -41,10 +41,10 @@
 
 
 
-    <string name="item_search_field_label">Pesquise ou cole um link</string>
+    <string name="item_search_field_label">Pesquise ou digite um nome</string>
     <string name="item_search_close_content_description">Fechar pesquisa</string>
     <string name="item_search_clear_content_description">Limpar pesquisa</string>
-    <string name="item_search_source_caption">Adicionando à reserva de %1$s</string>
+    <string name="item_search_source_caption">Adicionando a %1$s</string>
     <string name="item_search_min_query">Digite pelo menos duas letras para pesquisar.</string>
     <string name="item_search_empty_title">Nada encontrado para \"%1$s\"</string>
     <string name="item_search_error_title">Não foi possível carregar os resultados</string>
@@ -294,4 +294,11 @@
         <item quantity="many">Sua colagem · imagens: %d</item>
         <item quantity="other">Sua colagem · imagens: %d</item>
     </plurals>
+    <string name="item_search_add_own">Ou adicione o seu</string>
+    <string name="item_search_own_link">Cole o link de uma imagem</string>
+    <string name="item_search_own_link_sub">De qualquer site — o cartão usa essa imagem</string>
+    <string name="item_search_own_photo">Sua foto</string>
+    <string name="item_search_own_photo_sub">Da galeria ou da câmera</string>
+    <string name="item_search_own_name">Só um nome</string>
+    <string name="item_search_own_name_sub">Digite no campo acima e toque em Adicionar</string>
 </resources>

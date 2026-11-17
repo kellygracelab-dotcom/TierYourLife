@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -119,6 +121,24 @@ class OneByOneTest {
         composeRule.onNodeWithTag(TierDetailTestTags.tile(POOL_FIRST)).assertDoesNotExist()
         composeRule.onNodeWithTag(TierDetailTestTags.oneByOneTier(TIER_A)).performClick()
         assertEquals(listOf(Triple(POOL_FIRST, TIER_A, 1)), moves)
+    }
+
+    @Test
+    fun onAPhone_theCardsNameAndWhatIsLeftStandBesideIt() {
+        memory.oneCardAtATime = true
+        setBoard()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.ONE_BY_ONE_NAME).assertTextEquals("Card 0")
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_COUNT, useUnmergedTree = true).assertTextEquals("3 cards left")
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(RANKED)).assertIsDisplayed()
+    }
+
+    @Test
+    fun theTierButtons_takeAsFewEvenRowsAsSixToARowAllows() {
+        assertEquals(TierButtonLayout(rows = 1, perRow = 5), tierButtonRows(5))
+        assertEquals(TierButtonLayout(rows = 1, perRow = 6), tierButtonRows(6))
+        assertEquals(TierButtonLayout(rows = 2, perRow = 4), tierButtonRows(7))
+        assertEquals(TierButtonLayout(rows = 3, perRow = 5), tierButtonRows(13))
     }
 
     @Test

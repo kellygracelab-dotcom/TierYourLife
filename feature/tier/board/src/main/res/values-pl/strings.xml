@@ -186,17 +186,10 @@
     <string name="list_settings_cover_adjust">Dopasuj położenie</string>
     <string name="list_settings_cover_adjust_sub">Która część zdjęcia jest widoczna</string>
     <string name="one_by_one_toggle">Po jednej</string>
-    <string name="one_by_one_on">Ocenianie po jednej karcie</string>
     <string name="one_by_one_skip">Pomiń</string>
     <string name="one_by_one_to_pool">Do puli</string>
     <string name="one_by_one_done">Wszystkie karty na miejscu</string>
     <string name="one_by_one_exit">Wyjdź</string>
-    <plurals name="one_by_one_left">
-        <item quantity="one">została %d</item>
-        <item quantity="few">zostały %d</item>
-        <item quantity="many">zostało %d</item>
-        <item quantity="other">zostało %d</item>
-    </plurals>
     <string name="board_publish">Opublikuj</string>
     <string name="board_publish_update">Aktualizuj</string>
     <string name="board_publish_ranking">Pokaż w rankingach</string>
@@ -211,5 +204,25 @@
     <string name="board_published_view">Zobacz</string>
     <string name="board_publishing">Publikowanie…</string>
     <string name="board_updating">Aktualizowanie…</string>
-    <string name="list_settings_manual_add_sub">Własne zdjęcie lub nazwa</string>
+    <plurals name="pool_cards_left">
+        <item quantity="one">Została %d karta</item>
+        <item quantity="few">Zostały %d karty</item>
+        <item quantity="many">Zostało %d kart</item>
+        <item quantity="other">Zostało %d kart</item>
+    </plurals>
+    <string name="one_by_one_place_in">Umieść %1$s w %2$s</string>
+    <plurals name="board_cards_count">
+        <item quantity="one">%d karta</item>
+        <item quantity="few">%d karty</item>
+        <item quantity="many">%d kart</item>
+        <item quantity="other">%d karty</item>
+    </plurals>
+    <plurals name="board_cards_placed">
+        <item quantity="one">umieszczono %d</item>
+        <item quantity="few">umieszczono %d</item>
+        <item quantity="many">umieszczono %d</item>
+        <item quantity="other">umieszczono %d</item>
+    </plurals>
+    <string name="board_nothing_placed">jeszcze nic nie umieszczono</string>
+    <string name="board_header_counts">%1$s · %2$s</string>
 </resources>

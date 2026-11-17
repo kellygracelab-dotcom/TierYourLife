@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,6 +70,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.AboutTheCover
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
 import com.artiuillab.tieryourlife.feature.tier.board.play.NoPlay
@@ -79,6 +81,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
+import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
 private val SWITCH_HEIGHT = 36.dp
 private val SAVE_BUTTON_MAX_WIDTH = 180.dp
@@ -287,10 +290,12 @@ fun CommunityListScreenContent(
                                 onCardLifted = { lifted = it },
                                 poolSide = loaded.showing,
                                 emptyPoolCounted = false,
+                                poolCountsCardsLeft = !loaded.own,
                             ),
                             // Theirs is theirs, and their own list changes on its board; a move
                             // on Theirs still arrives, and starts the reader's own version from it.
                             readOnly = loaded.readOnly,
+                            subtitle = sectionAndCards(loaded),
                             onReaderMoreClick = { actionsVisible = true },
                             belowTopBar = {
                                 UnderTheTitle(
@@ -623,6 +628,15 @@ private fun Resources.startedFromTheirs(notice: ListNotice.StartedFromTheirs): S
     }
 }
 
+/** "Anime · 25 cards" under the title: where the list is filed and how many cards it holds. */
+@Composable
+private fun sectionAndCards(loaded: CommunityListUiState.Success): String {
+    val cards = loaded.list.tiers.sumOf { it.items.size }
+    val count = pluralStringResource(BoardR.plurals.board_cards_count, cards, cards)
+    val section = loaded.section?.let { sectionLabel(it) } ?: return count
+    return stringResource(BoardR.string.board_header_counts, section, count)
+}
+
 /** Under the title: the author and the list this one was changed from. */
 @Composable
 private fun UnderTheTitle(
@@ -689,6 +703,8 @@ private fun ReaderStrip(
             if (state.own) {
                 CopyLinkButton(onClick = onCopyLink)
                 OwnBoardButton(state = state, onClick = onOwnBoard)
+            } else if (state.nothingToSaveYet) {
+                Unit
             } else if (savedId != null) {
                 Button(
                     onClick = { onOpenSaved(savedId) },
@@ -718,6 +734,8 @@ private fun ReaderStrip(
             Box(Modifier.weight(1f)) {
                 if (state.foldsToRankIt && !lifted) {
                     RankItYourselfLine()
+                } else if (state.nothingToSaveYet && !lifted) {
+                    Unit
                 } else {
                     Text(
                         text = statusText(state, lifted),
@@ -871,6 +889,7 @@ private fun statusText(state: CommunityListUiState.Success, lifted: Boolean): St
 /** The same sentence, small, under the side pool's title, and a game's Undo under it. */
 @Composable
 private fun ReaderStatusLine(state: CommunityListUiState.Success, lifted: Boolean, onTurnGame: () -> Unit) {
+    if (state.nothingToSaveYet && !lifted) return
     Column {
         Text(
             text = statusText(state, lifted),
