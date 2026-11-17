@@ -2,8 +2,6 @@ package com.artiuillab.tieryourlife.feature.community.presentation.explore
 
 internal object ExploreTestTags {
     const val SCREEN = "explore_screen"
-    const val TAB_EXPLORE = "explore_tab_explore"
-    const val TAB_FOLLOWING = "explore_tab_following"
     const val FOLLOWING_FEED = "following_feed"
     const val SKELETON = "explore_skeleton"
     const val FAILED = "explore_failed"
@@ -12,8 +10,9 @@ internal object ExploreTestTags {
     const val TILE_MENU_FOLLOW = "explore_tile_menu_follow"
     const val FOLLOW_BUTTON = "explore_follow_button"
     const val FOLLOWING_BUTTON = "explore_following_button"
-    const val HEADING = "explore_heading"
     const val SEARCH = "explore_search"
+    const val SEARCH_BROWSE_SECTIONS = "explore_search_browse_sections"
+    const val SEARCH_BROWSE_TOPICS = "explore_search_browse_topics"
     const val SEARCH_RESULTS = "explore_search_results"
     const val SEARCH_NOTHING = "explore_search_nothing"
     const val STRIP = "following_strip"
@@ -24,7 +23,12 @@ internal object ExploreTestTags {
     const val ALL_SECTIONS_TILE = "explore_all_sections"
     const val FOLLOW_PICKED = "following_follow_picked"
 
+    /** explore_chip_popular, explore_chip_new, explore_chip_following. */
+    fun chip(chip: HomeChip) = "explore_chip_${chip.name.lowercase()}"
+
     fun tile(sectionId: String) = "explore_tile_$sectionId"
+    fun browseSection(sectionId: String) = "explore_search_section_$sectionId"
+    fun browseTopic(topicId: String) = "explore_search_topic_$topicId"
     fun miniTile(sectionId: String) = "following_mini_tile_$sectionId"
     fun card(id: String) = "explore_card_$id"
 

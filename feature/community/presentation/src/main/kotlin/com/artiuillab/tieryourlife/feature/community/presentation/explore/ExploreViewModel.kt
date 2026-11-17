@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.matchesSearch
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
@@ -31,14 +32,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** Explore (§2): the sections in the server's order, and the popular feed under them. */
+/** Explore (§2): the sections in the server's order, and the popular and the newest feed under them. */
 data class ExploreUiState(
     /** What the tiles draw: approved sections only. */
     val sections: List<Section> = Section.BUILT_IN,
+    /** The popular feed. */
     val feed: FeedPane = FeedPane(),
+    /** Everything published, newest first: the New chip. */
+    val newest: FeedPane = FeedPane(),
     /** Non-null while the search bar is up. */
     val query: String? = null,
     val results: SearchResults = SearchResults(),
+    /** The biggest topics anywhere, shown by a search before anything is typed. */
+    val popularTopics: List<Topic> = emptyList(),
     val nowMillis: Long = 0L,
 )
 
@@ -61,18 +67,30 @@ class ExploreViewModel @Inject constructor(
         community.feed(sort = FeedSort.Popular, after = after)
     }
 
+    internal val newest = FeedLoader(FeedKeys.EXPLORE_NEWEST, viewModelScope, cache, clock, menu::isVisible) { after ->
+        community.feed(sort = FeedSort.Recent, after = after)
+    }
+
     val picturesOnWifiOnly: () -> Boolean = preferences::picturesOnWifiOnly
 
     val search = ExploreSearch(community, viewModelScope, menu::isVisible) { typed ->
         catalog.directory.value.shown.any { it.matchesSearch(typed) }
     }
 
-    val state: StateFlow<ExploreUiState> = combine(catalog.directory, feed.pane, search.query, search.results) { directory, pane, q, found ->
+    val state: StateFlow<ExploreUiState> = combine(
+        catalog.directory,
+        combine(feed.pane, newest.pane, ::Pair),
+        search.query,
+        search.results,
+        search.popularTopics,
+    ) { directory, (pane, newestPane), q, found, topics ->
         ExploreUiState(
             sections = directory.shown,
             feed = pane,
+            newest = newestPane,
             query = q,
             results = found,
+            popularTopics = topics,
             nowMillis = clock.nowMillis(),
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ExploreUiState())
@@ -84,7 +102,7 @@ class ExploreViewModel @Inject constructor(
 
     val notices: Flow<CommunityNotice> = merge(
         notes.receiveAsFlow(),
-        feed.notices.map { notice -> notice.toCommunityNotice() },
+        merge(feed.notices, newest.notices).map { notice -> notice.toCommunityNotice() },
     )
 
     init {
@@ -92,6 +110,7 @@ class ExploreViewModel @Inject constructor(
         viewModelScope.launch {
             network.available.collect {
                 feed.onNetworkBack()
+                newest.onNetworkBack()
                 if (!catalog.directory.value.counted) loadSections()
             }
         }
@@ -102,6 +121,9 @@ class ExploreViewModel @Inject constructor(
         feed.open()
         loadSections()
     }
+
+    /** The New chip, each time it is chosen: the kept feed first, then the server. */
+    fun openNewest() = newest.open()
 
     /** At most every ten minutes: the catalog keeps the rest. */
     private fun loadSections() {
@@ -125,14 +147,26 @@ class ExploreViewModel @Inject constructor(
         }
     }
 
-    fun hideList(summary: PublishedListSummary) = menu.hideList(feed, summary)
+    /** From the popular feed, or with [fromNewest] the New one: the note goes where the card was, and the other feed drops it too. */
+    fun hideList(summary: PublishedListSummary, fromNewest: Boolean = false) {
+        menu.hideList(loaderOf(fromNewest), summary)
+        loaderOf(!fromNewest).refilter()
+    }
 
-    fun hideAuthor(authorUid: String, name: String) = menu.hideAuthor(listOf(feed), authorUid, name)
+    fun hideAuthor(authorUid: String, name: String) = menu.hideAuthor(listOf(feed, newest), authorUid, name)
 
-    fun report(summary: PublishedListSummary, reason: ReportReason, note: String?) = menu.report(feed, summary, reason, note)
+    fun report(summary: PublishedListSummary, reason: ReportReason, note: String?, fromNewest: Boolean = false) {
+        menu.report(loaderOf(fromNewest), summary, reason, note)
+        loaderOf(!fromNewest).refilter()
+    }
+
+    private fun loaderOf(newestFeed: Boolean) = if (newestFeed) newest else feed
 
     /** Come back from Settings, where hiding can be undone: what shows is filtered again. */
-    fun refreshHidden() = feed.refilter()
+    fun refreshHidden() {
+        feed.refilter()
+        newest.refilter()
+    }
 }
 
 internal fun FeedNotice.toCommunityNotice(): CommunityNotice = when (this) {

@@ -1,55 +1,49 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.explore
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
@@ -57,15 +51,18 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
+import com.artiuillab.tieryourlife.core.theme.ui.HomeIconButton
 import com.artiuillab.tieryourlife.core.theme.ui.HomeTopBar
 import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.core.theme.ui.SearchIcon
 import com.artiuillab.tieryourlife.core.theme.ui.SearchTopBar
+import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
@@ -80,7 +77,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenc
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingActions
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedViewModel
-import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingTab
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.CommunityRoute
 import com.artiuillab.tieryourlife.feature.community.presentation.section.FoundTopicTiles
 import com.artiuillab.tieryourlife.feature.community.presentation.section.WaitingSectionSheet
@@ -89,10 +85,8 @@ import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
 import com.artiuillab.tieryourlife.feature.tier.board.common.rememberSectionNames
 import com.artiuillab.tieryourlife.feature.tier.board.components.ArtPictures
 import com.artiuillab.tieryourlife.feature.tier.board.components.PrefetchArt
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
@@ -179,9 +173,20 @@ fun CommunityHomeScreen(
                 onLoadMore = explore.feed::loadMore,
                 onScrolledDown = explore.feed::onScrolledDown,
                 onApplyHeld = explore.feed::applyHeld,
-                onHideList = explore::hideList,
+                onHideList = { explore.hideList(it) },
                 onHideAuthor = explore::hideAuthor,
-                onReport = explore::report,
+                onReport = { summary, reason, note -> explore.report(summary, reason, note) },
+            ),
+            newestFeed = FeedCallbacks(
+                onOpen = explore::openNewest,
+                onRefresh = explore.newest::pullToRefresh,
+                onRetry = explore.newest::retry,
+                onLoadMore = explore.newest::loadMore,
+                onScrolledDown = explore.newest::onScrolledDown,
+                onApplyHeld = explore.newest::applyHeld,
+                onHideList = { explore.hideList(it, fromNewest = true) },
+                onHideAuthor = explore::hideAuthor,
+                onReport = { summary, reason, note -> explore.report(summary, reason, note, fromNewest = true) },
             ),
             followingFeed = FeedCallbacks(
                 onOpen = following::open,
@@ -231,15 +236,19 @@ fun CommunityHomeContent(
     exploreFeed: FeedCallbacks = FeedCallbacks(),
     followingFeed: FeedCallbacks = FeedCallbacks(),
     exploreCalls: ExploreCallbacks = ExploreCallbacks(),
+    /** The New chip's feed. */
+    newestFeed: FeedCallbacks = FeedCallbacks(),
     destinations: CommunityDestinations = CommunityDestinations(),
     tabs: @Composable () -> Unit = {},
     notices: Flow<CommunityNotice> = emptyFlow(),
     onUndoUnfollow: (String) -> Unit = {},
+    /** Opens on the Following chip rather than Popular. */
     startOnFollowing: Boolean = false,
     /** Null draws without fetching any covers ahead, as a test or a preview should. */
     picturesOnWifiOnly: (() -> Boolean)? = null,
 ) {
     val snackbar = remember { SnackbarHostState() }
+    val feeds = HomeFeeds(exploreFeed, newestFeed, followingFeed)
     NoticeSnackbars(notices, snackbar, exploreFeed, onUndoUnfollow)
 
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
@@ -248,7 +257,7 @@ fun CommunityHomeContent(
             if (layout == HomeLayout.Cover) {
                 CoverCommunityGrid(onBack = null, sections = explore.sections, onOpenSection = destinations.onOpenSection)
             } else {
-                HomeBody(explore, following, layout, exploreFeed, followingFeed, exploreCalls, destinations, tabs, startOnFollowing)
+                HomeBody(explore, following, layout, feeds, exploreCalls, destinations, tabs, startOnFollowing)
                 if (picturesOnWifiOnly != null) {
                     PrefetchCovers(explore.feed, following.feed, layout, constraints.maxWidth / layout.feedColumns, picturesOnWifiOnly)
                 }
@@ -319,45 +328,54 @@ private fun NoticeSnackbars(
     }
 }
 
+/** The three feeds under Community's chips. */
+private class HomeFeeds(val popular: FeedCallbacks, val newest: FeedCallbacks, val following: FeedCallbacks) {
+    operator fun get(chip: HomeChip): FeedCallbacks = when (chip) {
+        HomeChip.Popular -> popular
+        HomeChip.New -> newest
+        HomeChip.Following -> following
+    }
+}
+
 @Composable
 private fun HomeBody(
     explore: ExploreUiState,
     following: FollowingFeedUiState,
     layout: HomeLayout,
-    exploreFeed: FeedCallbacks,
-    followingFeed: FeedCallbacks,
+    feeds: HomeFeeds,
     exploreCalls: ExploreCallbacks,
     destinations: CommunityDestinations,
     tabs: @Composable () -> Unit,
     startOnFollowing: Boolean,
 ) {
-    val pager = rememberPagerState(initialPage = if (startOnFollowing) 1 else 0) { 2 }
+    var chip by rememberSaveable { mutableStateOf(if (startOnFollowing) HomeChip.Following else HomeChip.Popular) }
     val scope = rememberCoroutineScope()
-    val exploreGrid = rememberLazyGridState()
-    val followingGrid = rememberLazyGridState()
-    var exploreMenu by remember { mutableStateOf<PublishedListSummary?>(null) }
-    var followingMenu by remember { mutableStateOf<PublishedListSummary?>(null) }
+    // Each chip keeps its own place, so going back to one finds it where it was left.
+    val grids = HomeChip.entries.associateWith { rememberLazyGridState() }
+    var menu by remember { mutableStateOf<Pair<HomeChip, PublishedListSummary>?>(null) }
     var waitingTopic by rememberSaveable(stateSaver = TopicSaver) { mutableStateOf<Topic?>(null) }
     var waitingSection by rememberSaveable { mutableStateOf<String?>(null) }
     val searching = explore.query != null
 
-    // Following is one swipe away: asked for at once, and drawn off screen once
-    // the screen has come in and nothing moves, so the first swipe finds it
-    // ready instead of composing it, and its answer, under the finger.
-    var drawnAhead by rememberSaveable { mutableIntStateOf(0) }
+    // Following is asked for at once, so its chip finds its answer waiting.
     LaunchedEffect(Unit) {
-        exploreFeed.onOpen()
-        followingFeed.onOpen()
-        delay(DRAW_AHEAD_AFTER_MILLIS)
-        snapshotFlow { pager.isScrollInProgress }.first { !it }
-        drawnAhead = 1
+        feeds.popular.onOpen()
+        feeds.following.onOpen()
     }
-    LaunchedEffect(pager.settledPage) { if (pager.settledPage == 1) followingFeed.onOpen() }
+    // Every choice of a chip but the first is an arrival of its own, as a tab's was.
+    var chosen by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(chip) {
+        if (chip == HomeChip.New || chosen) feeds[chip].onOpen()
+        chosen = true
+    }
     BackHandler(enabled = searching, onBack = exploreCalls.onExitSearch)
 
-    val currentPane = if (pager.currentPage == 0) explore.feed else following.feed
-    val currentFeed = if (pager.currentPage == 0) exploreFeed else followingFeed
-    val selectTab: (Int) -> Unit = { page -> scope.launch { pager.animateScrollToPage(page) } }
+    val currentPane = when (chip) {
+        HomeChip.Popular -> explore.feed
+        HomeChip.New -> explore.newest
+        HomeChip.Following -> following.feed
+    }
+    val currentFeed = feeds[chip]
 
     if (searching) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -372,12 +390,13 @@ private fun HomeBody(
                 results = explore.results,
                 query = explore.query.orEmpty(),
                 layout = layout,
-                cards = CardActions(destinations.onOpenList) { exploreMenu = it },
+                cards = CardActions(destinations.onOpenList) { menu = HomeChip.Popular to it },
                 onRetry = exploreCalls.onRetrySearch,
                 onLoadMore = exploreCalls.onLoadMoreSearch,
                 onOpenTopic = destinations.onOpenTopic,
                 sections = explore.sections,
                 onOpenSection = destinations.onOpenSection,
+                browse = SearchBrowse(explore.sections, explore.popularTopics),
             )
         }
     } else {
@@ -391,66 +410,56 @@ private fun HomeBody(
                         onSearchClick = exploreCalls.onEnterSearch,
                         onSettingsClick = destinations.onSettings,
                         statusBarPadding = false,
+                        searchDescription = stringResource(R.string.explore_search_hint),
                     )
-                    HomeLayout.CompactHeight -> CompactBar(pager.currentPage, selectTab, exploreCalls.onEnterSearch)
+                    HomeLayout.CompactHeight -> CompactBar(exploreCalls.onEnterSearch)
                     else -> RailBar(exploreCalls.onEnterSearch)
                 }
             },
             body = {
                 Column(Modifier.fillMaxSize()) {
                     if (layout == HomeLayout.Portrait) tabs()
-                    if (layout != HomeLayout.CompactHeight) SubTabs(pager.currentPage, selectTab, inset = layout != HomeLayout.Portrait)
-                    OfflineStrip(currentPane.offlineSinceMillis, if (pager.currentPage == 0) explore.nowMillis else following.nowMillis, currentPane.retrying, currentFeed.onRetry)
+                    OfflineStrip(
+                        currentPane.offlineSinceMillis,
+                        if (chip == HomeChip.Following) following.nowMillis else explore.nowMillis,
+                        currentPane.retrying,
+                        currentFeed.onRetry,
+                    )
                     Box(Modifier.fillMaxSize()) {
-                        HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), beyondViewportPageCount = drawnAhead, key = { it }) { page ->
-                            if (page == 0) {
-                                ExploreTab(
-                                    state = explore,
-                                    layout = layout,
-                                    gridState = exploreGrid,
-                                    tiles = TileActions(
-                                        onOpen = destinations.onOpenSection,
-                                        onFollow = exploreCalls.onFollowSection,
-                                        onUnfollow = exploreCalls.onUnfollowSection,
-                                        onOpenAll = destinations.onOpenAllSections,
-                                    ),
-                                    cards = CardActions(destinations.onOpenList) { exploreMenu = it },
-                                    onRefresh = exploreFeed.onRefresh,
-                                    onRetry = exploreFeed.onRetry,
-                                    onLoadMore = exploreFeed.onLoadMore,
-                                    onScrolledDown = exploreFeed.onScrolledDown,
-                                )
-                            } else {
-                                FollowingTab(
-                                    state = following,
-                                    layout = layout,
-                                    gridState = followingGrid,
-                                    actions = FollowingActions(
-                                        onOpenSection = destinations.onOpenSection,
-                                        onOpenTopic = destinations.onOpenTopic,
-                                        onOpenWaiting = { waitingTopic = it },
-                                        onOpenAuthor = { destinations.onOpenAuthor(it.uid, it.name, it.photoUrl) },
-                                        onManage = destinations.onManageFollowing,
-                                        onTogglePick = exploreCalls.onTogglePick,
-                                        onFollowPicked = exploreCalls.onFollowPicked,
-                                        onOpenAllSections = destinations.onOpenAllSections,
-                                        onOpenWaitingSection = { waitingSection = it.id },
-                                        onDismissNotice = exploreCalls.onWithdrawProposal,
-                                        onGoToExplore = { selectTab(0) },
-                                    ),
-                                    cards = CardActions(destinations.onOpenList) { followingMenu = it },
-                                    onRefresh = followingFeed.onRefresh,
-                                    onRetry = followingFeed.onRetry,
-                                    onLoadMore = followingFeed.onLoadMore,
-                                    onScrolledDown = followingFeed.onScrolledDown,
-                                )
-                            }
+                        key(chip) {
+                            HomeFeedGrid(
+                                chip = chip,
+                                onChip = { chip = it },
+                                explore = explore,
+                                following = following,
+                                feed = ChipFeed(currentPane, currentFeed, CardActions(destinations.onOpenList) { menu = chip to it }),
+                                layout = layout,
+                                gridState = grids.getValue(chip),
+                                tiles = TileActions(
+                                    onOpen = destinations.onOpenSection,
+                                    onFollow = exploreCalls.onFollowSection,
+                                    onUnfollow = exploreCalls.onUnfollowSection,
+                                    onOpenAll = destinations.onOpenAllSections,
+                                ),
+                                followingActions = FollowingActions(
+                                    onOpenSection = destinations.onOpenSection,
+                                    onOpenTopic = destinations.onOpenTopic,
+                                    onOpenWaiting = { waitingTopic = it },
+                                    onOpenAuthor = { destinations.onOpenAuthor(it.uid, it.name, it.photoUrl) },
+                                    onManage = destinations.onManageFollowing,
+                                    onTogglePick = exploreCalls.onTogglePick,
+                                    onFollowPicked = exploreCalls.onFollowPicked,
+                                    onOpenAllSections = destinations.onOpenAllSections,
+                                    onOpenWaitingSection = { waitingSection = it.id },
+                                    onDismissNotice = exploreCalls.onWithdrawProposal,
+                                    onGoToExplore = { chip = HomeChip.Popular },
+                                ),
+                            )
                         }
                         NewListsPill(
                             visible = currentPane.newListsWaiting,
                             onClick = {
-                                val grid = if (pager.currentPage == 0) exploreGrid else followingGrid
-                                scope.launch { grid.animateScrollToItem(0) }
+                                scope.launch { grids.getValue(chip).animateScrollToItem(0) }
                                 currentFeed.onApplyHeld()
                             },
                             modifier = Modifier
@@ -463,8 +472,7 @@ private fun HomeBody(
         )
     }
 
-    FeedListMenus(exploreMenu, { exploreMenu = null }, exploreFeed, destinations.onOpenAuthor)
-    FeedListMenus(followingMenu, { followingMenu = null }, followingFeed, destinations.onOpenAuthor)
+    menu?.let { (from, summary) -> FeedListMenus(summary, { menu = null }, feeds[from], destinations.onOpenAuthor) }
     WaitingSheets(
         topic = waitingTopic,
         section = following.waitingSections.firstOrNull { it.id == waitingSection },
@@ -475,9 +483,6 @@ private fun HomeBody(
         },
     )
 }
-
-/** Past the slide or fade that brought Community in, which is not the moment for a second tab's worth of work. */
-private const val DRAW_AHEAD_AFTER_MILLIS = 500L
 
 @Composable
 private fun WaitingSheets(topic: Topic?, section: Section?, onWithdraw: (String) -> Unit, onClose: () -> Unit) {
@@ -494,47 +499,9 @@ private fun WaitingSheets(topic: Topic?, section: Section?, onWithdraw: (String)
     }
 }
 
-/** Explore · Following (§1.2): two equal tabs under a phone's bar, or hugging their labels under a rail's title (§7.1). */
+/** A short window's one bar (§6.1): the name and search; the chips are in the content. It scrolls away with the content. */
 @Composable
-private fun SubTabs(selected: Int, onSelect: (Int) -> Unit, inset: Boolean) {
-    if (inset) {
-        Column(Modifier.fillMaxWidth()) {
-            Row(Modifier.padding(start = 12.dp)) {
-                InlineTab(stringResource(R.string.explore_tab_explore), selected == 0, ExploreTestTags.TAB_EXPLORE) { onSelect(0) }
-                InlineTab(stringResource(R.string.explore_tab_following), selected == 1, ExploreTestTags.TAB_FOLLOWING) { onSelect(1) }
-            }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-        }
-        return
-    }
-    SecondaryTabRow(
-        selectedTabIndex = selected,
-        modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.surface,
-        divider = { HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant) },
-    ) {
-        SubTab(stringResource(R.string.explore_tab_explore), selected == 0, ExploreTestTags.TAB_EXPLORE) { onSelect(0) }
-        SubTab(stringResource(R.string.explore_tab_following), selected == 1, ExploreTestTags.TAB_FOLLOWING) { onSelect(1) }
-    }
-}
-
-@Composable
-private fun SubTab(label: String, selected: Boolean, tag: String, onClick: () -> Unit) {
-    Tab(
-        selected = selected,
-        onClick = onClick,
-        modifier = Modifier
-            .height(48.dp)
-            .testTag(tag),
-        text = { Text(label, style = MaterialTheme.typography.titleSmall) },
-        selectedContentColor = MaterialTheme.colorScheme.onSurface,
-        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-/** A short window's one bar (§6.1): the name, the two tabs inline, and search. It scrolls away with the content. */
-@Composable
-private fun CompactBar(selected: Int, onSelect: (Int) -> Unit, onSearch: () -> Unit) {
+private fun CompactBar(onSearch: () -> Unit) {
     Column {
         Row(
             Modifier
@@ -548,42 +515,10 @@ private fun CompactBar(selected: Int, onSelect: (Int) -> Unit, onSearch: () -> U
                 style = TextStyle(fontSize = 20.sp, lineHeight = 28.sp),
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            Spacer(Modifier.width(12.dp))
-            InlineTab(stringResource(R.string.explore_tab_explore), selected == 0, ExploreTestTags.TAB_EXPLORE) { onSelect(0) }
-            InlineTab(stringResource(R.string.explore_tab_following), selected == 1, ExploreTestTags.TAB_FOLLOWING) { onSelect(1) }
             Spacer(Modifier.weight(1f))
             SearchButton(onSearch)
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    }
-}
-
-@Composable
-private fun InlineTab(label: String, selected: Boolean, tag: String, onClick: () -> Unit) {
-    Column(
-        Modifier
-            .height(48.dp)
-            .width(IntrinsicSize.Max)
-            .clickable(onClick = onClick)
-            .testTag(tag),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(Modifier.weight(1f))
-        Text(
-            label,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.titleSmall,
-            color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.weight(1f))
-        Box(
-            Modifier
-                .padding(horizontal = 12.dp)
-                .height(2.dp)
-                .fillMaxWidth()
-                .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent),
-        )
     }
 }
 
@@ -607,9 +542,10 @@ private fun RailBar(onSearch: () -> Unit) {
     }
 }
 
+/** Says what it searches, as the phone's bar does: community lists, not the person's own. */
 @Composable
 private fun SearchButton(onSearch: () -> Unit) {
-    IconButton(onClick = onSearch, modifier = Modifier.testTag(ExploreTestTags.SEARCH)) { SearchIcon() }
+    HomeIconButton(stringResource(R.string.explore_search_hint), onSearch, testTag = ExploreTestTags.SEARCH) { SearchIcon() }
 }
 
 /** What was typed, answered by the server: cards, or a line saying there is nothing. */
@@ -624,6 +560,8 @@ internal fun SearchResultsGrid(
     sections: List<Section> = emptyList(),
     onOpenSection: (String) -> Unit = {},
     onLoadMore: () -> Unit = {},
+    /** What a search everywhere offers before anything is typed; null where a search is narrowed to one page. */
+    browse: SearchBrowse? = null,
 ) {
     val alpha = rememberSkeletonAlpha(running = results.loading || results.loadingMore)
     val grid = rememberLazyGridState()
@@ -644,26 +582,12 @@ internal fun SearchResultsGrid(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        // The sections are the phone's own, so they show while the server is still asked.
-        if (found.isNotEmpty()) {
-            item(key = "sections-heading", span = full) { SearchHeading(stringResource(R.string.search_sections)) }
-            item(key = "sections", span = full) {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TileRows(found, columns = 3, gap = 8.dp) { section, rowModifier ->
-                        SectionTile(
-                            section = section,
-                            following = section.following,
-                            onOpen = { onOpenSection(section.id) },
-                            onFollow = {},
-                            onUnfollow = {},
-                            modifier = rowModifier.height(84.dp),
-                            style = TileStyle.Mini,
-                            longPressMenu = false,
-                        )
-                    }
-                }
-            }
+        if (browse != null && query.isBlank()) {
+            browseItems(browse, onOpenSection, onOpenTopic)
+            return@LazyVerticalGrid
         }
+        // The sections are the phone's own, so they show while the server is still asked.
+        foundSectionItems(found, onOpenSection)
         when {
             results.loading -> items(4) { SkeletonCard(alpha, coverHeight = layout.coverHeight) }
             results.failed -> item(span = full) {
@@ -696,6 +620,98 @@ internal fun SearchResultsGrid(
 }
 
 private const val SEARCH_NEAR_END = 4
+
+private fun androidx.compose.foundation.lazy.grid.LazyGridScope.foundSectionItems(found: List<Section>, onOpenSection: (String) -> Unit) {
+    if (found.isEmpty()) return
+    val full: androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope.() -> androidx.compose.foundation.lazy.grid.GridItemSpan =
+        { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }
+    item(key = "sections-heading", span = full) { SearchHeading(stringResource(R.string.search_sections)) }
+    item(key = "sections", span = full) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            TileRows(found, columns = 3, gap = 8.dp) { section, rowModifier ->
+                SectionTile(
+                    section = section,
+                    following = section.following,
+                    onOpen = { onOpenSection(section.id) },
+                    onFollow = {},
+                    onUnfollow = {},
+                    modifier = rowModifier.height(84.dp),
+                    style = TileStyle.Mini,
+                    longPressMenu = false,
+                )
+            }
+        }
+    }
+}
+
+/** An empty search everywhere: every section, and the biggest topics with their sections. */
+internal class SearchBrowse(val sections: List<Section>, val topics: List<Topic>)
+
+/** Nothing typed yet (design audit 16.11): the sections as chips, then the popular topics, each a tap away. */
+private fun androidx.compose.foundation.lazy.grid.LazyGridScope.browseItems(
+    browse: SearchBrowse,
+    onOpenSection: (String) -> Unit,
+    onOpenTopic: (Topic) -> Unit,
+) {
+    val full: androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope.() -> androidx.compose.foundation.lazy.grid.GridItemSpan =
+        { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }
+    item(key = "browse-sections", span = full) {
+        Column(Modifier.testTag(ExploreTestTags.SEARCH_BROWSE_SECTIONS), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            SectionLabel(stringResource(R.string.search_sections))
+            BrowseSectionChips(browse.sections, onOpenSection)
+        }
+    }
+    if (browse.topics.isNotEmpty()) {
+        item(key = "browse-topics", span = full) {
+            Column(Modifier.padding(top = 8.dp).testTag(ExploreTestTags.SEARCH_BROWSE_TOPICS)) {
+                SectionLabel(stringResource(R.string.search_popular_topics), Modifier.padding(bottom = 4.dp))
+                browse.topics.forEach { topic -> PopularTopicRow(topic) { onOpenTopic(topic) } }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun BrowseSectionChips(sections: List<Section>, onOpenSection: (String) -> Unit) {
+    val nameOf = rememberSectionNames()
+    val ordered = sections.filterNot { it.isOther } + sections.filter { it.isOther }
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ordered.forEach { section ->
+            SuggestionChip(
+                onClick = { onOpenSection(section.id) },
+                label = { Text(nameOf(section.id)) },
+                modifier = Modifier.testTag(ExploreTestTags.browseSection(section.id)),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PopularTopicRow(topic: Topic, onClick: () -> Unit) {
+    val nameOf = rememberSectionNames()
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clickable(onClick = onClick)
+            .testTag(ExploreTestTags.browseTopic(topic.id)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            topic.name,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        topic.section?.let { section ->
+            Text(nameOf(section), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+        }
+    }
+}
 
 /** Sections named by what was typed, in any language or by id. */
 @Composable
