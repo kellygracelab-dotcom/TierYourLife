@@ -108,4 +108,14 @@
         <item quantity="many">Has colocado %1$d cartas. El juego las reordena; «Deshacer» las devuelve.</item>
         <item quantity="other">Has colocado %1$d cartas. El juego las reordena; «Deshacer» las devuelve.</item>
     </plurals>
+    <string name="play_ready_title">Tu ranking está listo</string>
+    <string name="play_ready_summary">Resultado: %1$s en %2$s</string>
+    <string name="play_see_my_list">Ver mi lista</string>
+    <string name="play_sign_in_to_show">Inicia sesión para mostrarlo en clasificaciones</string>
+    <string name="play_play_again">Jugar de nuevo</string>
+    <plurals name="play_more_tiers">
+        <item quantity="one">y %1$d nivel más</item>
+        <item quantity="many">y %1$d niveles más</item>
+        <item quantity="other">y %1$d niveles más</item>
+    </plurals>
 </resources>

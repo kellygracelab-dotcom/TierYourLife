@@ -1,11 +1,16 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
@@ -15,6 +20,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,6 +50,29 @@ class ViewButtonTest {
         composeRule.onNodeWithTag(TierDetailTestTags.VIEW_MODE).performClick()
         composeRule.onNodeWithTag(TierDetailTestTags.viewMode(TierListDisplayMode.HORIZONTAL_SCROLL.name)).performClick()
         assertEquals(listOf(TierListDisplayMode.HORIZONTAL_SCROLL), chosen)
+    }
+
+    @Test
+    fun namesOnCards_standsUnderTheViews_checked_andTurnsOffForEveryList() {
+        val memory = InMemoryBoardLayoutMemory()
+        composeRule.setContent {
+            CompositionLocalProvider(LocalBoardLayoutMemory provides memory) {
+                TierYourLifeTheme {
+                    TierDetailScreenContent(
+                        state = TierDetailUiState.Success(placed),
+                        actions = TierDetailActions(onPlay = {}, onPublish = {}, onSetDisplayMode = { chosen += it }),
+                    )
+                }
+            }
+        }
+        composeRule.onNodeWithTag(TierDetailTestTags.VIEW_MODE).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.NAMES_ON_CARDS).assertIsOn().performClick()
+        assertFalse(memory.namesOnCards)
+
+        composeRule.onNodeWithTag(TierDetailTestTags.VIEW_MODE).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.NAMES_ON_CARDS).assertIsOff().performClick()
+        assertTrue(memory.namesOnCards)
+        assertTrue(chosen.isEmpty())
     }
 
     @Test

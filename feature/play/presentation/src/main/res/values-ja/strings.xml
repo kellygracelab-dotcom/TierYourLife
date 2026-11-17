@@ -86,4 +86,12 @@
     <plurals name="play_placed_warning">
         <item quantity="other">%1$d枚のカードを配置済みです。ゲームで並べ替わりますが、「元に戻す」で戻せます。</item>
     </plurals>
+    <string name="play_ready_title">ランキングが完成しました</string>
+    <string name="play_ready_summary">%2$sで%1$sを配置しました</string>
+    <string name="play_see_my_list">自分のリストを見る</string>
+    <string name="play_sign_in_to_show">ログインしてランキングに表示</string>
+    <string name="play_play_again">もう一度プレイ</string>
+    <plurals name="play_more_tiers">
+        <item quantity="other">ほか%1$d個のティア</item>
+    </plurals>
 </resources>

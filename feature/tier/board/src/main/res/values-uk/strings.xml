@@ -225,4 +225,6 @@
     </plurals>
     <string name="board_nothing_placed">ще нічого не розкладено</string>
     <string name="board_header_counts">%1$s · %2$s</string>
+    <string name="board_names_on_cards">Назви на картках</string>
+    <string name="board_names_on_cards_sub">Смужка з назвою внизу кожної картинки</string>
 </resources>

@@ -108,4 +108,14 @@
         <item quantity="many">Vous avez placé %1$d cartes. Le jeu les replace ; « Annuler » les remet.</item>
         <item quantity="other">Vous avez placé %1$d cartes. Le jeu les replace ; « Annuler » les remet.</item>
     </plurals>
+    <string name="play_ready_title">Votre classement est prêt</string>
+    <string name="play_ready_summary">Résultat : %1$s en %2$s</string>
+    <string name="play_see_my_list">Voir ma liste</string>
+    <string name="play_sign_in_to_show">Se connecter pour l’afficher dans les classements</string>
+    <string name="play_play_again">Rejouer</string>
+    <plurals name="play_more_tiers">
+        <item quantity="one">et %1$d autre rang</item>
+        <item quantity="many">et %1$d autres rangs</item>
+        <item quantity="other">et %1$d autres rangs</item>
+    </plurals>
 </resources>

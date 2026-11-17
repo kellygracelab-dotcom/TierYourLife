@@ -133,7 +133,7 @@ private fun RankedItemRow(entry: RankedEntry, onSelect: (itemId: Long) -> Unit) 
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.titleMedium.copy(fontFeatureSettings = "tnum"),
         )
-        ItemTile(item = entry.item, width = 32.dp, height = 48.dp)
+        ItemTile(item = entry.item, width = 32.dp, height = 48.dp, named = false)
         Text(
             text = entry.item.title,
             modifier = Modifier.weight(1f),
@@ -283,7 +283,7 @@ private fun PoolItemRow(item: TierItem, onSelect: (itemId: Long) -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ItemTile(item = item, width = 32.dp, height = 48.dp)
+        ItemTile(item = item, width = 32.dp, height = 48.dp, named = false)
         Text(
             text = item.title,
             modifier = Modifier.weight(1f),

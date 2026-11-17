@@ -331,7 +331,7 @@ internal fun poolTitle(count: Int, countsCardsLeft: Boolean): String = if (count
 private fun Glimpse(items: List<TierItem>) {
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         items.filter { it.imageUrl != null }.take(GLIMPSE_TILES).forEach { item ->
-            ItemTile(item = item, width = GLIMPSE_TILE, height = GLIMPSE_TILE)
+            ItemTile(item = item, width = GLIMPSE_TILE, height = GLIMPSE_TILE, named = false)
         }
     }
 }

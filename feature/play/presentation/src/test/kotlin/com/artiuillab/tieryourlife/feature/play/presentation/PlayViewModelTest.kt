@@ -361,8 +361,16 @@ class PlayViewModelTest {
         viewModel.playToTheEnd()
 
         val arranged = viewModel.events.firstWithin { it is PlayEvent.Arranged } as PlayEvent.Arranged
+        // The window at the game's end first; closed, the board offers Undo as before.
+        val ready = (viewModel.state.firstWithin { it.stage is PlayStage.Ready }.stage as PlayStage.Ready).ready
+        assertEquals(unranked.ids().flatMap { it.second }.size, ready.cards)
+        assertFalse(ready.intoMine)
+        assertEquals(arranged.board, ready.board)
+        viewModel.ready.dismiss()
         val said = (viewModel.events.firstWithin { it is PlayEvent.Said } as PlayEvent.Said).notice as PlayNotice.BoardArranged
         assertTrue(said.duels > 0)
+        assertEquals(ready.duels, said.duels)
+        assertEquals(PlayStage.Closed, viewModel.state.value.stage)
         val after = arranged.board.ids()
         assertEquals(after, repository.board.ids())
         assertEquals(POOL to emptyList<Long>(), after.last())
@@ -432,8 +440,28 @@ class PlayViewModelTest {
         assertTrue(arranged.board.tiers.first { it.isPool }.items.isEmpty())
         assertEquals(6, arranged.board.tiers.sumOf { it.items.size })
         assertTrue(repository.moves.isEmpty())
-        // QA list-flow Н4: the page has its own Undo, and its question about showing comes now; no snackbar under it.
+        // QA list-flow Н4: the page has its own Undo, and its question about showing comes once the window closes; no snackbar under it.
+        val ready = (viewModel.state.firstWithin { it.stage is PlayStage.Ready }.stage as PlayStage.Ready).ready
+        assertTrue(ready.intoMine)
+        assertEquals(6, ready.cards)
+        viewModel.ready.dismiss()
         assertNull(withTimeoutOrNull(500) { viewModel.events.first { it is PlayEvent.Said } })
+        assertEquals(PlayStage.Closed, viewModel.state.value.stage)
+    }
+
+    @Test
+    fun playAgain_fromTheGamesEnd_opensThePickerOverTheBoardAsItWasLeft() = runBlocking {
+        val viewModel = viewModel()
+        viewModel.open()
+        viewModel.picker.start()
+        viewModel.playToTheEnd()
+        viewModel.state.firstWithin { it.stage is PlayStage.Ready }
+
+        viewModel.ready.again()
+
+        assertTrue(viewModel.state.value.stage is PlayStage.Picking)
+        // No Undo snackbar for a game already being replayed.
+        assertNull(withTimeoutOrNull(300) { viewModel.events.first { it is PlayEvent.Said } })
     }
 
     @Test

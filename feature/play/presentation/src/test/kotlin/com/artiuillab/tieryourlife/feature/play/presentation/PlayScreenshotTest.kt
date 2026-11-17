@@ -26,7 +26,10 @@ import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.request.ErrorResult
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
+import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRankings
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -164,6 +167,34 @@ class PlayScreenshotTest {
         }
     }
 
+    @Composable
+    private fun ReadyFrame(rankings: PlayRankings?) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .padding(top = 24.dp),
+        ) {
+            ReadyContent(ReadyState(cards = 15, duels = 33, board = sciFi, intoMine = rankings != null), rankings, {}, {}, {})
+        }
+    }
+
+    @Test
+    fun theGamesEnd_onSomeoneElsesList() = capture("play_ready") {
+        ReadyFrame(PlayRankings(signedIn = true) {})
+    }
+
+    @Test
+    fun theGamesEnd_onOnesOwnBoard_dark() = capture("play_ready_dark", dark = true) {
+        ReadyFrame(null)
+    }
+
+    @Test
+    @Config(qualifiers = "+ru", fontScale = 1.15f)
+    fun theGamesEnd_aGuest_russian() = capture("play_ready_ru") {
+        ReadyFrame(PlayRankings(signedIn = false) {})
+    }
+
     private val savedGame = ResumeOffer(GameKind.Swiss, played = 48, total = 136, startedAt = System.currentTimeMillis() - DAY)
 
     @Test
@@ -287,6 +318,20 @@ class PlayScreenshotTest {
                 CardGroup(5L, "D", "No", "#2F6FA8", "#8DB8E3", count = 102, isPool = false),
             ),
             chosen = setOf(POOL, 2L),
+        )
+
+        /** A finished game's board: four tiers with cards, so one is counted rather than drawn. */
+        val sciFi = TierList(
+            id = 1,
+            title = "Sci-fi films",
+            tiers = listOf(
+                Tier(1, "S", "#B03A32", "#F1948C", (1L..3L).map { TierItem(it, "Film $it", null) }),
+                Tier(2, "A", "#C06A25", "#E9A867", (4L..10L).map { TierItem(it, "Film $it", null) }),
+                Tier(3, "B", "#C9A227", "#E7CB6B", (11L..13L).map { TierItem(it, "Film $it", null) }),
+                Tier(4, "C", "#3E8E5E", "#86C9A0", (14L..15L).map { TierItem(it, "Film $it", null) }),
+                Tier(5, "D", "#2F6FA8", "#8DB8E3", emptyList()),
+                Tier(POOL, "Unranked", "#DAD7E0", "#46464F", emptyList(), isPool = true),
+            ),
         )
 
         // The first card has a picture, which Robolectric never loads: its name stands under it.

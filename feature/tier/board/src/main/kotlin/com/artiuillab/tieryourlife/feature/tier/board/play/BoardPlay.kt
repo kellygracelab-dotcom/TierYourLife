@@ -40,6 +40,10 @@ data class PlayRequest(
     }
 }
 
+/** The game's end on someone else's list: its result shown among the list's rankings, or sign in for that. */
+@Immutable
+data class PlayRankings(val signedIn: Boolean, val onShow: () -> Unit)
+
 /**
  * Play as a board screen sees it. The screens only ask for it; navigation
  * hands in the real one from the Play feature, so neither feature opens the
@@ -56,10 +60,17 @@ interface BoardPlay {
      * duels and the result. Always composed, so what it says on the way out
      * outlives it. [onArranged] gets the board an applied result left, or
      * the one its undo put back, and which of the two it was; [onClose] says
-     * Play is done with the screen.
+     * Play is done with the screen, its window at the end closed too.
+     * [rankings], on someone else's list, is offered in that window.
      */
     @Composable
-    fun Layer(request: PlayRequest, open: Boolean, onArranged: (board: TierList, undone: Boolean) -> Unit, onClose: () -> Unit)
+    fun Layer(
+        request: PlayRequest,
+        open: Boolean,
+        onArranged: (board: TierList, undone: Boolean) -> Unit,
+        onClose: () -> Unit,
+        rankings: PlayRankings?,
+    )
 }
 
 /** Where nothing plays: previews, tests, and screens navigation gave no Play to. */
@@ -68,6 +79,11 @@ object NoPlay : BoardPlay {
     override fun isSaved(key: String): Boolean = false
 
     @Composable
-    override fun Layer(request: PlayRequest, open: Boolean, onArranged: (board: TierList, undone: Boolean) -> Unit, onClose: () -> Unit) =
-        Unit
+    override fun Layer(
+        request: PlayRequest,
+        open: Boolean,
+        onArranged: (board: TierList, undone: Boolean) -> Unit,
+        onClose: () -> Unit,
+        rankings: PlayRankings?,
+    ) = Unit
 }

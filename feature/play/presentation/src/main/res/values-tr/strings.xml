@@ -97,4 +97,13 @@
         <item quantity="one">%1$d kart yerleştirdin. Oyun onu yeniden dizer; “Geri al” geri getirir.</item>
         <item quantity="other">%1$d kart yerleştirdin. Oyun onları yeniden dizer; “Geri al” geri getirir.</item>
     </plurals>
+    <string name="play_ready_title">Sıralaman hazır</string>
+    <string name="play_ready_summary">%2$s sonunda %1$s yerleştirildi</string>
+    <string name="play_see_my_list">Listemi gör</string>
+    <string name="play_sign_in_to_show">Sıralamalarda göstermek için giriş yap</string>
+    <string name="play_play_again">Tekrar oyna</string>
+    <plurals name="play_more_tiers">
+        <item quantity="one">ve %1$d seviye daha</item>
+        <item quantity="other">ve %1$d seviye daha</item>
+    </plurals>
 </resources>

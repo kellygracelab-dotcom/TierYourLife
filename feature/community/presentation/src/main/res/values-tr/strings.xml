@@ -327,4 +327,5 @@
     <string name="community_remove_ranking_body">Bu listenin sıralamalarından kalkar. Listeleriniz’de sizde kalır.</string>
     <string name="community_remove_ranking_confirm">Kaldır</string>
     <string name="feed_unverified">Uygulama doğrulanamadı, bu yüzden listeler yüklenemiyor.</string>
+    <string name="community_rankings_link">%1$s — başkalarının nasıl yerleştirdiğini gör</string>
 </resources>

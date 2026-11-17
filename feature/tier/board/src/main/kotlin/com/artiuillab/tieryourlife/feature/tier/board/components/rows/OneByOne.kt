@@ -432,7 +432,7 @@ private fun BigCard(card: TierItem, picked: Boolean, width: Dp = BIG_CARD_WIDTH,
                 .semantics { contentDescription = shown.title },
         ) {
             ProvideTextCardRoom(listOf(shown), width, height, 0.dp) {
-                ItemTile(item = shown, width = width, height = height)
+                ItemTile(item = shown, width = width, height = height, named = false)
             }
             if (picked) PickedOutline(width, height)
         }

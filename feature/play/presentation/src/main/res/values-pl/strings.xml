@@ -119,4 +119,15 @@
         <item quantity="many">Umieszczono %1$d kart. Gra je przestawi; „Cofnij” je przywróci.</item>
         <item quantity="other">Umieszczono %1$d karty. Gra je przestawi; „Cofnij” je przywróci.</item>
     </plurals>
+    <string name="play_ready_title">Twój ranking jest gotowy</string>
+    <string name="play_ready_summary">Ułożono: %1$s, rozegrano: %2$s</string>
+    <string name="play_see_my_list">Zobacz moją listę</string>
+    <string name="play_sign_in_to_show">Zaloguj się, aby pokazać w rankingach</string>
+    <string name="play_play_again">Zagraj ponownie</string>
+    <plurals name="play_more_tiers">
+        <item quantity="one">i jeszcze %1$d poziom</item>
+        <item quantity="few">i jeszcze %1$d poziomy</item>
+        <item quantity="many">i jeszcze %1$d poziomów</item>
+        <item quantity="other">i jeszcze %1$d poziomu</item>
+    </plurals>
 </resources>

@@ -334,4 +334,5 @@
     <string name="community_remove_ranking_body">Il disparaîtra des classements de cette liste. Vous le gardez dans Vos listes.</string>
     <string name="community_remove_ranking_confirm">Retirer</string>
     <string name="feed_unverified">Impossible de vérifier l’app, les listes ne peuvent donc pas se charger.</string>
+    <string name="community_rankings_link">%1$s — voyez comment d’autres les ont placées</string>
 </resources>

@@ -187,6 +187,11 @@ interface AppPreferences {
     fun oneCardAtATime(): Boolean = false
 
     fun setOneCardAtATime(on: Boolean) = Unit
+
+    /** A strip with its name along the foot of every picture; this device only, on until turned off. */
+    fun namesOnCards(): Boolean = true
+
+    fun setNamesOnCards(on: Boolean) = Unit
 }
 
 const val DEFAULT_POOL_DOCK_ROWS = 2

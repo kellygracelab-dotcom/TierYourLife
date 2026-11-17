@@ -327,4 +327,5 @@
     <string name="community_remove_ranking_body">It leaves this list’s rankings. You keep it in Your lists.</string>
     <string name="community_remove_ranking_confirm">Remove</string>
     <string name="feed_unverified">Couldn’t check this app, so the lists can’t load.</string>
+    <string name="community_rankings_link">%1$s — see how others placed them</string>
 </resources>

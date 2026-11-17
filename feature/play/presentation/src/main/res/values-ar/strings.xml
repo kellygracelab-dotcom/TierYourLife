@@ -141,4 +141,17 @@
         <item quantity="many">وضعت %1$d بطاقة. ستعيد اللعبة ترتيبها، و«تراجع» يعيدها.</item>
         <item quantity="other">وضعت %1$d بطاقة. ستعيد اللعبة ترتيبها، و«تراجع» يعيدها.</item>
     </plurals>
+    <string name="play_ready_title">ترتيبك جاهز</string>
+    <string name="play_ready_summary">رُتّبت %1$s في %2$s</string>
+    <string name="play_see_my_list">عرض قائمتي</string>
+    <string name="play_sign_in_to_show">سجّل الدخول لعرضه في الترتيبات</string>
+    <string name="play_play_again">العب مرة أخرى</string>
+    <plurals name="play_more_tiers">
+        <item quantity="zero">ولا مستويات أخرى</item>
+        <item quantity="one">ومستوى آخر</item>
+        <item quantity="two">ومستويان آخران</item>
+        <item quantity="few">و%1$d مستويات أخرى</item>
+        <item quantity="many">و%1$d مستوى آخر</item>
+        <item quantity="other">و%1$d مستوى آخر</item>
+    </plurals>
 </resources>

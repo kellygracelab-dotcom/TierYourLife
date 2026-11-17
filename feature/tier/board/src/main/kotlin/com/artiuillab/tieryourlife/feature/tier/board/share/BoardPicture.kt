@@ -57,12 +57,16 @@ object BoardPicture {
     private const val LABEL_SIZE = 60f
     private const val CAPTION_SIZE = 26f
     private const val TILE_TEXT_SIZE = 24f
+    private const val NAME_TEXT_SIZE = 20f
+    private const val NAME_PADDING = 8f
+    private const val NAME_SHADE_RISE = 28f
+    private const val NAME_SHADE = 0xC7000000.toInt()
     private const val FOOTER_HEIGHT = 120f
     private const val FOOTER_TEXT_SIZE = 32f
     private const val MAX_ROWS_PER_TIER = 6
 
-    /** Pictures by item id. A card without one is drawn as its title. */
-    fun render(list: TierList, palette: BoardPalette, pictures: Map<Long, Bitmap>, footer: String): Bitmap {
+    /** Pictures by item id. A card without one is drawn as its title; with [names], a picture carries its name along its foot. */
+    fun render(list: TierList, palette: BoardPalette, pictures: Map<Long, Bitmap>, footer: String, names: Boolean = false): Bitmap {
         val ranked = list.tiers.filterNot { it.isPool }
         val pool = list.tiers.filter { it.isPool }
         val poolRow = pool.firstOrNull()?.let { first ->
@@ -87,7 +91,7 @@ object BoardPicture {
 
         var y = headerHeight
         for (row in rows) {
-            drawRow(canvas, row, y, bandWidth, palette, pictures)
+            drawRow(canvas, row, y, bandWidth, palette, pictures, names)
             y += row.height + ROW_GAP
         }
 
@@ -149,7 +153,7 @@ object BoardPicture {
         canvas.drawText("$rankedCount ranked · ${ranked.size} tiers", PADDING, PADDING + TITLE_SIZE + 12f + SUBTITLE_SIZE, subtitle)
     }
 
-    private fun drawRow(canvas: Canvas, row: Row, top: Float, bandWidth: Float, palette: BoardPalette, pictures: Map<Long, Bitmap>) {
+    private fun drawRow(canvas: Canvas, row: Row, top: Float, bandWidth: Float, palette: BoardPalette, pictures: Map<Long, Bitmap>, names: Boolean) {
         val tier = row.tier
         val band = if (tier.isPool) {
             palette.unrankedBand
@@ -211,7 +215,10 @@ object BoardPicture {
             val picture = pictures[item.id]
             if (picture != null) {
                 val rounded = android.graphics.Path().apply { addRoundRect(frame, TILE_RADIUS, TILE_RADIUS, android.graphics.Path.Direction.CW) }
-                canvas.withClip(rounded) { drawBitmap(picture, cover(picture, frame), frame, null) }
+                canvas.withClip(rounded) {
+                    drawBitmap(picture, cover(picture, frame), frame, null)
+                    if (names) drawNameStrip(this, item.title, frame)
+                }
             } else {
                 canvas.drawRoundRect(frame, TILE_RADIUS, TILE_RADIUS, placeholder)
                 drawTitle(canvas, item.title, frame, tileText)
@@ -240,6 +247,46 @@ object BoardPicture {
             val h = (picture.width / frameRatio).toInt()
             val y = (picture.height - h) / 2
             Rect(0, y, picture.width, y + h)
+        }
+    }
+
+    /** As the board draws it: white, two lines at most, on a shade that darkens toward the foot. */
+    private fun drawNameStrip(canvas: Canvas, title: String, frame: RectF) {
+        val text = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = android.graphics.Color.WHITE
+            textSize = NAME_TEXT_SIZE
+            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+        val maxWidth = frame.width() - 2 * NAME_PADDING
+        val lines = mutableListOf<String>()
+        var rest = title.trim()
+        while (rest.isNotEmpty() && lines.size < 2) {
+            val cut = lineEnd(rest, text.breakText(rest, true, maxWidth, null))
+            lines += rest.substring(0, cut).trim()
+            rest = rest.substring(cut).trim()
+        }
+        if (rest.isNotEmpty() && lines.isNotEmpty()) {
+            lines[lines.lastIndex] = TextUtils.ellipsize(lines.last() + " " + rest, text, maxWidth, TextUtils.TruncateAt.END).toString()
+        }
+        val lineHeight = NAME_TEXT_SIZE * 1.15f
+        val stripTop = frame.bottom - lines.size * lineHeight - NAME_SHADE_RISE
+        val shade = Paint().apply {
+            shader = android.graphics.LinearGradient(
+                0f,
+                stripTop,
+                0f,
+                frame.bottom,
+                android.graphics.Color.TRANSPARENT,
+                NAME_SHADE,
+                android.graphics.Shader.TileMode.CLAMP,
+            )
+        }
+        canvas.drawRect(frame.left, stripTop, frame.right, frame.bottom, shade)
+        var y = frame.bottom - NAME_PADDING - (lines.size - 1) * lineHeight
+        for (line in lines) {
+            canvas.drawText(line, frame.centerX(), y, text)
+            y += lineHeight
         }
     }
 

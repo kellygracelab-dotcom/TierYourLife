@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -48,7 +50,9 @@ private const val LOAD_MORE_ROWS_AHEAD = 3
  * The people who placed this list's cards their own way: the author first,
  * then the most liked, newer first among equals, this reader in their place.
  * A thumb up on anyone else's; how many liked it is never shown. Choosing one
- * fills the left half of the switch with their placing.
+ * fills the left half of the switch with their placing. The check is on the
+ * placing the board shows: the author's, a chosen one, or on Mine the reader's
+ * own row when it is among them.
  */
 @Composable
 internal fun RankingsSheet(
@@ -87,17 +91,19 @@ internal fun RankingsSheet(
                     name = shownName(state.authorName),
                     photoUrl = state.authorPhotoUrl,
                     note = stringResource(R.string.community_ranking_author),
-                    selected = state.chosenRanking == null,
+                    selected = onBoard(state, ranking = null),
                     onClick = { onChoose(null) },
                     modifier = Modifier.testTag(CommunityListTestTags.RANKING_AUTHOR),
                 )
+                // The readers' rankings below, as many as the count says.
+                if (state.rankings.isNotEmpty()) HorizontalDivider(Modifier.padding(horizontal = 20.dp))
             }
             items(state.rankings, key = { it.uid }) { ranking ->
                 RankingRow(
                     name = if (ranking.mine) stringResource(R.string.community_ranking_you) else shownName(ranking.authorName),
                     photoUrl = ranking.authorPhotoUrl,
                     note = whenPlaced(ranking.updatedAtMillis),
-                    selected = state.chosenRanking?.uid == ranking.uid,
+                    selected = onBoard(state, ranking),
                     onClick = { onChoose(ranking) },
                     modifier = Modifier.testTag(CommunityListTestTags.ranking(ranking.uid)),
                     trailing = if (ranking.mine) {
@@ -139,6 +145,13 @@ private fun LikeButton(liked: Boolean, onToggle: () -> Unit, tag: String) {
     }
 }
 
+/** Whether [ranking] (the author's when null) is the placing on the board now. */
+private fun onBoard(state: CommunityListUiState.Success, ranking: Ranking?): Boolean = when {
+    state.showing == Showing.Mine -> ranking?.mine == true
+    ranking == null -> state.chosenRanking == null
+    else -> state.chosenRanking?.uid == ranking.uid
+}
+
 @Composable
 private fun RankingRow(
     name: String,
@@ -152,6 +165,7 @@ private fun RankingRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .semantics { this.selected = selected }
             .clickable(onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,

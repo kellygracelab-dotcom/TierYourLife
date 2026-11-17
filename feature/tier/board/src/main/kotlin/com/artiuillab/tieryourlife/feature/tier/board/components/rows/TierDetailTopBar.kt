@@ -29,6 +29,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -58,17 +59,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.ui.AddPhotoIcon
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
@@ -104,6 +114,8 @@ fun TierScreenTopBar(
     /** The community's menu also applies while arranging one's own ranking. */
     onReaderMoreClick: (() -> Unit)? = null,
     subtitle: String? = null,
+    /** Tapped at the end of [subtitle]: someone else's list's rankings. */
+    subtitleLink: SubtitleLink? = null,
     /** A short window's one bar: lower, a smaller title, and no second line. */
     compact: Boolean = false,
     /** What the screen around the board puts in the bar, between the title and the overflow: a reader's switch and save. */
@@ -164,7 +176,7 @@ fun TierScreenTopBar(
                     modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
                 )
             } else {
-                ReadTitle(title, titleStyle, subline, subtitle.takeIf { roomy && subline == null })
+                ReadTitle(title, titleStyle, subline, subtitle.takeIf { roomy && subline == null }?.let { withLink(it, subtitleLink) })
             }
             trailing?.invoke(this)
             BarActions(publish, play, view, playWorded = roomy)
@@ -190,9 +202,31 @@ fun TierScreenTopBar(
     }
 }
 
+/** A line under a title that ends in a link: someone else's list's rankings. */
+@Immutable
+data class SubtitleLink(val text: String, val onClick: () -> Unit)
+
+/** [text], and after it [link] in the primary colour, which can be tapped. */
+@Composable
+internal fun withLink(text: String, link: SubtitleLink?): AnnotatedString {
+    val color = MaterialTheme.colorScheme.primary
+    return buildAnnotatedString {
+        append(text)
+        if (link != null) {
+            append(SUBTITLE_SEPARATOR)
+            withLink(LinkAnnotation.Clickable(SUBTITLE_LINK_TAG, TextLinkStyles(SpanStyle(color = color))) { link.onClick() }) {
+                append(link.text)
+            }
+        }
+    }
+}
+
+private const val SUBTITLE_SEPARATOR = " · "
+private const val SUBTITLE_LINK_TAG = "subtitle_link"
+
 /** A title only read, and the line under it: a tablet's [subline], or [subtitle]. */
 @Composable
-private fun RowScope.ReadTitle(title: String, style: TextStyle, subline: (@Composable () -> Unit)?, subtitle: String?) {
+private fun RowScope.ReadTitle(title: String, style: TextStyle, subline: (@Composable () -> Unit)?, subtitle: AnnotatedString?) {
     Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
         Text(
             text = title,
@@ -275,9 +309,41 @@ private fun ViewAction(view: ViewButton) {
                     },
                 )
             }
+            HorizontalDivider(Modifier.padding(vertical = 4.dp))
+            NamesOnCardsItem(onDone = { open = false })
         }
     }
 }
+
+/** Under the three ways to show the tiers: the names on the pictures, on or off for every list on this device. */
+@Composable
+private fun NamesOnCardsItem(onDone: () -> Unit) {
+    val memory = LocalBoardLayoutMemory.current
+    val on = memory.namesOnCards
+    DropdownMenuItem(
+        text = {
+            Column(Modifier.widthIn(max = NAMES_ITEM_MAX_WIDTH)) {
+                Text(stringResource(R.string.board_names_on_cards))
+                Text(
+                    text = stringResource(R.string.board_names_on_cards_sub),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
+        onClick = {
+            onDone()
+            memory.namesOnCards = !on
+        },
+        modifier = Modifier
+            .semantics { toggleableState = ToggleableState(on) }
+            .testTag(TierDetailTestTags.NAMES_ON_CARDS),
+        leadingIcon = { Spacer(Modifier.size(24.dp)) },
+        trailingIcon = { Box(Modifier.size(20.dp)) { if (on) CheckIcon(20.dp, MaterialTheme.colorScheme.primary) } },
+    )
+}
+
+private val NAMES_ITEM_MAX_WIDTH = 220.dp
 
 /** The bar's Play: how many cards there are decides whether it can start, a saved game puts a dot on it. */
 @Immutable
@@ -469,6 +535,8 @@ fun OwnBoardTopBar(
     publish: PublishButton?,
     view: ViewButton?,
     moreTag: String? = null,
+    /** Tapped at the end of [counts]: someone else's list's rankings. */
+    countsLink: SubtitleLink? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     val moreDescription = stringResource(ThemeR.string.tier_detail_content_description_more)
@@ -543,11 +611,12 @@ fun OwnBoardTopBar(
                     )
                 }
                 Text(
-                    text = counts,
+                    text = withLink(counts, countsLink),
                     modifier = Modifier.padding(top = 2.dp).testTag(TierDetailTestTags.OWN_BAR_COUNTS),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
+                    // The link takes a second line rather than being cut.
+                    maxLines = if (countsLink != null) 2 else 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
