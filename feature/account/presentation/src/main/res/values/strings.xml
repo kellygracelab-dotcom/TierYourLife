@@ -54,9 +54,10 @@
     <string name="account_face_title">Your face</string>
     <string name="account_face_body">Pick a card from your own lists.</string>
     <string name="account_face_no_cards">None of your cards have a picture from a catalogue yet.</string>
-    <string name="account_face_letter">Just the letter</string>
-    <string name="account_face_gallery">A photo from the gallery</string>
-    <string name="account_face_note">Card art stays where it lives on the web. A photo from the gallery is checked and kept with your account.</string>
+    <string name="account_face_letter">Letter</string>
+    <string name="account_face_gallery">Upload</string>
+    <string name="account_face_note">People see your face next to your name on the lists you publish. A card or a photo you pick is checked and kept with your account.</string>
+    <string name="account_face_your_photo">Your photo</string>
     <string name="account_cd_change_face">Change your picture</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d generation credit</item>

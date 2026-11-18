@@ -187,7 +187,8 @@ private fun FirebaseUser?.toAccount(): Account = when {
         val google = providerData.firstOrNull { it.providerId == GOOGLE_PROVIDER }
         Account.SignedIn(
             email = email ?: google?.email,
-            photoUrl = (photoUrl ?: google?.photoUrl)?.toString(),
+            // The profile's own, as the community sees it: the letter, once chosen, is no picture at all.
+            photoUrl = photoUrl?.toString(),
             displayName = displayName ?: google?.displayName,
             uid = uid,
         )

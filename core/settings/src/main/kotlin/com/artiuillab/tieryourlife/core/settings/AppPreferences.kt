@@ -207,6 +207,19 @@ interface AppPreferences {
     fun namesOnCards(): Boolean = true
 
     fun setNamesOnCards(on: Boolean) = Unit
+
+    /**
+     * The photo the account uploaded as its face, by account: one slot, kept whatever it wears now, so the
+     * letter or a card can be worn and the photo put back with a tap. Here until the account can keep it.
+     */
+    fun ownFace(account: String): String? = null
+
+    fun setOwnFace(account: String, url: String?) = Unit
+
+    /** The card whose copy the account wears now, so its tile carries the check; by account. */
+    fun cardFace(account: String): CardFace? = null
+
+    fun setCardFace(account: String, cardFace: CardFace?) = Unit
 }
 
 const val DEFAULT_POOL_DOCK_ROWS = 2

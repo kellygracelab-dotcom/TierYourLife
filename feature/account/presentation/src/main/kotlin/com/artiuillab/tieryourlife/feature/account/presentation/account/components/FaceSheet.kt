@@ -6,20 +6,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +25,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
@@ -35,21 +39,24 @@ import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountTestTags
 
 private val CHOICE_SIZE = 64.dp
+private val TILE_WIDTH = 76.dp
+private val CHECK_SIZE = 22.dp
 
 /**
- * A card's picture is an address someone else already hosts. A photo from the
- * phone is the one thing stored here: looked at first, then kept beside the
- * account so the community can show it.
+ * Letter · Your photo · Upload · the cards, one row, the check on the face worn
+ * (FACE-PHOTO-2026-11-19). The uploaded photo keeps its tile whatever is worn,
+ * so it is put back with a tap; only a new upload replaces it.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FaceSheet(
     current: String?,
+    ownPhoto: String?,
     cardImages: List<String>,
     name: String?,
     onDismiss: () -> Unit,
     onChoose: (String?) -> Unit,
     onPickPhoto: () -> Unit,
+    onWearOwnPhoto: () -> Unit = {},
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -59,11 +66,12 @@ internal fun FaceSheet(
         Column(
             Modifier
                 .navigationBarsPadding()
-                .padding(horizontal = 24.dp)
+                .padding(bottom = 8.dp)
                 .testTag(AccountTestTags.FACE_SHEET),
         ) {
             Text(
                 text = stringResource(R.string.account_face_title),
+                modifier = Modifier.padding(horizontal = 24.dp),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -71,53 +79,46 @@ internal fun FaceSheet(
                 text = stringResource(
                     if (cardImages.isEmpty()) R.string.account_face_no_cards else R.string.account_face_body,
                 ),
-                modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 4.dp, bottom = 16.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            if (cardImages.isNotEmpty()) {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    items(cardImages) { url ->
-                        FaceChoice(
-                            selected = url == current,
-                            onClick = { onChoose(url) },
-                            testTag = AccountTestTags.faceChoice(url),
-                        ) {
-                            AsyncImage(
-                                model = url,
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.size(CHOICE_SIZE).clip(CircleShape),
-                            )
+            val letter = stringResource(R.string.account_face_letter)
+            val yourPhoto = stringResource(R.string.account_face_your_photo)
+            val upload = stringResource(R.string.account_face_gallery)
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 20.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                item {
+                    FaceTile(letter, selected = current == null, onClick = { onChoose(null) }, testTag = AccountTestTags.FACE_LETTER) {
+                        Avatar(photoUrl = null, name = name, size = CHOICE_SIZE)
+                    }
+                }
+                if (ownPhoto != null) {
+                    item {
+                        FaceTile(yourPhoto, selected = current == ownPhoto, onClick = onWearOwnPhoto, testTag = AccountTestTags.FACE_OWN_PHOTO) {
+                            FacePicture(ownPhoto)
                         }
                     }
                 }
-                Spacer(Modifier.height(20.dp))
+                item {
+                    FaceTile(upload, selected = null, onClick = onPickPhoto, testTag = AccountTestTags.FACE_GALLERY) {
+                        UploadIcon(28.dp, MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                items(cardImages) { url ->
+                    FaceTile(null, selected = url == current, onClick = { onChoose(url) }, testTag = AccountTestTags.faceChoice(url)) {
+                        FacePicture(url)
+                    }
+                }
             }
 
-            TextButton(
-                onClick = onPickPhoto,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag(AccountTestTags.FACE_GALLERY),
-            ) {
-                Text(stringResource(R.string.account_face_gallery))
-            }
-            TextButton(
-                onClick = { onChoose(null) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag(AccountTestTags.FACE_LETTER),
-            ) {
-                Text(stringResource(R.string.account_face_letter))
-            }
             Text(
                 text = stringResource(R.string.account_face_note),
-                modifier = Modifier.padding(bottom = 8.dp),
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 8.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
             )
@@ -126,25 +127,74 @@ internal fun FaceSheet(
 }
 
 @Composable
-private fun FaceChoice(
-    selected: Boolean,
+private fun FacePicture(url: String) {
+    AsyncImage(
+        model = url,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.size(CHOICE_SIZE).clip(CircleShape),
+    )
+}
+
+/** [selected] null: a tile that does something rather than being worn, so never checked. */
+@Composable
+private fun FaceTile(
+    caption: String?,
+    selected: Boolean?,
     onClick: () -> Unit,
     testTag: String,
     content: @Composable () -> Unit,
 ) {
-    Box(
+    Column(
         Modifier
-            .size(CHOICE_SIZE)
-            .aspectRatio(1f)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .then(
-                if (selected) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, CircleShape) else Modifier,
-            )
-            .clickable(onClick = onClick)
+            .width(TILE_WIDTH)
+            .clip(MaterialTheme.shapes.medium)
+            .clickable(role = if (selected == null) Role.Button else Role.RadioButton, onClick = onClick)
+            .semantics {
+                if (selected != null) this.selected = selected
+                if (caption != null) contentDescription = caption
+            }
+            .padding(vertical = 4.dp)
             .testTag(testTag),
-        contentAlignment = Alignment.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        content()
+        Box {
+            Box(
+                Modifier
+                    .size(CHOICE_SIZE)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .then(
+                        if (selected == true) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, CircleShape) else Modifier,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                content()
+            }
+            if (selected == true) {
+                Box(
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = 2.dp, y = 2.dp)
+                        .size(CHECK_SIZE)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CheckIcon(16.dp, MaterialTheme.colorScheme.onPrimary)
+                }
+            }
+        }
+        if (caption != null) {
+            Text(
+                text = caption,
+                modifier = Modifier.padding(top = 6.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }

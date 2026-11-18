@@ -134,7 +134,7 @@ interface TierDao {
         SELECT DISTINCT i.imageUrl FROM tier_items i
             JOIN tiers t ON i.tierId = t.id
             JOIN tier_lists l ON t.tierListId = l.id
-        WHERE (i.imageUrl LIKE 'https://%' OR i.source = 'GENERATED')
+        WHERE (i.imageUrl LIKE 'https://%' OR i.source != 'MANUAL' OR i.credit IS NOT NULL OR i.attribution IS NOT NULL)
             AND i.imageUrl IS NOT NULL
             AND i.deletedAt IS NULL
             AND l.deletedAt IS NULL
@@ -143,9 +143,11 @@ interface TierDao {
         """,
     )
     /**
-     * Pictures a face may be made from: catalogue art and generated pictures.
-     * Gallery photographs are excluded on purpose -- a face is public, and a
-     * personal photograph should not first become public there.
+     * Pictures a face may be made from: catalogue art and generated pictures,
+     * where they live or, since 13.11.2026, as the copy kept with us, which
+     * still carries its credit. Gallery photographs carry none and are excluded
+     * on purpose -- a face is public, and a personal photograph should not
+     * first become public there.
      */
     suspend fun cardImageUrls(owner: String?, limit: Int): List<String>
 

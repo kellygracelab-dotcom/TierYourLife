@@ -42,6 +42,17 @@ internal fun PersonIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { sca
     )
 }
 
+/** An arrow up out of a tray: a picture from this device. */
+@Composable
+internal fun UploadIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    drawLine(color, Offset(12f * scale, 4f * scale), Offset(12f * scale, 15f * scale), 1.8f * scale, StrokeCap.Round)
+    drawLine(color, Offset(7.5f * scale, 8.5f * scale), Offset(12f * scale, 4f * scale), 1.8f * scale, StrokeCap.Round)
+    drawLine(color, Offset(16.5f * scale, 8.5f * scale), Offset(12f * scale, 4f * scale), 1.8f * scale, StrokeCap.Round)
+    drawLine(color, Offset(5f * scale, 15f * scale), Offset(5f * scale, 19.5f * scale), 1.8f * scale, StrokeCap.Round)
+    drawLine(color, Offset(5f * scale, 19.5f * scale), Offset(19f * scale, 19.5f * scale), 1.8f * scale, StrokeCap.Round)
+    drawLine(color, Offset(19f * scale, 15f * scale), Offset(19f * scale, 19.5f * scale), 1.8f * scale, StrokeCap.Round)
+}
+
 @Composable
 internal fun CheckIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     drawLine(color, Offset(5f * scale, 12.5f * scale), Offset(10f * scale, 17.5f * scale), 1.9f * scale, StrokeCap.Round)
