@@ -80,6 +80,8 @@ import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
+import com.artiuillab.tieryourlife.core.theme.tips.Tip
+import com.artiuillab.tieryourlife.core.theme.tips.tipAnchor
 import com.artiuillab.tieryourlife.core.theme.ui.AddPhotoIcon
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
@@ -372,6 +374,7 @@ private fun PlayAction(play: PlayButton, worded: Boolean) {
                 .padding(horizontal = 4.dp)
                 .heightIn(min = 40.dp)
                 .semantics { contentDescription = description }
+                .tipAnchor(Tip.Play)
                 .testTag(TierDetailTestTags.PLAY),
         ) {
             BadgedBox(badge = { if (play.saved && play.enabled) Badge(containerColor = MaterialTheme.colorScheme.primary) }) {
@@ -393,6 +396,7 @@ private fun PlayAction(play: PlayButton, worded: Boolean) {
         modifier = Modifier
             .size(48.dp)
             .semantics { contentDescription = description }
+            .tipAnchor(Tip.Play)
             .testTag(TierDetailTestTags.PLAY),
     ) {
         BadgedBox(badge = { if (play.saved && play.enabled) Badge(containerColor = MaterialTheme.colorScheme.primary) }) {

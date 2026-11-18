@@ -35,15 +35,16 @@ class AboutRowsTest {
         val taps = mutableListOf<String>()
         composeRule.setContent {
             TierYourLifeTheme {
-                Column { AboutRows(onRate = { taps += "rate" }, onShare = { taps += "share" }, onFeedback = { taps += "feedback" }) }
+                Column { AboutRows(onHowItWorks = { taps += "how" }, onRate = { taps += "rate" }, onShare = { taps += "share" }, onFeedback = { taps += "feedback" }) }
             }
         }
 
+        composeRule.onNodeWithTag(SettingsTestTags.HOW_IT_WORKS_ROW).performClick()
         composeRule.onNodeWithTag(SettingsTestTags.RATE_ROW).performClick()
         composeRule.onNodeWithTag(SettingsTestTags.SHARE_ROW).performClick()
         composeRule.onNodeWithTag(SettingsTestTags.FEEDBACK_ROW).performClick()
 
-        assertEquals(listOf("rate", "share", "feedback"), taps)
+        assertEquals(listOf("how", "rate", "share", "feedback"), taps)
     }
 
     @Test

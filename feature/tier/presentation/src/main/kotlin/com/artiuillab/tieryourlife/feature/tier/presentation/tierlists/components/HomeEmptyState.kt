@@ -37,6 +37,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
@@ -72,7 +73,12 @@ private val SUGGESTIONS = listOf(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun HomeEmptyState(onCreateNamedList: (String) -> Unit, modifier: Modifier = Modifier) {
+internal fun HomeEmptyState(
+    onCreateNamedList: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    readyList: PublishedListSummary? = null,
+    onTryReadyList: (listId: String) -> Unit = {},
+) {
     BoxWithConstraints(modifier.fillMaxSize()) {
         // Centred while it fits, scrollable once a large font or a short screen
         // makes it taller than the window.
@@ -95,6 +101,10 @@ internal fun HomeEmptyState(onCreateNamedList: (String) -> Unit, modifier: Modif
                 modifier = Modifier.atMost(ContentWidth.Message),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                if (readyList != null) {
+                    ReadyListCard(readyList, onTry = { onTryReadyList(readyList.id) })
+                    Spacer(Modifier.height(28.dp))
+                }
                 MiniBoard()
                 Spacer(Modifier.height(28.dp))
                 Text(

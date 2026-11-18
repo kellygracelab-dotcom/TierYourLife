@@ -195,4 +195,9 @@
     <string name="tier_editor_move_up">上へ移動</string>
     <string name="tier_editor_move_down">下へ移動</string>
     <string name="tier_editor_remove">ティアを削除</string>
+    <string name="tip_place">&lt;b&gt;ここから：&lt;/b&gt;カードをタップして、入れるティアをタップ。ドラッグでも置けます。</string>
+    <plurals name="tip_play">
+        <item quantity="other">%1$d枚を手で並べるのは大変？&lt;b&gt;プレイ&lt;/b&gt;：2枚から良い方を選ぶだけでティアが埋まります。</item>
+    </plurals>
+    <string name="tip_add">名前を入力すると、画像は自動で付きます。</string>
 </resources>

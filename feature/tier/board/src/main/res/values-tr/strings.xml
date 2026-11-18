@@ -209,4 +209,10 @@
     <string name="tier_editor_move_up">Yukarı taşı</string>
     <string name="tier_editor_move_down">Aşağı taşı</string>
     <string name="tier_editor_remove">Seviyeyi sil</string>
+    <string name="tip_place">&lt;b&gt;Buradan başla:&lt;/b&gt; bir karta, sonra ait olduğu seviyeye dokun. Ya da oraya sürükle.</string>
+    <plurals name="tip_play">
+        <item quantity="one">%1$d kartı elle yerleştirmek istemiyor musun? &lt;b&gt;Oyna&lt;/b&gt;: ikisinden iyisini seç, seviyeler dolsun.</item>
+        <item quantity="other">%1$d kartı elle yerleştirmek istemiyor musun? &lt;b&gt;Oyna&lt;/b&gt;: ikisinden iyisini seç, seviyeler dolsun.</item>
+    </plurals>
+    <string name="tip_add">Bir ad yaz, resmi kendiliğinden gelsin.</string>
 </resources>

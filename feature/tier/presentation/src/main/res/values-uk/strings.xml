@@ -356,4 +356,12 @@
     <string name="started_discard_arrangement">Скинути мою розстановку</string>
     <string name="started_discarded">Розстановку скинуто</string>
     <string name="started_updated_elsewhere">Оновлено з іншого пристрою</string>
+    <string name="ready_list_label">ВПЕРШЕ ТУТ?</string>
+    <string name="ready_list_try">Спробувати</string>
+    <plurals name="ready_list_cards">
+        <item quantity="one">Готовий список · %1$d картка</item>
+        <item quantity="few">Готовий список · %1$d картки</item>
+        <item quantity="many">Готовий список · %1$d карток</item>
+        <item quantity="other">Готовий список · %1$d картки</item>
+    </plurals>
 </resources>

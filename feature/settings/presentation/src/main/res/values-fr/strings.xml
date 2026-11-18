@@ -100,4 +100,17 @@
     <string name="share_app_chooser">Partager TierYourLife</string>
     <string name="share_app_text">TierYourLife : classez tout par niveaux et partagez vos listes.\nWeb : %1$s</string>
     <string name="feedback_subject">Avis sur TierYourLife : appli %1$s, Android %2$s</string>
+    <string name="settings_how_it_works">Comment ça marche</string>
+    <string name="settings_how_it_works_sub">Classer, jouer, créer les vôtres</string>
+    <string name="how_place">Placer</string>
+    <string name="how_place_text">touchez une carte, puis un rang. Ou faites-la glisser.</string>
+    <string name="how_play">Jouer</string>
+    <string name="how_play_text">choisissez la meilleure de deux cartes ; les rangs se remplissent.</string>
+    <string name="how_own">Créer la vôtre</string>
+    <string name="how_own_text">tapez des noms, les images viennent avec.</string>
+    <string name="how_share">Partager</string>
+    <string name="how_share_text">publiez votre liste ou envoyez-la en image.</string>
+    <string name="how_again">Revoir les conseils</string>
+    <string name="how_again_done">Les conseils s’afficheront à nouveau.</string>
+    <string name="how_close">Fermer</string>
 </resources>

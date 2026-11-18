@@ -356,4 +356,12 @@
     <string name="started_discard_arrangement">Odrzuć mój układ</string>
     <string name="started_discarded">Układ odrzucony</string>
     <string name="started_updated_elsewhere">Zaktualizowano na innym urządzeniu</string>
+    <string name="ready_list_label">NOWY TUTAJ?</string>
+    <string name="ready_list_try">Wypróbuj</string>
+    <plurals name="ready_list_cards">
+        <item quantity="one">Gotowa lista · %1$d karta</item>
+        <item quantity="few">Gotowa lista · %1$d karty</item>
+        <item quantity="many">Gotowa lista · %1$d kart</item>
+        <item quantity="other">Gotowa lista · %1$d karty</item>
+    </plurals>
 </resources>

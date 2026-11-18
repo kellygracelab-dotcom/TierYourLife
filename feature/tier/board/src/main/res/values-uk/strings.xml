@@ -237,4 +237,12 @@
     <string name="tier_editor_move_up">Посунути вгору</string>
     <string name="tier_editor_move_down">Посунути вниз</string>
     <string name="tier_editor_remove">Видалити рівень</string>
+    <string name="tip_place">&lt;b&gt;Почніть тут:&lt;/b&gt; торкніться картки, потім рівня, де їй місце. Або перетягніть її туди.</string>
+    <plurals name="tip_play">
+        <item quantity="one">Не хочеться розкладати %1$d картку вручну? &lt;b&gt;Грати&lt;/b&gt;: обирайте кращу з двох, і рівні заповняться.</item>
+        <item quantity="few">Не хочеться розкладати %1$d картки вручну? &lt;b&gt;Грати&lt;/b&gt;: обирайте кращу з двох, і рівні заповняться.</item>
+        <item quantity="many">Не хочеться розкладати %1$d карток вручну? &lt;b&gt;Грати&lt;/b&gt;: обирайте кращу з двох, і рівні заповняться.</item>
+        <item quantity="other">Не хочеться розкладати %1$d картки вручну? &lt;b&gt;Грати&lt;/b&gt;: обирайте кращу з двох, і рівні заповняться.</item>
+    </plurals>
+    <string name="tip_add">Введіть назву — картинка підбереться сама.</string>
 </resources>

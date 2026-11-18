@@ -18,10 +18,21 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsTestTags
 import timber.log.Timber
 
-/** Rate, share, write to us: what the testers asked for, each by the way Android already knows. */
+/**
+ * How it works, then rate, share, write to us: what the testers asked for, each by the way Android
+ * already knows.
+ */
 @Composable
-internal fun AboutRows(onRate: () -> Unit, onShare: () -> Unit, onFeedback: () -> Unit) {
+internal fun AboutRows(onHowItWorks: () -> Unit, onRate: () -> Unit, onShare: () -> Unit, onFeedback: () -> Unit) {
     val tint = MaterialTheme.colorScheme.onSurfaceVariant
+    SettingsRow(
+        icon = { HelpIcon(24.dp, tint) },
+        title = stringResource(R.string.settings_how_it_works),
+        subtitle = stringResource(R.string.settings_how_it_works_sub),
+        onClick = onHowItWorks,
+        testTag = SettingsTestTags.HOW_IT_WORKS_ROW,
+    )
+    SettingsGroupDivider()
     SettingsRow(
         icon = { StarIcon(on = false, size = 24.dp, colorOverride = tint) },
         title = stringResource(R.string.settings_rate),

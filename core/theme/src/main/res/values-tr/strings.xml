@@ -59,4 +59,6 @@
     <string name="publication_preview_independent">Bu, ayrı bir herkese açık liste olacak. Özel kopyan düzenlenebilir kalacak.</string>
     <string name="source_changed_recheck">Güncel orijinalle karşılaştır</string>
     <string name="publication_limit_until">%1$s sonrasında yeni bir liste daha yayımlayabilirsin. Özel listelerini kaydetmeye ve sıralamalarını yayımlamaya devam edebilirsin.</string>
+    <string name="tip_got_it">Anladım</string>
+    <string name="tip_no_more">Başka ipucu yok</string>
 </resources>

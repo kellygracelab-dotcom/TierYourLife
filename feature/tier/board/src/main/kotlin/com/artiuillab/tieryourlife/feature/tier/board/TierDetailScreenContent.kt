@@ -253,10 +253,10 @@ private fun TierDetailPane(
                 }
             }
 
-            is TierDetailUiState.Success -> {
+            is TierDetailUiState.Success -> BoardTips(state.list, actions, readOnly) { heard ->
                 TierScreenBody(
                     list = state.list,
-                    actions = actions,
+                    actions = heard,
                     addedItemIds = addedItemIds,
                     userMessages = userMessages,
                     readOnly = readOnly,

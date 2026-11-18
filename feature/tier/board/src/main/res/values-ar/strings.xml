@@ -265,4 +265,14 @@
     <string name="tier_editor_move_up">حرّك للأعلى</string>
     <string name="tier_editor_move_down">حرّك للأسفل</string>
     <string name="tier_editor_remove">إزالة المستوى</string>
+    <string name="tip_place">&lt;b&gt;ابدأ هنا:&lt;/b&gt; المس بطاقة، ثم المستوى الذي تنتمي إليه. أو اسحبها إليه.</string>
+    <plurals name="tip_play">
+        <item quantity="zero">لا تريد ترتيب %1$d بطاقة يدويًا؟ &lt;b&gt;العب&lt;/b&gt;: اختر الأفضل من اثنتين وتمتلئ المستويات.</item>
+        <item quantity="one">لا تريد ترتيب بطاقة واحدة يدويًا؟ &lt;b&gt;العب&lt;/b&gt;: اختر الأفضل من اثنتين وتمتلئ المستويات.</item>
+        <item quantity="two">لا تريد ترتيب بطاقتين يدويًا؟ &lt;b&gt;العب&lt;/b&gt;: اختر الأفضل من اثنتين وتمتلئ المستويات.</item>
+        <item quantity="few">لا تريد ترتيب %1$d بطاقات يدويًا؟ &lt;b&gt;العب&lt;/b&gt;: اختر الأفضل من اثنتين وتمتلئ المستويات.</item>
+        <item quantity="many">لا تريد ترتيب %1$d بطاقة يدويًا؟ &lt;b&gt;العب&lt;/b&gt;: اختر الأفضل من اثنتين وتمتلئ المستويات.</item>
+        <item quantity="other">لا تريد ترتيب %1$d بطاقة يدويًا؟ &lt;b&gt;العب&lt;/b&gt;: اختر الأفضل من اثنتين وتمتلئ المستويات.</item>
+    </plurals>
+    <string name="tip_add">اكتب اسمًا وستأتي الصورة معه.</string>
 </resources>

@@ -112,4 +112,17 @@
     <string name="share_app_chooser">شارك TierYourLife</string>
     <string name="share_app_text">TierYourLife: رتّب أي شيء في مستويات وشارك قوائمك.\nالويب: %1$s</string>
     <string name="feedback_subject">ملاحظات حول TierYourLife: التطبيق %1$s، Android %2$s</string>
+    <string name="settings_how_it_works">كيف يعمل</string>
+    <string name="settings_how_it_works_sub">رتّب، العب، أنشئ قوائمك</string>
+    <string name="how_place">رتّب</string>
+    <string name="how_place_text">انقر بطاقة، ثم مستوى. أو اسحبها.</string>
+    <string name="how_play">العب</string>
+    <string name="how_play_text">اختر الأفضل من بطاقتين؛ تمتلئ المستويات.</string>
+    <string name="how_own">أنشئ قائمتك</string>
+    <string name="how_own_text">اكتب الأسماء، وتأتي الصور معها.</string>
+    <string name="how_share">شارك</string>
+    <string name="how_share_text">انشر قائمتك أو أرسلها صورةً.</string>
+    <string name="how_again">أظهر النصائح مجددًا</string>
+    <string name="how_again_done">ستظهر النصائح مجددًا.</string>
+    <string name="how_close">إغلاق</string>
 </resources>

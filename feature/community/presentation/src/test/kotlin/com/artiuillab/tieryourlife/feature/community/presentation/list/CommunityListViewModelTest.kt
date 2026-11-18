@@ -53,6 +53,18 @@ class CommunityListViewModelTest {
         made.forEach { it.viewModelScope.cancel() }
     }
 
+    // "Try a ready list" (PARITY 4.9): a list whose author's ranking is known still opens on Mine, to be ranked.
+    @Test
+    fun aReadyList_opensOnMine_whereOthersOpenOnTheirs() = onMain {
+        val community = { TestCommunity(arrangement = listOf(0, 1)) }
+
+        val plain = viewModel(community = community())
+        val tried = viewModel(community = community(), handle = SavedStateHandle(mapOf("publishedId" to "abc", "rankFirst" to true)))
+
+        assertEquals(Showing.Theirs, (plain.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success).showing)
+        assertEquals(Showing.Mine, (tried.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success).showing)
+    }
+
     @Test
     fun opening_putsTheAuthorsCardsInThePool_andLeavesEveryTierEmpty() = onMain {
         val viewModel = viewModel()

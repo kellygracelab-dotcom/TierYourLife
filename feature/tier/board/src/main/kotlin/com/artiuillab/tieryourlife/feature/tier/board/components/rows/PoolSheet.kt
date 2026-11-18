@@ -71,6 +71,8 @@ import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.BoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.tips.Tip
+import com.artiuillab.tieryourlife.core.theme.tips.tipAnchor
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
@@ -388,7 +390,9 @@ private fun PoolCards(
                         dragController = dragController,
                         onMoveItem = onMoveItem,
                         onDeleteItem = onDeleteItem,
-                        modifier = Modifier.padding(end = if (slot != null && entry.item.id == liftedId) 0.dp else STRIP_GAP),
+                        modifier = Modifier
+                            .padding(end = if (slot != null && entry.item.id == liftedId) 0.dp else STRIP_GAP)
+                            .then(if (entry.index == 0) Modifier.tipAnchor(Tip.Place) else Modifier),
                         onDoubleTap = onDoubleTap,
                         collapseWhileLifted = slot != null,
                         scroll = TileScroll.Sideways,
@@ -648,6 +652,7 @@ private fun PoolCardsWrapped(
                         onPositioned = { bounds -> dragController.registerTileBounds(pool.id, entry.item.id, entry.index, bounds) },
                         onDoubleTap = onDoubleTap,
                         collapseWhileLifted = slot != null,
+                        modifier = if (entry.index == 0) Modifier.tipAnchor(Tip.Place) else Modifier,
                     )
                 }
             }
@@ -679,6 +684,7 @@ private fun AddChip(onClick: () -> Unit) {
             .clip(RoundedCornerShape(100.dp))
             .background(MaterialTheme.colorScheme.primaryContainer)
             .clickable(onClick = onClick)
+            .tipAnchor(Tip.Add)
             .testTag(TierDetailTestTags.ADD_CHIP)
             .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,

@@ -57,6 +57,8 @@ import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.tips.Tip
+import com.artiuillab.tieryourlife.core.theme.tips.tipAnchor
 import com.artiuillab.tieryourlife.core.theme.ui.AutoAwesomeIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CheckCircleIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PanelCloseIcon
@@ -259,6 +261,7 @@ private fun PoolColumnCards(
                             onPositioned = { bounds -> dragController.registerTileBounds(pool.id, entry.item.id, entry.index, bounds) },
                             onDoubleTap = onDoubleTap,
                             collapseWhileLifted = slot != null,
+                            modifier = if (entry.index == 0) Modifier.tipAnchor(Tip.Place, beside = true) else Modifier,
                         )
                     }
                 }
@@ -350,6 +353,7 @@ internal fun AddCardField(onAddClick: () -> Unit, onGenerateClick: () -> Unit, m
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.outline, shape)
             .clickable(onClick = onAddClick)
+            .tipAnchor(Tip.Add)
             .testTag(TierDetailTestTags.ADD_CHIP)
             .padding(start = 12.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,

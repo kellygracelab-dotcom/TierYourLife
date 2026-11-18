@@ -71,4 +71,6 @@
     <string name="publication_preview_independent">Це буде окремий публічний список. Особиста копія залишиться доступною для змін.</string>
     <string name="source_changed_recheck">Звірити з поточним оригіналом</string>
     <string name="publication_limit_until">Новий список можна опублікувати після %1$s. Особисті збереження та публікація рейтингів залишаються доступними.</string>
+    <string name="tip_got_it">Зрозуміло</string>
+    <string name="tip_no_more">Більше без підказок</string>
 </resources>

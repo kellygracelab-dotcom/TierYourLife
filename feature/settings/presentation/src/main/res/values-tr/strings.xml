@@ -96,4 +96,17 @@
     <string name="share_app_chooser">TierYourLife\'ı paylaş</string>
     <string name="share_app_text">TierYourLife: her şeyi seviyelere ayır ve listelerini paylaş.\nWeb: %1$s</string>
     <string name="feedback_subject">TierYourLife geri bildirimi: uygulama %1$s, Android %2$s</string>
+    <string name="settings_how_it_works">Nasıl çalışır</string>
+    <string name="settings_how_it_works_sub">Sırala, oyna, kendininkini yap</string>
+    <string name="how_place">Yerleştir</string>
+    <string name="how_place_text">bir karta, sonra bir seviyeye dokunun. Ya da sürükleyin.</string>
+    <string name="how_play">Oyna</string>
+    <string name="how_play_text">iki karttan iyisini seçin; seviyeler kendiliğinden dolar.</string>
+    <string name="how_own">Kendi listeniz</string>
+    <string name="how_own_text">adları yazın, resimler onlarla gelir.</string>
+    <string name="how_share">Paylaş</string>
+    <string name="how_share_text">listenizi yayımlayın ya da resim olarak gönderin.</string>
+    <string name="how_again">İpuçlarını yeniden göster</string>
+    <string name="how_again_done">İpuçları yeniden gösterilecek.</string>
+    <string name="how_close">Kapat</string>
 </resources>

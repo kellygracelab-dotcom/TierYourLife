@@ -356,4 +356,12 @@
     <string name="started_discard_arrangement">Сбросить мою расстановку</string>
     <string name="started_discarded">Расстановка сброшена</string>
     <string name="started_updated_elsewhere">Обновлено с другого устройства</string>
+    <string name="ready_list_label">ВПЕРВЫЕ ЗДЕСЬ?</string>
+    <string name="ready_list_try">Попробовать</string>
+    <plurals name="ready_list_cards">
+        <item quantity="one">Готовый список · %1$d карточка</item>
+        <item quantity="few">Готовый список · %1$d карточки</item>
+        <item quantity="many">Готовый список · %1$d карточек</item>
+        <item quantity="other">Готовый список · %1$d карточки</item>
+    </plurals>
 </resources>

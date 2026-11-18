@@ -237,4 +237,12 @@
     <string name="tier_editor_move_up">Przesuń w górę</string>
     <string name="tier_editor_move_down">Przesuń w dół</string>
     <string name="tier_editor_remove">Usuń poziom</string>
+    <string name="tip_place">&lt;b&gt;Zacznij tutaj:&lt;/b&gt; dotknij karty, a potem poziomu, do którego pasuje. Albo przeciągnij ją tam.</string>
+    <plurals name="tip_play">
+        <item quantity="one">Nie chcesz układać %1$d karty ręcznie? &lt;b&gt;Graj&lt;/b&gt;: wybieraj lepszą z dwóch, a poziomy same się wypełnią.</item>
+        <item quantity="few">Nie chcesz układać %1$d kart ręcznie? &lt;b&gt;Graj&lt;/b&gt;: wybieraj lepszą z dwóch, a poziomy same się wypełnią.</item>
+        <item quantity="many">Nie chcesz układać %1$d kart ręcznie? &lt;b&gt;Graj&lt;/b&gt;: wybieraj lepszą z dwóch, a poziomy same się wypełnią.</item>
+        <item quantity="other">Nie chcesz układać %1$d karty ręcznie? &lt;b&gt;Graj&lt;/b&gt;: wybieraj lepszą z dwóch, a poziomy same się wypełnią.</item>
+    </plurals>
+    <string name="tip_add">Wpisz nazwę — obrazek dobierze się sam.</string>
 </resources>

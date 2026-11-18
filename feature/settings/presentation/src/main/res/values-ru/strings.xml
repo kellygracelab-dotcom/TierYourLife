@@ -104,4 +104,17 @@
     <string name="share_app_chooser">Поделиться TierYourLife</string>
     <string name="share_app_text">Делаю тир-листы в TierYourLife: раскладываю что угодно от S до D, решаю спорное в дуэлях и смотрю, как разложили другие.\nСайт: %1$s</string>
     <string name="feedback_subject">Отзыв о TierYourLife: приложение %1$s, Android %2$s</string>
+    <string name="settings_how_it_works">Как это работает</string>
+    <string name="settings_how_it_works_sub">Раскладывать, играть, делать свои</string>
+    <string name="how_place">Расставить</string>
+    <string name="how_place_text">нажмите карточку, затем уровень. Или перетащите.</string>
+    <string name="how_play">Играть</string>
+    <string name="how_play_text">выбирайте лучшую из двух карточек; уровни заполнятся сами.</string>
+    <string name="how_own">Свой список</string>
+    <string name="how_own_text">вводите названия, картинки подберутся сами.</string>
+    <string name="how_share">Поделиться</string>
+    <string name="how_share_text">опубликуйте список или отправьте его картинкой.</string>
+    <string name="how_again">Показать подсказки снова</string>
+    <string name="how_again_done">Подсказки покажутся снова.</string>
+    <string name="how_close">Закрыть</string>
 </resources>

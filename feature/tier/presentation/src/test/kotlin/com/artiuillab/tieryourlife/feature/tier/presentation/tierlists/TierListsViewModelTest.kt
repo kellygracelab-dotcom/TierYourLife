@@ -748,7 +748,7 @@ private class TestCommunity(
 }
 
 /** A guest has nowhere to sync to, so every case here would report the same thing. */
-private object NoBoardSync : BoardSync {
+internal object NoBoardSync : BoardSync {
     override suspend fun sync(): SyncReport = SyncReport(signedIn = false)
 }
 
@@ -765,7 +765,7 @@ private class HeldSync : BoardSync {
 }
 
 /** The same identity throughout, so the boards on screen are always the same library's. */
-private object NoOwnerChange : BoardOwner {
+internal object NoOwnerChange : BoardOwner {
     override val changes: Flow<Unit> = emptyFlow()
 }
 
@@ -774,6 +774,6 @@ private class MovingOwner : BoardOwner {
 }
 
 /** Nothing is arriving on this phone, which is what the list screen sees almost always. */
-private object NoPictureRestore : PictureRestore {
+internal object NoPictureRestore : PictureRestore {
     override val restoring = MutableStateFlow(PictureRestore.Progress.Idle)
 }

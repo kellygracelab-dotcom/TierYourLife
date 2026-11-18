@@ -193,6 +193,16 @@ interface AppPreferences {
 
     fun setOneCardAtATime(on: Boolean) = Unit
 
+    /** The newcomer's tips already shown on this device, by name (TipMemory); not the person's, so not forgotten with them. */
+    fun tipsSeen(): Set<String> = emptySet()
+
+    fun setTipsSeen(tips: Set<String>) = Unit
+
+    /** "No more tips". */
+    fun tipsOff(): Boolean = false
+
+    fun setTipsOff(off: Boolean) = Unit
+
     /** A strip with its name along the foot of every picture; this device only, on until turned off. */
     fun namesOnCards(): Boolean = true
 

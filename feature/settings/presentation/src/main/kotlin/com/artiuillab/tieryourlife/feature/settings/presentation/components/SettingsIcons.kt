@@ -47,3 +47,25 @@ internal fun AccountCircleIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize
         style = Stroke(1.7f * scale, cap = StrokeCap.Round),
     )
 }
+
+/** A circle with a question in it: how the app works. */
+@Composable
+internal fun HelpIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = Stroke(1.7f * scale, cap = StrokeCap.Round, join = StrokeJoin.Round)
+    drawCircle(color, 8.5f * scale, Offset(12f * scale, 12f * scale), style = stroke)
+    val hook = Path().apply {
+        moveTo(9.6f * scale, 9.8f * scale)
+        cubicTo(9.6f * scale, 6.9f * scale, 14.4f * scale, 6.9f * scale, 14.4f * scale, 9.8f * scale)
+        cubicTo(14.4f * scale, 11.6f * scale, 12f * scale, 11.8f * scale, 12f * scale, 13.6f * scale)
+    }
+    drawPath(hook, color, style = stroke)
+    drawCircle(color, 1.05f * scale, Offset(12f * scale, 16.6f * scale))
+}
+
+/** Three tiers, each shorter than the one above: placing cards. */
+@Composable
+internal fun TierStackIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    listOf(16f, 12f, 8f).forEachIndexed { index, width ->
+        drawRoundRect(color, Offset(4f * scale, (5f + index * 5.5f) * scale), Size(width * scale, 3.4f * scale), CornerRadius(1.2f * scale))
+    }
+}

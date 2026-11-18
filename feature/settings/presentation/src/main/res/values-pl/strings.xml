@@ -104,4 +104,17 @@
     <string name="share_app_chooser">Udostępnij TierYourLife</string>
     <string name="share_app_text">TierYourLife: układaj wszystko w poziomy i udostępniaj listy.\nStrona: %1$s</string>
     <string name="feedback_subject">Opinia o TierYourLife: aplikacja %1$s, Android %2$s</string>
+    <string name="settings_how_it_works">Jak to działa</string>
+    <string name="settings_how_it_works_sub">Układaj, graj, twórz własne</string>
+    <string name="how_place">Układaj</string>
+    <string name="how_place_text">dotknij karty, potem poziomu. Albo ją przeciągnij.</string>
+    <string name="how_play">Graj</string>
+    <string name="how_play_text">wybieraj lepszą z dwóch kart; poziomy wypełnią się same.</string>
+    <string name="how_own">Własna lista</string>
+    <string name="how_own_text">wpisuj nazwy, obrazki przyjdą z nimi.</string>
+    <string name="how_share">Udostępnij</string>
+    <string name="how_share_text">opublikuj listę albo wyślij ją jako obrazek.</string>
+    <string name="how_again">Pokaż podpowiedzi ponownie</string>
+    <string name="how_again_done">Podpowiedzi pokażą się ponownie.</string>
+    <string name="how_close">Zamknij</string>
 </resources>

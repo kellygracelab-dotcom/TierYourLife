@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardFilters
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.BoardSort
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
@@ -29,6 +30,8 @@ sealed interface TierListsUiState {
         val conflict: TierListSummary? = null,
         /** Other people's lists begun here and not saved yet, the last touched first. */
         val started: List<StartedList> = emptyList(),
+        /** For someone with no lists yet: a popular list to try (artboard 50); gone once there is one of their own. */
+        val readyList: PublishedListSummary? = null,
     ) : TierListsUiState
 
     data object Error : TierListsUiState

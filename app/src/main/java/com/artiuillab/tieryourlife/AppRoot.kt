@@ -27,6 +27,9 @@ import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.LocalShortWindow
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
+import com.artiuillab.tieryourlife.core.theme.tips.InMemoryTipMemory
+import com.artiuillab.tieryourlife.core.theme.tips.LocalTipMemory
+import com.artiuillab.tieryourlife.core.theme.tips.TipMemory
 import com.artiuillab.tieryourlife.navigation.TierYourLifeContent
 
 @Composable
@@ -35,6 +38,7 @@ fun AppRoot(
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     onLanguageTagChange: (String?) -> Unit,
     boardLayoutMemory: BoardLayoutMemory = remember { InMemoryBoardLayoutMemory() },
+    tipMemory: TipMemory = remember { InMemoryTipMemory() },
 ) {
     val darkTheme = when (state.themeChoice) {
         ThemeChoice.LIGHT -> false
@@ -69,6 +73,7 @@ fun AppRoot(
                 LocalWindowShape provides shape,
                 LocalShortWindow provides WindowShape.isShort(maxHeight),
                 LocalBoardLayoutMemory provides boardLayoutMemory,
+                LocalTipMemory provides tipMemory,
             ) {
                 TierYourLifeContent(
                     themeChoice = state.themeChoice,

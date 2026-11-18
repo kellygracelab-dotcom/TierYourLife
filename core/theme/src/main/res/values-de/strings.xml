@@ -59,4 +59,6 @@
     <string name="publication_preview_independent">Dies wird eine eigene öffentliche Liste. Deine private Kopie bleibt bearbeitbar.</string>
     <string name="source_changed_recheck">Mit dem aktuellen Original abgleichen</string>
     <string name="publication_limit_until">Du kannst nach %1$s eine weitere neue Liste veröffentlichen. Private Listen und Ranglisten sind weiterhin verfügbar.</string>
+    <string name="tip_got_it">Verstanden</string>
+    <string name="tip_no_more">Keine Tipps mehr</string>
 </resources>
