@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.itemLayout
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,8 @@ internal class TheirsStart(
     private val changed: () -> Unit,
 ) {
     /** Mine as it was before a move on Theirs replaced it, for Undo. */
-    private var before: Pair<TierList, Boolean>? = null
+    private var before: UndoStart? = null
+    private var nextUndoId = 0L
 
     /** The move on Theirs that asked before replacing Mine. */
     private var asked: Triple<Long, Long, Int>? = null
@@ -53,20 +55,40 @@ internal class TheirsStart(
 
     /** Mine as it was before, and their arrangement back on screen. */
     fun undo() {
-        val (mine, arranged) = before ?: return
+        before?.let { undo(it.id) }
+    }
+
+    fun undo(id: Long) {
+        val step = before?.takeIf { it.id == id } ?: return
+        val current = state.value as? CommunityListUiState.Success ?: return
+        if (current.arriving || current.version != step.version || current.mine.itemLayout() != step.after.itemLayout()) {
+            forget(id)
+            return
+        }
         before = null
-        state.update { if (it is CommunityListUiState.Success) it.copy(mine = mine, arranged = arranged, showing = Showing.Theirs) else it }
+        state.value = current.copy(mine = step.mine, arranged = step.arranged, showing = Showing.Theirs)
+        scope.launch { tell(ListNotice.TheirsUndoDismissed(id)) }
         changed()
     }
 
     /** Undo no longer applies: the board was reopened, emptied or changed under it. */
     fun forget() {
+        val old = before
         before = null
+        asked = null
+        if (old != null) scope.launch { tell(ListNotice.TheirsUndoDismissed(old.id)) }
+    }
+
+    /** A late snackbar completion must never consume a newer action's snapshot. */
+    fun forget(id: Long) {
+        if (before?.id != id) return
+        before = null
+        scope.launch { tell(ListNotice.TheirsUndoDismissed(id)) }
     }
 
     private fun start(current: CommunityListUiState.Success, itemId: Long, toTierId: Long, toPosition: Int, replaced: Boolean) {
         val listCards = current.listCards()
-        before = current.mine to current.arranged
+        val id = nextUndoId++
         replacing()
         state.update { now ->
             if (now !is CommunityListUiState.Success) return@update now
@@ -78,9 +100,13 @@ internal class TheirsStart(
                 replaceAsk = null,
             )
         }
-        scope.launch { tell(ListNotice.StartedFromTheirs(current.theirsName, replaced = replaced)) }
+        val after = (state.value as? CommunityListUiState.Success)?.mine ?: return
+        before = UndoStart(id, current.mine, current.arranged, after, current.version)
+        scope.launch { tell(ListNotice.StartedFromTheirs(current.theirsName, replaced = replaced, undoId = id)) }
         changed()
     }
 
     private fun CommunityListUiState.Success.listCards(): Set<Long> = list.tiers.flatMap { it.items }.mapTo(mutableSetOf()) { it.id }
+
+    private data class UndoStart(val id: Long, val mine: TierList, val arranged: Boolean, val after: TierList, val version: Long)
 }

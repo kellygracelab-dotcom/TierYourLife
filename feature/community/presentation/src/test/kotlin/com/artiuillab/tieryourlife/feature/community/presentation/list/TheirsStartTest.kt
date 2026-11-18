@@ -98,6 +98,21 @@ class TheirsStartTest {
         assertFalse(after.arranged)
     }
 
+    @Test
+    fun aLaterMoveInMineInvalidatesTheEarlierStartUndoInsteadOfLosingTheNewMove() = runBlocking {
+        val viewModel = viewModel(community = TestCommunity(arrangement = listOf(0, null)))
+        viewModel.state.firstWithin { it is CommunityListUiState.Success }
+        viewModel.moveItem(itemId = 1, toTierId = 1, toPosition = 0)
+        viewModel.moveItem(itemId = 0, toTierId = 1, toPosition = 0)
+        val newer = viewModel.state.value as CommunityListUiState.Success
+
+        viewModel.theirsStart.undo()
+
+        val after = viewModel.state.value as CommunityListUiState.Success
+        assertEquals(newer.mine, after.mine)
+        assertEquals(newer.showing, after.showing)
+    }
+
     // Danylo 16.11, as on the web: one's own version is asked about first, every time.
     @Test
     fun aMoveOnTheirsOverAnArrangedMine_asksFirst_andChangesNothingYet() = runBlocking {
@@ -197,6 +212,74 @@ class TheirsStartTest {
         viewModel.moveItem(itemId = 1, toTierId = 1, toPosition = 0)
 
         assertEquals(ListNotice.StartedFromTheirs(null, replaced = false), withTimeout(5_000) { viewModel.listNotices.first() })
+    }
+
+    @Test
+    fun anExpiredUndoDoesNotEraseTheMoveAwaitingReplacement() = runBlocking {
+        val vm = viewModel(TestCommunity(arrangement = listOf(0, null)))
+        vm.state.firstWithin { it is CommunityListUiState.Success }
+        vm.moveItem(1, 1, 0)
+        val old = vm.listNotices.firstWithin { it is ListNotice.StartedFromTheirs } as ListNotice.StartedFromTheirs
+        val firstMine = (vm.state.value as CommunityListUiState.Success).mine
+        vm.show(Showing.Theirs)
+        vm.moveItem(0, 1, 0)
+
+        vm.theirsStart.forget(old.undoId)
+        assertEquals(ReplaceAsk("Olena M."), (vm.state.value as CommunityListUiState.Success).replaceAsk)
+        vm.theirsStart.replace()
+
+        val after = vm.state.value as CommunityListUiState.Success
+        assertNull(after.replaceAsk)
+        assertEquals(Showing.Mine, after.showing)
+        assertEquals(listOf(0L), after.mine.tiers.first { it.id == 1L }.items.map { it.id })
+        val next = vm.listNotices.firstWithin { it is ListNotice.StartedFromTheirs } as ListNotice.StartedFromTheirs
+        vm.theirsStart.undo(next.undoId)
+        assertEquals(firstMine, (vm.state.value as CommunityListUiState.Success).mine)
+    }
+
+    @Test
+    fun anExpiredUndoWhileReplacementIsOpenStillAllowsCancelAndAnotherMove() = runBlocking {
+        val vm = viewModel(TestCommunity(arrangement = listOf(0, null)))
+        vm.state.firstWithin { it is CommunityListUiState.Success }
+        vm.moveItem(1, 1, 0)
+        val old = vm.listNotices.firstWithin { it is ListNotice.StartedFromTheirs } as ListNotice.StartedFromTheirs
+        val firstMine = (vm.state.value as CommunityListUiState.Success).mine
+        vm.show(Showing.Theirs)
+        vm.moveItem(0, 1, 0)
+
+        vm.theirsStart.forget(old.undoId)
+        vm.theirsStart.keep()
+        val kept = vm.state.value as CommunityListUiState.Success
+        assertNull(kept.replaceAsk)
+        assertEquals(firstMine, kept.mine)
+        assertEquals(Showing.Theirs, kept.showing)
+        vm.moveItem(0, 1, 0)
+        assertEquals(ReplaceAsk("Olena M."), (vm.state.value as CommunityListUiState.Success).replaceAsk)
+        vm.theirsStart.replace()
+        assertEquals(listOf(0L), (vm.state.value as CommunityListUiState.Success).mine.tiers.first { it.id == 1L }.items.map { it.id })
+    }
+
+    @Test
+    fun anOldActionOrSnackbarCompletionCannotConsumeTheNewUndo() = runBlocking {
+        val vm = viewModel(TestCommunity(arrangement = listOf(0, null)))
+        vm.state.firstWithin { it is CommunityListUiState.Success }
+        vm.moveItem(1, 1, 0)
+        val old = vm.listNotices.firstWithin { it is ListNotice.StartedFromTheirs } as ListNotice.StartedFromTheirs
+        val firstMine = (vm.state.value as CommunityListUiState.Success).mine
+        vm.show(Showing.Theirs)
+        vm.moveItem(0, 1, 0)
+        vm.theirsStart.replace()
+        val next = vm.listNotices.firstWithin { it is ListNotice.StartedFromTheirs } as ListNotice.StartedFromTheirs
+        val newer = vm.state.value
+
+        vm.theirsStart.forget(old.undoId)
+        vm.theirsStart.undo(old.undoId)
+        assertEquals(newer, vm.state.value)
+        vm.theirsStart.undo(next.undoId)
+        assertEquals(firstMine, (vm.state.value as CommunityListUiState.Success).mine)
+        val undone = vm.state.value
+        vm.theirsStart.undo(next.undoId)
+        assertEquals(undone, vm.state.value)
     }
 
     private fun viewModel(community: CommunityRepository) = CommunityListViewModel(
