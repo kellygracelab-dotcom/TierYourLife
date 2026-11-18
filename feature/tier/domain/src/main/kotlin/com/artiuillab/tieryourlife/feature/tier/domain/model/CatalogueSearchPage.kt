@@ -10,4 +10,6 @@ data class CatalogueSearchPage(
     val busy: Boolean = false,
     /** With [busy]: when the busy catalogues may be asked again, epoch ms; null when the server did not say. */
     val retryAt: Long? = null,
+    /** What was searched instead, when the text as typed found nothing: cut short, the other keyboard layout, or spelt right. */
+    val searchedAs: String? = null,
 )

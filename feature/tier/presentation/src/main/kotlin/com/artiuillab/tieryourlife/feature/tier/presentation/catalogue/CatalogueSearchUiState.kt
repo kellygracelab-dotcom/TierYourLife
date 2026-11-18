@@ -22,6 +22,8 @@ sealed interface CatalogueSearchUiState {
         val canLoadMore: Boolean = false,
         val loadingMore: Boolean = false,
         val notice: SearchNotice? = null,
+        /** What the server searched instead of the words as typed, which found nothing. */
+        val searchedAs: String? = null,
     ) : CatalogueSearchUiState
 
     data object Error : CatalogueSearchUiState

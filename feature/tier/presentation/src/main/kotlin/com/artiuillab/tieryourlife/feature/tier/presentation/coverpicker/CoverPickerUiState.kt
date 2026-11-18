@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.coverpicker
 
 import com.artiuillab.tieryourlife.feature.tier.board.components.MOSAIC_CELLS
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListKind
 
 enum class CoverPickerTab { Cards, Search }
 
@@ -23,6 +24,8 @@ data class CoverPickerUiState(
     val saved: Boolean = false,
     /** Saved as one picture, whose part to show is chosen next. */
     val adjustNext: Boolean = false,
+    /** The board's section and topic, sent with a search for its cover. */
+    val kind: ListKind = ListKind(),
 ) {
     val coverImageUrl: String? get() = chosen.singleOrNull()
 

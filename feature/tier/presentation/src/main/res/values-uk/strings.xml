@@ -76,6 +76,8 @@
     <string name="item_search_kind_album">Альбом</string>
     <string name="item_search_kind_book">Книжка</string>
     <string name="item_search_kind_animal">Тварина</string>
+    <string name="item_search_kind_plant">Рослина</string>
+    <string name="item_search_showing_for">Показано результати для «%1$s»</string>
     <string name="item_search_selected_none">Нічого не вибрано</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d вибрано</item>

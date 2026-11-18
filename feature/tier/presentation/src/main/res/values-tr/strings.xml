@@ -70,6 +70,8 @@
     <string name="item_search_kind_album">Albüm</string>
     <string name="item_search_kind_book">Kitap</string>
     <string name="item_search_kind_animal">Hayvan</string>
+    <string name="item_search_kind_plant">Bitki</string>
+    <string name="item_search_showing_for">“%1$s” için sonuçlar gösteriliyor</string>
     <string name="item_search_selected_none">Hiçbir şey seçilmedi</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d seçildi</item>

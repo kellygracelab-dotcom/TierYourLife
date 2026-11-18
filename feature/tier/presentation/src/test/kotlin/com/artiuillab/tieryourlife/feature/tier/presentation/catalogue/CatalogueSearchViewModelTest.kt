@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListKind
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
@@ -374,6 +375,38 @@ class CatalogueSearchViewModelTest {
         assertEquals(null, busyWaitUntil(1_000 + BUSY_WAIT_MAX_MILLIS + 1, tries = 1, now = 1_000))
     }
 
+    @Test
+    fun everySearch_carriesTheListsSectionAndTopic_andAChangedScopeKeepsThem() = runBlocking {
+        val repository = FakeCatalogueSearchRepository(1 to page(ids = listOf(1), hasMore = true), 2 to page(ids = listOf(2), hasMore = false))
+        val viewModel = viewModelWith(repository)
+
+        withContext(Dispatchers.Main) {
+            viewModel.start("food", "t-dishes")
+            viewModel.search("sushi")
+        }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success }
+        withContext(Dispatchers.Main) { viewModel.loadMore() }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success && it.items.size == 2 }
+
+        assertTrue(repository.kinds.isNotEmpty())
+        assertTrue(repository.kinds.all { it == ListKind("food", "t-dishes") })
+    }
+
+    @Test
+    fun resultsFoundUnderOtherWords_sayWhich_andKeepSayingItAsMoreArrive() = runBlocking {
+        val first = page(ids = listOf(1), hasMore = true).map { it.copy(searchedAs = "Interstellar") }
+        val repository = FakeCatalogueSearchRepository(1 to first, 2 to page(ids = listOf(2), hasMore = false))
+        val viewModel = viewModelWith(repository)
+
+        withContext(Dispatchers.Main) { viewModel.search("Intersteller") }
+        val shown = viewModel.state.firstWithin { it is CatalogueSearchUiState.Success } as CatalogueSearchUiState.Success
+        assertEquals("Interstellar", shown.searchedAs)
+
+        withContext(Dispatchers.Main) { viewModel.loadMore() }
+        val more = viewModel.state.firstWithin { it is CatalogueSearchUiState.Success && it.items.size == 2 } as CatalogueSearchUiState.Success
+        assertEquals("Interstellar", more.searchedAs)
+    }
+
     private fun viewModelWith(repository: CatalogueSearchRepository, links: PictureLinks = FakePictureLinks(LinkPicture.SignInNeeded)) =
         CatalogueSearchViewModel(repository, FakeAppPreferences(), links)
 
@@ -401,6 +434,7 @@ private class FakeCatalogueSearchRepository(
     val requestedPages = mutableListOf<Int>()
     val asked = mutableListOf<Pair<PictureScope, Boolean>>()
     val quickAsked = mutableListOf<Boolean>()
+    val kinds = mutableListOf<ListKind>()
 
     @Volatile
     var holdWhole = false
@@ -412,8 +446,10 @@ private class FakeCatalogueSearchRepository(
         scope: PictureScope,
         everywhere: Boolean,
         quick: Boolean,
+        kind: ListKind,
     ): Result<CatalogueSearchPage> {
         quickAsked += quick
+        kinds += kind
         if (quick && this.quick != null) return this.quick
         while (!quick && holdWhole) delay(10)
         if (quick || this.quick == null) {
@@ -438,6 +474,7 @@ private class ScriptedSearch(answers: List<Result<CatalogueSearchPage>>) : Catal
         scope: PictureScope,
         everywhere: Boolean,
         quick: Boolean,
+        kind: ListKind,
     ): Result<CatalogueSearchPage> {
         quickAsked += quick
         return if (turns.size > 1) turns.removeFirst() else turns.first()

@@ -1,9 +1,11 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
+import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.PicturesApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PictureAttributionDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PictureHitDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PicturesDto
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListKind
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
@@ -217,6 +219,45 @@ class ServerCatalogueSearchTest {
         assertEquals("ja", searchLanguage("ja", Locale.US))
     }
 
+    // Stage 1 of the picture search: the list's section always, whatever the scope, and its topic when it has one.
+    @Test
+    fun theListsSectionAndTopic_goWithTheSearch_whateverTheScope() = runBlocking {
+        val api = FakePicturesApi(PicturesDto())
+        val search = search(api)
+
+        search.search("sushi", "en", 1, PictureScope.All, kind = ListKind(section = "food", topic = "t-dishes"))
+        search.search("dune", "en", 1, PictureScope.Books, everywhere = true, kind = ListKind(section = "books"))
+        search.search("arsenal", "en", 1, PictureScope.All, kind = ListKind(section = " ", topic = ""))
+        search.search("matrix", "en", 1)
+
+        assertEquals(listOf("food" to "t-dishes", "books" to null, null to null, null to null), api.kinds)
+    }
+
+    @Test
+    fun anAnswerFoundUnderOtherWords_saysWhich_andAPlantIsReadAsAnyKind() = runBlocking {
+        val plant = PictureHitDto(id = "inat:1", title = "Rose", imageUrl = "https://i/1.jpg", source = "inaturalist", kind = "plant")
+        val api = FakePicturesApi(
+            networkJson.decodeFromString<PicturesDto>(
+                """{"items":[],"hasMore":false,"searchedAs":{"text":"Interstellar","how":"spelling"}}""",
+            ).copy(items = listOf(plant)),
+        )
+
+        val page = search(api).search("Intersteller", "en", 1).getOrThrow()
+
+        assertEquals("Interstellar", page.searchedAs)
+        assertEquals("plant", page.items.single().kind)
+        assertNull(search(FakePicturesApi(PicturesDto(items = listOf(plant)))).search("rose", "en", 1).getOrThrow().searchedAs)
+    }
+
+    @Test
+    fun theNewFieldsOfAHit_doNotStopTheAnswerBeingRead() = runBlocking {
+        val body = """{"items":[{"id":"w:1","title":"Kyiv","imageUrl":"https://w/1.jpg","source":"wikidata","kind":"thing",""" +
+            """"matchedName":"Киев","confidence":"medium","doubts":["otherName","whatever"]}],"hasMore":false}"""
+        val page = search(FakePicturesApi(networkJson.decodeFromString<PicturesDto>(body))).search("Киев", "en", 1).getOrThrow()
+
+        assertEquals("Kyiv", page.items.single().title)
+    }
+
     private fun search(api: PicturesApi, now: () -> Long = { 0L }) = ServerCatalogueSearch(api, now) { Locale.US }
 }
 
@@ -238,9 +279,21 @@ private class FakePicturesApi(private val answer: PicturesDto = PicturesDto(), p
     val parts = mutableListOf<String?>()
     var refuse: (() -> Exception)? = null
 
-    override suspend fun search(query: String, scope: String, language: String, page: Int, web: String?, part: String?): PicturesDto {
+    val kinds = mutableListOf<Pair<String?, String?>>()
+
+    override suspend fun search(
+        query: String,
+        scope: String,
+        language: String,
+        page: Int,
+        web: String?,
+        part: String?,
+        section: String?,
+        topic: String?,
+    ): PicturesDto {
         asked += Asked(query, scope, language, page, web)
         parts += part
+        kinds += section to topic
         failure?.let { throw it }
         refuse?.let { throw it() }
         return answer

@@ -105,6 +105,8 @@ fun CoverPickerScreen(
         if (uri != null) viewModel.pickFromGallery(uri.toString())
     }
 
+    LaunchedEffect(state.kind) { searchViewModel.forList(state.kind.section, state.kind.topic) }
+
     LaunchedEffect(state.saved) {
         if (state.saved) if (state.adjustNext) onAdjust() else onSaved()
     }

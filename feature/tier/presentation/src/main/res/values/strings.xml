@@ -70,6 +70,8 @@
     <string name="item_search_kind_album">Album</string>
     <string name="item_search_kind_book">Book</string>
     <string name="item_search_kind_animal">Animal</string>
+    <string name="item_search_kind_plant">Plant</string>
+    <string name="item_search_showing_for">Showing results for %1$s</string>
     <string name="item_search_selected_none">Nothing selected</string>
     <plurals name="item_search_selected_count">
         <item quantity="one">%1$d selected</item>

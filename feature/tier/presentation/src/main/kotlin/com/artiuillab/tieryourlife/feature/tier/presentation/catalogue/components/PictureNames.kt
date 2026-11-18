@@ -34,6 +34,7 @@ internal fun kindName(kind: String?): String? = when (kind) {
     "album" -> stringResource(R.string.item_search_kind_album)
     "book" -> stringResource(R.string.item_search_kind_book)
     "animal" -> stringResource(R.string.item_search_kind_animal)
+    "plant" -> stringResource(R.string.item_search_kind_plant)
     else -> null
 }
 
@@ -63,6 +64,22 @@ internal fun SourcesLine(items: List<CatalogueItem>) {
             .padding(horizontal = 16.dp)
             .padding(top = 4.dp)
             .testTag(CatalogueSearchTestTags.ITEM_SEARCH_SOURCES),
+    )
+}
+
+/** "Showing results for Interstellar": the words as typed found nothing, these are for the ones searched instead. */
+@Composable
+internal fun SearchedAsLine(searchedAs: String?) {
+    if (searchedAs == null) return
+    Text(
+        text = stringResource(R.string.item_search_showing_for, searchedAs),
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(top = 4.dp)
+            .testTag(CatalogueSearchTestTags.ITEM_SEARCH_SEARCHED_AS),
     )
 }
 

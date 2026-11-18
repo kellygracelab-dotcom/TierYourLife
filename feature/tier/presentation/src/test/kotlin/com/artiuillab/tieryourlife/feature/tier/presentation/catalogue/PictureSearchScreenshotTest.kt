@@ -179,6 +179,25 @@ class PictureSearchScreenshotTest {
         )
     }
 
+    // Stage 1: the words as typed found nothing, so the server searched the right spelling; a rose is a plant.
+    @Test
+    fun resultsFoundUnderOtherWords_sayWhich() = capture("picture_search_searched_as") {
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Success(
+                items = listOf(
+                    CatalogueItem("tmdb:157336", "Interstellar", "2014", "https://t/1.jpg", kind = "movie", source = "tmdb"),
+                    CatalogueItem("inaturalist:47851", "Rose", "Rosa", "https://i/1.jpg", kind = "plant", source = "inaturalist"),
+                ),
+                searchedAs = "Interstellar",
+            ),
+            query = "Intersteller",
+            onQueryChange = {},
+            onSearchClick = {},
+            listTitle = "Films",
+            scopes = ScopeChoice(first = PictureScope.All, selected = PictureScope.All, onSelect = {}),
+        )
+    }
+
     @Test
     fun aBusyCatalogue_isWaitedFor_andSaysUntilWhen() = capture("picture_search_waiting") {
         CatalogueSearchScreenContent(
