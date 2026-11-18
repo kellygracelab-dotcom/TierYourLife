@@ -53,4 +53,6 @@
     <string name="publication_preview_independent">別の公開リストとして公開されます。非公開のコピーは引き続き編集できます。</string>
     <string name="source_changed_recheck">現在の元リストと照合</string>
     <string name="publication_limit_until">新しいリストは%1$s以降に公開できます。非公開リストの保存とランキングの公開は引き続き利用できます。</string>
+    <string name="tip_got_it">OK</string>
+    <string name="tip_no_more">ヒントを表示しない</string>
 </resources>

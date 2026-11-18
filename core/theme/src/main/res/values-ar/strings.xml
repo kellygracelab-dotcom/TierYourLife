@@ -83,4 +83,6 @@
     <string name="publication_preview_independent">ستُنشر كقائمة عامة مستقلة. ستبقى نسختك الخاصة قابلة للتعديل.</string>
     <string name="source_changed_recheck">المقارنة مع الأصل الحالي</string>
     <string name="publication_limit_until">يمكنك نشر قائمة جديدة بعد %1$s. يمكنك الاستمرار في حفظ القوائم الخاصة ونشر الترتيبات.</string>
+    <string name="tip_got_it">فهمت</string>
+    <string name="tip_no_more">لا مزيد من التلميحات</string>
 </resources>

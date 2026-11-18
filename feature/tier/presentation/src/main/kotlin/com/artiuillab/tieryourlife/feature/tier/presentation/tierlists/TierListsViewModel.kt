@@ -9,6 +9,8 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.SearchWords
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
@@ -212,6 +214,7 @@ class TierListsViewModel @Inject constructor(
             started = startedLists()
             loaded = true
             emitSuccess().join()
+            if (lastLoadedLists.isEmpty() && started.isEmpty()) findReadyList()
             keepBoards()
             startedSync.request()
         } catch (e: CancellationException) {
@@ -221,6 +224,25 @@ class TierListsViewModel @Inject constructor(
             if (!hasVisibleList) {
                 _state.value = TierListsUiState.Error
             }
+        }
+    }
+
+    private var readyList: PublishedListSummary? = null
+    private var readyListFound = false
+
+    /**
+     * The first list on the first page of the popular feed with at least eight cards, so the
+     * Play tip has something to say there too. Asked for once found; a failure leaves no card
+     * and is asked again on the next arrival.
+     */
+    private fun findReadyList() {
+        if (readyListFound) return
+        viewModelScope.launch {
+            community.feed(sort = FeedSort.Popular).onSuccess { page ->
+                readyListFound = true
+                readyList = page.lists.firstOrNull { it.itemCount >= READY_LIST_FROM }
+                emitSuccess()
+            }.onFailure { Timber.i(it, "No ready list to offer") }
         }
     }
 
@@ -250,10 +272,17 @@ class TierListsViewModel @Inject constructor(
         val restoring = restoringPictures
         val seen = conflictsSeen
         val begun = started
+        val ready = readyList.takeIf { lists.isEmpty() && begun.isEmpty() }
         arranging?.cancel()
         return viewModelScope.launch {
             val shown = withContext(Dispatchers.Default) { arrange(lists, mode, sort, filters, seen) }
-            _state.value = shown.copy(asPictures = asPictures, localOnly = localOnly, restoringPictures = restoring, started = begun)
+            _state.value = shown.copy(
+                asPictures = asPictures,
+                localOnly = localOnly,
+                restoringPictures = restoring,
+                started = begun,
+                readyList = ready,
+            )
         }.also { arranging = it }
     }
 
@@ -485,6 +514,9 @@ class TierListsViewModel @Inject constructor(
 
 /** At most this many begun lists stand above one's own: the block is a way back, not a second library. */
 private const val MAX_STARTED = 3
+
+/** Enough cards that the Play tip has something to say on the ready list too (PARITY 4.9). */
+private const val READY_LIST_FROM = 8
 
 /** For tests that leave games out: none is ever put down. */
 private object NoSavedGames : SavedGames {

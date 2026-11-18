@@ -43,6 +43,8 @@ sealed interface CommunityRoute {
         val fromBoard: Boolean = false,
         /** From Continue in one's lists: the game put down on this list comes up as the page opens. */
         val resumeGame: Boolean = false,
+        /** "Try a ready list": the page opens on Mine, to be ranked, as the site's does (PARITY 4.9). */
+        val rankFirst: Boolean = false,
     ) : CommunityRoute {
 
         fun preview(): ListPreview? = title?.let { known ->
@@ -178,6 +180,7 @@ internal fun SavedStateHandle.communityListRoute() = CommunityRoute.CommunityLis
     basedOnAuthor = get<String>(CommunityRoute.CommunityList::basedOnAuthor.name),
     fromBoard = get<Boolean>(CommunityRoute.CommunityList::fromBoard.name) ?: false,
     resumeGame = get<Boolean>(CommunityRoute.CommunityList::resumeGame.name) ?: false,
+    rankFirst = get<Boolean>(CommunityRoute.CommunityList::rankFirst.name) ?: false,
 )
 
 internal fun SavedStateHandle.authorRoute() = CommunityRoute.Author(

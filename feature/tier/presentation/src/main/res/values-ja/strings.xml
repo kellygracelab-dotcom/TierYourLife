@@ -305,4 +305,9 @@
     <string name="started_discard_arrangement">自分の並びを破棄</string>
     <string name="started_discarded">並びを破棄しました</string>
     <string name="started_updated_elsewhere">別の端末で更新されました</string>
+    <string name="ready_list_label">はじめての方へ</string>
+    <string name="ready_list_try">試してみる</string>
+    <plurals name="ready_list_cards">
+        <item quantity="other">できあがったリスト · %1$d枚</item>
+    </plurals>
 </resources>

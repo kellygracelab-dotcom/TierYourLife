@@ -339,4 +339,11 @@
     <string name="started_discard_arrangement">Descartar mi orden</string>
     <string name="started_discarded">Orden descartado</string>
     <string name="started_updated_elsewhere">Actualizado desde otro dispositivo</string>
+    <string name="ready_list_label">¿ERES NUEVO?</string>
+    <string name="ready_list_try">Probar</string>
+    <plurals name="ready_list_cards">
+        <item quantity="one">Una lista lista · %1$d carta</item>
+        <item quantity="many">Una lista lista · %1$d cartas</item>
+        <item quantity="other">Una lista lista · %1$d cartas</item>
+    </plurals>
 </resources>

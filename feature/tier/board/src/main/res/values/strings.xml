@@ -210,4 +210,10 @@
     <string name="tier_editor_move_up">Move up</string>
     <string name="tier_editor_move_down">Move down</string>
     <string name="tier_editor_remove">Remove tier</string>
+    <string name="tip_place">&lt;b&gt;Start here:&lt;/b&gt; tap a card, then the tier it belongs in. Or drag it there.</string>
+    <plurals name="tip_play">
+        <item quantity="one">Rather not place %1$d by hand? &lt;b&gt;Play&lt;/b&gt;: pick the better of two and the tiers fill in.</item>
+        <item quantity="other">Rather not place %1$d by hand? &lt;b&gt;Play&lt;/b&gt;: pick the better of two and the tiers fill in.</item>
+    </plurals>
+    <string name="tip_add">Type a name — the picture comes with it.</string>
 </resources>

@@ -61,6 +61,8 @@ class RouteFromHandleTest {
             basedOnTitle = "Every A24 film",
             basedOnAuthor = "kenji",
             fromBoard = true,
+            resumeGame = true,
+            rankFirst = true,
         )
         val entry = entryFor(route)
 

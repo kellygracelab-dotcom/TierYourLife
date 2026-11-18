@@ -322,4 +322,10 @@
     <string name="started_discard_arrangement">Meine Anordnung verwerfen</string>
     <string name="started_discarded">Anordnung verworfen</string>
     <string name="started_updated_elsewhere">Auf einem anderen Gerät aktualisiert</string>
+    <string name="ready_list_label">NEU HIER?</string>
+    <string name="ready_list_try">Ausprobieren</string>
+    <plurals name="ready_list_cards">
+        <item quantity="one">Eine fertige Liste · %1$d Karte</item>
+        <item quantity="other">Eine fertige Liste · %1$d Karten</item>
+    </plurals>
 </resources>

@@ -23,6 +23,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.LocalShortWindow
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.DISCARD_TAG
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreenContent
@@ -66,6 +67,34 @@ class TierListsScreenshotTest {
     }
 
     private val boards = TierListsUiState.Success(previewTierLists, previewTierLists.size, 24)
+
+    // Artboard 50: no lists yet, and a popular one to try.
+    private val readyList = PublishedListSummary(
+        id = "ready",
+        title = "Eurovision winners since 2000",
+        authorUid = "uid",
+        authorName = "Ann",
+        category = "music",
+        itemCount = 25,
+        updatedAtMillis = 0L,
+        tierColors = listOf("#B03A32", "#C06A25", "#A98B1F", "#4E8A3E", "#3A6EA5"),
+    )
+
+    @Test
+    fun noListsYet_withAReadyList() {
+        var tried: String? = null
+        capture("lists_empty_ready_list") {
+            TierListsScreenContent(TierListsUiState.Success(emptyList(), 0, 0, readyList = readyList), onTierListClick = {}, onTryReadyList = { tried = it })
+        }
+        composeRule.onNodeWithTag(TierListsTestTags.READY_LIST_TRY).performClick()
+        assertEquals("ready", tried)
+    }
+
+    @Test
+    @Config(qualifiers = "w320dp-h640dp-mdpi")
+    fun noListsYet_withAReadyList_onTheSmallestPhone() = capture("lists_empty_ready_list_320x640", dark = true) {
+        TierListsScreenContent(TierListsUiState.Success(emptyList(), 0, 0, readyList = readyList), onTierListClick = {})
+    }
 
     @Test
     fun lists_phonePortrait() = capture("lists_phone_portrait") { TierListsScreenContent(boards, onTierListClick = {}) }

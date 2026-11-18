@@ -55,10 +55,12 @@ class MainActivity : AppCompatActivity() {
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             val boardLayoutMemory = remember { PreferencesBoardLayoutMemory(appPreferences) }
+            val tipMemory = remember { PreferencesTipMemory(appPreferences) }
 
             AppRoot(
                 state = state,
                 boardLayoutMemory = boardLayoutMemory,
+                tipMemory = tipMemory,
                 onThemeChoiceChange = viewModel::setThemeChoice,
                 onLanguageTagChange = { tag ->
                     viewModel.setLanguageTag(tag)

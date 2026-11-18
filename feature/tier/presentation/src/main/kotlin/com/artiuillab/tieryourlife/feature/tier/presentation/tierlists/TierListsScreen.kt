@@ -115,6 +115,8 @@ fun TierListsScreen(
     tabs: @Composable () -> Unit = {},
     /** Someone else's list begun here, opened where it was left, with its game when [resumeGame]. */
     onContinueStarted: (listId: String, resumeGame: Boolean) -> Unit = { _, _ -> },
+    /** "Try it" on the ready list a newcomer is offered: opened to be ranked. */
+    onTryReadyList: (listId: String) -> Unit = {},
     /** From the home screen, which outlives a tab switch; null when this screen stands alone. */
     arrival: Any? = null,
     viewModel: TierListsViewModel = hiltViewModel(),
@@ -163,6 +165,7 @@ fun TierListsScreen(
         tabs = tabs,
         picturesOnWifiOnly = viewModel::picturesOnWifiOnly,
         onContinueStarted = onContinueStarted,
+        onTryReadyList = onTryReadyList,
         onDiscardStarted = viewModel::discardStarted,
         onUndoDiscardStarted = viewModel::undoDiscardStarted,
         updatedElsewhere = viewModel.updatedElsewhere,
@@ -198,6 +201,7 @@ fun TierListsScreenContent(
     /** Null draws without fetching any pictures ahead, as a test or a preview should. */
     picturesOnWifiOnly: (() -> Boolean)? = null,
     onContinueStarted: (listId: String, resumeGame: Boolean) -> Unit = { _, _ -> },
+    onTryReadyList: (listId: String) -> Unit = {},
     onDiscardStarted: (listId: String) -> Unit = {},
     onUndoDiscardStarted: () -> Unit = {},
     updatedElsewhere: Flow<Unit> = emptyFlow(),
@@ -402,7 +406,11 @@ fun TierListsScreenContent(
                             HomeEmptyState(onCreateNamedList = onCreateNamedList, modifier = Modifier.weight(1f))
                         }
 
-                        totalListCount == 0 -> HomeEmptyState(onCreateNamedList = onCreateNamedList)
+                        totalListCount == 0 -> HomeEmptyState(
+                            onCreateNamedList = onCreateNamedList,
+                            readyList = success?.readyList,
+                            onTryReadyList = onTryReadyList,
+                        )
 
                         else -> HomeContent(
                             top = top,

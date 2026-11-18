@@ -339,4 +339,11 @@
     <string name="started_discard_arrangement">Abandonner mon classement</string>
     <string name="started_discarded">Classement abandonné</string>
     <string name="started_updated_elsewhere">Mis à jour depuis un autre appareil</string>
+    <string name="ready_list_label">NOUVEAU ICI ?</string>
+    <string name="ready_list_try">Essayer</string>
+    <plurals name="ready_list_cards">
+        <item quantity="one">Une liste prête · %1$d carte</item>
+        <item quantity="many">Une liste prête · %1$d cartes</item>
+        <item quantity="other">Une liste prête · %1$d cartes</item>
+    </plurals>
 </resources>

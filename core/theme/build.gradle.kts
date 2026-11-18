@@ -11,4 +11,6 @@ dependencies {
     implementation(projects.core.logging)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    // Back closes a tip (TipHost).
+    implementation(libs.androidx.activity.compose)
 }

@@ -323,4 +323,10 @@
     <string name="started_discard_arrangement">Discard my arrangement</string>
     <string name="started_discarded">Arrangement discarded</string>
     <string name="started_updated_elsewhere">Updated from another device</string>
+    <string name="ready_list_label">NEW HERE?</string>
+    <string name="ready_list_try">Try it</string>
+    <plurals name="ready_list_cards">
+        <item quantity="one">A ready list · %1$d card</item>
+        <item quantity="other">A ready list · %1$d cards</item>
+    </plurals>
 </resources>

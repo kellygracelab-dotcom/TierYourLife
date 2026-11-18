@@ -223,4 +223,11 @@
     <string name="tier_editor_move_up">Mover para cima</string>
     <string name="tier_editor_move_down">Mover para baixo</string>
     <string name="tier_editor_remove">Remover nível</string>
+    <string name="tip_place">&lt;b&gt;Comece aqui:&lt;/b&gt; toque em um card e depois no nível dele. Ou arraste-o até lá.</string>
+    <plurals name="tip_play">
+        <item quantity="one">Prefere não posicionar %1$d card à mão? &lt;b&gt;Jogar&lt;/b&gt;: escolha o melhor de dois e os níveis se preenchem.</item>
+        <item quantity="many">Prefere não posicionar %1$d cards à mão? &lt;b&gt;Jogar&lt;/b&gt;: escolha o melhor de dois e os níveis se preenchem.</item>
+        <item quantity="other">Prefere não posicionar %1$d cards à mão? &lt;b&gt;Jogar&lt;/b&gt;: escolha o melhor de dois e os níveis se preenchem.</item>
+    </plurals>
+    <string name="tip_add">Digite um nome e a imagem vem junto.</string>
 </resources>

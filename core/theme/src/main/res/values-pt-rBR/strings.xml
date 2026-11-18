@@ -65,4 +65,6 @@
     <string name="publication_preview_independent">Será uma lista pública independente. Sua cópia particular continuará editável.</string>
     <string name="source_changed_recheck">Conferir com o original atual</string>
     <string name="publication_limit_until">Você poderá publicar outra lista nova após %1$s. Ainda pode salvar listas particulares e publicar rankings.</string>
+    <string name="tip_got_it">Entendi</string>
+    <string name="tip_no_more">Sem mais dicas</string>
 </resources>

@@ -322,4 +322,10 @@
     <string name="started_discard_arrangement">Düzenlememi at</string>
     <string name="started_discarded">Düzenleme atıldı</string>
     <string name="started_updated_elsewhere">Başka bir cihazdan güncellendi</string>
+    <string name="ready_list_label">YENİ MİSİN?</string>
+    <string name="ready_list_try">Dene</string>
+    <plurals name="ready_list_cards">
+        <item quantity="one">Hazır bir liste · %1$d kart</item>
+        <item quantity="other">Hazır bir liste · %1$d kart</item>
+    </plurals>
 </resources>

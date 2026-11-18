@@ -390,4 +390,14 @@
     <string name="started_discard_arrangement">تجاهل ترتيبي</string>
     <string name="started_discarded">تم تجاهل الترتيب</string>
     <string name="started_updated_elsewhere">تم التحديث من جهاز آخر</string>
+    <string name="ready_list_label">جديد هنا؟</string>
+    <string name="ready_list_try">جرّبها</string>
+    <plurals name="ready_list_cards">
+        <item quantity="zero">قائمة جاهزة · %1$d بطاقة</item>
+        <item quantity="one">قائمة جاهزة · بطاقة واحدة</item>
+        <item quantity="two">قائمة جاهزة · بطاقتان</item>
+        <item quantity="few">قائمة جاهزة · %1$d بطاقات</item>
+        <item quantity="many">قائمة جاهزة · %1$d بطاقة</item>
+        <item quantity="other">قائمة جاهزة · %1$d بطاقة</item>
+    </plurals>
 </resources>

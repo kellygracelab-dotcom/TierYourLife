@@ -194,6 +194,7 @@ private fun NavGraphBuilder.homeScreen(navController: NavHostController, openLis
                     onNewListCreated = { id -> navController.navigateToTierDetail(id, fresh = true) },
                     tabs = tabs,
                     onContinueStarted = { id, resume -> openList(CommunityRoute.CommunityList(publishedId = id, resumeGame = resume)) },
+                    onTryReadyList = { id -> openList(CommunityRoute.CommunityList(publishedId = id, rankFirst = true)) },
                     arrival = arrival,
                 )
             },
