@@ -67,6 +67,8 @@
     <string name="item_search_kind_album">アルバム</string>
     <string name="item_search_kind_book">本</string>
     <string name="item_search_kind_animal">動物</string>
+    <string name="item_search_kind_plant">植物</string>
+    <string name="item_search_showing_for">「%1$s」の検索結果を表示しています</string>
     <string name="item_search_selected_none">何も選択されていません</string>
     <plurals name="item_search_selected_count">
         <item quantity="other">%1$d件選択</item>

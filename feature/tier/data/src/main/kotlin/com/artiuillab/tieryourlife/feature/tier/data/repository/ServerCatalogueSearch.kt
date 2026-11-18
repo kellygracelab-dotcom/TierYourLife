@@ -5,6 +5,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.api.PicturesApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.SearchRefusalDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.toDomain
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListKind
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
@@ -39,6 +40,7 @@ class ServerCatalogueSearch internal constructor(
         scope: PictureScope,
         everywhere: Boolean,
         quick: Boolean,
+        kind: ListKind,
     ): Result<CatalogueSearchPage> {
         val typed = query.trim()
         if (typed.length < MIN_QUERY) return Result.success(CatalogueSearchPage(items = emptyList(), hasMore = false))
@@ -52,6 +54,8 @@ class ServerCatalogueSearch internal constructor(
                     page = page,
                     web = if (everywhere) "1" else null,
                     part = if (quick) "quick" else null,
+                    section = kind.section?.takeIf { it.isNotBlank() },
+                    topic = kind.topic?.takeIf { it.isNotBlank() },
                 ).toDomain(),
             )
         } catch (exception: IOException) {

@@ -15,6 +15,15 @@ data class PicturesDto(
     val busy: List<String> = emptyList(),
     /** With [busy]: when they may be asked again, epoch ms. */
     val retryAt: Long? = null,
+    /** What was searched instead of the text as typed, which found nothing. */
+    val searchedAs: SearchedAsDto? = null,
+)
+
+/** [how] is `trimmed`, `layout` or `spelling`; the line says the same whichever it was. */
+@Serializable
+data class SearchedAsDto(
+    val text: String = "",
+    val how: String? = null,
 )
 
 @Serializable
@@ -59,6 +68,7 @@ fun PicturesDto.toDomain(): CatalogueSearchPage = CatalogueSearchPage(
     rest = rest,
     busy = busy.isNotEmpty(),
     retryAt = retryAt?.takeIf { busy.isNotEmpty() && it > 0 },
+    searchedAs = searchedAs?.text?.trim()?.takeIf { it.isNotEmpty() },
     // Codes this build does not know are for a newer one.
     notice = notices.firstNotNullOfOrNull { code ->
         when (code) {

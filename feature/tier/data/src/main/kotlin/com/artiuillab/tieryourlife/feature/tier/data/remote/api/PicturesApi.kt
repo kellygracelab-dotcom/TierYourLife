@@ -15,5 +15,8 @@ interface PicturesApi {
         @Query("page") page: Int,
         @Query("web") web: String? = null,
         @Query("part") part: String? = null,
+        /** The list's section, whatever the scope: its kind of picture comes first. */
+        @Query("section") section: String? = null,
+        @Query("topic") topic: String? = null,
     ): PicturesDto
 }

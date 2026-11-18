@@ -32,6 +32,8 @@ internal fun AddItemsSheet(
     /** The board's section: its own catalogues are searched first. */
     category: String?,
     onDismiss: () -> Unit,
+    /** The list's topic, when it has one: its names tell the server more than the section does. */
+    topic: String? = null,
     onItemsConfirmed: (List<PoolItemDraft>) -> Unit,
     /** From the end edge, the board left in view: for a board laid out in columns. */
     side: Boolean = false,
@@ -42,7 +44,7 @@ internal fun AddItemsSheet(
 ) {
     val searchState by searchViewModel.state.collectAsStateWithLifecycle()
     val scope by searchViewModel.scope.collectAsStateWithLifecycle()
-    LaunchedEffect(category) { searchViewModel.start(category) }
+    LaunchedEffect(category, topic) { searchViewModel.start(category, topic) }
     var query by rememberSaveable { mutableStateOf("") }
     val link by searchViewModel.link.collectAsStateWithLifecycle()
     val clipboard = rememberClipboardLinks()

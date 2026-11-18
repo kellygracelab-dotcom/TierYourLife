@@ -35,6 +35,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ResultsGrid
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ScopeChips
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SearchField
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SearchedAsLine
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SelectionBar
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SourcesLine
 
@@ -137,6 +138,7 @@ fun CatalogueSearchScreenContent(
 
                 is CatalogueSearchUiState.Success -> Column {
                     NoticeLine(state.notice)
+                    SearchedAsLine(state.searchedAs)
                     SourcesLine(state.items)
                     ResultsGrid(
                         items = state.items,

@@ -178,6 +178,7 @@ fun TierDetailScreen(
             side = columnLayout,
             listTitle = (state as? TierDetailUiState.Success)?.list?.title.orEmpty(),
             category = (state as? TierDetailUiState.Success)?.list?.category,
+            topic = (state as? TierDetailUiState.Success)?.list?.topicId,
             onDismiss = { addSheetVisible = false },
             onItemsConfirmed = { items ->
                 viewModel.addItemsToPool(items)

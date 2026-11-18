@@ -17,6 +17,7 @@ internal object CatalogueSearchTestTags {
     const val ITEM_SEARCH_EVERYWHERE = "tier_detail_item_search_everywhere"
     const val ITEM_SEARCH_NOTICE = "tier_detail_item_search_notice"
     const val ITEM_SEARCH_SOURCES = "tier_detail_item_search_sources"
+    const val ITEM_SEARCH_SEARCHED_AS = "tier_detail_item_search_searched_as"
     const val ITEM_SEARCH_CREDIT = "tier_detail_item_search_credit"
     const val ITEM_SEARCH_PASTE_LINK = "tier_detail_item_search_paste_link"
     const val ITEM_SEARCH_LINK = "tier_detail_item_search_link"

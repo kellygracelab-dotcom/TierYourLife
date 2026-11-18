@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListKind
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
@@ -73,12 +74,19 @@ class CatalogueSearchViewModel @Inject constructor(
     private var everywhere = false
     private var loadedPage = FIRST_PAGE
     private var started = false
+    private var kind = ListKind()
 
     /** Once per sheet: a rotation keeps whatever scope the person chose since. */
-    fun start(category: String?) {
+    fun start(category: String?, topic: String? = null) {
         if (started) return
         started = true
         _scope.value = PictureScope.forCategory(category)
+        forList(category, topic)
+    }
+
+    /** What the list holds, sent with every search so its kind of picture comes first, whatever the scope. */
+    fun forList(section: String?, topic: String?) {
+        kind = ListKind(section, topic)
     }
 
     fun setScope(scope: PictureScope) {
@@ -164,7 +172,7 @@ class CatalogueSearchViewModel @Inject constructor(
         val nextPage = loadedPage + 1
         _state.value = shown.copy(loadingMore = true)
         moreJob = viewModelScope.launch {
-            repository.search(searchedQuery, appPreferences.languageTag(), nextPage, _scope.value, everywhere)
+            repository.search(searchedQuery, appPreferences.languageTag(), nextPage, _scope.value, everywhere, kind = kind)
                 .fold(
                     onSuccess = { page -> append(nextPage, page) },
                     // A page that never arrived is no reason to take away the
@@ -204,7 +212,7 @@ class CatalogueSearchViewModel @Inject constructor(
      */
     private suspend fun searchOnce(query: String, tries: Int): SearchRefusal.Busy? {
         val language = appPreferences.languageTag()
-        val quick = repository.search(query, language, FIRST_PAGE, _scope.value, everywhere, quick = true)
+        val quick = repository.search(query, language, FIRST_PAGE, _scope.value, everywhere, quick = true, kind = kind)
         val first = quick.getOrElse { failure ->
             if (failure is SearchRefusal) return held(failure)
             // A quick answer that would not come: the whole search, as before it was split.
@@ -221,7 +229,7 @@ class CatalogueSearchViewModel @Inject constructor(
 
     /** The whole search, below what the quick one showed; [quick]'s answer stands when it fails with nothing shown. */
     private suspend fun whole(query: String, language: String?, tries: Int, quick: Result<CatalogueSearchPage>): SearchRefusal.Busy? {
-        val whole = repository.search(query, language, FIRST_PAGE, _scope.value, everywhere)
+        val whole = repository.search(query, language, FIRST_PAGE, _scope.value, everywhere, kind = kind)
         val page = whole.getOrElse { failure ->
             when {
                 _state.value is CatalogueSearchUiState.Success -> stopWaiting()
@@ -252,7 +260,7 @@ class CatalogueSearchViewModel @Inject constructor(
         if (!page.busy) return
         val until = busyWaitUntil(page.retryAt, tries, System.currentTimeMillis()) ?: return
         delay((until - System.currentTimeMillis()).coerceAtLeast(0))
-        val again = repository.search(query, language, FIRST_PAGE, _scope.value, everywhere).getOrNull() ?: return
+        val again = repository.search(query, language, FIRST_PAGE, _scope.value, everywhere, kind = kind).getOrNull() ?: return
         when {
             _state.value is CatalogueSearchUiState.Success -> append(FIRST_PAGE, again)
             again.items.isNotEmpty() -> show(query, Result.success(again))
@@ -270,6 +278,7 @@ class CatalogueSearchViewModel @Inject constructor(
                         canLoadMore = page.hasMore,
                         loadingMore = restComing,
                         notice = page.notice,
+                        searchedAs = page.searchedAs,
                     )
                 }
             },
@@ -287,6 +296,7 @@ class CatalogueSearchViewModel @Inject constructor(
             canLoadMore = loaded.hasMore,
             loadingMore = false,
             notice = loaded.notice ?: shown.notice,
+            searchedAs = shown.searchedAs ?: loaded.searchedAs,
         )
     }
 

@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
 import com.artiuillab.tieryourlife.feature.tier.board.components.MOSAIC_CELLS
+import com.artiuillab.tieryourlife.feature.tier.domain.model.ListKind
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.coverPickerRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,6 +48,7 @@ class CoverPickerViewModel @Inject constructor(
                     automatic = pictures.distinct().take(MOSAIC_CELLS),
                     tierColors = list.tiers.filterNot { tier -> tier.isPool }.map { tier -> tier.colorLight },
                     chosen = list.coverImageUrl?.let(::listOf) ?: list.coverImageUrls,
+                    kind = ListKind(list.category, list.topicId),
                 )
             }
         }

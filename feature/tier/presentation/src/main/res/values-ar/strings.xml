@@ -82,6 +82,8 @@
     <string name="item_search_kind_album">ألبوم</string>
     <string name="item_search_kind_book">كتاب</string>
     <string name="item_search_kind_animal">حيوان</string>
+    <string name="item_search_kind_plant">نبات</string>
+    <string name="item_search_showing_for">عرض نتائج «%1$s»</string>
     <string name="item_search_selected_none">لم يتم تحديد شيء</string>
     <plurals name="item_search_selected_count">
         <item quantity="zero">لم يتم تحديد شيء</item>
