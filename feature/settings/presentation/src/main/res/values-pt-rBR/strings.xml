@@ -89,4 +89,15 @@
         <item quantity="many">%1$d cartões restantes</item>
         <item quantity="other">%1$d cartões restantes</item>
     </plurals>
+    <string name="settings_group_about">Sobre</string>
+    <string name="settings_rate">Avaliar o TierYourLife</string>
+    <string name="settings_rate_sub">Diga o que acha no Google Play</string>
+    <string name="settings_share">Compartilhar o TierYourLife</string>
+    <string name="settings_share_sub">Envie o app para um amigo</string>
+    <string name="settings_feedback">Enviar feedback</string>
+    <string name="settings_feedback_sub">Ideias, problemas, qualquer coisa: escreva pra gente</string>
+    <string name="settings_feedback_no_mail">Nenhum app de e-mail aqui. Escreva para %1$s</string>
+    <string name="share_app_chooser">Compartilhar o TierYourLife</string>
+    <string name="share_app_text">TierYourLife: classifique o que quiser em níveis e compartilhe suas listas.\nWeb: %1$s</string>
+    <string name="feedback_subject">Feedback do TierYourLife: app %1$s, Android %2$s</string>
 </resources>

@@ -14,4 +14,10 @@ object Features {
      * offered something that would fail.
      */
     const val GENERATION_OFFERED = false
+
+    /**
+     * Google's own review card after the first finished list (ReviewMoments). Off until the app
+     * is in production: in the closed test the testers' reviews go privately anyway.
+     */
+    const val REVIEW_CARD_OFFERED = false
 }

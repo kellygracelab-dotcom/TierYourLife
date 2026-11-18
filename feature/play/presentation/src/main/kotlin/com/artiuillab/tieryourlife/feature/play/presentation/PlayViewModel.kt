@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.play.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
+import com.artiuillab.tieryourlife.core.settings.ReviewMoments
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.domain.GameSpec
 import com.artiuillab.tieryourlife.feature.play.domain.MIN_PLAY_CARDS
@@ -14,6 +15,8 @@ import com.artiuillab.tieryourlife.feature.play.domain.nextPair
 import com.artiuillab.tieryourlife.feature.play.domain.progress
 import com.artiuillab.tieryourlife.feature.play.domain.resumeOn
 import com.artiuillab.tieryourlife.feature.tier.board.play.PlayRequest
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.allPlaced
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.cardCount
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.itemLayout
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
@@ -42,6 +45,7 @@ class PlayViewModel @Inject constructor(
     private val games: SavedGames,
     private val boards: TierRepository,
     private val boardSync: BoardSync = BoardSync.None,
+    private val reviewMoments: ReviewMoments = ReviewMoments.None,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PlayState())
@@ -245,6 +249,8 @@ class PlayViewModel @Inject constructor(
             val shown = (stage as? PlayStage.Ready)?.ready ?: return
             close()
             if (!shown.intoMine) viewModelScope.launch { say(PlayNotice.BoardArranged(shown.duels)) }
+            // Back on the board after "Your ranking is ready": the moment for Play's review card.
+            if (shown.board.allPlaced()) reviewMoments.listFinished(shown.board.cardCount())
         }
 
         /** Play again: the picker over the board as the game left it. */

@@ -1,13 +1,38 @@
 package com.artiuillab.tieryourlife.feature.settings.presentation.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import com.artiuillab.tieryourlife.core.theme.ui.VectorIcon
+
+/** An envelope: a rounded sheet with its flap folded to the middle. */
+@Composable
+internal fun MailIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = Stroke(1.7f * scale, cap = StrokeCap.Round, join = StrokeJoin.Round)
+    drawRoundRect(color, Offset(3.5f * scale, 6f * scale), Size(17f * scale, 12f * scale), CornerRadius(2f * scale), style = stroke)
+    val flap = Path().apply {
+        moveTo(4.5f * scale, 7.5f * scale)
+        lineTo(12f * scale, 13f * scale)
+        lineTo(19.5f * scale, 7.5f * scale)
+    }
+    drawPath(flap, color, style = stroke)
+}
+
+/** "↗": the row leaves the app, for Play or the mail app. */
+@Composable
+internal fun OpenOutsideIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
+    val stroke = 1.7f * scale
+    drawLine(color, Offset(7f * scale, 17f * scale), Offset(17f * scale, 7f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(9f * scale, 7f * scale), Offset(17f * scale, 7f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(17f * scale, 7f * scale), Offset(17f * scale, 15f * scale), stroke, StrokeCap.Round)
+}
 
 @Composable
 internal fun AccountCircleIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->

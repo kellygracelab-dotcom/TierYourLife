@@ -101,4 +101,15 @@
         <item quantity="many">%1$d بطاقة متبقية</item>
         <item quantity="other">%1$d بطاقة متبقية</item>
     </plurals>
+    <string name="settings_group_about">حول التطبيق</string>
+    <string name="settings_rate">قيّم TierYourLife</string>
+    <string name="settings_rate_sub">قل رأيك على Google Play</string>
+    <string name="settings_share">شارك TierYourLife</string>
+    <string name="settings_share_sub">أرسل التطبيق إلى صديق</string>
+    <string name="settings_feedback">أرسل ملاحظاتك</string>
+    <string name="settings_feedback_sub">أفكار، مشكلات، أي شيء: راسلنا</string>
+    <string name="settings_feedback_no_mail">لا يوجد تطبيق بريد هنا. راسلنا على %1$s</string>
+    <string name="share_app_chooser">شارك TierYourLife</string>
+    <string name="share_app_text">TierYourLife: رتّب أي شيء في مستويات وشارك قوائمك.\nالويب: %1$s</string>
+    <string name="feedback_subject">ملاحظات حول TierYourLife: التطبيق %1$s، Android %2$s</string>
 </resources>

@@ -18,6 +18,7 @@ android {
 
 dependencies {
     implementation(projects.core.logging)
+    implementation(projects.core.settings)
     implementation(projects.core.theme)
     implementation(projects.feature.play.domain)
     implementation(projects.feature.tier.domain)
