@@ -132,6 +132,34 @@ class TierListsScreenshotTest {
         TierListsScreenContent(boards.copy(started = begun), onTierListClick = {})
     }
 
+    // One favourite: only it wears a star, in pictures as in rows.
+    private val starred = boards.copy(
+        lists = previewTierLists.mapIndexed { index, list -> if (index == 1) list.copy(favouritedAt = 1L) else list },
+    )
+
+    @Test
+    fun continue_phonePortrait_pictures() = capture("lists_continue_phone_portrait_pictures") {
+        TierListsScreenContent(starred.copy(started = begun, asPictures = true), onTierListClick = {})
+    }
+
+    @Test
+    @Config(qualifiers = "w891dp-h411dp-land-xhdpi")
+    fun continue_phoneLandscape_grid() = capture("lists_continue_landscape_grid") {
+        TierListsScreenContent(starred.copy(started = begun, asPictures = true), onTierListClick = {})
+    }
+
+    @Test
+    @Config(qualifiers = "w891dp-h411dp-land-xhdpi")
+    fun continue_phoneLandscape_rows_dark() = capture("lists_continue_landscape_rows_dark", dark = true) {
+        TierListsScreenContent(starred.copy(started = begun), onTierListClick = {})
+    }
+
+    @Test
+    fun selection_phonePortrait_pictures() = capture("lists_selection_phone_portrait_pictures") {
+        val ticked = setOf(previewTierLists[0].id, previewTierLists[1].id)
+        TierListsScreenContent(starred.copy(asPictures = true, mode = HomeMode.Selecting(ticked)), onTierListClick = {})
+    }
+
     @Test
     fun continue_noBoardsOfOnesOwn() = capture("lists_continue_no_boards") {
         TierListsScreenContent(TierListsUiState.Success(emptyList(), 0, 24, started = begun), onTierListClick = {})

@@ -6,9 +6,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
@@ -38,6 +41,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.summary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.HomeTabs
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -132,9 +136,9 @@ class TierListsScreenTest {
         ).assertIsDisplayed()
     }
 
-    // The star on a found board did nothing: the results passed it an empty callback.
+    // A found board is starred as any other: by the card's own action, the one TalkBack offers.
     @Test
-    fun search_inPictures_theStarStarsTheBoard() {
+    fun search_inPictures_theCardsActionStarsTheBoard() {
         val starred = mutableListOf<Long>()
         composeRule.setContent {
             TierYourLifeTheme {
@@ -152,7 +156,8 @@ class TierListsScreenTest {
             }
         }
 
-        composeRule.onNodeWithTag(TierListsTestTags.star(1L)).performClick()
+        composeRule.onNodeWithTag(TierListsTestTags.star(1L), useUnmergedTree = true).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierListsTestTags.tile(1L)).performCustomAction(string(R.string.lists_favourite_add))
 
         assertEquals(listOf(1L), starred)
     }
@@ -466,43 +471,94 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag(TierListsTestTags.BOARD_FILTER_BUTTON).assertIsDisplayed()
     }
 
-    // The star has to be visible on a board that is not starred, or there is
-    // no way to star one.
+    // As on the site (artboard 42): a star says a favourite, it is not a button on every card.
     @Test
-    fun everyBoard_carriesAStarWhetherOrNotItIsStarred() {
-        setScreen(
-            TierListsUiState.Success(
-                lists = listOf(
-                    tierList(1, "One", intArrayOf(1, 0, 0, 0, 0, 0)),
-                    tierList(2, "Two", intArrayOf(1, 0, 0, 0, 0, 0)),
-                ),
-                totalListCount = 2,
-                rankedCount = 2,
-            ),
+    fun onlyAFavourite_wearsAStar_inPicturesAndInRows() {
+        val lists = listOf(
+            tierList(1, "One", intArrayOf(1, 0, 0, 0, 0, 0)).copy(favouritedAt = 5L),
+            tierList(2, "Two", intArrayOf(1, 0, 0, 0, 0, 0)),
         )
+        var asPictures by mutableStateOf(true)
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierListsScreenContent(TierListsUiState.Success(lists, 2, 2, asPictures = asPictures), onTierListClick = {})
+            }
+        }
 
-        composeRule.onNodeWithTag(TierListsTestTags.star(1)).assertIsDisplayed()
-        composeRule.onNodeWithTag(TierListsTestTags.star(2)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.star(1), useUnmergedTree = true).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.star(2), useUnmergedTree = true).assertDoesNotExist()
+
+        asPictures = false
+        composeRule.waitForIdle()
+        composeRule.onNodeWithTag(TierListsTestTags.star(1), useUnmergedTree = true).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.star(2), useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
-    fun tappingAStar_asksForThatBoard() {
-        var starred: Long? = null
+    fun theCardsOwnAction_starsOrUnstarsThatBoard() {
+        val starred = mutableListOf<Long>()
         setScreen(
             TierListsUiState.Success(
                 lists = listOf(
-                    tierList(1, "One", intArrayOf(1, 0, 0, 0, 0, 0)),
+                    tierList(1, "One", intArrayOf(1, 0, 0, 0, 0, 0)).copy(favouritedAt = 5L),
                     tierList(7, "Seven", intArrayOf(1, 0, 0, 0, 0, 0)),
                 ),
                 totalListCount = 2,
                 rankedCount = 2,
             ),
-            onToggleFavourite = { starred = it },
+            onToggleFavourite = { starred += it },
         )
 
-        composeRule.onNodeWithTag(TierListsTestTags.star(7)).performClick()
+        composeRule.onNodeWithTag("tier_list_card_7").performCustomAction(string(R.string.lists_favourite_add))
+        composeRule.onNodeWithTag("tier_list_card_1").performCustomAction(string(R.string.lists_favourite_remove))
 
-        assertEquals(7L, starred)
+        assertEquals(listOf(7L, 1L), starred)
+    }
+
+    // A long press, then the star beside the bin: for every list ticked. All of them favourites takes them out.
+    @Test
+    fun theSelectionBarsStar_actsOnTheTickedLists() {
+        val lists = listOf(
+            tierList(1, "One", intArrayOf(1, 0, 0, 0, 0, 0)).copy(favouritedAt = 5L),
+            tierList(2, "Two", intArrayOf(1, 0, 0, 0, 0, 0)),
+        )
+        var selected by mutableStateOf(setOf(1L, 2L))
+        val asked = mutableListOf<Set<Long>>()
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierListsScreenContent(
+                    state = TierListsUiState.Success(lists, 2, 2, HomeMode.Selecting(selected)),
+                    onTierListClick = {},
+                    onFavouriteSelected = { asked += it },
+                )
+            }
+        }
+
+        composeRule.onNodeWithContentDescription(string(R.string.lists_favourite_add)).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.SELECTION_FAVOURITE).performClick()
+        selected = setOf(1L)
+        composeRule.onNodeWithContentDescription(string(R.string.lists_favourite_remove)).performClick()
+
+        assertEquals(listOf(setOf(1L, 2L), setOf(1L)), asked)
+        composeRule.onNodeWithTag(TierListsTestTags.star(1), useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    // The counts, the lists begun, then the sort right above the boards, as on the site.
+    @Test
+    fun continue_standsBetweenTheCountsAndTheSort() {
+        val begun = StartedList("films", "Every A24 film", placed = 14, total = 22, gameSaved = false)
+        val lists = listOf(tierList(1, "One", intArrayOf(1, 0, 0, 0, 0, 0)), tierList(2, "Two", intArrayOf(1, 0, 0, 0, 0, 0)))
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierListsScreenContent(TierListsUiState.Success(lists, 2, 2, started = listOf(begun)), onTierListClick = {})
+            }
+        }
+
+        val summary = composeRule.onNodeWithTag(TierListsTestTags.SUMMARY).getUnclippedBoundsInRoot()
+        val begunBlock = composeRule.onNodeWithTag(TierListsTestTags.CONTINUE_BLOCK).getUnclippedBoundsInRoot()
+        val sort = composeRule.onNodeWithTag(TierListsTestTags.BOARD_CONTROLS).getUnclippedBoundsInRoot()
+        assertTrue(summary.bottom <= begunBlock.top)
+        assertTrue(begunBlock.bottom <= sort.top)
     }
 
     // Danylo's phone, 569: with one list begun, Undo after a swipe flashed and brought nothing back. The block
@@ -630,6 +686,12 @@ class TierListsScreenTest {
         plural(ThemeR.plurals.tier_lists_ranked_count, ranked),
         plural(BoardR.plurals.tier_lists_in_pool_count, pool),
     )
+
+    /** What TalkBack does with an action from a card's menu. */
+    private fun SemanticsNodeInteraction.performCustomAction(label: String) {
+        val action = fetchSemanticsNode().config[SemanticsActions.CustomActions].single { it.label == label }
+        composeRule.runOnIdle { action.action() }
+    }
 
     private fun string(resourceId: Int, vararg formatArgs: Any): String =
         InstrumentationRegistry.getInstrumentation().targetContext.getString(resourceId, *formatArgs)

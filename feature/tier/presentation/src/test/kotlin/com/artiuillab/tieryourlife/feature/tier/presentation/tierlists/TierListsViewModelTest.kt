@@ -393,6 +393,34 @@ class TierListsViewModelTest {
     }
 
     @Test
+    fun theSelectionsStar_starsTheTickedLists_thenUnstarsThemWhenAllAreStarred() = runBlocking {
+        val repository = FakeTierRepository(
+            initial = listOf(fakeList(id = 1, title = "One").copy(favouritedAt = 5L), fakeList(id = 2, title = "Two"), fakeList(id = 3, title = "Three")),
+        )
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange)
+        viewModel.loadTierLists()
+        viewModel.state.firstWithin { it is TierListsUiState.Success }
+
+        withContext(Dispatchers.Main) {
+            viewModel.enterSelection(1L)
+            viewModel.toggleSelection(2L)
+            viewModel.favouriteSelected(setOf(1L, 2L))
+        }
+        val starred = viewModel.state.firstWithin { state ->
+            state is TierListsUiState.Success && (state.favourites + state.lists).count { it.favouritedAt != null } == 2
+        } as TierListsUiState.Success
+        assertEquals(HomeMode.Browsing, starred.mode)
+        assertEquals(listOf(2L), repository.favourited.map { it.first })
+
+        withContext(Dispatchers.Main) { viewModel.favouriteSelected(setOf(1L, 2L)) }
+        viewModel.state.firstWithin { state ->
+            state is TierListsUiState.Success && (state.favourites + state.lists).none { it.favouritedAt != null }
+        }
+        assertEquals(listOf(2L, 1L, 2L), repository.favourited.map { it.first })
+        assertEquals(listOf(null, null), repository.favourited.drop(1).map { it.second })
+    }
+
+    @Test
     fun deleteTierLists_removesThemAndExitsSelection_thenRestoreBringsThemBack() = runBlocking {
         val repository = FakeTierRepository(
             initial = listOf(fakeList(id = 1, title = "Keeps existing"), fakeList(id = 2, title = "Gets deleted")),
@@ -603,6 +631,7 @@ class TierListsViewModelTest {
 }
 
 internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
+    val favourited = mutableListOf<Pair<Long, Long?>>()
 
     override suspend fun createFromTemplate(
         title: String,
@@ -620,7 +649,10 @@ internal class FakeTierRepository(initial: List<TierList>) : TierRepository {
 
     override suspend fun boardPublishedAs(publishedId: String): TierList? = null
 
-    override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
+    override suspend fun setFavouritedAt(id: Long, at: Long?) {
+        favourited += id to at
+        lists[id]?.let { lists[id] = it.copy(favouritedAt = at) }
+    }
 
     override suspend fun setCategory(id: Long, category: String?) = Unit
 
