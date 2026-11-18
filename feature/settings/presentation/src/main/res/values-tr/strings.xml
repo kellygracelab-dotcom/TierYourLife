@@ -85,4 +85,15 @@
         <item quantity="one">%1$d kart kaldı</item>
         <item quantity="other">%1$d kart kaldı</item>
     </plurals>
+    <string name="settings_group_about">Hakkında</string>
+    <string name="settings_rate">TierYourLife\'ı puanla</string>
+    <string name="settings_rate_sub">Google Play\'de ne düşündüğünü söyle</string>
+    <string name="settings_share">TierYourLife\'ı paylaş</string>
+    <string name="settings_share_sub">Uygulamayı bir arkadaşına gönder</string>
+    <string name="settings_feedback">Geri bildirim gönder</string>
+    <string name="settings_feedback_sub">Fikirler, sorunlar, her şey: bize yaz</string>
+    <string name="settings_feedback_no_mail">Burada e-posta uygulaması yok. %1$s adresine yaz</string>
+    <string name="share_app_chooser">TierYourLife\'ı paylaş</string>
+    <string name="share_app_text">TierYourLife: her şeyi seviyelere ayır ve listelerini paylaş.\nAndroid: %1$s\nWeb: %2$s</string>
+    <string name="feedback_subject">TierYourLife geri bildirimi: uygulama %1$s, Android %2$s</string>
 </resources>

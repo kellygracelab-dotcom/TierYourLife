@@ -85,4 +85,15 @@
         <item quantity="one">%1$d card left</item>
         <item quantity="other">%1$d cards left</item>
     </plurals>
+    <string name="settings_group_about">About</string>
+    <string name="settings_rate">Rate TierYourLife</string>
+    <string name="settings_rate_sub">Say what you think on Google Play</string>
+    <string name="settings_share">Share TierYourLife</string>
+    <string name="settings_share_sub">Send the app to a friend</string>
+    <string name="settings_feedback">Send feedback</string>
+    <string name="settings_feedback_sub">Ideas, problems, anything: write to us</string>
+    <string name="settings_feedback_no_mail">No mail app here. Write to %1$s</string>
+    <string name="share_app_chooser">Share TierYourLife</string>
+    <string name="share_app_text">TierYourLife: rank anything in tiers and share your lists.\nAndroid: %1$s\nWeb: %2$s</string>
+    <string name="feedback_subject">TierYourLife feedback: app %1$s, Android %2$s</string>
 </resources>

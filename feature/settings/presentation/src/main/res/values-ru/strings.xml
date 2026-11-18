@@ -93,4 +93,15 @@
         <item quantity="many">Осталось %1$d карточек</item>
         <item quantity="other">Осталось %1$d карточки</item>
     </plurals>
+    <string name="settings_group_about">О приложении</string>
+    <string name="settings_rate">Оценить TierYourLife</string>
+    <string name="settings_rate_sub">Скажите, что думаете, в Google Play</string>
+    <string name="settings_share">Поделиться TierYourLife</string>
+    <string name="settings_share_sub">Отправить приложение другу</string>
+    <string name="settings_feedback">Написать нам</string>
+    <string name="settings_feedback_sub">Идеи, проблемы, что угодно: напишите нам</string>
+    <string name="settings_feedback_no_mail">Нет почтового приложения. Пишите на %1$s</string>
+    <string name="share_app_chooser">Поделиться TierYourLife</string>
+    <string name="share_app_text">TierYourLife: раскладывайте что угодно по уровням и делитесь списками.\nAndroid: %1$s\nСайт: %2$s</string>
+    <string name="feedback_subject">Отзыв о TierYourLife: приложение %1$s, Android %2$s</string>
 </resources>

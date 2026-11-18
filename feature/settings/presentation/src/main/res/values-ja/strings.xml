@@ -81,4 +81,15 @@
     <plurals name="unranked_count">
         <item quantity="other">残りのカード %1$d 枚</item>
     </plurals>
+    <string name="settings_group_about">このアプリについて</string>
+    <string name="settings_rate">TierYourLife を評価</string>
+    <string name="settings_rate_sub">Google Play で感想を伝える</string>
+    <string name="settings_share">TierYourLife を共有</string>
+    <string name="settings_share_sub">友だちにアプリを送る</string>
+    <string name="settings_feedback">フィードバックを送信</string>
+    <string name="settings_feedback_sub">アイデア、不具合、なんでもお寄せください</string>
+    <string name="settings_feedback_no_mail">メールアプリがありません。%1$s までお送りください</string>
+    <string name="share_app_chooser">TierYourLife を共有</string>
+    <string name="share_app_text">TierYourLife：なんでもティアに並べてリストを共有。\nAndroid：%1$s\nWeb：%2$s</string>
+    <string name="feedback_subject">TierYourLife へのフィードバック：アプリ %1$s、Android %2$s</string>
 </resources>

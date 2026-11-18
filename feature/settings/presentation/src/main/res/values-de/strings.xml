@@ -85,4 +85,15 @@
         <item quantity="one">Noch %1$d Karte</item>
         <item quantity="other">Noch %1$d Karten</item>
     </plurals>
+    <string name="settings_group_about">Über die App</string>
+    <string name="settings_rate">TierYourLife bewerten</string>
+    <string name="settings_rate_sub">Sag bei Google Play, was du denkst</string>
+    <string name="settings_share">TierYourLife teilen</string>
+    <string name="settings_share_sub">Schick die App an Freunde</string>
+    <string name="settings_feedback">Feedback senden</string>
+    <string name="settings_feedback_sub">Ideen, Probleme, alles: schreib uns</string>
+    <string name="settings_feedback_no_mail">Keine Mail-App vorhanden. Schreib an %1$s</string>
+    <string name="share_app_chooser">TierYourLife teilen</string>
+    <string name="share_app_text">TierYourLife: Ordne alles in Stufen und teile deine Listen.\nAndroid: %1$s\nWeb: %2$s</string>
+    <string name="feedback_subject">Feedback zu TierYourLife: App %1$s, Android %2$s</string>
 </resources>

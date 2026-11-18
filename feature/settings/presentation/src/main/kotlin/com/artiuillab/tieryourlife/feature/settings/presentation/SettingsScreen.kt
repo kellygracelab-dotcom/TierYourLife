@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.artiuillab.tieryourlife.core.settings.AppLinks
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
@@ -71,6 +72,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.IgdbNotice
 import com.artiuillab.tieryourlife.core.theme.ui.OnResumeEffect
 import com.artiuillab.tieryourlife.core.theme.ui.TmdbNotice
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.AboutRows
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.AccountRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.BackupSection
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.LanguageRow
@@ -78,6 +80,10 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.components.Sett
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.SettingsGroupDivider
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.StopBackingUpDialog
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.ThemeSection
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.appVersion
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.rateTheApp
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.shareTheApp
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.writeToUs
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
 import kotlinx.coroutines.launch
@@ -120,6 +126,7 @@ fun SettingsScreen(
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val tryAgainLabel = stringResource(ThemeR.string.action_try_again)
     val shareLabel = stringResource(R.string.action_share)
+    val noMailMessage = stringResource(R.string.settings_feedback_no_mail, AppLinks.FEEDBACK_EMAIL)
     val exportStrings = buildExportStrings(context)
 
     LaunchedEffect(Unit) {
@@ -168,6 +175,13 @@ fun SettingsScreen(
         },
         onPicturesOnWifiOnlyChange = viewModel::setPicturesOnWifiOnly,
         snackbarHostState = snackbarHostState,
+        onRateClick = { rateTheApp(context) },
+        onShareClick = { shareTheApp(context) },
+        onFeedbackClick = {
+            if (!writeToUs(context, appVersion(context))) {
+                coroutineScope.launch { snackbarHostState.showSnackbar(noMailMessage) }
+            }
+        },
     )
 
     if (stoppingBackup) {
@@ -287,6 +301,9 @@ fun SettingsScreenContent(
     onBackUpChange: (Boolean) -> Unit = {},
     onPicturesOnWifiOnlyChange: (Boolean) -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onRateClick: () -> Unit = {},
+    onShareClick: () -> Unit = {},
+    onFeedbackClick: () -> Unit = {},
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Box(Modifier.fillMaxSize()) {
@@ -339,6 +356,9 @@ fun SettingsScreenContent(
                                     SettingsGroupDivider()
                                     ModerationRow(waiting = pendingReports, onClick = onModerationClick)
                                 }
+                            }
+                            SettingsGroup(title = stringResource(R.string.settings_group_about)) {
+                                AboutRows(onRate = onRateClick, onShare = onShareClick, onFeedback = onFeedbackClick)
                             }
                             VersionLine(versionName)
                         }
