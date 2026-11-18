@@ -96,4 +96,17 @@
     <string name="share_app_chooser">TierYourLife teilen</string>
     <string name="share_app_text">TierYourLife: Ordne alles in Stufen und teile deine Listen.\nWeb: %1$s</string>
     <string name="feedback_subject">Feedback zu TierYourLife: App %1$s, Android %2$s</string>
+    <string name="settings_how_it_works">So funktioniert’s</string>
+    <string name="settings_how_it_works_sub">Einordnen, spielen, eigene machen</string>
+    <string name="how_place">Einordnen</string>
+    <string name="how_place_text">Tippe auf eine Karte, dann auf eine Stufe. Oder zieh sie.</string>
+    <string name="how_play">Spielen</string>
+    <string name="how_play_text">Wähle die bessere von zwei Karten; die Stufen füllen sich.</string>
+    <string name="how_own">Eigene Liste</string>
+    <string name="how_own_text">Gib Namen ein, die Bilder kommen mit.</string>
+    <string name="how_share">Teilen</string>
+    <string name="how_share_text">Veröffentliche deine Liste oder schick sie als Bild.</string>
+    <string name="how_again">Tipps wieder zeigen</string>
+    <string name="how_again_done">Die Tipps werden wieder gezeigt.</string>
+    <string name="how_close">Schließen</string>
 </resources>

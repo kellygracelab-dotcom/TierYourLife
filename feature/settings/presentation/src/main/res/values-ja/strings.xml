@@ -92,4 +92,17 @@
     <string name="share_app_chooser">TierYourLife を共有</string>
     <string name="share_app_text">TierYourLife：なんでもティアに並べてリストを共有。\nWeb：%1$s</string>
     <string name="feedback_subject">TierYourLife へのフィードバック：アプリ %1$s、Android %2$s</string>
+    <string name="settings_how_it_works">使い方</string>
+    <string name="settings_how_it_works_sub">並べる、遊ぶ、自分で作る</string>
+    <string name="how_place">並べる</string>
+    <string name="how_place_text">カードをタップしてからティアをタップ。ドラッグでもOK。</string>
+    <string name="how_play">プレイ</string>
+    <string name="how_play_text">2枚のうち良い方を選ぶと、ティアが埋まります。</string>
+    <string name="how_own">自分で作る</string>
+    <string name="how_own_text">名前を入力すると、画像も一緒に入ります。</string>
+    <string name="how_share">共有</string>
+    <string name="how_share_text">リストを公開するか、画像として送ります。</string>
+    <string name="how_again">ヒントをもう一度表示</string>
+    <string name="how_again_done">ヒントがもう一度表示されます。</string>
+    <string name="how_close">閉じる</string>
 </resources>

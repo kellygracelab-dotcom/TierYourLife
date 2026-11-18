@@ -104,4 +104,17 @@
     <string name="share_app_chooser">Поділитися TierYourLife</string>
     <string name="share_app_text">TierYourLife: розкладайте що завгодно за рівнями й діліться списками.\nВеб: %1$s</string>
     <string name="feedback_subject">Відгук про TierYourLife: застосунок %1$s, Android %2$s</string>
+    <string name="settings_how_it_works">Як це працює</string>
+    <string name="settings_how_it_works_sub">Розкладати, грати, робити свої</string>
+    <string name="how_place">Розставити</string>
+    <string name="how_place_text">натисніть картку, потім рівень. Або перетягніть.</string>
+    <string name="how_play">Грати</string>
+    <string name="how_play_text">обирайте кращу з двох карток; рівні заповняться самі.</string>
+    <string name="how_own">Свій список</string>
+    <string name="how_own_text">вводьте назви, картинки підберуться самі.</string>
+    <string name="how_share">Поділитися</string>
+    <string name="how_share_text">опублікуйте список або надішліть його картинкою.</string>
+    <string name="how_again">Показати підказки знову</string>
+    <string name="how_again_done">Підказки зʼявляться знову.</string>
+    <string name="how_close">Закрити</string>
 </resources>

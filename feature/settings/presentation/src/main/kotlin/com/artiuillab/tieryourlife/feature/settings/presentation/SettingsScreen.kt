@@ -60,6 +60,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
 import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
 import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
+import com.artiuillab.tieryourlife.core.theme.tips.LocalTipMemory
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
@@ -75,6 +76,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.AboutRows
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.AccountRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.BackupSection
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.HowItWorksSheet
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.LanguageRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.OpenOutsideIcon
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.SettingsGroup
@@ -306,6 +308,20 @@ fun SettingsScreenContent(
     onShareClick: () -> Unit = {},
     onFeedbackClick: () -> Unit = {},
 ) {
+    var showingHow by rememberSaveable { mutableStateOf(false) }
+    val tipMemory = LocalTipMemory.current
+    val tipsAgainMessage = stringResource(R.string.how_again_done)
+    val scope = rememberCoroutineScope()
+    if (showingHow) {
+        HowItWorksSheet(
+            onDismiss = { showingHow = false },
+            onTipsAgain = {
+                tipMemory.showAgain()
+                showingHow = false
+                scope.launch { snackbarHostState.showSnackbar(tipsAgainMessage) }
+            },
+        )
+    }
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
         Box(Modifier.fillMaxSize()) {
             CenteredContent(max = ContentWidth.Reading, modifier = Modifier.fillMaxSize()) {
@@ -359,7 +375,12 @@ fun SettingsScreenContent(
                                 }
                             }
                             SettingsGroup(title = stringResource(R.string.settings_group_about)) {
-                                AboutRows(onRate = onRateClick, onShare = onShareClick, onFeedback = onFeedbackClick)
+                                AboutRows(
+                                    onHowItWorks = { showingHow = true },
+                                    onRate = onRateClick,
+                                    onShare = onShareClick,
+                                    onFeedback = onFeedbackClick,
+                                )
                             }
                             VersionLine(versionName)
                         }

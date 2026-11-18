@@ -96,4 +96,17 @@
     <string name="share_app_chooser">Share TierYourLife</string>
     <string name="share_app_text">I make tier lists in TierYourLife: rank anything from S to D, settle it in duels and see how others rank it.\nWeb: %1$s</string>
     <string name="feedback_subject">TierYourLife feedback: app %1$s, Android %2$s</string>
+    <string name="settings_how_it_works">How it works</string>
+    <string name="settings_how_it_works_sub">Place, play, make your own</string>
+    <string name="how_place">Place</string>
+    <string name="how_place_text">tap a card, then a tier. Or drag it.</string>
+    <string name="how_play">Play</string>
+    <string name="how_play_text">pick the better of two cards; the tiers fill in.</string>
+    <string name="how_own">Make your own</string>
+    <string name="how_own_text">type names, the pictures come with them.</string>
+    <string name="how_share">Share</string>
+    <string name="how_share_text">publish your list or send it as a picture.</string>
+    <string name="how_again">Show the tips again</string>
+    <string name="how_again_done">The tips will show again.</string>
+    <string name="how_close">Close</string>
 </resources>
