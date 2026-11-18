@@ -20,6 +20,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeLeft
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -502,6 +503,44 @@ class TierListsScreenTest {
         composeRule.onNodeWithTag(TierListsTestTags.star(7)).performClick()
 
         assertEquals(7L, starred)
+    }
+
+    // Danylo's phone, 569: with one list begun, Undo after a swipe flashed and brought nothing back. The block
+    // leaves the grid when its last row goes, and the row came back with Undo already swiped away.
+    @Test
+    fun undoAfterASwipe_bringsTheOnlyBegunListBack_andTheTabsStayPut() {
+        val begun = StartedList("films", "Every A24 film", placed = 14, total = 22, gameSaved = true)
+        val discarded = mutableListOf<String>()
+        var undone = 0
+        composeRule.setContent {
+            var started by remember { mutableStateOf(listOf(begun)) }
+            TierYourLifeTheme {
+                TierListsScreenContent(
+                    state = TierListsUiState.Success(listOf(tierList(1, "Sci-fi films", intArrayOf(1, 0, 0, 0, 0, 0))), 1, 1, started = started),
+                    onTierListClick = {},
+                    onDiscardStarted = { id ->
+                        discarded += id
+                        started = emptyList()
+                    },
+                    onUndoDiscardStarted = {
+                        undone++
+                        started = listOf(begun)
+                    },
+                    tabs = { HomeTabs(selected = HomeTab.Mine, onSelect = { error("the swipe moved the tabs") }) },
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(TierListsTestTags.started("films")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTag(TierListsTestTags.CONTINUE_BLOCK).assertDoesNotExist()
+        composeRule.onNodeWithText(string(R.string.started_discarded)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.action_undo)).performClick()
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithTag(TierListsTestTags.started("films")).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierListsTestTags.resumeGame("films")).assertExists()
+        assertEquals(listOf("films"), discarded)
+        assertEquals(1, undone)
     }
 
     private fun setScreen(
