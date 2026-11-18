@@ -300,4 +300,7 @@
     <string name="publish_sheet_name_why">Hâlâ “%1$s” adını taşıyor. Listeler adlarıyla bulunur.</string>
     <string name="publish_sheet_needs_account">Yayınlamak için Google hesabı gerekir. Sen giriş yaparken listen burada kalır.</string>
     <string name="publish_sheet_sign_in_and_publish">Oturum aç ve yayımla</string>
+    <string name="started_discard">At</string>
+    <string name="started_discard_arrangement">Düzenlememi at</string>
+    <string name="started_discarded">Düzenleme atıldı</string>
 </resources>

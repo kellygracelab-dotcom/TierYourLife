@@ -301,4 +301,7 @@
     <string name="publish_sheet_name_why">It’s still called “%1$s”. People find lists by name.</string>
     <string name="publish_sheet_needs_account">Publishing needs a Google account. Your list stays here while you sign in.</string>
     <string name="publish_sheet_sign_in_and_publish">Sign in and publish</string>
+    <string name="started_discard">Discard</string>
+    <string name="started_discard_arrangement">Discard my arrangement</string>
+    <string name="started_discarded">Arrangement discarded</string>
 </resources>

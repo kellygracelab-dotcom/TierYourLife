@@ -317,4 +317,7 @@
     <string name="publish_sheet_name_why">Todavía se llama «%1$s». Las listas se encuentran por su nombre.</string>
     <string name="publish_sheet_needs_account">Para publicar hace falta una cuenta de Google. Tu lista se queda aquí mientras inicias sesión.</string>
     <string name="publish_sheet_sign_in_and_publish">Iniciar sesión y publicar</string>
+    <string name="started_discard">Descartar</string>
+    <string name="started_discard_arrangement">Descartar mi orden</string>
+    <string name="started_discarded">Orden descartado</string>
 </resources>

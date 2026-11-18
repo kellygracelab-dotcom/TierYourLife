@@ -334,4 +334,7 @@
     <string name="publish_sheet_name_why">Wciąż nazywa się „%1$s”. Listy wyszukuje się po nazwie.</string>
     <string name="publish_sheet_needs_account">Publikowanie wymaga konta Google. Lista zostaje tutaj, gdy się logujesz.</string>
     <string name="publish_sheet_sign_in_and_publish">Zaloguj się i opublikuj</string>
+    <string name="started_discard">Odrzuć</string>
+    <string name="started_discard_arrangement">Odrzuć mój układ</string>
+    <string name="started_discarded">Układ odrzucony</string>
 </resources>

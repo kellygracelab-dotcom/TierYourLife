@@ -4,14 +4,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.test.swipeRight
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.LocalShortWindow
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.DISCARD_TAG
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashScreenContent
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashUiState
@@ -150,6 +158,52 @@ class TierListsScreenshotTest {
         composeRule.onNodeWithTag(TierListsTestTags.resumeGame("games")).assertDoesNotExist()
 
         assertEquals(listOf("games" to false, "films" to true), opened)
+    }
+
+    @Test
+    fun aBegunList_goesBySwipeEitherWay_orByItsMenu() {
+        val discarded = mutableListOf<String>()
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierListsScreenContent(boards.copy(started = begun), onTierListClick = {}, onDiscardStarted = { discarded += it })
+            }
+        }
+        composeRule.onNodeWithTag(TierListsTestTags.started("games")).performTouchInput { swipeRight() }
+        composeRule.onNodeWithTag(TierListsTestTags.started("films")).performTouchInput { swipeLeft() }
+        composeRule.waitForIdle()
+        assertEquals(listOf("games", "films"), discarded)
+    }
+
+    @Test
+    fun aShortSwipe_putsTheRowBack() {
+        val discarded = mutableListOf<String>()
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierListsScreenContent(boards.copy(started = begun), onTierListClick = {}, onDiscardStarted = { discarded += it })
+            }
+        }
+        composeRule.onNodeWithTag(TierListsTestTags.started("games")).performTouchInput {
+            // Slowly: a fling goes whatever the distance.
+            swipeRight(startX = centerX, endX = centerX + width / 6f, durationMillis = 1_000)
+        }
+        composeRule.waitForIdle()
+        assertEquals(emptyList<String>(), discarded)
+    }
+
+    @Test
+    fun aLongPress_opensTheMenu_whoseLastItemDiscards() {
+        val discarded = mutableListOf<String>()
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TierListsScreenContent(boards.copy(started = begun), onTierListClick = {}, onDiscardStarted = { discarded += it })
+            }
+        }
+        composeRule.onNodeWithTag(TierListsTestTags.started("films")).performTouchInput { longClick() }
+        // The row's own button and the menu's item.
+        composeRule.onAllNodesWithText("Resume game").assertCountEquals(2)
+        composeRule.onNodeWithTag(TierListsTestTags.started("films") + DISCARD_TAG).performClick()
+        composeRule.onNodeWithText("Arrangement discarded").assertExists()
+        assertEquals(listOf("films"), discarded)
     }
 
     private companion object {
