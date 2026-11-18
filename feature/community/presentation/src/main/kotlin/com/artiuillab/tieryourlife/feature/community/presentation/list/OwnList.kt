@@ -21,7 +21,10 @@ sealed interface ListNotice {
     data object TakenDown : ListNotice
 
     /** A move on Theirs started the reader's own version from [name]'s; [replaced] when Mine had been arranged before. */
-    data class StartedFromTheirs(val name: String?, val replaced: Boolean) : ListNotice
+    data class StartedFromTheirs(val name: String?, val replaced: Boolean, val undoId: Long = 0) : ListNotice
+
+    /** That particular action was consumed, expired or invalidated by a newer edit. */
+    data class TheirsUndoDismissed(val undoId: Long) : ListNotice
 
     /** Their own list with its board on this phone: the board is where it changes, so the page gives way to it. */
     data class OpenBoard(val boardId: Long) : ListNotice

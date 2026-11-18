@@ -72,7 +72,9 @@ class PlayViewModel @Inject constructor(
     private val shelf = GameShelf(games, boards) { clock() }
 
     /** A game's result on the board: one step, undone and redone as a whole while it stands. */
-    private data class Arrangement(val before: TierList, val after: TierList, val own: Boolean, val duels: Int)
+    private data class Arrangement(val before: TierList, val after: TierList, val own: Boolean, val duels: Int, val undone: Boolean = false)
+
+    private var turning: Job? = null
 
     val picker = PickerControls()
     val selection = SelectionControls()
@@ -306,12 +308,18 @@ class PlayViewModel @Inject constructor(
 
         private fun turn(undone: Boolean) {
             val step = arranged ?: return
+            if (turning?.isActive == true || step.undone == undone) return
             val target = if (undone) step.before else step.after
-            viewModelScope.launch {
-                val done = if (step.own) restore(target) else target
-                if (done == null) say(PlayNotice.Failed)
-                _events.send(PlayEvent.Arranged(done ?: target, undone))
-                if (done != null && step.own) say(if (undone) PlayNotice.GameUndone(step.duels) else PlayNotice.BoardArranged(step.duels))
+            val expected = if (undone) step.after else step.before
+            turning = viewModelScope.launch {
+                val done = if (step.own) restore(expected, target) else target
+                if (done == null) {
+                    say(PlayNotice.Failed)
+                    return@launch
+                }
+                if (arranged === step) arranged = step.copy(undone = undone)
+                _events.send(PlayEvent.Arranged(done, undone))
+                if (step.own) say(if (undone) PlayNotice.GameUndone(step.duels) else PlayNotice.BoardArranged(step.duels))
             }
         }
     }
@@ -375,9 +383,10 @@ class PlayViewModel @Inject constructor(
         return null
     }
 
-    /** Every card back where [before] had it, on the board as it is now; null when that failed. */
-    private suspend fun restore(before: TierList): TierList? = runSuspendCatching {
+    /** Undo only the arrangement still on screen: later edits and sync must not be overwritten. */
+    private suspend fun restore(expected: TierList, before: TierList): TierList? = runSuspendCatching {
         val now = boards.getTierListById(before.id) ?: return null
+        if (now.uid != expected.uid || now.itemLayout() != expected.itemLayout()) return null
         val target = now.restoredTo(before)
         if (boards.arrangeBoard(now.id, now.itemLayout(), target.itemLayout())) target else null
     }.onFailure { Timber.w(it, "Putting the board back failed") }.getOrNull()
