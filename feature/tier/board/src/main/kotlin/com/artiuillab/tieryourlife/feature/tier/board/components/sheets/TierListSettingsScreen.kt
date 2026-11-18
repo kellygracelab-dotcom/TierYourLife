@@ -452,7 +452,7 @@ private fun CoverRow(chosen: Boolean, onClick: () -> Unit) {
         icon = { CoverIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
         title = stringResource(R.string.list_settings_cover),
         subtitle = stringResource(
-            if (chosen) R.string.list_settings_cover_set else R.string.list_settings_cover_none_set,
+            if (chosen) R.string.list_settings_cover_set else R.string.list_settings_cover_auto,
         ),
         onClick = onClick,
         testTag = TierDetailTestTags.COVER_ROW,

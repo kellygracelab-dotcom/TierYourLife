@@ -32,9 +32,9 @@ const val SHARE_LINK = "https://tieryourlife.web.app"
  * photo, and it is the only part a friend can tap. Returns false when nothing
  * could be made or handed over.
  */
-suspend fun shareBoard(context: Context, list: TierList, palette: BoardPalette, caption: String, footer: String, names: Boolean = false): Boolean {
+suspend fun shareBoard(context: Context, list: TierList, palette: BoardPalette, caption: String, words: SharedWords, names: Boolean = false): Boolean {
     val pictures = loadPictures(context, list)
-    val bitmap = BoardPicture.render(list, palette, pictures, footer, names)
+    val bitmap = BoardPicture.render(list, palette, pictures, words.footer, names, words.counts, words.notPlaced)
     val file = withContext(Dispatchers.IO) {
         runCatching {
             val dir = File(context.cacheDir, SHARED_DIR).apply { mkdirs() }

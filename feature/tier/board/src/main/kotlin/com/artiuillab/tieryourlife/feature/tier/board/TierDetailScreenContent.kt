@@ -108,6 +108,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.everyCardP
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishingOf
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberOneByOne
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
+import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorActions
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.fixedInSettings
@@ -335,7 +336,7 @@ private fun TierScreenBody(
     // So does a refusal put right there: the Publication row says why.
     LaunchedEffect(actions.publishError) { if (actions.publishError?.fixedInSettings() == true) listSettingsVisible = true }
 
-    val share = rememberShareBoard()
+    val share = rememberShareBoard(actions.ownName)
 
     if (listSettingsVisible) {
         TierListSettingsScreenContent(
@@ -856,8 +857,33 @@ private fun TierScreenBody(
                 onEditTier(editingTier.id, label, caption, colorLight, colorDark)
                 editingTierId = null
             },
+            actions = tierEditorActions(
+                rankedTierIds = rankedTiers.map { it.id },
+                tierId = editingTier.id,
+                onReorderTiers = onReorderTiers,
+                onRemove = {
+                    editingTierId = null
+                    deleteTierAndAnnounce(editingTier.id)
+                },
+            ),
         )
     }
+}
+
+/** Moves one place up or down, as dragging the band does; the ends have no move past them. */
+internal fun tierEditorActions(
+    rankedTierIds: List<Long>,
+    tierId: Long,
+    onReorderTiers: (List<Long>) -> Unit,
+    onRemove: () -> Unit,
+): TierEditorActions {
+    val at = rankedTierIds.indexOf(tierId)
+    fun moveTo(to: Int): (() -> Unit)? = if (at < 0 || to !in rankedTierIds.indices) {
+        null
+    } else {
+        { onReorderTiers(rankedTierIds.toMutableList().apply { add(to, removeAt(at)) }) }
+    }
+    return TierEditorActions(onMoveUp = moveTo(at - 1), onMoveDown = moveTo(at + 1), onRemove = onRemove)
 }
 
 @TierYourLifeDevicePreviews

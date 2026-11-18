@@ -14,7 +14,7 @@
     <string name="list_settings_category">Section</string>
     <string name="list_settings_category_none">Not chosen yet</string>
     <string name="list_settings_cover">Cover</string>
-    <string name="list_settings_cover_none_set">None</string>
+    <string name="list_settings_cover_auto">Collage · auto</string>
     <string name="list_settings_cover_set">Chosen</string>
     <string name="list_settings_topic">Topic</string>
     <string name="list_settings_topic_none">None</string>
@@ -58,7 +58,12 @@
     <string name="manual_dialog_title">Add a card</string>
     <string name="my_published_action_update">Update</string>
     <string name="share_caption">%1$s — ranked in TierYourLife\n%2$s</string>
-    <string name="share_footer">Made in TierYourLife</string>
+    <string name="share_rank_yourself">Rank it yourself · %1$s</string>
+    <string name="share_by_author">by %1$s</string>
+    <plurals name="share_more_not_placed">
+        <item quantity="one">%d more card not placed yet</item>
+        <item quantity="other">%d more cards not placed yet</item>
+    </plurals>
     <string name="share_failed">Could not share the picture</string>
     <string name="tier_detail_add">Add</string>
     <plurals name="tier_detail_collapsed_item_count">
@@ -202,4 +207,7 @@
     <string name="board_header_counts">%1$s · %2$s</string>
     <string name="board_names_on_cards">Names on cards</string>
     <string name="board_names_on_cards_sub">A strip with the name at the bottom of each picture</string>
+    <string name="tier_editor_move_up">Move up</string>
+    <string name="tier_editor_move_down">Move down</string>
+    <string name="tier_editor_remove">Remove tier</string>
 </resources>

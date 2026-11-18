@@ -167,7 +167,7 @@ class TierDetailViewModel @Inject constructor(
                     (observed as? Account.SignedIn)?.recordKey != (account as? Account.SignedIn)?.recordKey || observed == Account.Unknown
                     )
                 observed = account
-                _screen.update { it.copy(signedIn = account is Account.SignedIn) }
+                _screen.update { it.copy(signedIn = account is Account.SignedIn, ownName = (account as? Account.SignedIn)?.authorName) }
                 if (changedOwner) {
                     publication.accountChanged()
                     board = TierDetailUiState.Loading

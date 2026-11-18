@@ -8,6 +8,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 data class TierDetailActions(
     val onBack: () -> Unit = {},
     val signedIn: Boolean = false,
+    /** The signed-in person's name, as their published lists carry it. */
+    val ownName: String? = null,
     val publishing: Boolean = false,
     val publishError: PublishError? = null,
     val categoryWanted: Boolean = false,

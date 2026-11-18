@@ -14,7 +14,7 @@
     <string name="list_settings_category">Rubrik</string>
     <string name="list_settings_category_none">Noch nicht gewählt</string>
     <string name="list_settings_cover">Titelbild</string>
-    <string name="list_settings_cover_none_set">Keins</string>
+    <string name="list_settings_cover_auto">Collage · automatisch</string>
     <string name="list_settings_cover_set">Gewählt</string>
     <string name="list_settings_topic">Thema</string>
     <string name="list_settings_topic_none">Keins</string>
@@ -58,7 +58,12 @@
     <string name="manual_dialog_title">Karte hinzufügen</string>
     <string name="my_published_action_update">Aktualisieren</string>
     <string name="share_caption">%1$s — eingeordnet in TierYourLife\n%2$s</string>
-    <string name="share_footer">Erstellt mit TierYourLife</string>
+    <string name="share_rank_yourself">Ordne sie selbst ein · %1$s</string>
+    <string name="share_by_author">von %1$s</string>
+    <plurals name="share_more_not_placed">
+        <item quantity="one">%d weitere Karte noch nicht eingeordnet</item>
+        <item quantity="other">%d weitere Karten noch nicht eingeordnet</item>
+    </plurals>
     <string name="share_failed">Das Bild konnte nicht geteilt werden</string>
     <string name="tier_detail_add">Hinzufügen</string>
     <plurals name="tier_detail_collapsed_item_count">
@@ -201,4 +206,7 @@
     <string name="board_header_counts">%1$s · %2$s</string>
     <string name="board_names_on_cards">Namen auf den Karten</string>
     <string name="board_names_on_cards_sub">Ein Streifen mit dem Namen unten auf jedem Bild</string>
+    <string name="tier_editor_move_up">Nach oben verschieben</string>
+    <string name="tier_editor_move_down">Nach unten verschieben</string>
+    <string name="tier_editor_remove">Stufe entfernen</string>
 </resources>

@@ -14,7 +14,7 @@
     <string name="list_settings_category">セクション</string>
     <string name="list_settings_category_none">未選択</string>
     <string name="list_settings_cover">カバー</string>
-    <string name="list_settings_cover_none_set">なし</string>
+    <string name="list_settings_cover_auto">コラージュ · 自動</string>
     <string name="list_settings_cover_set">選択済み</string>
     <string name="list_settings_topic">トピック</string>
     <string name="list_settings_topic_none">なし</string>
@@ -56,7 +56,11 @@
     <string name="manual_dialog_title">カードを追加</string>
     <string name="my_published_action_update">更新</string>
     <string name="share_caption">%1$s — TierYourLife でランク付け\n%2$s</string>
-    <string name="share_footer">TierYourLife で作成</string>
+    <string name="share_rank_yourself">自分でランク付け · %1$s</string>
+    <string name="share_by_author">%1$s さん</string>
+    <plurals name="share_more_not_placed">
+        <item quantity="other">あと %d 枚が未配置</item>
+    </plurals>
     <string name="share_failed">画像を共有できませんでした</string>
     <string name="tier_detail_add">追加</string>
     <plurals name="tier_detail_collapsed_item_count">
@@ -188,4 +192,7 @@
     <string name="board_header_counts">%1$s · %2$s</string>
     <string name="board_names_on_cards">カードに名前</string>
     <string name="board_names_on_cards_sub">各画像の下に名前の帯を表示</string>
+    <string name="tier_editor_move_up">上へ移動</string>
+    <string name="tier_editor_move_down">下へ移動</string>
+    <string name="tier_editor_remove">ティアを削除</string>
 </resources>

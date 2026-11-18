@@ -97,6 +97,7 @@ fun TierDetailScreen(
         actions = TierDetailActions(
             onBack = back,
             signedIn = screen.signedIn,
+            ownName = screen.ownName,
             publishing = publish.publishing,
             publishError = publish.error,
             publicPending = publish.publicPending,
