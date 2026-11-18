@@ -2,6 +2,10 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.test.assertCountEquals
@@ -172,6 +176,34 @@ class TierListsScreenshotTest {
         composeRule.onNodeWithTag(TierListsTestTags.started("films")).performTouchInput { swipeLeft() }
         composeRule.waitForIdle()
         assertEquals(listOf("games", "films"), discarded)
+    }
+
+    // The phone's case: the only begun list. Its block leaves the grid when it goes and comes back with Undo,
+    // and the row must come back as a row, not as one swiped away that goes again at once.
+    @Test
+    fun undo_bringsTheOnlyBegunListBack_toStay() {
+        val discarded = mutableListOf<String>()
+        composeRule.setContent {
+            var started by remember { mutableStateOf(begun.take(1)) }
+            TierYourLifeTheme {
+                TierListsScreenContent(
+                    boards.copy(started = started),
+                    onTierListClick = {},
+                    onDiscardStarted = { id ->
+                        discarded += id
+                        started = started.filterNot { it.listId == id }
+                    },
+                    onUndoDiscardStarted = { started = begun.take(1) },
+                )
+            }
+        }
+        composeRule.onNodeWithTag(TierListsTestTags.started("films")).performTouchInput { swipeRight() }
+        composeRule.onNodeWithTag(TierListsTestTags.CONTINUE_BLOCK).assertDoesNotExist()
+        composeRule.onNodeWithText("Undo").performClick()
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithTag(TierListsTestTags.started("films")).assertExists()
+        assertEquals(listOf("films"), discarded)
     }
 
     @Test

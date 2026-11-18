@@ -21,10 +21,10 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -80,7 +80,9 @@ internal fun ContinueBlock(
  */
 @Composable
 private fun SwipeToDiscard(list: StartedList, onDiscard: (StartedList) -> Unit, row: @Composable () -> Unit) {
-    val state = rememberSwipeToDismissBoxState(positionalThreshold = { it / 3 })
+    // Not saveable: the grid keeps a gone block's saved state, and a row brought back by Undo would
+    // come back already swiped away and go again at once.
+    val state = remember { SwipeToDismissBoxState(SwipeToDismissBoxValue.Settled, positionalThreshold = { it / 3 }) }
     LaunchedEffect(state.currentValue) {
         if (state.currentValue != SwipeToDismissBoxValue.Settled) onDiscard(list)
     }

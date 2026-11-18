@@ -295,7 +295,8 @@ class TierListsViewModel @Inject constructor(
         discarding = viewModelScope.launch {
             messages.guard("Discarding an arrangement") {
                 val who = (accounts.current() as? Account.SignedIn)?.recordKey
-                val draft = drafts.read(listId, who) ?: return@guard
+                // Already in the deck: discarding it again would leave Undo nothing to bring back.
+                val draft = drafts.read(listId, who)?.takeIf { it.placed > 0 } ?: return@guard
                 val key = PlayRequest.someoneElsesKey(listId, draft.version)
                 val game = games.load(key)
                 drafts.keep(listId, draft.copy(rows = draft.rows.map { emptyList() }, pool = draft.rows.flatten() + draft.pool), who)

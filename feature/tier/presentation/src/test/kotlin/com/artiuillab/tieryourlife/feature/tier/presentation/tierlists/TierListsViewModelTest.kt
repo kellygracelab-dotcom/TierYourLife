@@ -526,6 +526,8 @@ class TierListsViewModelTest {
         assertEquals(listOf(0, 1, 2, 3), drafts.kept.pool)
         assertTrue(key !in games.keys())
 
+        // A second discard of what is already in the deck must not take Undo's copy.
+        viewModel.discardStarted("films")
         viewModel.undoDiscardStarted()
         viewModel.state.firstWithin { it is TierListsUiState.Success && it.started.size == 1 }
         withTimeout(5_000) { while (key !in games.keys()) delay(10) }
