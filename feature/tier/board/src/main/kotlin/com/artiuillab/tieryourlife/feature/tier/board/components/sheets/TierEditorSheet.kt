@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,8 +19,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +56,7 @@ fun TierEditorSheet(
     initialTier: Tier? = null,
     onDismiss: () -> Unit,
     onSave: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
+    actions: TierEditorActions? = null,
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -62,15 +67,24 @@ fun TierEditorSheet(
             initialTier = initialTier,
             onDismiss = onDismiss,
             onSave = onSave,
+            actions = actions,
         )
     }
 }
+
+/** What an existing tier's editor can do besides saving it; a null move means the tier is at that end already. */
+class TierEditorActions(
+    val onMoveUp: (() -> Unit)?,
+    val onMoveDown: (() -> Unit)?,
+    val onRemove: () -> Unit,
+)
 
 @Composable
 fun TierEditorSheetContent(
     initialTier: Tier? = null,
     onDismiss: () -> Unit,
     onSave: (label: String, caption: String?, colorLight: String, colorDark: String) -> Unit,
+    actions: TierEditorActions? = null,
 ) {
     var label by rememberSaveable { mutableStateOf(initialTier?.label ?: "") }
     var caption by rememberSaveable { mutableStateOf(initialTier?.caption ?: "") }
@@ -131,6 +145,8 @@ fun TierEditorSheetContent(
                     colorLight = colorSelection.colorLight,
                     colorDark = colorSelection.colorDark,
                 )
+
+                if (actions != null) TierPlaceActions(actions)
             }
 
             Row(
@@ -193,6 +209,31 @@ fun TierEditorSheetContent(
             }
         }
     }
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TierPlaceActions(actions: TierEditorActions) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        OutlinedButton(
+            onClick = { actions.onMoveUp?.invoke() },
+            enabled = actions.onMoveUp != null,
+            modifier = Modifier.testTag(TierDetailTestTags.TIER_EDITOR_MOVE_UP),
+        ) { Text(stringResource(R.string.tier_editor_move_up)) }
+        OutlinedButton(
+            onClick = { actions.onMoveDown?.invoke() },
+            enabled = actions.onMoveDown != null,
+            modifier = Modifier.testTag(TierDetailTestTags.TIER_EDITOR_MOVE_DOWN),
+        ) { Text(stringResource(R.string.tier_editor_move_down)) }
+        TextButton(
+            onClick = actions.onRemove,
+            modifier = Modifier.testTag(TierDetailTestTags.TIER_EDITOR_REMOVE),
+        ) { Text(stringResource(R.string.tier_editor_remove), color = MaterialTheme.colorScheme.error) }
+    }
+}
 
 /** As long as the server keeps a tier's name and caption; longer is cut there, so it is not taken here. */
 const val TIER_LABEL_MAX_LENGTH = 80

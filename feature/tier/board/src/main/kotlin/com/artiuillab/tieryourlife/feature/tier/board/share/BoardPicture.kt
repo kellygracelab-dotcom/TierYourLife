@@ -62,42 +62,104 @@ object BoardPicture {
     private const val NAME_PADDING = 8f
     private const val NAME_SHADE_RISE = 28f
     private const val NAME_SHADE = 0xC7000000.toInt()
+    private const val TITLE_SMALLEST = 40f
+    private const val TITLE_LINE = 1.15f
+    private const val NOT_PLACED_SIZE = 30f
+    private const val NOT_PLACED_HEIGHT = 64f
     private const val FOOTER_HEIGHT = 120f
     private const val FOOTER_TEXT_SIZE = 32f
+    private const val MARK_SIZE = 54f
+    private const val MARK_RADIUS = 14f
+    private const val MARK_GAP = 22f
+    private const val PILL_TEXT_SIZE = 27f
+    private const val PILL_SMALLEST_TEXT = 20f
+    private const val PILL_HEIGHT = 56f
+    private const val PILL_PADDING = 26f
     private const val MAX_ROWS_PER_TIER = 6
+    private const val BRAND = "TierYourLife"
 
-    /** Pictures by item id. A card without one is drawn as its title; with [names], a picture carries its name along its foot. */
-    fun render(list: TierList, palette: BoardPalette, pictures: Map<Long, Bitmap>, footer: String, names: Boolean = false): Bitmap {
+    /** The mark's stripes, top to bottom: the default tiers' colours, as on the site's icon. */
+    private val MARK_STRIPES = listOf(
+        0.25f to 0xFFB03A32.toInt(),
+        0.45f to 0xFFC06A25.toInt(),
+        0.62f to 0xFFA98B1F.toInt(),
+        0.80f to 0xFF3F7F55.toInt(),
+        1f to 0xFF3C6E99.toInt(),
+    )
+
+    /**
+     * Pictures by item id. A card without one is drawn as its title; with [names], a picture carries its name along its foot.
+     * [footer] is the pill at the foot (rank it yourself, and where), [counts] the line under the title, and
+     * [notPlaced] the one line that stands for the cards still in the deck: the picture shows the ranking, not the deck.
+     */
+    fun render(
+        list: TierList,
+        palette: BoardPalette,
+        pictures: Map<Long, Bitmap>,
+        footer: String,
+        names: Boolean = false,
+        counts: String = "",
+        notPlaced: String? = null,
+    ): Bitmap {
         val ranked = list.tiers.filterNot { it.isPool }
-        val pool = list.tiers.filter { it.isPool }
-        val poolRow = pool.firstOrNull()?.let { first ->
-            val items = pool.flatMap { it.items }
-            items.takeIf { it.isNotEmpty() }?.let { Tier(-1, first.label, "", "", it, isPool = true) }
-        }
         // One band width for the whole board, from the longest caption: a
         // caption never moves the column of tier letters, on screen or here.
-        val bandWidth = bandWidthFor(ranked + listOfNotNull(poolRow))
+        val bandWidth = bandWidthFor(ranked)
         val perLine = tilesPerLine(bandWidth)
-        val rows = ranked.map { tier -> Row(tier, perLine) } + listOfNotNull(poolRow?.let { Row(it, perLine) })
+        val rows = ranked.map { tier -> Row(tier, perLine) }
 
-        val headerHeight = PADDING + TITLE_SIZE + 12f + SUBTITLE_SIZE + PADDING
+        val title = titlePaint(palette)
+        val titleLines = titleLines(list.title, title)
+        val headerHeight = PADDING + title.textSize * (1 + TITLE_LINE * (titleLines.size - 1)) + 12f + SUBTITLE_SIZE + PADDING
         val boardHeight = rows.sumOf { it.height.toDouble() }.toFloat() + ROW_GAP * max(0, rows.size - 1)
-        val height = (headerHeight + boardHeight + PADDING + FOOTER_HEIGHT).toInt()
+        val notPlacedHeight = if (notPlaced != null) NOT_PLACED_HEIGHT else 0f
+        val height = (headerHeight + boardHeight + notPlacedHeight + PADDING + FOOTER_HEIGHT).toInt()
 
         val bitmap = createBitmap(WIDTH, height)
         val canvas = Canvas(bitmap)
         canvas.drawColor(palette.surface.toArgb())
 
-        drawHeader(canvas, list, ranked, palette)
+        drawHeader(canvas, titleLines, title, counts, palette)
 
         var y = headerHeight
         for (row in rows) {
             drawRow(canvas, row, y, bandWidth, palette, pictures, names)
             y += row.height + ROW_GAP
         }
+        if (notPlaced != null) {
+            val text = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = palette.onSurfaceVariant.toArgb()
+                textSize = NOT_PLACED_SIZE
+                typeface = Typeface.SANS_SERIF
+            }
+            canvas.drawText(notPlaced, PADDING, y - ROW_GAP + NOT_PLACED_HEIGHT / 2 + NOT_PLACED_SIZE / 2, text)
+        }
 
         drawFooter(canvas, height.toFloat(), footer, palette)
         return bitmap
+    }
+
+    private fun titlePaint(palette: BoardPalette) = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = palette.onSurface.toArgb()
+        textSize = TITLE_SIZE
+        typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+    }
+
+    /**
+     * The whole name in two lines at most, broken between words: a long one takes a smaller size first,
+     * and only what still does not fit ends in an ellipsis. Leaves [paint] at the size chosen.
+     */
+    private fun titleLines(title: String, paint: TextPaint): List<String> {
+        val width = WIDTH - 2 * PADDING
+        val words = title.split(' ', '\n', '\t').filter { it.isNotEmpty() }
+        fun wrap() = wrapWords(words, width.toInt()) { paint.measureText(it).toInt() }
+        var wrapped = wrap()
+        while (paint.textSize > TITLE_SMALLEST && (wrapped.size > 2 || wrapped.any { paint.measureText(it) > width })) {
+            paint.textSize -= 2f
+            wrapped = wrap()
+        }
+        return listOf(wrapped.firstOrNull().orEmpty()) + listOfNotNull(wrapped.drop(1).joinToString(" ").takeIf { it.isNotEmpty() })
+            .map { TextUtils.ellipsize(it, paint, width, TextUtils.TruncateAt.END).toString() }
     }
 
     private fun tilesPerLine(bandWidth: Float): Int =
@@ -132,26 +194,24 @@ object BoardPicture {
         val height: Float = ROW_PADDING * 2 + lines * TILE_HEIGHT + (lines - 1) * TILE_GAP
     }
 
-    private fun drawHeader(canvas: Canvas, list: TierList, ranked: List<Tier>, palette: BoardPalette) {
-        val title = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = palette.onSurface.toArgb()
-            textSize = TITLE_SIZE
-            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+    private fun drawHeader(canvas: Canvas, titleLines: List<String>, title: TextPaint, counts: String, palette: BoardPalette) {
+        var baseline = PADDING + title.textSize
+        titleLines.forEachIndexed { index, line ->
+            if (index > 0) baseline += title.textSize * TITLE_LINE
+            canvas.drawText(line, PADDING, baseline, title)
         }
-        val width = WIDTH - 2 * PADDING
-        canvas.drawText(
-            TextUtils.ellipsize(list.title, title, width, TextUtils.TruncateAt.END).toString(),
-            PADDING,
-            PADDING + TITLE_SIZE,
-            title,
-        )
-        val rankedCount = ranked.sumOf { it.items.size }
         val subtitle = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = palette.onSurfaceVariant.toArgb()
             textSize = SUBTITLE_SIZE
             typeface = Typeface.SANS_SERIF
         }
-        canvas.drawText("$rankedCount ranked · ${ranked.size} tiers", PADDING, PADDING + TITLE_SIZE + 12f + SUBTITLE_SIZE, subtitle)
+        val width = WIDTH - 2 * PADDING
+        canvas.drawText(
+            TextUtils.ellipsize(counts, subtitle, width, TextUtils.TruncateAt.END).toString(),
+            PADDING,
+            baseline + 12f + SUBTITLE_SIZE,
+            subtitle,
+        )
     }
 
     private fun drawRow(canvas: Canvas, row: Row, top: Float, bandWidth: Float, palette: BoardPalette, pictures: Map<Long, Bitmap>, names: Boolean) {
@@ -306,15 +366,54 @@ object BoardPicture {
         }
     }
 
+    /** The mark and name on the left; on the right a pill saying where to rank it, so the picture leads to the list. */
     private fun drawFooter(canvas: Canvas, height: Float, footer: String, palette: BoardPalette) {
-        val rule = Paint().apply { color = palette.outlineVariant.toArgb() }
-        canvas.drawRect(PADDING, height - FOOTER_HEIGHT, WIDTH - PADDING, height - FOOTER_HEIGHT + 2f, rule)
-        val text = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = palette.onSurfaceVariant.toArgb()
+        val middle = height - FOOTER_HEIGHT / 2
+        drawMark(canvas, RectF(PADDING, middle - MARK_SIZE / 2, PADDING + MARK_SIZE, middle + MARK_SIZE / 2))
+        val brand = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = palette.onSurface.toArgb()
             textSize = FOOTER_TEXT_SIZE
             typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
         }
-        canvas.drawText(footer, PADDING, height - FOOTER_HEIGHT / 2 + FOOTER_TEXT_SIZE / 3, text)
+        val brandLeft = PADDING + MARK_SIZE + MARK_GAP
+        canvas.drawText(BRAND, brandLeft, middle + FOOTER_TEXT_SIZE / 3, brand)
+
+        val pill = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = palette.surface.toArgb()
+            typeface = Typeface.SANS_SERIF
+        }
+        val room = WIDTH - PADDING - (brandLeft + brand.measureText(BRAND) + MARK_GAP) - 2 * PILL_PADDING
+        var size = PILL_TEXT_SIZE
+        pill.textSize = size
+        while (size > PILL_SMALLEST_TEXT && pill.measureText(footer) > room) {
+            size -= 1f
+            pill.textSize = size
+        }
+        val text = TextUtils.ellipsize(footer, pill, room, TextUtils.TruncateAt.END).toString()
+        val pillWidth = pill.measureText(text) + 2 * PILL_PADDING
+        val frame = RectF(WIDTH - PADDING - pillWidth, middle - PILL_HEIGHT / 2, WIDTH - PADDING, middle + PILL_HEIGHT / 2)
+        canvas.drawRoundRect(frame, PILL_HEIGHT / 2, PILL_HEIGHT / 2, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = palette.onSurface.toArgb() })
+        canvas.drawText(text, frame.left + PILL_PADDING, middle + size / 3, pill)
+    }
+
+    /** A rounded square in the default tiers' stripes with an S on it. */
+    private fun drawMark(canvas: Canvas, frame: RectF) {
+        val clip = android.graphics.Path().apply { addRoundRect(frame, MARK_RADIUS, MARK_RADIUS, android.graphics.Path.Direction.CW) }
+        canvas.withClip(clip) {
+            var top = frame.top
+            for ((end, color) in MARK_STRIPES) {
+                val bottom = frame.top + frame.height() * end
+                drawRect(frame.left, top, frame.right, bottom, Paint().apply { this.color = color })
+                top = bottom
+            }
+        }
+        val letter = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = android.graphics.Color.WHITE
+            textSize = MARK_SIZE * 0.55f
+            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText("S", frame.centerX(), frame.centerY() + letter.textSize / 3, letter)
     }
 }
 

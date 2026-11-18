@@ -14,7 +14,7 @@
     <string name="list_settings_category">Раздел</string>
     <string name="list_settings_category_none">Пока не выбрана</string>
     <string name="list_settings_cover">Обложка</string>
-    <string name="list_settings_cover_none_set">Нет</string>
+    <string name="list_settings_cover_auto">Коллаж · автоматически</string>
     <string name="list_settings_cover_set">Выбрана</string>
     <string name="list_settings_topic">Тема</string>
     <string name="list_settings_topic_none">Нет</string>
@@ -62,7 +62,14 @@
     <string name="manual_dialog_title">Добавить карточку</string>
     <string name="my_published_action_update">Обновить</string>
     <string name="share_caption">%1$s — расставлено в TierYourLife\n%2$s</string>
-    <string name="share_footer">Сделано в TierYourLife</string>
+    <string name="share_rank_yourself">Разложите сами · %1$s</string>
+    <string name="share_by_author">от %1$s</string>
+    <plurals name="share_more_not_placed">
+        <item quantity="one">Ещё %d карточка не разложена</item>
+        <item quantity="few">Ещё %d карточки не разложены</item>
+        <item quantity="many">Ещё %d карточек не разложено</item>
+        <item quantity="other">Ещё %d карточки не разложено</item>
+    </plurals>
     <string name="share_failed">Не удалось поделиться картинкой</string>
     <string name="tier_detail_add">Добавить</string>
     <plurals name="tier_detail_collapsed_item_count">
@@ -227,4 +234,7 @@
     <string name="board_header_counts">%1$s · %2$s</string>
     <string name="board_names_on_cards">Названия на карточках</string>
     <string name="board_names_on_cards_sub">Полоска с названием внизу каждой картинки</string>
+    <string name="tier_editor_move_up">Сдвинуть вверх</string>
+    <string name="tier_editor_move_down">Сдвинуть вниз</string>
+    <string name="tier_editor_remove">Удалить уровень</string>
 </resources>

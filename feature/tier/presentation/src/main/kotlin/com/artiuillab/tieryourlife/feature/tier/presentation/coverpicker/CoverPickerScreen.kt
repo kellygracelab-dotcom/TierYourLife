@@ -214,6 +214,7 @@ private fun PickerTopBar(onBack: () -> Unit, onDone: () -> Unit, saving: Boolean
                 .weight(1f)
                 .padding(horizontal = 4.dp),
             style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

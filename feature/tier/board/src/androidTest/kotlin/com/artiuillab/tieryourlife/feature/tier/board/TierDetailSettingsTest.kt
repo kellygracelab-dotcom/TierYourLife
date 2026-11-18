@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -113,7 +114,7 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
         ).asTierList()
         setScreen(TierDetailUiState.Success(list))
 
-        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { doubleClick() }
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(1)).performTouchInput { click() }
 
         composeRule.onNodeWithText("Edit tier").assertIsDisplayed()
     }

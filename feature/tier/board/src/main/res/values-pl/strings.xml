@@ -14,7 +14,7 @@
     <string name="list_settings_category">Dział</string>
     <string name="list_settings_category_none">Jeszcze nie wybrana</string>
     <string name="list_settings_cover">Okładka</string>
-    <string name="list_settings_cover_none_set">Brak</string>
+    <string name="list_settings_cover_auto">Kolaż · automatyczny</string>
     <string name="list_settings_cover_set">Wybrana</string>
     <string name="list_settings_topic">Temat</string>
     <string name="list_settings_topic_none">Brak</string>
@@ -62,7 +62,14 @@
     <string name="manual_dialog_title">Dodaj kartę</string>
     <string name="my_published_action_update">Aktualizuj</string>
     <string name="share_caption">%1$s — ułożone w TierYourLife\n%2$s</string>
-    <string name="share_footer">Zrobione w TierYourLife</string>
+    <string name="share_rank_yourself">Oceń po swojemu · %1$s</string>
+    <string name="share_by_author">od %1$s</string>
+    <plurals name="share_more_not_placed">
+        <item quantity="one">Jeszcze %d karta czeka na miejsce</item>
+        <item quantity="few">Jeszcze %d karty czekają na miejsce</item>
+        <item quantity="many">Jeszcze %d kart czeka na miejsce</item>
+        <item quantity="other">Jeszcze %d karty czeka na miejsce</item>
+    </plurals>
     <string name="share_failed">Nie udało się udostępnić obrazu</string>
     <string name="tier_detail_add">Dodaj</string>
     <plurals name="tier_detail_collapsed_item_count">
@@ -227,4 +234,7 @@
     <string name="board_header_counts">%1$s · %2$s</string>
     <string name="board_names_on_cards">Nazwy na kartach</string>
     <string name="board_names_on_cards_sub">Pasek z nazwą u dołu każdego obrazu</string>
+    <string name="tier_editor_move_up">Przesuń w górę</string>
+    <string name="tier_editor_move_down">Przesuń w dół</string>
+    <string name="tier_editor_remove">Usuń poziom</string>
 </resources>

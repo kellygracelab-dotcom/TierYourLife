@@ -195,7 +195,7 @@ fun TierRow(
                                     )
                                 }
                                 .pointerInput(tier.id) {
-                                    detectTapGestures(onDoubleTap = { onEditTier(tier.id) })
+                                    detectTapGestures(onTap = { onEditTier(tier.id) })
                                 }
                         } else {
                             Modifier

@@ -1,7 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import android.content.ClipData
-import android.net.Uri
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,7 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.board.share.SHARE_LINK
+import com.artiuillab.tieryourlife.feature.tier.board.share.publishedListLink
 import kotlinx.coroutines.launch
 
 /** What the page of their own list can do while its board is not on this phone, and from its menu. */
@@ -148,7 +147,7 @@ internal fun CopyLinkButton(
 private val OWN_BUTTON_MAX_WIDTH = 180.dp
 
 /** The list's address on the web, the one the site itself copies. */
-internal fun listLink(publishedId: String): String = "$SHARE_LINK/l/${Uri.encode(publishedId)}"
+internal fun listLink(publishedId: String): String = publishedListLink(publishedId)
 
 /** Puts the link on the clipboard; Android 13 and later say so themselves, earlier ones get the snackbar. */
 @Composable

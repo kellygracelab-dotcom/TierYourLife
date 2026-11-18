@@ -96,14 +96,16 @@ internal fun TierListCard(
             // Trailing, so the stars line up in a column of their own. The
             // leading edge is where a name starts, and a column of stars there
             // would push every title across for the sake of two boards.
-            if (list.coverImageUrl != null || list.coverImageUrls.isNotEmpty()) {
+            // The same art as the list's tile, its automatic collage included.
+            val art = list.art()
+            if (art.coverImageUrl != null || art.previewImages.isNotEmpty()) {
                 // Own lists are known by their name; the cover is a reminder,
                 // not the whole card.
                 ListArt(
-                    coverImageUrl = list.coverImageUrl,
-                    coverFocus = list.coverFocus,
-                    pictureFocus = list.pictureFocus,
-                    previewImages = list.coverImageUrls,
+                    coverImageUrl = art.coverImageUrl,
+                    coverFocus = art.coverFocus,
+                    pictureFocus = art.pictureFocus,
+                    previewImages = art.previewImages,
                     tierColors = emptyList(),
                     modifier = Modifier
                         .size(COVER_THUMBNAIL)
