@@ -303,4 +303,5 @@
     <string name="started_discard">At</string>
     <string name="started_discard_arrangement">Düzenlememi at</string>
     <string name="started_discarded">Düzenleme atıldı</string>
+    <string name="started_updated_elsewhere">Başka bir cihazdan güncellendi</string>
 </resources>

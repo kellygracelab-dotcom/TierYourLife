@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.SearchWords
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
+import com.artiuillab.tieryourlife.feature.community.domain.repository.StartedSync
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGames
@@ -30,11 +31,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -53,6 +56,7 @@ class TierListsViewModel @Inject constructor(
     private val owner: BoardOwner,
     private val drafts: RankingDrafts = RankingDrafts.None,
     private val games: SavedGames = NoSavedGames,
+    private val startedSync: StartedSync = StartedSync.None,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
@@ -61,6 +65,11 @@ class TierListsViewModel @Inject constructor(
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
+
+    private val replacedHere = Channel<Unit>(Channel.CONFLATED)
+
+    /** A list begun here gave way to a later arrangement of it from another device. */
+    val updatedElsewhere: Flow<Unit> = replacedHere.receiveAsFlow()
 
     private var lastLoadedLists: List<TierListSummary> = emptyList()
 
@@ -110,6 +119,15 @@ class TierListsViewModel @Inject constructor(
         // A run from a returning connection, with no screen having asked for it.
         viewModelScope.launch {
             boardSync.finished.collect { report -> if (loaded && report.carried > 0) showWhatTheRunLeft() }
+        }
+        // Lists begun on another device, or taken out of Continue there.
+        viewModelScope.launch {
+            startedSync.synced.collect { outcome ->
+                if (!loaded) return@collect
+                started = startedLists()
+                emitSuccess()
+                if (outcome.replaced > 0) replacedHere.trySend(Unit)
+            }
         }
     }
 
@@ -195,6 +213,7 @@ class TierListsViewModel @Inject constructor(
             loaded = true
             emitSuccess().join()
             keepBoards()
+            startedSync.request()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

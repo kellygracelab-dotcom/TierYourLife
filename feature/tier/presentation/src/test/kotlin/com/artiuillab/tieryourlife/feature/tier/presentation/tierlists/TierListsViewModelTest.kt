@@ -10,6 +10,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityReposit
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
 import com.artiuillab.tieryourlife.feature.community.domain.repository.StartedRanking
+import com.artiuillab.tieryourlife.feature.community.domain.repository.StartedSync
+import com.artiuillab.tieryourlife.feature.community.domain.repository.StartedSyncOutcome
 import com.artiuillab.tieryourlife.feature.play.domain.FakeSavedGames
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.domain.GameSpec
@@ -533,6 +535,40 @@ class TierListsViewModelTest {
         withTimeout(5_000) { while (key !in games.keys()) delay(10) }
         assertEquals(begun, drafts.kept)
         assertTrue(key in games.keys())
+    }
+
+    @Test
+    fun aListReplacedFromAnotherDevice_isShownAsItIsNow_andSaidOnce() = runBlocking {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Mine")))
+        var begun = listOf(StartedRanking("films", "Every A24 film", version = 7, placed = 4, total = 22, keptAt = 2))
+        val drafts = object : RankingDrafts {
+            override suspend fun read(listId: String, owner: String?): RankingDraft? = null
+            override suspend fun keep(listId: String, draft: RankingDraft, owner: String?) = Unit
+            override suspend fun started(owner: String?): List<StartedRanking> = begun
+        }
+        val sync = object : StartedSync {
+            var requests = 0
+            val rounds = MutableSharedFlow<StartedSyncOutcome>()
+            override suspend fun sync() = StartedSyncOutcome()
+            override fun request() {
+                requests++
+            }
+            override val synced: Flow<StartedSyncOutcome> = rounds
+        }
+        val viewModel = TierListsViewModel(
+            repository, TestCommunity(), FakeAppPreferences(), FakeAccountRepository(), NoBoardSync, NoPictureRestore, NoOwnerChange,
+            drafts, FakeSavedGames(), sync,
+        )
+        viewModel.loadTierLists()
+        viewModel.state.firstWithin { it is TierListsUiState.Success && it.started.single().placed == 4 }
+        assertEquals(1, sync.requests)
+        val told = async { viewModel.updatedElsewhere.first() }
+
+        begun = listOf(begun.single().copy(placed = 9))
+        sync.rounds.emit(StartedSyncOutcome(changed = true, replaced = 1))
+
+        viewModel.state.firstWithin { it is TierListsUiState.Success && it.started.single().placed == 9 }
+        withTimeout(5_000) { told.await() }
     }
 
     private fun savedGame() = SavedGame(spec = GameSpec(GameKind.Hill, count = 2, seed = 1), ids = listOf(1L, 2L), history = emptyList(), round = 0, startedAt = 0)
