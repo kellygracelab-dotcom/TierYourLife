@@ -300,4 +300,7 @@
     <string name="publish_sheet_name_why">Sie heißt noch „%1$s“. Listen werden über ihren Namen gefunden.</string>
     <string name="publish_sheet_needs_account">Zum Veröffentlichen brauchst du ein Google-Konto. Deine Liste bleibt hier, während du dich anmeldest.</string>
     <string name="publish_sheet_sign_in_and_publish">Anmelden und veröffentlichen</string>
+    <string name="started_discard">Verwerfen</string>
+    <string name="started_discard_arrangement">Meine Anordnung verwerfen</string>
+    <string name="started_discarded">Anordnung verworfen</string>
 </resources>

@@ -317,4 +317,7 @@
     <string name="publish_sheet_name_why">Elle s’appelle encore « %1$s ». On trouve les listes par leur nom.</string>
     <string name="publish_sheet_needs_account">Publier demande un compte Google. Votre liste reste ici pendant la connexion.</string>
     <string name="publish_sheet_sign_in_and_publish">Se connecter et publier</string>
+    <string name="started_discard">Abandonner</string>
+    <string name="started_discard_arrangement">Abandonner mon classement</string>
+    <string name="started_discarded">Classement abandonné</string>
 </resources>

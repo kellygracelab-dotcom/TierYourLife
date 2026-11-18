@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.SearchWords
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.domain.SavedGame
@@ -77,6 +78,12 @@ class TierListsViewModel @Inject constructor(
 
     private var restoringPictures: PictureRestore.Progress = PictureRestore.Progress.Idle
     private var started: List<StartedList> = emptyList()
+
+    /** The arrangement last discarded from Continue, as it was, for its Undo. */
+    private var discarded: Discarded? = null
+    private var discarding: Job? = null
+
+    private class Discarded(val listId: String, val owner: String?, val draft: RankingDraft, val gameKey: String, val game: SavedGame?)
 
     init {
         offerAnswered = preferences.signInOfferAnswered()
@@ -277,6 +284,42 @@ class TierListsViewModel @Inject constructor(
             )
         }
     }.onFailure { Timber.w(it, "Reading the lists begun failed") }.getOrDefault(emptyList())
+
+    /**
+     * Takes a list out of Continue: its cards go back to the deck and its game is let go, as Return all
+     * cards to the deck does on the list. The list itself, in Community, is not touched.
+     */
+    fun discardStarted(listId: String) {
+        started = started.filterNot { it.listId == listId }
+        emitSuccess()
+        discarding = viewModelScope.launch {
+            messages.guard("Discarding an arrangement") {
+                val who = (accounts.current() as? Account.SignedIn)?.recordKey
+                val draft = drafts.read(listId, who) ?: return@guard
+                val key = PlayRequest.someoneElsesKey(listId, draft.version)
+                val game = games.load(key)
+                drafts.keep(listId, draft.copy(rows = draft.rows.map { emptyList() }, pool = draft.rows.flatten() + draft.pool), who)
+                if (game != null) games.discard(key)
+                discarded = Discarded(listId, who, draft, key, game)
+            }
+            started = startedLists()
+            emitSuccess()
+        }
+    }
+
+    fun undoDiscardStarted() {
+        viewModelScope.launch {
+            discarding?.join()
+            val last = discarded ?: return@launch
+            discarded = null
+            messages.guard("Bringing an arrangement back") {
+                drafts.keep(last.listId, last.draft, last.owner)
+                last.game?.let { games.save(last.gameKey, it) }
+            }
+            started = startedLists()
+            emitSuccess()
+        }
+    }
 
     /** The sign-in offer waits for a first board: with nothing to lose there is nothing to offer. */
     private fun whereTheseLive(): LocalOnly = when {

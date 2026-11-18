@@ -283,4 +283,7 @@
     <string name="publish_sheet_name_why">まだ「%1$s」という名前です。リストは名前で探されます。</string>
     <string name="publish_sheet_needs_account">公開には Google アカウントが必要です。ログインの間もリストはここに残ります。</string>
     <string name="publish_sheet_sign_in_and_publish">ログインして公開</string>
+    <string name="started_discard">破棄</string>
+    <string name="started_discard_arrangement">自分の並びを破棄</string>
+    <string name="started_discarded">並びを破棄しました</string>
 </resources>

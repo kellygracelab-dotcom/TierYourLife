@@ -334,4 +334,7 @@
     <string name="publish_sheet_name_why">Він досі називається «%1$s». Списки шукають за назвою.</string>
     <string name="publish_sheet_needs_account">Для публікації потрібен обліковий запис Google. Поки ви входите, список лишається тут.</string>
     <string name="publish_sheet_sign_in_and_publish">Увійти й опублікувати</string>
+    <string name="started_discard">Скинути</string>
+    <string name="started_discard_arrangement">Скинути мою розстановку</string>
+    <string name="started_discarded">Розстановку скинуто</string>
 </resources>

@@ -162,6 +162,8 @@ fun TierListsScreen(
         tabs = tabs,
         picturesOnWifiOnly = viewModel::picturesOnWifiOnly,
         onContinueStarted = onContinueStarted,
+        onDiscardStarted = viewModel::discardStarted,
+        onUndoDiscardStarted = viewModel::undoDiscardStarted,
     )
 }
 
@@ -193,6 +195,8 @@ fun TierListsScreenContent(
     /** Null draws without fetching any pictures ahead, as a test or a preview should. */
     picturesOnWifiOnly: (() -> Boolean)? = null,
     onContinueStarted: (listId: String, resumeGame: Boolean) -> Unit = { _, _ -> },
+    onDiscardStarted: (listId: String) -> Unit = {},
+    onUndoDiscardStarted: () -> Unit = {},
 ) {
     val success = state as? TierListsUiState.Success
     val mode = success?.mode ?: HomeMode.Browsing
@@ -208,10 +212,6 @@ fun TierListsScreenContent(
     val favourites = success?.favourites.orEmpty()
     val grouped = success?.grouped ?: false
     val started = success?.started.orEmpty()
-    // Not while searching or choosing boards to delete: those are about one's own.
-    val continuing: (@Composable () -> Unit)? = started.takeIf { it.isNotEmpty() && mode == HomeMode.Browsing }?.let { begun ->
-        { ContinueBlock(begun, onContinue = { list, resume -> onContinueStarted(list.listId, resume) }) }
-    }
     var filtersOpen by rememberSaveable { mutableStateOf(false) }
     val hasRail = currentWindowShape.hasRail
     // Out here, so closing a search finds the boards where they were left.
@@ -267,6 +267,20 @@ fun TierListsScreenContent(
                 onUndoDelete(ids)
             }
         }
+    }
+
+    val discardedMessage = stringResource(R.string.started_discarded)
+    val discardAndAnnounce: (StartedList) -> Unit = { list ->
+        onDiscardStarted(list.listId)
+        snackbarHostState.currentSnackbarData?.dismiss()
+        coroutineScope.launch {
+            val result = snackbarHostState.showSnackbar(message = discardedMessage, actionLabel = undoLabel, duration = SnackbarDuration.Long)
+            if (result == SnackbarResult.ActionPerformed) onUndoDiscardStarted()
+        }
+    }
+    // Not while searching or choosing boards to delete: those are about one's own.
+    val continuing: (@Composable () -> Unit)? = started.takeIf { it.isNotEmpty() && mode == HomeMode.Browsing }?.let { begun ->
+        { ContinueBlock(begun, onContinue = { list, resume -> onContinueStarted(list.listId, resume) }, onDiscard = discardAndAnnounce) }
     }
 
     val showsEmptyState = state is TierListsUiState.Success &&

@@ -36,6 +36,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -496,6 +497,40 @@ class TierListsViewModelTest {
             listOf(StartedList("films", "Every A24 film", 4, 22, gameSaved = true, section = "film_tv"), StartedList("games", "PS2 era", 1, 9, gameSaved = false)),
             state.started,
         )
+    }
+
+    @Test
+    fun discardingABegunList_sendsItsCardsBackAndLetsItsGameGo_andUndoBringsBothBack() = runBlocking {
+        val repository = FakeTierRepository(initial = listOf(fakeList(id = 1, title = "Mine")))
+        val accounts = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null, uid = "uid-ann"))
+        val begun = RankingDraft(version = 7, rows = listOf(listOf(0, 1), listOf(2)), pool = listOf(3), title = "Every A24 film")
+        val drafts = object : RankingDrafts {
+            var kept = begun
+            override suspend fun read(listId: String, owner: String?): RankingDraft? = kept.takeIf { listId == "films" }
+            override suspend fun keep(listId: String, draft: RankingDraft, owner: String?) {
+                kept = draft
+            }
+            override suspend fun started(owner: String?): List<StartedRanking> =
+                listOf(StartedRanking("films", kept.title, kept.version, kept.placed, kept.total, keptAt = 1)).filter { it.placed > 0 }
+        }
+        val key = PlayRequest.someoneElsesKey("films", 7)
+        val games = FakeSavedGames().apply { this.games[key] = savedGame() }
+        val viewModel = TierListsViewModel(repository, TestCommunity(), FakeAppPreferences(), accounts, NoBoardSync, NoPictureRestore, NoOwnerChange, drafts, games)
+        viewModel.loadTierLists()
+        viewModel.state.firstWithin { it is TierListsUiState.Success && it.started.size == 1 }
+
+        viewModel.discardStarted("films")
+        viewModel.state.firstWithin { it is TierListsUiState.Success && it.started.isEmpty() }
+        withTimeout(5_000) { while (drafts.kept.placed > 0 || key in games.keys()) delay(10) }
+        assertEquals(listOf(emptyList<Int>(), emptyList()), drafts.kept.rows)
+        assertEquals(listOf(0, 1, 2, 3), drafts.kept.pool)
+        assertTrue(key !in games.keys())
+
+        viewModel.undoDiscardStarted()
+        viewModel.state.firstWithin { it is TierListsUiState.Success && it.started.size == 1 }
+        withTimeout(5_000) { while (key !in games.keys()) delay(10) }
+        assertEquals(begun, drafts.kept)
+        assertTrue(key in games.keys())
     }
 
     private fun savedGame() = SavedGame(spec = GameSpec(GameKind.Hill, count = 2, seed = 1), ids = listOf(1L, 2L), history = emptyList(), round = 0, startedAt = 0)

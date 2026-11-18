@@ -368,4 +368,7 @@
     <string name="publish_sheet_name_why">ما زال اسمها «%1$s». يجد الناس القوائم بأسمائها.</string>
     <string name="publish_sheet_needs_account">النشر يحتاج إلى حساب Google. تبقى قائمتك هنا أثناء تسجيل الدخول.</string>
     <string name="publish_sheet_sign_in_and_publish">سجّل الدخول وانشر</string>
+    <string name="started_discard">تجاهل</string>
+    <string name="started_discard_arrangement">تجاهل ترتيبي</string>
+    <string name="started_discarded">تم تجاهل الترتيب</string>
 </resources>
