@@ -67,6 +67,7 @@ internal fun BoardTile(
                 },
             )
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .favouriteAction(favouriteLabel(list.favouritedAt != null), onToggleFavourite.takeUnless { selectionMode })
             .testTag(TierListsTestTags.tile(list.id)),
     ) {
         Box(Modifier.fillMaxWidth().aspectRatio(ART_RATIO), contentAlignment = Alignment.TopEnd) {
@@ -80,8 +81,8 @@ internal fun BoardTile(
             )
             if (selectionMode) {
                 Box(Modifier.padding(8.dp)) { SelectionCheckbox(selected) }
-            } else if (onToggleFavourite != null) {
-                // On a disc: a bare outline disappears into a pale poster.
+            } else if (list.favouritedAt != null) {
+                // On a disc: the star alone disappears into a pale poster.
                 Box(
                     Modifier
                         .padding(6.dp)
@@ -90,15 +91,7 @@ internal fun BoardTile(
                         .background(Color.Black.copy(alpha = SCRIM_ALPHA)),
                     contentAlignment = Alignment.Center,
                 ) {
-                    StarButton(
-                        on = list.favouritedAt != null,
-                        id = list.id,
-                        onClick = onToggleFavourite,
-                        size = SCRIM_DISC,
-                        // Not the theme's grey, which vanished on a light poster:
-                        // white on a dark disc reads on any picture.
-                        colorOverride = if (list.favouritedAt != null) STAR_ON else Color.White,
-                    )
+                    FavouriteMark(id = list.id, color = STAR_ON)
                 }
             }
         }

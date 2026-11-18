@@ -370,6 +370,18 @@ class TierListsViewModel @Inject constructor(
         }
     }
 
+    /** Ticked lists all starred: unstarred together; otherwise the rest join them, in one sitting's time. */
+    fun favouriteSelected(ids: Set<Long>) {
+        val chosen = lastLoadedLists.filter { it.id in ids }
+        if (chosen.isEmpty()) return
+        val at = if (chosen.all { it.favouritedAt != null }) null else System.currentTimeMillis()
+        setMode(HomeMode.Browsing)
+        viewModelScope.launch {
+            chosen.filter { (it.favouritedAt == null) == (at != null) }.forEach { repository.setFavouritedAt(it.id, at) }
+            loadTierLists()
+        }
+    }
+
     fun picturesOnWifiOnly(): Boolean = preferences.picturesOnWifiOnly()
 
     fun toggleBoardsAsPictures() {

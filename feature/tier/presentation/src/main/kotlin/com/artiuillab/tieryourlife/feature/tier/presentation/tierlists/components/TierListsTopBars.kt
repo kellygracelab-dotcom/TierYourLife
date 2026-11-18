@@ -20,6 +20,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.ui.ClearIcon
 import com.artiuillab.tieryourlife.core.theme.ui.DeleteOutlineIcon
 import com.artiuillab.tieryourlife.core.theme.ui.HomeIconButton
+import com.artiuillab.tieryourlife.core.theme.ui.StarIcon
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
@@ -47,7 +48,14 @@ internal fun homeSummary(totalListCount: Int, rankedCount: Int): String = string
 )
 
 @Composable
-internal fun SelectionTopBar(count: Int, onClose: () -> Unit, onDelete: () -> Unit) {
+internal fun SelectionTopBar(
+    count: Int,
+    /** Every ticked list a favourite already: the star then takes them all out. */
+    allFavourites: Boolean,
+    onFavourite: () -> Unit,
+    onClose: () -> Unit,
+    onDelete: () -> Unit,
+) {
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     Box(
         Modifier
@@ -74,6 +82,11 @@ internal fun SelectionTopBar(count: Int, onClose: () -> Unit, onDelete: () -> Un
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            HomeIconButton(
+                stringResource(if (allFavourites) R.string.lists_favourite_remove else R.string.lists_favourite_add),
+                onFavourite,
+                TierListsTestTags.SELECTION_FAVOURITE,
+            ) { StarIcon(on = allFavourites, colorOverride = onSurfaceVariant.takeUnless { allFavourites }) }
             val deleteDescription = stringResource(
                 R.string.cd_delete_selected,
                 pluralStringResource(ThemeR.plurals.tier_lists_count, count, count),

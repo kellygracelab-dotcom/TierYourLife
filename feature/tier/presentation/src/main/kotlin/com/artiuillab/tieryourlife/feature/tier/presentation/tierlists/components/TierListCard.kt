@@ -89,6 +89,7 @@ internal fun TierListCard(
                 },
             )
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .favouriteAction(favouriteLabel(list.favouritedAt != null), onToggleFavourite.takeUnless { selectionMode })
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
@@ -160,11 +161,8 @@ internal fun TierListCard(
             if (selectionMode) {
                 SelectionCheckbox(selected)
             } else {
-                // Out of the way while boards are being picked to delete: two
-                // things to tap on one card, asking different questions, is
-                // one too many.
-                if (onToggleFavourite != null) {
-                    StarButton(on = list.favouritedAt != null, id = list.id, onClick = onToggleFavourite)
+                if (list.favouritedAt != null) {
+                    Box(Modifier.padding(horizontal = 8.dp)) { FavouriteMark(list.id) }
                 }
                 ChevronIcon()
             }
