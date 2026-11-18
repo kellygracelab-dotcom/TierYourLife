@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
+import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkPicture
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PictureLinks
@@ -22,6 +23,25 @@ private const val SEARCH_DEBOUNCE_MILLIS = 300L
 private const val LINK_DEBOUNCE_MILLIS = 600L
 private const val MIN_QUERY_LENGTH = 2
 private const val FIRST_PAGE = 1
+
+/** A busy catalogue's time further off than this is not waited for: the search says it stayed busy. */
+internal const val BUSY_WAIT_MAX_MILLIS = 2 * 60 * 1_000L
+
+/** Without a time from the server, a busy catalogue is asked again after this long. */
+internal const val BUSY_FALLBACK_MILLIS = 10_000L
+
+/** How many times one search asks a busy catalogue before it gives up on it. */
+internal const val BUSY_TRIES = 5
+
+/**
+ * When a busy catalogue is asked again, after the search went [tries] times and the server named [retryAt];
+ * null when it is given up: asked often enough, or a time too far off. The site's rule, to the millisecond.
+ */
+internal fun busyWaitUntil(retryAt: Long?, tries: Int, now: Long): Long? {
+    if (tries >= BUSY_TRIES) return null
+    val until = retryAt ?: (now + BUSY_FALLBACK_MILLIS)
+    return until.takeIf { it - now <= BUSY_WAIT_MAX_MILLIS }
+}
 
 @HiltViewModel
 class CatalogueSearchViewModel @Inject constructor(
@@ -155,29 +175,87 @@ class CatalogueSearchViewModel @Inject constructor(
     }
 
     /**
-     * The quick catalogues first, on screen at once; then, when the quick
-     * answer says the slow ones or the web can add something, their new
-     * results below, while the spinner under the grid says more is coming.
+     * The same words until they get an answer: nothing found while a catalogue is busy is not "nothing by
+     * that name", so they wait for the time the server gave and go again by themselves, as on the site.
      */
     private suspend fun performSearch(trimmedQuery: String) {
         _state.value = CatalogueSearchUiState.Loading
         searchedQuery = trimmedQuery
         loadedPage = FIRST_PAGE
-        val language = appPreferences.languageTag()
-
-        val quick = repository.search(trimmedQuery, language, FIRST_PAGE, _scope.value, everywhere, quick = true)
-        val first = quick.getOrNull()
-        if (first == null || !first.rest) {
-            show(trimmedQuery, quick)
-            return
+        var tries = 0
+        while (true) {
+            tries++
+            val busy = searchOnce(trimmedQuery, tries) ?: return
+            val until = busyWaitUntil(busy.retryAt, tries, System.currentTimeMillis())
+            if (until == null) {
+                _state.value = CatalogueSearchUiState.Busy(busy.retryAt)
+                return
+            }
+            _state.value = CatalogueSearchUiState.Waiting(until)
+            delay((until - System.currentTimeMillis()).coerceAtLeast(0))
         }
-        if (first.items.isNotEmpty()) show(trimmedQuery, quick, restComing = true)
+    }
 
-        val whole = repository.search(trimmedQuery, language, FIRST_PAGE, _scope.value, everywhere)
+    /**
+     * The quick catalogues first, on screen at once; then, when the quick
+     * answer says the slow ones or the web can add something, their new
+     * results below, while the spinner under the grid says more is coming.
+     * The busy refusal when nothing came and the busy catalogue is worth waiting for.
+     */
+    private suspend fun searchOnce(query: String, tries: Int): SearchRefusal.Busy? {
+        val language = appPreferences.languageTag()
+        val quick = repository.search(query, language, FIRST_PAGE, _scope.value, everywhere, quick = true)
+        val first = quick.getOrElse { failure ->
+            if (failure is SearchRefusal) return held(failure)
+            // A quick answer that would not come: the whole search, as before it was split.
+            return whole(query, language, tries, quick)
+        }
+        if (!first.rest) {
+            show(query, quick)
+            refill(query, language, first, tries)
+            return null
+        }
+        if (first.items.isNotEmpty()) show(query, quick, restComing = true)
+        return whole(query, language, tries, quick)
+    }
+
+    /** The whole search, below what the quick one showed; [quick]'s answer stands when it fails with nothing shown. */
+    private suspend fun whole(query: String, language: String?, tries: Int, quick: Result<CatalogueSearchPage>): SearchRefusal.Busy? {
+        val whole = repository.search(query, language, FIRST_PAGE, _scope.value, everywhere)
+        val page = whole.getOrElse { failure ->
+            when {
+                _state.value is CatalogueSearchUiState.Success -> stopWaiting()
+                failure is SearchRefusal -> return held(failure)
+                else -> show(query, if (quick.isSuccess) quick else whole)
+            }
+            return null
+        }
+        if (_state.value is CatalogueSearchUiState.Success) append(FIRST_PAGE, page) else show(query, whole)
+        refill(query, language, page, tries)
+        return null
+    }
+
+    /** Over the limit, the search stops and says until when; a busy catalogue is handed back to be waited for. */
+    private fun held(refusal: SearchRefusal): SearchRefusal.Busy? = when (refusal) {
+        is SearchRefusal.Limit -> {
+            _state.value = CatalogueSearchUiState.Limited(refusal.retryAt)
+            null
+        }
+        is SearchRefusal.Busy -> refusal
+    }
+
+    /**
+     * The answer misses a busy catalogue's hits: the whole search once more when it may be asked, its new
+     * hits going below the others. Nothing is said of it, and a time too far off is not waited for.
+     */
+    private suspend fun refill(query: String, language: String?, page: CatalogueSearchPage, tries: Int) {
+        if (!page.busy) return
+        val until = busyWaitUntil(page.retryAt, tries, System.currentTimeMillis()) ?: return
+        delay((until - System.currentTimeMillis()).coerceAtLeast(0))
+        val again = repository.search(query, language, FIRST_PAGE, _scope.value, everywhere).getOrNull() ?: return
         when {
-            _state.value !is CatalogueSearchUiState.Success -> show(trimmedQuery, if (whole.isSuccess) whole else quick)
-            whole.isSuccess -> append(FIRST_PAGE, whole.getOrThrow())
-            else -> stopWaiting()
+            _state.value is CatalogueSearchUiState.Success -> append(FIRST_PAGE, again)
+            again.items.isNotEmpty() -> show(query, Result.success(again))
         }
     }
 
@@ -201,7 +279,8 @@ class CatalogueSearchViewModel @Inject constructor(
 
     private fun append(page: Int, loaded: CatalogueSearchPage) {
         val shown = _state.value as? CatalogueSearchUiState.Success ?: return
-        loadedPage = page
+        // A refill of the first page after more were loaded does not send the next page back to the second.
+        loadedPage = maxOf(loadedPage, page)
         val alreadyShown = shown.items.mapTo(mutableSetOf()) { it.id }
         _state.value = shown.copy(
             items = shown.items + loaded.items.filterNot { it.id in alreadyShown },

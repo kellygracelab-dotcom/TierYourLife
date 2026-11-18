@@ -73,6 +73,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.FieldFill
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.SelectedRowTintDark
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.SelectedRowTintLight
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CenteredMessage
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.HeldMessage
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ResultsList
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SearchField
 import kotlinx.coroutines.flow.Flow
@@ -431,6 +432,8 @@ private fun SearchTab(
                     loadingMore = searchState.loadingMore,
                     onNearEnd = onLoadMore,
                 )
+
+                is CatalogueSearchUiState.Held -> HeldMessage(searchState, onRetry = onSearchClick)
 
                 CatalogueSearchUiState.Error -> CenteredMessage(
                     text = stringResource(R.string.item_search_error_title),

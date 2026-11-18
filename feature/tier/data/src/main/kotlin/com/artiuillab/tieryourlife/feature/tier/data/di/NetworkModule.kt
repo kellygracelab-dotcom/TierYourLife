@@ -1,37 +1,17 @@
 package com.artiuillab.tieryourlife.feature.tier.data.di
 
-import com.artiuillab.tieryourlife.core.network.AppCheckInterceptor
-import com.artiuillab.tieryourlife.core.network.ProxyAddress
 import com.artiuillab.tieryourlife.core.network.ProxyRetrofit
 import com.artiuillab.tieryourlife.core.network.networkJson
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikimediaUserAgentInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import javax.inject.Qualifier
 import javax.inject.Singleton
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class TmdbOkHttp
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class WikidataRetrofit
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class WikidataSparqlRetrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -57,17 +37,6 @@ object NetworkModule {
             .build()
     }
 
-    @TmdbOkHttp
-    @Provides
-    @Singleton
-    fun provideTmdbOkHttpClient(
-        appCheckInterceptor: AppCheckInterceptor,
-    ): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(appCheckInterceptor)
-            .build()
-    }
-
     // The same client as the community: both count against an account, and
     // both are refused without one.
     @Provides
@@ -75,86 +44,5 @@ object NetworkModule {
     fun provideBoardsApi(@ProxyRetrofit retrofit: Retrofit): BoardsApi =
         retrofit.create(BoardsApi::class.java)
 
-    @Provides
-    @Singleton
-    fun provideRetrofit(
-        @TmdbOkHttp okHttpClient: OkHttpClient,
-        json: Json,
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(ProxyAddress.resolve(TMDB_PATH_PREFIX))
-            .client(okHttpClient)
-            .addConverterFactory(
-                json.asConverterFactory(
-                    JSON_MEDIA_TYPE.toMediaType(),
-                ),
-            )
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideTmdbApi(
-        retrofit: Retrofit,
-    ): TmdbApi {
-        return retrofit.create(TmdbApi::class.java)
-    }
-
-    @WikidataRetrofit
-    @Provides
-    @Singleton
-    fun provideWikidataRetrofit(
-        okHttpClient: OkHttpClient,
-        json: Json,
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(WIKIDATA_BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(
-                json.asConverterFactory(
-                    JSON_MEDIA_TYPE.toMediaType(),
-                ),
-            )
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideWikidataApi(
-        @WikidataRetrofit retrofit: Retrofit,
-    ): WikidataApi {
-        return retrofit.create(WikidataApi::class.java)
-    }
-
-    @WikidataSparqlRetrofit
-    @Provides
-    @Singleton
-    fun provideWikidataSparqlRetrofit(
-        okHttpClient: OkHttpClient,
-        json: Json,
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(WIKIDATA_SPARQL_BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(
-                json.asConverterFactory(
-                    JSON_MEDIA_TYPE.toMediaType(),
-                ),
-            )
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideWikidataSparqlApi(
-        @WikidataSparqlRetrofit retrofit: Retrofit,
-    ): WikidataSparqlApi {
-        return retrofit.create(WikidataSparqlApi::class.java)
-    }
-
-    private const val TMDB_PATH_PREFIX = "tmdb/"
-    private const val WIKIDATA_BASE_URL = "https://www.wikidata.org/w/"
-    private const val WIKIDATA_SPARQL_BASE_URL = "https://query.wikidata.org/"
-    private const val JSON_MEDIA_TYPE = "application/json"
     private const val WIKIMEDIA_USER_AGENT = "TierYourLife/1.0 (com.artiuillab.tieryourlife; Android)"
 }

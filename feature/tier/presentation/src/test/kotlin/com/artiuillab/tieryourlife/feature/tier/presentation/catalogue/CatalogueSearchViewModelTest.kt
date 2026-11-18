@@ -8,6 +8,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueSearchPage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
+import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.CatalogueSearchRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkPicture
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkRefusal
@@ -290,6 +291,89 @@ class CatalogueSearchViewModelTest {
         assertEquals(2, links.asked.size)
     }
 
+    @Test
+    fun nothingFoundWhileACatalogueIsBusy_waitsUntilItSaid_andAsksAgainByItself() = runBlocking {
+        val soon = System.currentTimeMillis() + 300
+        val repository = ScriptedSearch(listOf(Result.failure(SearchRefusal.Busy(soon)), page(ids = listOf(4), hasMore = false)))
+        val viewModel = viewModelWith(repository)
+
+        withContext(Dispatchers.Main) { viewModel.search("naruto") }
+        val waiting = viewModel.state.firstWithin { it is CatalogueSearchUiState.Waiting } as CatalogueSearchUiState.Waiting
+        assertEquals(soon, waiting.untilMillis)
+
+        val shown = viewModel.state.firstWithin { it is CatalogueSearchUiState.Success } as CatalogueSearchUiState.Success
+        assertEquals(listOf("tmdb:4"), shown.items.map { it.id })
+        assertEquals(listOf(true, true), repository.quickAsked)
+    }
+
+    @Test
+    fun aBusyCatalogueWithATimeTooFarOff_isNotWaitedFor_andCanBeTriedAgain() = runBlocking {
+        val later = System.currentTimeMillis() + BUSY_WAIT_MAX_MILLIS + 60_000
+        val repository = ScriptedSearch(listOf(Result.failure(SearchRefusal.Busy(later))))
+        val viewModel = viewModelWith(repository)
+
+        withContext(Dispatchers.Main) { viewModel.search("naruto") }
+
+        assertEquals(CatalogueSearchUiState.Busy(later), viewModel.state.firstWithin { it is CatalogueSearchUiState.Busy })
+        assertEquals(1, repository.quickAsked.size)
+    }
+
+    @Test
+    fun overTheSearchLimit_theSearchStops_andNothingElseIsAsked() = runBlocking {
+        val repository = ScriptedSearch(listOf(Result.failure(SearchRefusal.Limit(3_600_000))))
+        val viewModel = viewModelWith(repository)
+
+        withContext(Dispatchers.Main) { viewModel.search("dune") }
+
+        assertEquals(CatalogueSearchUiState.Limited(3_600_000), viewModel.state.firstWithin { it is CatalogueSearchUiState.Limited })
+        delay(100)
+        assertEquals(listOf(true), repository.quickAsked)
+    }
+
+    @Test
+    fun aGapLeftByABusyCatalogue_isFilledOnceWhenItMayBeAsked_belowWhatIsThere() = runBlocking {
+        val soon = System.currentTimeMillis() + 300
+        val gap = page(ids = listOf(1), hasMore = false).map { it.copy(busy = true, retryAt = soon) }
+        val repository = ScriptedSearch(listOf(gap, page(ids = listOf(2, 1), hasMore = false).map { it.copy(busy = true, retryAt = soon) }))
+        val viewModel = viewModelWith(repository)
+
+        withContext(Dispatchers.Main) { viewModel.search("naruto") }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Success && it.items.size == 1 }
+
+        val filled = viewModel.state.firstWithin { it is CatalogueSearchUiState.Success && it.items.size == 2 } as CatalogueSearchUiState.Success
+        assertEquals(listOf("tmdb:1", "tmdb:2"), filled.items.map { it.id })
+        delay(600)
+        assertEquals(listOf(true, false), repository.quickAsked)
+    }
+
+    @Test
+    fun aWholeSearchThatFindsNothingWhileBusy_waitsToo() = runBlocking {
+        val soon = System.currentTimeMillis() + 200
+        val repository = ScriptedSearch(
+            listOf(
+            page(ids = emptyList(), hasMore = false).map { it.copy(rest = true) },
+            Result.failure(SearchRefusal.Busy(soon)),
+            page(ids = listOf(9), hasMore = false),
+            ),
+        )
+        val viewModel = viewModelWith(repository)
+
+        withContext(Dispatchers.Main) { viewModel.search("dune") }
+        viewModel.state.firstWithin { it is CatalogueSearchUiState.Waiting }
+
+        val shown = viewModel.state.firstWithin { it is CatalogueSearchUiState.Success } as CatalogueSearchUiState.Success
+        assertEquals(listOf("tmdb:9"), shown.items.map { it.id })
+        assertEquals(listOf(true, false, true), repository.quickAsked)
+    }
+
+    @Test
+    fun theWaitRule_isTheSites() {
+        assertEquals(1_000L + BUSY_FALLBACK_MILLIS, busyWaitUntil(null, tries = 1, now = 1_000))
+        assertEquals(5_000L, busyWaitUntil(5_000, tries = 4, now = 1_000))
+        assertEquals(null, busyWaitUntil(5_000, tries = BUSY_TRIES, now = 1_000))
+        assertEquals(null, busyWaitUntil(1_000 + BUSY_WAIT_MAX_MILLIS + 1, tries = 1, now = 1_000))
+    }
+
     private fun viewModelWith(repository: CatalogueSearchRepository, links: PictureLinks = FakePictureLinks(LinkPicture.SignInNeeded)) =
         CatalogueSearchViewModel(repository, FakeAppPreferences(), links)
 
@@ -339,6 +423,24 @@ private class FakeCatalogueSearchRepository(
         return byScope[scope]
             ?: pagesByNumber[page]
             ?: Result.failure(IllegalStateException("page $page was not expected"))
+    }
+}
+
+/** Answers in turn, whatever is asked; the last one again when the turns run out. */
+private class ScriptedSearch(answers: List<Result<CatalogueSearchPage>>) : CatalogueSearchRepository {
+    private val turns = ArrayDeque(answers)
+    val quickAsked: MutableList<Boolean> = java.util.Collections.synchronizedList(mutableListOf())
+
+    override suspend fun search(
+        query: String,
+        languageTag: String?,
+        page: Int,
+        scope: PictureScope,
+        everywhere: Boolean,
+        quick: Boolean,
+    ): Result<CatalogueSearchPage> {
+        quickAsked += quick
+        return if (turns.size > 1) turns.removeFirst() else turns.first()
     }
 }
 

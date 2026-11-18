@@ -27,6 +27,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.AddYourOwn
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CaptionLine
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.CenteredMessage
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.HeldMessage
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.LinkChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.LinkDraft
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.NoticeLine
@@ -35,6 +36,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ScopeChips
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SearchField
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SelectionBar
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SourcesLine
 
 internal val FieldFillLight = Color(0xFFEFEDF4)
 internal val FieldFillDark = Color(0xFF2A2A31)
@@ -135,6 +137,7 @@ fun CatalogueSearchScreenContent(
 
                 is CatalogueSearchUiState.Success -> Column {
                     NoticeLine(state.notice)
+                    SourcesLine(state.items)
                     ResultsGrid(
                         items = state.items,
                         selectedIds = selectedIds,
@@ -143,6 +146,8 @@ fun CatalogueSearchScreenContent(
                         onNearEnd = onLoadMore,
                     )
                 }
+
+                is CatalogueSearchUiState.Held -> HeldMessage(state, onRetry = onSearchClick)
 
                 CatalogueSearchUiState.Error -> {
                     CenteredMessage(

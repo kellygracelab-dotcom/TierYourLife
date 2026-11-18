@@ -11,6 +11,10 @@ data class PicturesDto(
     val hasMore: Boolean = false,
     val notices: List<String> = emptyList(),
     val rest: Boolean = false,
+    /** The catalogues that were busy and left a gap; empty from a server that had none, or knows of none. */
+    val busy: List<String> = emptyList(),
+    /** With [busy]: when they may be asked again, epoch ms. */
+    val retryAt: Long? = null,
 )
 
 @Serializable
@@ -27,7 +31,7 @@ data class PictureHitDto(
     val attribution: PictureAttributionDto? = null,
 )
 
-/** The server's 429 for a person who searched too often; [retryAt] is when it answers again, epoch ms. */
+/** The server's 429 SEARCH_LIMIT or 503 SOURCE_BUSY; [retryAt] is when it is worth asking again, epoch ms. */
 @Serializable
 data class SearchRefusalDto(
     val code: String? = null,
@@ -47,10 +51,14 @@ fun PicturesDto.toDomain(): CatalogueSearchPage = CatalogueSearchPage(
             fromWeb = hit.source == WEB_SOURCE,
             credit = hit.credit?.trim()?.takeIf { it.isNotEmpty() },
             attribution = hit.attribution?.toDomain(),
+            kind = hit.kind.takeIf { it.isNotBlank() },
+            source = hit.source.takeIf { it.isNotBlank() },
         )
     },
     hasMore = hasMore,
     rest = rest,
+    busy = busy.isNotEmpty(),
+    retryAt = retryAt?.takeIf { busy.isNotEmpty() && it > 0 },
     // Codes this build does not know are for a newer one.
     notice = notices.firstNotNullOfOrNull { code ->
         when (code) {

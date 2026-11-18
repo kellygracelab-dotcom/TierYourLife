@@ -12,4 +12,8 @@ data class CatalogueItem(
     /** Who the picture's license asks to be named, such as "© Jane Doe, CC BY". */
     val credit: String? = null,
     val attribution: PictureAttribution? = null,
+    /** What the picture is of, by the server's word (movie, anime, book…); null when it says nothing worth a label. */
+    val kind: String? = null,
+    /** Whose catalogue it came from, by the server's word (tmdb, anilist, web…); null when unknown. */
+    val source: String? = null,
 )
