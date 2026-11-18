@@ -337,4 +337,5 @@
     <string name="started_discard">Скинути</string>
     <string name="started_discard_arrangement">Скинути мою розстановку</string>
     <string name="started_discarded">Розстановку скинуто</string>
+    <string name="started_updated_elsewhere">Оновлено з іншого пристрою</string>
 </resources>

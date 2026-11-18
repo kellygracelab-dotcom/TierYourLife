@@ -14,6 +14,9 @@ dependencies {
     implementation(projects.core.logging)
     implementation(projects.feature.community.domain)
     implementation(projects.feature.tier.domain)
+    // Lists begun follow whoever is signed in, with the game over each.
+    implementation(projects.feature.account.domain)
+    implementation(projects.feature.play.domain)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(platform(libs.firebase.bom))
     // Whose proposals are whose, and a section's picture going to this person's own folder, as faces and card pictures do.
@@ -23,5 +26,7 @@ dependencies {
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.core.ktx)
     testImplementation(testFixtures(projects.feature.community.domain))
+    testImplementation(testFixtures(projects.feature.account.domain))
+    testImplementation(testFixtures(projects.feature.play.domain))
     testImplementation(libs.robolectric)
 }

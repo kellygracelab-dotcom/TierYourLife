@@ -337,4 +337,5 @@
     <string name="started_discard">Odrzuć</string>
     <string name="started_discard_arrangement">Odrzuć mój układ</string>
     <string name="started_discarded">Układ odrzucony</string>
+    <string name="started_updated_elsewhere">Zaktualizowano na innym urządzeniu</string>
 </resources>

@@ -11,8 +11,10 @@ import com.artiuillab.tieryourlife.feature.community.data.cache.RoomOpenedLists
 import com.artiuillab.tieryourlife.feature.community.data.cache.RoomSectionStore
 import com.artiuillab.tieryourlife.feature.community.data.cache.SystemCommunityNetwork
 import com.artiuillab.tieryourlife.feature.community.data.picture.StorageSectionPictures
+import com.artiuillab.tieryourlife.feature.community.data.remote.StartedApi
 import com.artiuillab.tieryourlife.feature.community.data.remote.api.CommunityApi
 import com.artiuillab.tieryourlife.feature.community.data.repository.RetrofitCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.data.sync.StartedListsSync
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityClock
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityFeedCache
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityNetwork
@@ -23,6 +25,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDr
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionCatalog
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionPictures
 import com.artiuillab.tieryourlife.feature.community.domain.repository.SectionStore
+import com.artiuillab.tieryourlife.feature.community.domain.repository.StartedSync
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
 import dagger.Module
@@ -73,11 +76,20 @@ abstract class CommunityModule {
     @Singleton
     abstract fun bindSectionPictures(implementation: StorageSectionPictures): SectionPictures
 
+    @Binds
+    @Singleton
+    abstract fun bindStartedSync(implementation: StartedListsSync): StartedSync
+
     companion object {
         @Provides
         @Singleton
         fun provideCommunityApi(@ProxyRetrofit retrofit: Retrofit): CommunityApi =
             retrofit.create(CommunityApi::class.java)
+
+        @Provides
+        @Singleton
+        fun provideStartedApi(@ProxyRetrofit retrofit: Retrofit): StartedApi =
+            retrofit.create(StartedApi::class.java)
 
         @Provides
         @Singleton

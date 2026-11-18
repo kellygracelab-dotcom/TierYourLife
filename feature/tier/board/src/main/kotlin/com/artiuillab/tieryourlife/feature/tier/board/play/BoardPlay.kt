@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.board.play
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.artiuillab.tieryourlife.feature.community.domain.repository.startedGameKey
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 
 /** Fewer cards than this and there is nothing for duels to sort out. */
@@ -31,7 +32,7 @@ data class PlayRequest(
             PlayRequest(board = shown, key = someoneElsesKey(publishedId, version), applyTo = mine)
 
         /** Where a game of [version] of someone else's list is kept, for whoever asks whether one is. */
-        fun someoneElsesKey(publishedId: String, version: Long): String = "list:$publishedId$VERSION_MARK$version"
+        fun someoneElsesKey(publishedId: String, version: Long): String = startedGameKey(publishedId, version)
 
         /** Whether two keys are of the same board or list, whatever the version. */
         fun sameBoard(key: String, other: String): Boolean = key.substringBefore(VERSION_MARK) == other.substringBefore(VERSION_MARK)

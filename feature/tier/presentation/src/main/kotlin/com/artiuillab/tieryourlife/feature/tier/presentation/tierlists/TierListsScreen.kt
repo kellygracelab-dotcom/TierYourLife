@@ -164,6 +164,7 @@ fun TierListsScreen(
         onContinueStarted = onContinueStarted,
         onDiscardStarted = viewModel::discardStarted,
         onUndoDiscardStarted = viewModel::undoDiscardStarted,
+        updatedElsewhere = viewModel.updatedElsewhere,
     )
 }
 
@@ -197,6 +198,7 @@ fun TierListsScreenContent(
     onContinueStarted: (listId: String, resumeGame: Boolean) -> Unit = { _, _ -> },
     onDiscardStarted: (listId: String) -> Unit = {},
     onUndoDiscardStarted: () -> Unit = {},
+    updatedElsewhere: Flow<Unit> = emptyFlow(),
 ) {
     val success = state as? TierListsUiState.Success
     val mode = success?.mode ?: HomeMode.Browsing
@@ -270,6 +272,10 @@ fun TierListsScreenContent(
     }
 
     val discardedMessage = stringResource(R.string.started_discarded)
+    val updatedElsewhereMessage = stringResource(R.string.started_updated_elsewhere)
+    LaunchedEffect(Unit) {
+        updatedElsewhere.collect { snackbarHostState.showSnackbar(updatedElsewhereMessage) }
+    }
     val discardAndAnnounce: (StartedList) -> Unit = { list ->
         onDiscardStarted(list.listId)
         snackbarHostState.currentSnackbarData?.dismiss()

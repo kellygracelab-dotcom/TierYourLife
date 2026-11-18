@@ -286,4 +286,5 @@
     <string name="started_discard">破棄</string>
     <string name="started_discard_arrangement">自分の並びを破棄</string>
     <string name="started_discarded">並びを破棄しました</string>
+    <string name="started_updated_elsewhere">別の端末で更新されました</string>
 </resources>

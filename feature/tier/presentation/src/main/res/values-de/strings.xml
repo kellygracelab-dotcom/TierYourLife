@@ -303,4 +303,5 @@
     <string name="started_discard">Verwerfen</string>
     <string name="started_discard_arrangement">Meine Anordnung verwerfen</string>
     <string name="started_discarded">Anordnung verworfen</string>
+    <string name="started_updated_elsewhere">Auf einem anderen Gerät aktualisiert</string>
 </resources>
