@@ -742,7 +742,7 @@ class AccountViewModelTest {
         kept: Set<PersonalData> = emptySet(),
     ): AccountViewModel {
         picker = credential
-        return AccountViewModel(repository, credits, publishedLists, community, merge, erasure, facePhotos, ThePerson(preferences, kept))
+        return AccountViewModel(repository, credits, publishedLists, community, merge, erasure, facePhotos, ThePerson(preferences, kept), preferences)
     }
 }
 
@@ -757,12 +757,12 @@ private object RefusingErasure : AccountErasure {
     override suspend fun erase(): Result<Unit> = Result.failure(IllegalStateException("offline"))
 }
 
-private const val OLD_FACE = "https://example.test/old-face.jpg"
-private const val POSTER = "https://image.tmdb.org/t/p/w500/poster.jpg"
+internal const val OLD_FACE = "https://example.test/old-face.jpg"
+internal const val POSTER = "https://image.tmdb.org/t/p/w500/poster.jpg"
 
-private fun Account.withFace(photoUrl: String): Account = (this as Account.SignedIn).copy(photoUrl = photoUrl)
+internal fun Account.withFace(photoUrl: String): Account = (this as Account.SignedIn).copy(photoUrl = photoUrl)
 
-private class FakeCommunityForAccount : FakeCommunityRepository()
+internal class FakeCommunityForAccount : FakeCommunityRepository()
 
 private class RefusingFaces : FakeCommunityRepository() {
     override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(FaceRefused())
@@ -772,12 +772,16 @@ private class UnansweredFaces : FakeCommunityRepository() {
     override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(IOException("no answer"))
 }
 
-private class FakeOwnLists(private val published: Int = 0, private val boards: Int = 0) : OwnLists {
+internal class FakeOwnLists(
+    private val published: Int = 0,
+    private val boards: Int = 0,
+    private val cards: List<String> = emptyList(),
+) : OwnLists {
     override suspend fun publishedCount(): Int = published
 
     override suspend fun boardCount(): Int = boards
 
-    override suspend fun cardImages(limit: Int): List<String> = emptyList()
+    override suspend fun cardImages(limit: Int): List<String> = cards
 }
 
 private class FakeGoogleCredential(result: GoogleCredentialResult? = null) {
@@ -798,7 +802,7 @@ private class FakeGoogleCredential(result: GoogleCredentialResult? = null) {
     }
 }
 
-private class FakeGenerationCredits(private val balance: Int? = null) : GenerationCredits {
+internal class FakeGenerationCredits(private val balance: Int? = null) : GenerationCredits {
     override fun lastKnown(): Int? = null
 
     var reads = 0
@@ -809,7 +813,7 @@ private class FakeGenerationCredits(private val balance: Int? = null) : Generati
     }
 }
 
-private class RecordingMerge(
+internal class RecordingMerge(
     private val guestBoards: Int,
     private val heldBoards: Int = 0,
     private val copyFails: Boolean = false,
@@ -859,6 +863,6 @@ private class RecordingMerge(
 }
 
 /** Ending an account is its own test; here it must simply exist. */
-private object NoErasure : AccountErasure {
+internal object NoErasure : AccountErasure {
     override suspend fun erase(): Result<Unit> = Result.success(Unit)
 }

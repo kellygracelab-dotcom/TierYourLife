@@ -35,9 +35,10 @@
     <string name="account_face_title">Ваш аватар</string>
     <string name="account_face_body">Выберите карточку из своих списков.</string>
     <string name="account_face_no_cards">Ни у одной вашей карточки пока нет каталожной картинки.</string>
-    <string name="account_face_letter">Только буква</string>
-    <string name="account_face_gallery">Фото из галереи</string>
-    <string name="account_face_note">Картинка карточки остаётся там, где лежит в сети. Фото из галереи проверяется и хранится в аккаунте.</string>
+    <string name="account_face_letter">Буква</string>
+    <string name="account_face_gallery">Загрузить</string>
+    <string name="account_face_note">Ваше лицо видно рядом с именем на опубликованных листах. Выбранная карточка или фото проверяются и хранятся с вашим аккаунтом.</string>
+    <string name="account_face_your_photo">Ваше фото</string>
     <string name="account_cd_change_face">Сменить аватар</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d генерация</item>

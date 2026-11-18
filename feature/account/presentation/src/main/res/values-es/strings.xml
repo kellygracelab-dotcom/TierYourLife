@@ -34,9 +34,10 @@
     <string name="account_face_title">Tu imagen</string>
     <string name="account_face_body">Elige una tarjeta de tus listas.</string>
     <string name="account_face_no_cards">Ninguna de tus tarjetas tiene todavía una imagen de catálogo.</string>
-    <string name="account_face_letter">Solo la letra</string>
-    <string name="account_face_gallery">Una foto de la galería</string>
-    <string name="account_face_note">La imagen de una tarjeta se queda donde está en la web. Una foto de la galería se revisa y se guarda con tu cuenta.</string>
+    <string name="account_face_letter">Letra</string>
+    <string name="account_face_gallery">Subir</string>
+    <string name="account_face_note">La gente ve tu imagen junto a tu nombre en las listas que publicas. La tarjeta o la foto que elijas se revisa y se guarda con tu cuenta.</string>
+    <string name="account_face_your_photo">Tu foto</string>
     <string name="account_cd_change_face">Cambiar la imagen</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d generación</item>

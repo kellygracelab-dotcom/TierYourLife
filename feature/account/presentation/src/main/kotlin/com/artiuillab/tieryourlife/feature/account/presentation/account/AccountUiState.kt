@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
+import com.artiuillab.tieryourlife.core.settings.CardFace
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 
@@ -12,6 +13,10 @@ data class AccountUiState(
     val publicListCount: Int = 0,
     /** Card pictures the reader can wear as a face. */
     val faceChoices: List<String> = emptyList(),
+    /** The photo uploaded as the face, kept whatever is worn now: one slot, until a new upload. */
+    val ownFace: String? = null,
+    /** The card whose copy is worn, when one is. */
+    val cardFace: CardFace? = null,
     /** True while a picture of their own is being made into a face. */
     val makingFace: Boolean = false,
     /** The face just chosen, shown before the account wears it. */
@@ -37,6 +42,16 @@ data class AccountUiState(
      */
     val shownFace: String?
         get() = pendingFace.let { pending -> if (pending != null) pending.shown else (account as? Account.SignedIn)?.photoUrl }
+
+    /**
+     * What the face sheet checks: the face on its way while it goes, then the one the account wears,
+     * and a card's copy on the card it was cut from.
+     */
+    val faceInSheet: String?
+        get() {
+            val worn = if (makingFace) shownFace else (account as? Account.SignedIn)?.photoUrl
+            return if (worn != null && worn == cardFace?.face) cardFace.card else worn
+        }
 
     /** The square to show of [shownFace] while the picture is still the whole photo, before it is cut. */
     val shownFaceCrop: FaceCrop?

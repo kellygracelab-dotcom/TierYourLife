@@ -33,9 +33,10 @@
     <string name="account_face_title">Dein Bild</string>
     <string name="account_face_body">Wähle eine Karte aus deinen Listen.</string>
     <string name="account_face_no_cards">Noch keine deiner Karten hat ein Bild aus einem Katalog.</string>
-    <string name="account_face_letter">Nur der Buchstabe</string>
-    <string name="account_face_gallery">Ein Foto aus der Galerie</string>
-    <string name="account_face_note">Kartenbilder bleiben dort, wo sie im Netz liegen. Ein Foto aus der Galerie wird geprüft und beim Konto gespeichert.</string>
+    <string name="account_face_letter">Buchstabe</string>
+    <string name="account_face_gallery">Hochladen</string>
+    <string name="account_face_note">Andere sehen dein Bild neben deinem Namen auf den Listen, die du veröffentlichst. Eine gewählte Karte oder ein Foto wird geprüft und bei deinem Konto gespeichert.</string>
+    <string name="account_face_your_photo">Dein Foto</string>
     <string name="account_cd_change_face">Bild ändern</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d Generierung</item>

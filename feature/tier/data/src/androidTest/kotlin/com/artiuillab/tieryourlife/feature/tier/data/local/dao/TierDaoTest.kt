@@ -64,6 +64,23 @@ class TierDaoTest {
         assertTrue(originalTiers.filterNot { it.isPool }.all { dao.getAllTierItemsByTierId(it.id).isEmpty() })
     }
 
+    // Since 13.11 a card's picture is mostly the copy kept with us, a path on this phone: still a card,
+    // known by its credit. A photo from the gallery carries none and is never offered as a face.
+    @Test
+    fun faceChoices_takeCardsKeptWithUs_butNotGalleryPhotos() = runBlocking {
+        val id = dao.createTierListWithDefaultTier("Faces", CAPTIONS, owner = "ann")
+        val pool = dao.getAllTiersByTierListId(id).single { it.isPool }
+        val kept = "/data/pictures/kept"
+        val gallery = "/data/pictures/gallery"
+        dao.insertTierItem(tierItem(pool.id, "Poster", 0))
+        dao.insertTierItem(tierItem(pool.id, "Kept", 1).copy(imageUrl = kept, credit = "Wikimedia Commons"))
+        dao.insertTierItem(tierItem(pool.id, "Gallery", 2).copy(imageUrl = gallery))
+
+        val faces = dao.cardImageUrls("ann", 10)
+
+        assertEquals(setOf("https://example.com/poster.jpg", kept), faces.toSet())
+    }
+
     @Test
     fun a_board_built_from_a_template_keeps_each_card_in_its_tier() = runBlocking {
         val id = dao.createTierListFromTemplate(

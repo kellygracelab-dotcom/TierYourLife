@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -40,6 +41,7 @@ class AccountViewModel @Inject constructor(
     private val erasure: AccountErasure,
     private val facePhotos: FacePhotos,
     private val thePerson: ThePerson,
+    preferences: AppPreferences,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -48,13 +50,14 @@ class AccountViewModel @Inject constructor(
     val state: StateFlow<AccountUiState> = _state.asStateFlow()
 
     /** Choosing, placing and wearing a face. */
-    internal val face = AccountFace(_state, viewModelScope, repository, community, facePhotos, ::refreshPublishedAuthor)
+    internal val face = AccountFace(_state, viewModelScope, repository, community, facePhotos, preferences, ::refreshPublishedAuthor)
 
     init {
         viewModelScope.launch {
             repository.account.collect { account ->
                 // A face chosen here belongs to the account it was chosen on.
                 _state.update { it.copy(account = account, pendingFace = it.pendingFace.takeIf { account is Account.SignedIn }) }
+                face.load()
                 refreshCredits()
                 refreshOwnLists()
             }
@@ -258,13 +261,15 @@ class AccountViewModel @Inject constructor(
             ?: _state.value.publicListCount
         val faces = runSuspendCatching { ownLists.cardImages(FACE_CHOICE_LIMIT) }
             .onFailure { Timber.w(it, "Reading card pictures failed") }
-            .getOrDefault(emptyList())
+            .getOrNull()
         _state.update {
             it.copy(
                 publicListCount = count,
-                faceChoices = faces,
+                faceChoices = faces ?: emptyList(),
             )
         }
+        // Without the cards a worn card would pass for the photo.
+        if (faces != null) face.takeWornPhoto()
     }
 
     private suspend fun refreshCredits() {

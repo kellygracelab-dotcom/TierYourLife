@@ -35,9 +35,10 @@
     <string name="account_face_title">Ваш аватар</string>
     <string name="account_face_body">Виберіть картку зі своїх списків.</string>
     <string name="account_face_no_cards">Жодна ваша картка ще не має каталожного зображення.</string>
-    <string name="account_face_letter">Тільки літера</string>
-    <string name="account_face_gallery">Фото з галереї</string>
-    <string name="account_face_note">Зображення картки залишається там, де воно є в мережі. Фото з галереї перевіряється і зберігається в обліковому записі.</string>
+    <string name="account_face_letter">Літера</string>
+    <string name="account_face_gallery">Завантажити</string>
+    <string name="account_face_note">Ваш аватар видно поруч з іменем на списках, які ви публікуєте. Вибрана картка чи фото перевіряються й зберігаються з вашим акаунтом.</string>
+    <string name="account_face_your_photo">Ваше фото</string>
     <string name="account_cd_change_face">Змінити аватар</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d генерація</item>
