@@ -102,6 +102,6 @@
     <string name="settings_feedback_sub">Идеи, проблемы, что угодно: напишите нам</string>
     <string name="settings_feedback_no_mail">Нет почтового приложения. Пишите на %1$s</string>
     <string name="share_app_chooser">Поделиться TierYourLife</string>
-    <string name="share_app_text">TierYourLife: раскладывайте что угодно по уровням и делитесь списками.\nAndroid: %1$s\nСайт: %2$s</string>
+    <string name="share_app_text">Делаю тир-листы в TierYourLife: раскладываю что угодно от S до D, решаю спорное в дуэлях и смотрю, как разложили другие.\nСайт: %1$s</string>
     <string name="feedback_subject">Отзыв о TierYourLife: приложение %1$s, Android %2$s</string>
 </resources>

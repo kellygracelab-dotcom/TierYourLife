@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.ReviewMoments
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
@@ -24,6 +25,8 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFo
 import com.artiuillab.tieryourlife.feature.community.presentation.list.components.CommunityRankingChoices
 import com.artiuillab.tieryourlife.feature.community.presentation.list.components.PrivateRankingProgress
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListRoute
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.cardCount
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.finishedFrom
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.returningAllToPool
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -33,6 +36,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,6 +60,7 @@ class CommunityListViewModel @Inject constructor(
     afterSignIn: FollowAfterSignIn,
     private val drafts: RankingDrafts = RankingDrafts.None,
     boardSync: BoardSync = BoardSync.None,
+    private val reviewMoments: ReviewMoments = ReviewMoments.None,
 ) : ViewModel() {
 
     private val route = savedStateHandle.communityListRoute()
@@ -334,6 +339,13 @@ class CommunityListViewModel @Inject constructor(
         _state.update { state ->
             if (state !is CommunityListUiState.Success) return@update state
             state.copy(mine = state.mine.withItemMoved(itemId, toTierId, toPosition), arranged = true)
+        }
+        val mine = (_state.value as? CommunityListUiState.Success)?.mine
+        if (mine != null && mine.finishedFrom(current.mine)) {
+            viewModelScope.launch {
+                delay(ReviewMoments.FINISHED_PAUSE_MS)
+                reviewMoments.listFinished(mine.cardCount())
+            }
         }
         progress.keep()
         choices.offerIfNeeded()

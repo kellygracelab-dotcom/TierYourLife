@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
+import com.artiuillab.tieryourlife.core.settings.ReviewMoments
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.testing.onMain
@@ -27,6 +28,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
@@ -585,6 +588,7 @@ class CommunityListViewModelTest {
         accounts: FakeAccountRepository = FakeAccountRepository(),
         openedLists: FakeOpenedLists = FakeOpenedLists(),
         drafts: com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts = com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts.None,
+        reviewMoments: ReviewMoments = ReviewMoments.None,
     ) = CommunityListViewModel(
         community = community,
         tiers = tiers,
@@ -594,7 +598,31 @@ class CommunityListViewModelTest {
         openedLists = openedLists,
         afterSignIn = FollowAfterSignIn(accounts),
         drafts = drafts,
+        reviewMoments = reviewMoments,
     ).also { made += it }
+
+    // Someone else's list ranked to its last card is a finished list too (Marketing 18.11), a moment after the drop.
+    @Test
+    fun rankingTheirListToTheLastCard_finishesIt() = onMain {
+        val finished = mutableListOf<Int>()
+        val moments = object : ReviewMoments {
+            override fun listFinished(cards: Int) {
+                finished += cards
+            }
+
+            override val asks: Flow<Unit> = emptyFlow()
+        }
+        val viewModel = viewModel(reviewMoments = moments)
+        val loaded = viewModel.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
+        viewModel.show(Showing.Mine)
+        val target = loaded.mine.tiers.first { !it.isPool }
+        val cards = loaded.mine.tiers.first { it.isPool }.items
+
+        cards.forEach { viewModel.moveItem(it.id, target.id, 0) }
+        withTimeoutOrNull(3_000) { while (finished.isEmpty()) delay(20) }
+
+        assertEquals(listOf(cards.size), finished)
+    }
 
     private val signedIn = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = null))
 

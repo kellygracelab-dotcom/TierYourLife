@@ -57,7 +57,7 @@ class AboutRowsTest {
     }
 
     @Test
-    fun sharing_sendsBothLinks() {
+    fun sharing_sendsTheSite_andNotThePlayPageBeforeProduction() {
         shareTheApp(app)
 
         val chooser = shadowOf(app).nextStartedActivity
@@ -65,7 +65,7 @@ class AboutRowsTest {
         @Suppress("DEPRECATION")
         val send = chooser.getParcelableExtra<Intent>(Intent.EXTRA_INTENT)!!
         val text = send.getStringExtra(Intent.EXTRA_TEXT)!!
-        assertTrue(text, AppLinks.PLAY_PAGE in text && AppLinks.SITE in text)
+        assertTrue(text, AppLinks.SITE in text && "play.google.com" !in text)
     }
 
     @Test

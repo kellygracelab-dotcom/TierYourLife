@@ -98,6 +98,6 @@
     <string name="settings_feedback_sub">Idées, problèmes, tout : écrivez-nous</string>
     <string name="settings_feedback_no_mail">Aucune appli de messagerie. Écrivez à %1$s</string>
     <string name="share_app_chooser">Partager TierYourLife</string>
-    <string name="share_app_text">TierYourLife : classez tout par niveaux et partagez vos listes.\nAndroid : %1$s\nWeb : %2$s</string>
+    <string name="share_app_text">TierYourLife : classez tout par niveaux et partagez vos listes.\nWeb : %1$s</string>
     <string name="feedback_subject">Avis sur TierYourLife : appli %1$s, Android %2$s</string>
 </resources>

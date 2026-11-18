@@ -78,6 +78,11 @@ interface AppPreferences {
      */
     fun settleBackUpChoice(account: String?) = Unit
 
+    /** Play's review card was asked for once on this phone (ReviewMoments); not the person's, so not forgotten with them. */
+    fun reviewAsked(): Boolean = false
+
+    fun markReviewAsked() = Unit
+
     /** "Not now" means never again: a card that comes back gets swatted unread. */
     fun signInOfferAnswered(): Boolean
 

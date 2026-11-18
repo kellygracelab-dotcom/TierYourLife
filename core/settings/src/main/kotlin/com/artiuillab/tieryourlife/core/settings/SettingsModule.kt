@@ -17,6 +17,10 @@ abstract class SettingsModule {
         implementation: SharedPreferencesAppPreferences,
     ): AppPreferences
 
+    @Binds
+    @Singleton
+    abstract fun bindReviewMoments(implementation: OnceReviewMoments): ReviewMoments
+
     /** Empty until a module keeps something of the person's own. */
     @Multibinds
     abstract fun personalData(): Set<PersonalData>

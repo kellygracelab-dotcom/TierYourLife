@@ -16,6 +16,7 @@ private const val KEY_HIDDEN_AUTHORS = "hidden_author_uids"
 private const val KEY_BACK_UP_BOARDS = "back_up_boards"
 private const val KEY_BOARDS_AS_PICTURES = "boards_as_pictures"
 private const val KEY_SIGN_IN_OFFER_ANSWERED = "sign_in_offer_answered"
+private const val KEY_REVIEW_ASKED = "review_asked"
 private const val KEY_PICTURES_ON_WIFI_ONLY = "pictures_on_wifi_only"
 private const val KEY_COVER_IDS_LEARNED = "cover_ids_learned"
 private const val KEY_LAST_SYNCED_AT = "last_synced_at"
@@ -190,6 +191,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setCoverIdsLearned(account: String) {
         prefs.edit { putBoolean("$KEY_COVER_IDS_LEARNED:$account", true) }
+    }
+
+    override fun reviewAsked(): Boolean = prefs.getBoolean(KEY_REVIEW_ASKED, false)
+
+    override fun markReviewAsked() {
+        prefs.edit { putBoolean(KEY_REVIEW_ASKED, true) }
     }
 
     override fun signInOfferAnswered(): Boolean = prefs.getBoolean(KEY_SIGN_IN_OFFER_ANSWERED, false)

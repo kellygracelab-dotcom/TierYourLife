@@ -94,6 +94,6 @@
     <string name="settings_feedback_sub">Fikirler, sorunlar, her şey: bize yaz</string>
     <string name="settings_feedback_no_mail">Burada e-posta uygulaması yok. %1$s adresine yaz</string>
     <string name="share_app_chooser">TierYourLife\'ı paylaş</string>
-    <string name="share_app_text">TierYourLife: her şeyi seviyelere ayır ve listelerini paylaş.\nAndroid: %1$s\nWeb: %2$s</string>
+    <string name="share_app_text">TierYourLife: her şeyi seviyelere ayır ve listelerini paylaş.\nWeb: %1$s</string>
     <string name="feedback_subject">TierYourLife geri bildirimi: uygulama %1$s, Android %2$s</string>
 </resources>

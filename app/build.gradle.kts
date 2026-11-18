@@ -151,6 +151,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.core)
     implementation(libs.androidx.profileinstaller)
+    // Play's own review card, asked once after the first finished list (ReviewMoments).
+    implementation(libs.play.review.ktx)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.appcheck)
     implementation(libs.firebase.crashlytics)

@@ -79,6 +79,14 @@ class FakeAppPreferences(
         learnedCoverIds += account
     }
 
+    var reviewAsked = false
+
+    override fun reviewAsked(): Boolean = reviewAsked
+
+    override fun markReviewAsked() {
+        reviewAsked = true
+    }
+
     override fun signInOfferAnswered(): Boolean = offerAnswered
 
     override fun markSignInOfferAnswered() {

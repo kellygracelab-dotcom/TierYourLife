@@ -25,6 +25,15 @@ internal fun MailIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale
     drawPath(flap, color, style = stroke)
 }
 
+/** "↗": the row leaves the app, for Play or the mail app. */
+@Composable
+internal fun OpenOutsideIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
+    val stroke = 1.7f * scale
+    drawLine(color, Offset(7f * scale, 17f * scale), Offset(17f * scale, 7f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(9f * scale, 7f * scale), Offset(17f * scale, 7f * scale), stroke, StrokeCap.Round)
+    drawLine(color, Offset(17f * scale, 7f * scale), Offset(17f * scale, 15f * scale), stroke, StrokeCap.Round)
+}
+
 @Composable
 internal fun AccountCircleIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     drawCircle(color, 3.6f * scale, Offset(12f * scale, 9.4f * scale), style = Stroke(1.7f * scale))

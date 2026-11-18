@@ -90,6 +90,6 @@
     <string name="settings_feedback_sub">アイデア、不具合、なんでもお寄せください</string>
     <string name="settings_feedback_no_mail">メールアプリがありません。%1$s までお送りください</string>
     <string name="share_app_chooser">TierYourLife を共有</string>
-    <string name="share_app_text">TierYourLife：なんでもティアに並べてリストを共有。\nAndroid：%1$s\nWeb：%2$s</string>
+    <string name="share_app_text">TierYourLife：なんでもティアに並べてリストを共有。\nWeb：%1$s</string>
     <string name="feedback_subject">TierYourLife へのフィードバック：アプリ %1$s、Android %2$s</string>
 </resources>

@@ -102,6 +102,6 @@
     <string name="settings_feedback_sub">Pomysły, problemy, cokolwiek: napisz do nas</string>
     <string name="settings_feedback_no_mail">Brak aplikacji poczty. Napisz na %1$s</string>
     <string name="share_app_chooser">Udostępnij TierYourLife</string>
-    <string name="share_app_text">TierYourLife: układaj wszystko w poziomy i udostępniaj listy.\nAndroid: %1$s\nStrona: %2$s</string>
+    <string name="share_app_text">TierYourLife: układaj wszystko w poziomy i udostępniaj listy.\nStrona: %1$s</string>
     <string name="feedback_subject">Opinia o TierYourLife: aplikacja %1$s, Android %2$s</string>
 </resources>

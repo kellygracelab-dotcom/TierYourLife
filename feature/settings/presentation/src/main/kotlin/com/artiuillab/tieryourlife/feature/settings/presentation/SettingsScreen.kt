@@ -76,6 +76,7 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.components.Abou
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.AccountRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.BackupSection
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.LanguageRow
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.OpenOutsideIcon
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.SettingsGroup
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.SettingsGroupDivider
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.StopBackingUpDialog
@@ -504,6 +505,7 @@ internal fun SettingsRow(
     subtitle: String,
     onClick: () -> Unit,
     testTag: String,
+    leadsTo: LeadsTo = LeadsTo.Screen,
 ) {
     Row(
         modifier = Modifier
@@ -522,9 +524,16 @@ internal fun SettingsRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        ChevronRightIcon(20.dp, MaterialTheme.colorScheme.outline)
+        when (leadsTo) {
+            LeadsTo.Screen -> ChevronRightIcon(20.dp, MaterialTheme.colorScheme.outline)
+            LeadsTo.Outside -> OpenOutsideIcon(20.dp, MaterialTheme.colorScheme.outline)
+            LeadsTo.Nowhere -> Unit
+        }
     }
 }
+
+/** What the mark at a row's end promises: a screen in here, another app, or nothing to go to (artboard 51). */
+internal enum class LeadsTo { Screen, Outside, Nowhere }
 
 @TierYourLifeDevicePreviews
 @Composable

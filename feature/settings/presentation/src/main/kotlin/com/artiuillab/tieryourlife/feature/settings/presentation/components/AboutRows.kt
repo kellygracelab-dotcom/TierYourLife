@@ -12,6 +12,7 @@ import androidx.core.net.toUri
 import com.artiuillab.tieryourlife.core.settings.AppLinks
 import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
 import com.artiuillab.tieryourlife.core.theme.ui.StarIcon
+import com.artiuillab.tieryourlife.feature.settings.presentation.LeadsTo
 import com.artiuillab.tieryourlife.feature.settings.presentation.R
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsTestTags
@@ -27,6 +28,7 @@ internal fun AboutRows(onRate: () -> Unit, onShare: () -> Unit, onFeedback: () -
         subtitle = stringResource(R.string.settings_rate_sub),
         onClick = onRate,
         testTag = SettingsTestTags.RATE_ROW,
+        leadsTo = LeadsTo.Outside,
     )
     SettingsGroupDivider()
     SettingsRow(
@@ -35,6 +37,7 @@ internal fun AboutRows(onRate: () -> Unit, onShare: () -> Unit, onFeedback: () -
         subtitle = stringResource(R.string.settings_share_sub),
         onClick = onShare,
         testTag = SettingsTestTags.SHARE_ROW,
+        leadsTo = LeadsTo.Nowhere,
     )
     SettingsGroupDivider()
     SettingsRow(
@@ -43,6 +46,7 @@ internal fun AboutRows(onRate: () -> Unit, onShare: () -> Unit, onFeedback: () -
         subtitle = stringResource(R.string.settings_feedback_sub),
         onClick = onFeedback,
         testTag = SettingsTestTags.FEEDBACK_ROW,
+        leadsTo = LeadsTo.Outside,
     )
 }
 
@@ -57,10 +61,11 @@ internal fun rateTheApp(context: Context) {
     if (!opened) Timber.w("Nothing on this phone opens the app's page in Play")
 }
 
+/** Until the app is in production its Play page is not open to all, so the line carries the site only. */
 internal fun shareTheApp(context: Context) {
     val send = Intent(Intent.ACTION_SEND)
         .setType("text/plain")
-        .putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_app_text, AppLinks.PLAY_PAGE, AppLinks.SITE))
+        .putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_app_text, AppLinks.SITE))
     open(context, Intent.createChooser(send, context.getString(R.string.share_app_chooser)))
 }
 

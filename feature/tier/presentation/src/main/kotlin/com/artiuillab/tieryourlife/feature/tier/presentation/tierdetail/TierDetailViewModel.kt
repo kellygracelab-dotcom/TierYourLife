@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
+import com.artiuillab.tieryourlife.core.settings.ReviewMoments
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
@@ -17,6 +18,8 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.cardCount
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.finishedFrom
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
@@ -33,6 +36,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,6 +56,7 @@ class TierDetailViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val savedStateHandle: SavedStateHandle,
     private val boardSync: BoardSync = BoardSync.None,
+    private val reviewMoments: ReviewMoments = ReviewMoments.None,
 ) : ViewModel() {
 
     private val tierListId = savedStateHandle.tierDetailRoute().tierListId
@@ -309,7 +314,14 @@ class TierDetailViewModel @Inject constructor(
     fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         val current = board
         if (current is TierDetailUiState.Success) {
-            board = TierDetailUiState.Success(current.list.withItemMoved(itemId, toTierId, toPosition))
+            val moved = current.list.withItemMoved(itemId, toTierId, toPosition)
+            board = TierDetailUiState.Success(moved)
+            if (moved.finishedFrom(current.list)) {
+                viewModelScope.launch {
+                    delay(ReviewMoments.FINISHED_PAUSE_MS)
+                    reviewMoments.listFinished(moved.cardCount())
+                }
+            }
         }
         mutate("Moving an item") {
             repository.moveItem(itemId, toTierId, toPosition)
