@@ -561,6 +561,8 @@ class TierListsViewModelTest {
         )
         viewModel.loadTierLists()
         viewModel.state.firstWithin { it is TierListsUiState.Success && it.started.single().placed == 4 }
+        // Asked for after the lists are shown, so not necessarily yet when they are.
+        withTimeout(5_000) { while (sync.requests == 0) delay(10) }
         assertEquals(1, sync.requests)
         val told = async { viewModel.updatedElsewhere.first() }
 
