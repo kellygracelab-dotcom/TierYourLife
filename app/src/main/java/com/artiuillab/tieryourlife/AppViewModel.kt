@@ -2,6 +2,8 @@ package com.artiuillab.tieryourlife
 
 import androidx.lifecycle.ViewModel
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.ColourChoice
+import com.artiuillab.tieryourlife.core.settings.ColourSetting
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +20,7 @@ data class AppUiState(
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val appPreferences: AppPreferences,
+    colourChoice: ColourChoice,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -27,6 +30,9 @@ class AppViewModel @Inject constructor(
         ),
     )
     val state: StateFlow<AppUiState> = _state.asStateFlow()
+
+    /** Null for the default, lavender. */
+    val colour: StateFlow<ColourSetting?> = colourChoice.current
 
     fun setThemeChoice(choice: ThemeChoice) {
         appPreferences.setThemeChoice(choice)

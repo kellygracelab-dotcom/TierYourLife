@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.settings.presentation
 
+import com.artiuillab.tieryourlife.core.settings.ColourChoice
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
@@ -141,6 +142,7 @@ class SettingsViewModelTest {
         community = community,
         backup = backup,
         preferences = preferences,
+        colourChoice = ColourChoice(preferences),
     )
 }
 

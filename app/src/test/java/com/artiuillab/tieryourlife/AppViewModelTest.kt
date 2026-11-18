@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife
 
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.ColourChoice
 import com.artiuillab.tieryourlife.core.settings.HiddenEntry
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import org.junit.Assert.assertEquals
@@ -12,7 +13,7 @@ class AppViewModelTest {
     fun initialState_isWhateverWasStored_notADefault() {
         val preferences = FakeAppPreferences(themeChoice = ThemeChoice.DARK, languageTag = "uk")
 
-        val state = AppViewModel(preferences).state.value
+        val state = viewModelOf(preferences).state.value
 
         assertEquals(ThemeChoice.DARK, state.themeChoice)
         assertEquals("uk", state.languageTag)
@@ -21,7 +22,7 @@ class AppViewModelTest {
     @Test
     fun changingTheTheme_updatesStateAndPersistsInOneStep() {
         val preferences = FakeAppPreferences()
-        val viewModel = AppViewModel(preferences)
+        val viewModel = viewModelOf(preferences)
 
         viewModel.setThemeChoice(ThemeChoice.LIGHT)
 
@@ -32,7 +33,7 @@ class AppViewModelTest {
     @Test
     fun changingTheLanguage_updatesStateAndPersistsInOneStep() {
         val preferences = FakeAppPreferences()
-        val viewModel = AppViewModel(preferences)
+        val viewModel = viewModelOf(preferences)
 
         viewModel.setLanguageTag("ar")
 
@@ -43,7 +44,7 @@ class AppViewModelTest {
     @Test
     fun choosingTheSystemLanguage_storesNull_ratherThanSkippingTheWrite() {
         val preferences = FakeAppPreferences(languageTag = "ja")
-        val viewModel = AppViewModel(preferences)
+        val viewModel = viewModelOf(preferences)
 
         viewModel.setLanguageTag(null)
 
@@ -54,7 +55,7 @@ class AppViewModelTest {
     @Test
     fun theTwoSettings_areIndependent() {
         val preferences = FakeAppPreferences()
-        val viewModel = AppViewModel(preferences)
+        val viewModel = viewModelOf(preferences)
 
         viewModel.setThemeChoice(ThemeChoice.DARK)
         viewModel.setLanguageTag("pl")
@@ -62,6 +63,19 @@ class AppViewModelTest {
         assertEquals(ThemeChoice.DARK, viewModel.state.value.themeChoice)
         assertEquals("pl", viewModel.state.value.languageTag)
     }
+
+    @Test
+    fun theChosenColour_reachesTheWholeApp() {
+        val preferences = FakeAppPreferences()
+        val colour = ColourChoice(preferences)
+        val viewModel = AppViewModel(preferences, colour)
+
+        colour.choose("matcha", 125)
+
+        assertEquals("matcha", viewModel.colour.value?.name)
+    }
+
+    private fun viewModelOf(preferences: AppPreferences) = AppViewModel(preferences, ColourChoice(preferences))
 }
 
 private class FakeAppPreferences(

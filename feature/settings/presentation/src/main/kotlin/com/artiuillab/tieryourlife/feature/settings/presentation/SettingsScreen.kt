@@ -51,8 +51,11 @@ import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.settings.AppLinks
+import com.artiuillab.tieryourlife.core.settings.ColourChoice
+import com.artiuillab.tieryourlife.core.settings.ColourSetting
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.color.ReadyColours
 import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
@@ -76,6 +79,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.AboutRows
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.AccountRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.BackupSection
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.ColourSection
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.HowItWorksSheet
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.LanguageRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.OpenOutsideIcon
@@ -83,6 +87,7 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.components.Sett
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.SettingsGroupDivider
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.StopBackingUpDialog
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.ThemeSection
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.YourColourSheet
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.appVersion
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.rateTheApp
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.shareTheApp
@@ -111,6 +116,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val colour by viewModel.colour.collectAsStateWithLifecycle()
     val trashCount = state.trashCount
     val pendingReports = state.pendingReports
     val account = state.account
@@ -163,6 +169,8 @@ fun SettingsScreen(
         versionName = versionName(context),
         themeChoice = themeChoice,
         onThemeChoiceChange = onThemeChoiceChange,
+        colour = colour,
+        onColourChoose = viewModel::chooseColour,
         languageTag = languageTag,
         onLanguageTagChange = onLanguageTagChange,
         trashCount = trashCount,
@@ -307,7 +315,21 @@ fun SettingsScreenContent(
     onRateClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onFeedbackClick: () -> Unit = {},
+    colour: ColourSetting? = null,
+    /** A null hue keeps the last own one. */
+    onColourChoose: (name: String, hue: Int?) -> Unit = { _, _ -> },
 ) {
+    var choosingOwn by rememberSaveable { mutableStateOf(false) }
+    if (choosingOwn) {
+        YourColourSheet(
+            startHue = colour?.hue ?: ColourChoice.LAVENDER_HUE,
+            onDone = { hue ->
+                choosingOwn = false
+                onColourChoose(ReadyColours.CUSTOM, hue)
+            },
+            onCancel = { choosingOwn = false },
+        )
+    }
     var showingHow by rememberSaveable { mutableStateOf(false) }
     val tipMemory = LocalTipMemory.current
     val tipsAgainMessage = stringResource(R.string.how_again_done)
@@ -360,6 +382,12 @@ fun SettingsScreenContent(
                             }
                             SettingsGroup(title = stringResource(R.string.settings_group_appearance)) {
                                 ThemeSection(themeChoice = themeChoice, onThemeChoiceChange = onThemeChoiceChange)
+                                SettingsGroupDivider()
+                                ColourSection(
+                                    setting = colour,
+                                    onChoose = { name -> onColourChoose(name, null) },
+                                    onOwnColour = { choosingOwn = true },
+                                )
                                 SettingsGroupDivider()
                                 LanguageRow(languageTag = languageTag, onLanguageTagChange = onLanguageTagChange)
                             }

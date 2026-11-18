@@ -3,6 +3,8 @@ package com.artiuillab.tieryourlife.feature.settings.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.settings.ColourChoice
+import com.artiuillab.tieryourlife.core.settings.ColourSetting
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
@@ -39,7 +41,15 @@ class SettingsViewModel @Inject constructor(
     private val community: CommunityRepository,
     private val backup: BoardBackup,
     private val preferences: AppPreferences,
+    private val colourChoice: ColourChoice,
 ) : ViewModel() {
+
+    /** The colour the app is drawn in; a choice recolours it at once and goes to the account. */
+    val colour: StateFlow<ColourSetting?> = colourChoice.current
+
+    fun chooseColour(name: String, hue: Int?) {
+        if (hue == null) colourChoice.choose(name) else colourChoice.choose(name, hue)
+    }
 
     private val _state = MutableStateFlow(
         SettingsUiState(

@@ -6,6 +6,7 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import com.artiuillab.tieryourlife.core.logging.CrashKeys
 import com.artiuillab.tieryourlife.core.logging.Logging
+import com.artiuillab.tieryourlife.feature.account.data.settings.ColourSync
 import com.artiuillab.tieryourlife.feature.community.data.warmup.CommunityWarmUp
 import com.artiuillab.tieryourlife.feature.tier.data.sync.SyncOnReconnect
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +26,9 @@ class TierYourLifeApplication : Application(), SingletonImageLoader.Factory {
     @Inject
     lateinit var communityWarmUp: CommunityWarmUp
 
+    @Inject
+    lateinit var colourSync: ColourSync
+
     override fun onCreate() {
         // Before super, which is where Hilt builds the singletons.
         MainThreadChecks.install()
@@ -37,6 +41,7 @@ class TierYourLifeApplication : Application(), SingletonImageLoader.Factory {
         // screen watching that would ever ask.
         syncOnReconnect.start()
         communityWarmUp.start()
+        colourSync.start()
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader = imageLoader

@@ -113,4 +113,15 @@
     <string name="how_again">Revoir les conseils</string>
     <string name="how_again_done">Les conseils s’afficheront à nouveau.</string>
     <string name="how_close">Fermer</string>
+    <string name="settings_colour">Couleur</string>
+    <string name="colour_lavender">Lavande</string>
+    <string name="colour_matcha">Matcha</string>
+    <string name="colour_peach">Pêche</string>
+    <string name="colour_sky">Ciel</string>
+    <string name="colour_phone">Couleurs du téléphone</string>
+    <string name="colour_custom">La vôtre</string>
+    <string name="your_colour">Votre couleur</string>
+    <string name="colour_hue">Teinte</string>
+    <string name="colour_done">OK</string>
+    <string name="colour_cancel">Annuler</string>
 </resources>

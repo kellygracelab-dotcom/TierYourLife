@@ -11,6 +11,8 @@ android {
 dependencies {
     implementation(projects.core.logging)
     implementation(projects.core.network)
+    // The colour the app is drawn in follows the account (ColourSync).
+    implementation(projects.core.settings)
     implementation(projects.feature.account.domain)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.play.services)
@@ -21,4 +23,6 @@ dependencies {
     // The platform's own ExifInterface is what lint warns against; this one reads a photo's orientation safely.
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.core.ktx)
+    testImplementation(testFixtures(projects.core.settings))
+    testImplementation(testFixtures(projects.feature.account.domain))
 }

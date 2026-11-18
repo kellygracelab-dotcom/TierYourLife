@@ -30,6 +30,8 @@ googleid = "1.2.1"
 # Only for the sign-in mark: Google ships their own G in this library.
 playServicesBase = "18.11.1"
 playReview = "2.0.2"
+# Colour themes: the same palettes as the site and the proxy's vectors (Material Color Utilities).
+materialColorUtilities = "6.0.0"
 javaxInject = "1"
 googleServices = "4.6.0"
 timber = "5.0.1"
@@ -51,6 +53,7 @@ androidx-credentials = { group = "androidx.credentials", name = "credentials", v
 androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 play-services-base = { group = "com.google.android.gms", name = "play-services-base", version.ref = "playServicesBase" }
+material-color-utilities = { group = "com.materialkolor", name = "material-color-utilities", version.ref = "materialColorUtilities" }
 play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "playReview" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

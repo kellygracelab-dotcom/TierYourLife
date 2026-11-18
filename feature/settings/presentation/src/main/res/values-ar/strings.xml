@@ -125,4 +125,15 @@
     <string name="how_again">أظهر النصائح مجددًا</string>
     <string name="how_again_done">ستظهر النصائح مجددًا.</string>
     <string name="how_close">إغلاق</string>
+    <string name="settings_colour">اللون</string>
+    <string name="colour_lavender">لافندر</string>
+    <string name="colour_matcha">ماتشا</string>
+    <string name="colour_peach">خوخي</string>
+    <string name="colour_sky">سماوي</string>
+    <string name="colour_phone">ألوان الهاتف</string>
+    <string name="colour_custom">لونك</string>
+    <string name="your_colour">لونك الخاص</string>
+    <string name="colour_hue">درجة اللون</string>
+    <string name="colour_done">تم</string>
+    <string name="colour_cancel">إلغاء</string>
 </resources>

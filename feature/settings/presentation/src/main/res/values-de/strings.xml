@@ -109,4 +109,15 @@
     <string name="how_again">Tipps wieder zeigen</string>
     <string name="how_again_done">Die Tipps werden wieder gezeigt.</string>
     <string name="how_close">Schließen</string>
+    <string name="settings_colour">Farbe</string>
+    <string name="colour_lavender">Lavendel</string>
+    <string name="colour_matcha">Matcha</string>
+    <string name="colour_peach">Pfirsich</string>
+    <string name="colour_sky">Himmel</string>
+    <string name="colour_phone">Farben des Handys</string>
+    <string name="colour_custom">Eigene</string>
+    <string name="your_colour">Deine Farbe</string>
+    <string name="colour_hue">Farbton</string>
+    <string name="colour_done">Fertig</string>
+    <string name="colour_cancel">Abbrechen</string>
 </resources>

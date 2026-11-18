@@ -105,4 +105,15 @@
     <string name="how_again">ヒントをもう一度表示</string>
     <string name="how_again_done">ヒントがもう一度表示されます。</string>
     <string name="how_close">閉じる</string>
+    <string name="settings_colour">カラー</string>
+    <string name="colour_lavender">ラベンダー</string>
+    <string name="colour_matcha">抹茶</string>
+    <string name="colour_peach">ピーチ</string>
+    <string name="colour_sky">スカイ</string>
+    <string name="colour_phone">スマホの色</string>
+    <string name="colour_custom">カスタム</string>
+    <string name="your_colour">あなたの色</string>
+    <string name="colour_hue">色相</string>
+    <string name="colour_done">完了</string>
+    <string name="colour_cancel">キャンセル</string>
 </resources>
