@@ -29,11 +29,11 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColorInt
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorLine
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
+import com.artiuillab.tieryourlife.feature.tier.board.common.tierColorOrNull
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TIER_LIST_ITEM_SPACING
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OwnBoardTopBar
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.POOL_STRIP_WIDTH
@@ -230,4 +230,4 @@ private fun SkeletonRow(band: Color, tiles: Int, rows: TierRowDensity) {
     }
 }
 
-private fun String.toColorOrNull(): Color? = runCatching { Color(toColorInt()) }.getOrNull()
+private fun String.toColorOrNull(): Color? = tierColorOrNull(this)

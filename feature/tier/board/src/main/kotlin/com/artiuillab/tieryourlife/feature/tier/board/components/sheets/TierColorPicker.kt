@@ -50,7 +50,9 @@ import com.artiuillab.tieryourlife.core.theme.ui.ContrastIcon
 import com.artiuillab.tieryourlife.core.theme.ui.TuneIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
+import com.artiuillab.tieryourlife.feature.tier.board.common.B_LIGHT
 import com.artiuillab.tieryourlife.feature.tier.board.common.Hsl
+import com.artiuillab.tieryourlife.feature.tier.board.common.OLD_B_LIGHT
 import com.artiuillab.tieryourlife.feature.tier.board.common.contrastRatio
 import com.artiuillab.tieryourlife.feature.tier.board.common.hexToHsl
 import com.artiuillab.tieryourlife.feature.tier.board.common.parseTierColor
@@ -61,7 +63,7 @@ data class TierPreset(val colorLight: String, val colorDark: String)
 val TIER_COLOR_PRESETS = listOf(
     TierPreset("B03A32", "F1948C"),
     TierPreset("C06A25", "E9A867"),
-    TierPreset("A98B1F", "D8C05A"),
+    TierPreset(B_LIGHT, "D8C05A"),
     TierPreset("3F7F55", "8FD3A3"),
     TierPreset("3C6E99", "8FC3E8"),
     TierPreset("6B4E9E", "C9A9F0"),
@@ -114,7 +116,7 @@ val TierColorSelectionSaver: Saver<TierColorSelection, Any> = listSaver(
 )
 
 fun tierColorSelectionFor(colorLight: String, colorDark: String): TierColorSelection {
-    val light = colorLight.removePrefix("#")
+    val light = colorLight.removePrefix("#").let { if (it.equals(OLD_B_LIGHT, ignoreCase = true)) B_LIGHT else it }
     val dark = colorDark.removePrefix("#")
     val presetIndex = TIER_COLOR_PRESETS.indexOfFirst {
         it.colorLight.equals(light, ignoreCase = true) && it.colorDark.equals(dark, ignoreCase = true)
@@ -242,7 +244,7 @@ private fun CustomColorSwatch(isSelected: Boolean, contentDescription: String, o
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val conic = Brush.sweepGradient(
         listOf(
-            Color(0xFFB03A32), Color(0xFFC06A25), Color(0xFFA98B1F), Color(0xFF3F7F55),
+            Color(0xFFB03A32), Color(0xFFC06A25), Color(0xFFB88A00), Color(0xFF3F7F55),
             Color(0xFF2F7D7D), Color(0xFF3C6E99), Color(0xFF6B4E9E), Color(0xFFA63A66), Color(0xFFB03A32),
         ),
     )

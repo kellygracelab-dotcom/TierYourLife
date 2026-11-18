@@ -9,12 +9,19 @@ import org.junit.Test
 class WhiteLetterTest {
 
     @Test
-    fun `A's orange and B's ochre darken as on the site, until a white letter reads`() {
+    fun `A's orange and B's gold darken as on the site, until a white letter reads`() {
         assertEquals(parseTierColor("#A55B20"), parseTierColor("#C06A25").darkenedForWhite())
-        assertEquals(parseTierColor("#846C18"), parseTierColor("#A98B1F").darkenedForWhite())
-        listOf("#C06A25", "#A98B1F", "#F4D03F").forEach { hex ->
+        listOf("#C06A25", "#B88A00", "#F4D03F").forEach { hex ->
             assertTrue(hex, whiteContrast(parseTierColor(hex).darkenedForWhite()) >= WHITE_LETTER_FROM)
         }
+    }
+
+    @Test
+    fun `B's old olive is drawn as the gold, with a white letter at 3 to 1 or more`() {
+        assertEquals(parseTierColor("#B88A00"), parseTierColor("#A98B1F"))
+        assertEquals(parseTierColor("#B88A00"), parseTierColor("a98b1f"))
+        assertTrue(whiteContrast(parseTierColor("#B88A00")) >= 3f)
+        assertEquals(parseTierColor("#D8C05A"), parseTierColor("#D8C05A"))
     }
 
     @Test

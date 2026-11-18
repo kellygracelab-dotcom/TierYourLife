@@ -24,10 +24,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.titleIn
 import com.artiuillab.tieryourlife.feature.tier.board.common.currentLanguageTag
+import com.artiuillab.tieryourlife.feature.tier.board.common.tierColorOrNull
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 
@@ -76,7 +76,7 @@ internal fun ReadyListCard(list: PublishedListSummary, onTry: () -> Unit, modifi
 /** The list's own tier colours, stacked like the bands of a board. */
 @Composable
 private fun TierBands(colors: List<String>) {
-    val bands = colors.mapNotNull { runCatching { Color(it.toColorInt()) }.getOrNull() }.take(MAX_BANDS)
+    val bands = colors.mapNotNull { tierColorOrNull(it) }.take(MAX_BANDS)
         .ifEmpty { DEFAULT_BANDS }
     Column(Modifier.width(40.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         bands.forEach { band ->

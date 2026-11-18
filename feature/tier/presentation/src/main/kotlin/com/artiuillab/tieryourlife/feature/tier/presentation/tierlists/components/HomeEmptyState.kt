@@ -48,7 +48,7 @@ private const val TILES_PER_ROW = 4
 private val TIER_LIGHT = listOf(
     Color(0xFFB03A32),
     Color(0xFFC06A25),
-    Color(0xFFA98B1F),
+    Color(0xFFB88A00),
     Color(0xFF3F7F55),
     Color(0xFF3C6E99),
 )
