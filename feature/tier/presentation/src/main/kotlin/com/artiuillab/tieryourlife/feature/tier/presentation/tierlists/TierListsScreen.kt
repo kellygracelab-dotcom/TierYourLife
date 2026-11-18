@@ -158,6 +158,7 @@ fun TierListsScreen(
         onSelectBoardSort = viewModel::selectBoardSort,
         onApplyBoardFilters = viewModel::applyBoardFilters,
         onToggleFavourite = viewModel::toggleFavourite,
+        onFavouriteSelected = viewModel::favouriteSelected,
         userMessages = viewModel.userMessages,
         tabs = tabs,
         picturesOnWifiOnly = viewModel::picturesOnWifiOnly,
@@ -191,6 +192,7 @@ fun TierListsScreenContent(
     onSelectBoardSort: (BoardSort) -> Unit = {},
     onApplyBoardFilters: (BoardFilters) -> Unit = {},
     onToggleFavourite: (Long) -> Unit = {},
+    onFavouriteSelected: (Set<Long>) -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
     tabs: @Composable () -> Unit = {},
     /** Null draws without fetching any pictures ahead, as a test or a preview should. */
@@ -296,11 +298,15 @@ fun TierListsScreenContent(
     val short = isShortWindow
     val keyboardUp = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     // The first thing that scrolls, never pinned: the counts where the bar
-    // has no room for them, then what orders and narrows the boards. Nothing
-    // to order or narrow until there is more than one board.
+    // has no room for them, the lists begun, then what orders and narrows the
+    // boards, right above them as on the site. Nothing to order or narrow
+    // until there is more than one board.
     val top: @Composable () -> Unit = {
         Column {
             if (!short) HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
+            if (continuing != null) {
+                Box(Modifier.padding(top = 8.dp, bottom = 4.dp).widthIn(max = ContentWidth.Reading)) { continuing() }
+            }
             if (totalListCount > 1) {
                 BoardControlsRow(
                     sort = boardSort,
@@ -339,6 +345,8 @@ fun TierListsScreenContent(
 
                             is HomeMode.Selecting -> SelectionTopBar(
                                 count = mode.selectedIds.size,
+                                allFavourites = (favourites + lists).filter { it.id in mode.selectedIds }.all { it.favouritedAt != null },
+                                onFavourite = { onFavouriteSelected(mode.selectedIds) },
                                 onClose = onCloseSelection,
                                 onDelete = { deleteAndAnnounce(mode.selectedIds.toList()) },
                             )
@@ -414,7 +422,6 @@ fun TierListsScreenContent(
                             onSignInClick = onSignInClick,
                             onDismissSignInOffer = onDismissSignInOffer,
                             onDismissConflictNotice = onDismissConflictNotice,
-                            continuing = continuing,
                         )
                     }
                 }
@@ -495,7 +502,6 @@ private fun HomeContent(
     onSignInClick: () -> Unit,
     onDismissSignInOffer: () -> Unit,
     onDismissConflictNotice: (String) -> Unit,
-    continuing: (@Composable () -> Unit)? = null,
 ) {
     val isSelecting = mode is HomeMode.Selecting
     val selectedIds = (mode as? HomeMode.Selecting)?.selectedIds.orEmpty()
@@ -520,7 +526,6 @@ private fun HomeContent(
             onSignInClick = onSignInClick,
             onDismissSignInOffer = onDismissSignInOffer,
             onDismissConflictNotice = onDismissConflictNotice,
-            continuing = continuing,
         )
         return
     }
@@ -550,9 +555,6 @@ private fun HomeContent(
                     )
                 }
             }
-        }
-        if (continuing != null) {
-            wide("continue") { Box(Modifier.widthIn(max = ContentWidth.Reading)) { continuing() } }
         }
         if (grouped) {
             wide("favourites-heading") {
@@ -650,7 +652,6 @@ private fun BoardTiles(
     onSignInClick: () -> Unit,
     onDismissSignInOffer: () -> Unit,
     onDismissConflictNotice: (String) -> Unit,
-    continuing: (@Composable () -> Unit)? = null,
 ) {
     BoardsGrid(columns = GridCells.Adaptive(minSize = TILE_MIN_WIDTH), scroll = scroll, aboveKeyboard = aboveKeyboard) {
         wide("top") { top() }
@@ -671,9 +672,6 @@ private fun BoardTiles(
                     onDismiss = onDismissSignInOffer,
                 )
             }
-        }
-        if (continuing != null) {
-            wide("continue") { Box(Modifier.widthIn(max = ContentWidth.Reading)) { continuing() } }
         }
         if (grouped) {
             item(key = "favourites-heading", span = { GridItemSpan(maxLineSpan) }) {

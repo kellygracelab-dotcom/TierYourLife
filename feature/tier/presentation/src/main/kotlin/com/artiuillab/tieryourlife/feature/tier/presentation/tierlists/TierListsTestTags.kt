@@ -30,6 +30,8 @@ internal object TierListsTestTags {
     const val CONFLICT_TAG = "home_conflict_tag"
     fun tile(id: Long): String = "tier_list_tile_$id"
 
+    const val SELECTION_FAVOURITE = "tier_lists_selection_favourite"
+
     fun star(id: Long): String = "tier_list_star_$id"
 
     fun boardSortOption(sort: BoardSort): String = "tier_lists_sort_${sort.name.lowercase()}"
