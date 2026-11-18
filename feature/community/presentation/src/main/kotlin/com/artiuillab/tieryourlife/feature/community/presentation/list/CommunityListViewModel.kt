@@ -330,6 +330,7 @@ class CommunityListViewModel @Inject constructor(
         if (current.own || current.arriving) return
         if (current.showing == Showing.Theirs) return theirsStart.move(current, itemId, toTierId, toPosition)
         game.forget()
+        theirsStart.forget()
         _state.update { state ->
             if (state !is CommunityListUiState.Success) return@update state
             state.copy(mine = state.mine.withItemMoved(itemId, toTierId, toPosition), arranged = true)
@@ -339,7 +340,10 @@ class CommunityListViewModel @Inject constructor(
     }
 
     /** A game's result on someone else's list, or the game's own undo of it. */
-    fun putInMine(board: TierList, undone: Boolean = false) = game.put(board, undone)
+    fun putInMine(board: TierList, undone: Boolean = false) {
+        theirsStart.forget()
+        game.put(board, undone)
+    }
 
     /** A single private editor action; it never changes the author's arrangement. */
     private fun returnAllToPool() {

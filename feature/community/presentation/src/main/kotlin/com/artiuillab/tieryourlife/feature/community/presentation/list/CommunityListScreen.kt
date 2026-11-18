@@ -81,7 +81,9 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
@@ -158,6 +160,7 @@ fun CommunityListScreen(
             onTakeDown = viewModel.ownList::takeDown,
         ),
         onUndoStartFromTheirs = viewModel.theirsStart::undo,
+        onFinishStartFromTheirs = viewModel.theirsStart::forget,
         listNotices = viewModel.listNotices,
         onTurnGame = viewModel.game::turn,
     )
@@ -218,7 +221,8 @@ fun CommunityListScreenContent(
     userMessages: Flow<UserMessage> = emptyFlow(),
     rankingNotices: Flow<RankingNotice> = emptyFlow(),
     own: OwnListCallbacks = OwnListCallbacks(),
-    onUndoStartFromTheirs: () -> Unit = {},
+    onUndoStartFromTheirs: (Long) -> Unit = {},
+    onFinishStartFromTheirs: (Long) -> Unit = {},
     listNotices: Flow<ListNotice> = emptyFlow(),
     /** The board before the last game, or its result again. */
     onTurnGame: () -> Unit = {},
@@ -453,6 +457,7 @@ fun CommunityListScreenContent(
             listNotices = listNotices,
             onSignIn = onSignIn,
             onUndoStartFromTheirs = onUndoStartFromTheirs,
+            onFinishStartFromTheirs = onFinishStartFromTheirs,
             onTakenDown = onBack,
             onOpenBoard = onOpenSaved,
         )
@@ -567,13 +572,15 @@ private fun ListSnackbar(
     rankingNotices: Flow<RankingNotice>,
     listNotices: Flow<ListNotice>,
     onSignIn: () -> Unit,
-    onUndoStartFromTheirs: () -> Unit,
+    onUndoStartFromTheirs: (Long) -> Unit,
+    onFinishStartFromTheirs: (Long) -> Unit,
     onTakenDown: () -> Unit,
     onOpenBoard: (Long) -> Unit,
 ) {
     val resources = LocalResources.current
     val signIn by rememberUpdatedState(onSignIn)
     val undo by rememberUpdatedState(onUndoStartFromTheirs)
+    val finishUndo by rememberUpdatedState(onFinishStartFromTheirs)
     val leave by rememberUpdatedState(onTakenDown)
     val openBoard by rememberUpdatedState(onOpenBoard)
     val onTop by rememberUpdatedState(sheetHost)
@@ -616,20 +623,30 @@ private fun ListSnackbar(
         }
     }
     LaunchedEffect(listNotices) {
-        listNotices.collect { notice ->
+        var shownUndo: Long? = null
+        listNotices.filter { notice ->
+            val current = notice !is ListNotice.TheirsUndoDismissed || notice.undoId == shownUndo
+            if (current) shownUndo = (notice as? ListNotice.StartedFromTheirs)?.undoId
+            current
+        }.collectLatest { notice ->
             when (notice) {
                 ListNotice.TakenDown -> leave()
                 is ListNotice.OpenBoard -> openBoard(notice.boardId)
                 ListNotice.SignInToFollow -> signIn()
                 is ListNotice.FollowRefused -> host.showSnackbar(resources.sentenceFor(notice.refusal))
+                is ListNotice.TheirsUndoDismissed -> Unit
                 is ListNotice.StartedFromTheirs -> {
                     host.currentSnackbarData?.dismiss()
-                    val answer = host.showSnackbar(
-                        message = resources.startedFromTheirs(notice),
-                        actionLabel = resources.getString(R.string.community_action_undo),
-                        duration = SnackbarDuration.Long,
-                    )
-                    if (answer == SnackbarResult.ActionPerformed) undo()
+                    try {
+                        val answer = host.showSnackbar(
+                            message = resources.startedFromTheirs(notice),
+                            actionLabel = resources.getString(R.string.community_action_undo),
+                            duration = SnackbarDuration.Long,
+                        )
+                        if (answer == SnackbarResult.ActionPerformed) undo(notice.undoId)
+                    } finally {
+                        finishUndo(notice.undoId)
+                    }
                 }
             }
         }
