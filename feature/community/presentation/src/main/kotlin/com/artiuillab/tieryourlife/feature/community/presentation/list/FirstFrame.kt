@@ -69,7 +69,7 @@ internal fun darkFor(light: String): String {
 private val DARK_OF: Map<String, String> =
     TIER_COLOR_PRESETS.associate { it.colorLight.uppercase() to it.colorDark.uppercase() } +
         // A new board's own five, which a published list carries most often.
-        mapOf("B03A32" to "F1948C", "C06A25" to "E9A867", "A98B1F" to "D8C05A", "3F7F55" to "7FC393", "3C6E99" to "86B8DE")
+        mapOf("B03A32" to "F1948C", "C06A25" to "E9A867", "A98B1F" to "D8C05A", "B88A00" to "D8C05A", "3F7F55" to "7FC393", "3C6E99" to "86B8DE")
 
 private const val POOL_LIGHT = "#DAD7E0"
 private const val POOL_DARK = "#46464F"

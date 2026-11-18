@@ -5,7 +5,7 @@ internal object DefaultTierColors {
     const val S_DARK = "#F1948C"
     const val A_LIGHT = "#C06A25"
     const val A_DARK = "#E9A867"
-    const val B_LIGHT = "#A98B1F"
+    const val B_LIGHT = "#B88A00"
     const val B_DARK = "#D8C05A"
     const val C_LIGHT = "#3F7F55"
     const val C_DARK = "#7FC393"

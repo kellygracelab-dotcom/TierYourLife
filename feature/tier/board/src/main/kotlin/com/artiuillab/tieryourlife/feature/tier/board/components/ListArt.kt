@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColorInt
+import com.artiuillab.tieryourlife.feature.tier.board.common.tierColorOrNull
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
 
 private const val MOSAIC_COLUMNS = 3
@@ -100,6 +100,4 @@ private fun TierBands(tierColors: List<String>) {
     }
 }
 
-private fun String.toColorOrNull(): Color? = runCatching {
-    Color(this.toColorInt())
-}.getOrNull()
+private fun String.toColorOrNull(): Color? = tierColorOrNull(this)

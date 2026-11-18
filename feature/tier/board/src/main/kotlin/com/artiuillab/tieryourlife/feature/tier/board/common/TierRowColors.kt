@@ -9,10 +9,19 @@ import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 
 private const val ROW_TINT_ALPHA = 0.12f
 
+/** B in the light theme, gold, as on the site (artboard 56). */
+const val B_LIGHT = "B88A00"
+
+/** B's olive before 18.11.2026: the lists made until then keep it, and it is drawn as [B_LIGHT]. */
+const val OLD_B_LIGHT = "A98B1F"
+
+/** A colour that does not read as one comes back null. */
+fun tierColorOrNull(hex: String): Color? = parseTierColor(hex).takeIf { it != Color.Unspecified }
+
 const val ROW_HOVER_TINT_ALPHA = 0.24f
 
 fun parseTierColor(hex: String, fallback: Color = Color.Unspecified): Color {
-    val body = hex.removePrefix("#")
+    val body = hex.removePrefix("#").let { if (it.equals(OLD_B_LIGHT, ignoreCase = true)) B_LIGHT else it }
     if (body.length != 6 && body.length != 8) return fallback
 
     var value = 0L
