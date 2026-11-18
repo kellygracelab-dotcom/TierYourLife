@@ -158,6 +158,56 @@ class PictureSearchScreenshotTest {
         LinkCard(LinkPicture.Limited(threeAtNight.timeInMillis))
     }
 
+    @Test
+    fun eachResult_saysWhatItIs_andTheResultsSayWhoseTheyAre() = capture("picture_search_kinds") {
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Success(
+                items = listOf(
+                    CatalogueItem("tmdb:tv:46260", "Naruto", "2002", "https://t/1.jpg", kind = "tv", source = "tmdb"),
+                    CatalogueItem("anilist:20", "Naruto", "2002", "https://a/20.jpg", kind = "anime", source = "anilist"),
+                    CatalogueItem("anilist:m30011", "Naruto", "1999", "https://a/m1.jpg", kind = "manga", source = "anilist"),
+                    CatalogueItem("anilist:c17", "Naruto Uzumaki", "Naruto", "https://a/c17.jpg", kind = "character", source = "anilist"),
+                    CatalogueItem("wikidata:Q356", "Naruto", null, "https://w/1.jpg", kind = "thing", source = "wikidata"),
+                    CatalogueItem("web:x", "Naruto poster", "example.com", "https://x/1.jpg", kind = "web", source = "web"),
+                ),
+            ),
+            query = "naruto",
+            onQueryChange = {},
+            onSearchClick = {},
+            listTitle = "Аниме 2026",
+            scopes = ScopeChoice(first = PictureScope.All, selected = PictureScope.All, onSelect = {}),
+        )
+    }
+
+    @Test
+    fun aBusyCatalogue_isWaitedFor_andSaysUntilWhen() = capture("picture_search_waiting") {
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Waiting(at(14, 5)),
+            query = "naruto",
+            onQueryChange = {},
+            onSearchClick = {},
+            listTitle = "Аниме 2026",
+            scopes = ScopeChoice(first = PictureScope.Anime, selected = PictureScope.Anime, onSelect = {}),
+        )
+    }
+
+    @Test
+    fun tooManySearches_stopTheSearch_untilTheTimeItSays_dark() = capture("picture_search_limit_dark", dark = true) {
+        CatalogueSearchScreenContent(
+            state = CatalogueSearchUiState.Limited(at(15, 0)),
+            query = "dune",
+            onQueryChange = {},
+            onSearchClick = {},
+            listTitle = "Sci-fi films",
+            scopes = ScopeChoice(first = PictureScope.FilmTv, selected = PictureScope.FilmTv, onSelect = {}),
+        )
+    }
+
+    private fun at(hour: Int, minute: Int): Long = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, hour)
+        set(Calendar.MINUTE, minute)
+    }.timeInMillis
+
     @Composable
     private fun LinkCard(answer: LinkPicture, url: String = "https://i.example.net/p/8812.jpg") {
         CatalogueSearchScreenContent(

@@ -129,9 +129,10 @@ private fun ResultCell(item: CatalogueItem, selected: Boolean, onToggle: () -> U
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            item.subtitle?.let { subtitle ->
+            // "Film · 1972", as the site's tile: a poster and a manga of one name told apart.
+            listOfNotNull(kindName(item.kind), item.subtitle).joinToString(" · ").takeIf { it.isNotEmpty() }?.let { line ->
                 Text(
-                    text = subtitle,
+                    text = line,
                     style = TierYourLifeType.current.supportingLabel,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,

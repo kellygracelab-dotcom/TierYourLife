@@ -25,6 +25,18 @@ sealed interface CatalogueSearchUiState {
     ) : CatalogueSearchUiState
 
     data object Error : CatalogueSearchUiState
+
+    /** The search stands still for a reason the server gave: said in words, not as a failure to load. */
+    sealed interface Held : CatalogueSearchUiState
+
+    /** Nothing found while a catalogue the search needs is busy: the same words go again at [untilMillis], by themselves. */
+    data class Waiting(val untilMillis: Long) : Held
+
+    /** Too many searches: none until [untilMillis]. Asking before then is no use, so there is nothing to retry. */
+    data class Limited(val untilMillis: Long) : Held
+
+    /** A busy catalogue was waited for as long as is worth it and is busy still: until when, if the server said. */
+    data class Busy(val untilMillis: Long?) : Held
 }
 
 /** The field holds an address: no search, the picture behind it instead. [answer] is null while the server looks. */

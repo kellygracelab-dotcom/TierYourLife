@@ -86,9 +86,9 @@ internal fun ResultsList(
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
-                        item.subtitle?.let { subtitle ->
+                        listOfNotNull(kindName(item.kind), item.subtitle).joinToString(" · ").takeIf { it.isNotEmpty() }?.let { line ->
                             Text(
-                                text = subtitle,
+                                text = line,
                                 style = TierYourLifeType.current.supportingLabel,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )

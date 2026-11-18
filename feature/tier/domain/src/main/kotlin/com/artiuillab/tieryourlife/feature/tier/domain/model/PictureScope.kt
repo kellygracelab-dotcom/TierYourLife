@@ -27,7 +27,13 @@ sealed interface SearchNotice {
 
     /** The web search is out for everybody for now. */
     data object WebOff : SearchNotice
+}
 
-    /** This person searched too often: until [untilMillis] only the catalogues the phone asks itself answer. */
-    data class SearchLimit(val untilMillis: Long) : SearchNotice
+/** A search the server would not answer for a reason the person is told, rather than "couldn't load". */
+sealed class SearchRefusal(message: String) : Exception(message) {
+    /** This person searched too often: no search until [retryAt], epoch ms. */
+    class Limit(val retryAt: Long) : SearchRefusal("Too many picture searches")
+
+    /** Nothing found while a catalogue the search needs is busy: the same words are worth asking at [retryAt]. */
+    class Busy(val retryAt: Long?) : SearchRefusal("A catalogue this search needs is busy")
 }

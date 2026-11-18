@@ -1,19 +1,13 @@
 package com.artiuillab.tieryourlife.feature.tier.data.repository
 
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.PicturesApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.TmdbApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.api.WikidataSparqlApi
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.MovieDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.MovieSearchResponseDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PictureAttributionDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PictureHitDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PicturesDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.WikidataSearchResponseDto
-import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.WikidataSparqlResponseDto
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
+import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchRefusal
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
@@ -27,6 +21,7 @@ import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
+import java.util.Locale
 
 class ServerCatalogueSearchTest {
 
@@ -116,14 +111,10 @@ class ServerCatalogueSearchTest {
     }
 
     @Test
-    fun aServerThatCannotBeReached_leavesTheCataloguesThePhoneCanAsk() = runBlocking {
-        val tmdb = OneFilmTmdb()
+    fun aServerThatCannotBeReached_isAFailure_noCatalogueAskedBehindItsBack() = runBlocking {
+        val result = search(FakePicturesApi(failure = IOException("offline"))).search("dune", "en", 1, PictureScope.Books)
 
-        val page = search(FakePicturesApi(failure = IOException("offline")), tmdb).search("dune", "en", 1, PictureScope.Books).getOrThrow()
-
-        assertEquals(listOf("tmdb:7"), page.items.map { it.id })
-        assertNull(page.notice)
-        assertEquals(1, tmdb.searches)
+        assertTrue(result.exceptionOrNull() is IOException)
     }
 
     @Test
@@ -138,55 +129,101 @@ class ServerCatalogueSearchTest {
 
     // Proxy 429 SEARCH_LIMIT: 1000 an hour, 3000 a UTC day.
     @Test
-    fun overTheSearchLimit_thePhoneAsksItsOwnCataloguesUntilTheServerSaysAndSaysUntilWhen() = runBlocking {
+    fun overTheSearchLimit_theSearchStopsUntilTheServerSays_andSaysUntilWhen() = runBlocking {
         var clock = 1_000L
         val api = FakePicturesApi(PicturesDto())
-        api.refuse = { tooMany("""{"error":"Too many picture searches","code":"SEARCH_LIMIT","retryAt":3600000}""", retryAfter = "3599") }
-        val tmdb = OneFilmTmdb()
-        val search = search(api, tmdb, now = { clock })
+        api.refuse = { refused(429, """{"error":"Too many picture searches","code":"SEARCH_LIMIT","retryAt":3600000}""", retryAfter = "3599") }
+        val search = search(api, now = { clock })
 
-        val limited = search.search("dune", "en", 1, PictureScope.Books).getOrThrow()
+        val limited = search.search("dune", "en", 1, PictureScope.Books).exceptionOrNull()
         api.refuse = null
         clock = 3_599_999L
-        val stillLimited = search.search("dune", "en", 2, PictureScope.Books).getOrThrow()
+        val stillLimited = search.search("dune", "en", 2, PictureScope.Books).exceptionOrNull()
 
-        assertEquals(listOf("tmdb:7"), limited.items.map { it.id })
-        assertEquals(SearchNotice.SearchLimit(3_600_000L), limited.notice)
-        assertEquals(SearchNotice.SearchLimit(3_600_000L), stillLimited.notice)
+        assertEquals(3_600_000L, (limited as SearchRefusal.Limit).retryAt)
+        assertEquals(3_600_000L, (stillLimited as SearchRefusal.Limit).retryAt)
         assertEquals(1, api.asked.size)
-        assertEquals(2, tmdb.searches)
 
         clock = 3_600_000L
-        val again = search.search("dune", "en", 1, PictureScope.Books).getOrThrow()
-        assertNull(again.notice)
+        assertTrue(search.search("dune", "en", 1, PictureScope.Books).isSuccess)
         assertEquals(2, api.asked.size)
     }
 
     @Test
     fun aLimitWithoutItsHour_waitsAsLongAsRetryAfterSays_andAnyOther429IsJustAFailure() = runBlocking {
         val api = FakePicturesApi(PicturesDto())
-        api.refuse = { tooMany("""{"code":"SEARCH_LIMIT"}""", retryAfter = "120") }
+        api.refuse = { refused(429, """{"code":"SEARCH_LIMIT"}""", retryAfter = "120") }
 
-        val limited = search(api, now = { 5_000L }).search("dune", "en", 1).getOrThrow()
+        val limited = search(api, now = { 5_000L }).search("dune", "en", 1).exceptionOrNull()
 
-        assertEquals(SearchNotice.SearchLimit(125_000L), limited.notice)
+        assertEquals(125_000L, (limited as SearchRefusal.Limit).retryAt)
 
         val other = FakePicturesApi(PicturesDto())
-        other.refuse = { tooMany("""{"error":"Too many requests"}""", retryAfter = "60") }
+        other.refuse = { refused(429, """{"error":"Too many requests"}""", retryAfter = "60") }
         val search = search(other, now = { 5_000L })
-        assertNull(search.search("dune", "en", 1).getOrThrow().notice)
+        assertTrue(search.search("dune", "en", 1).exceptionOrNull() is HttpException)
         search.search("dune", "en", 1)
         assertEquals(2, other.asked.size)
     }
 
-    private fun search(api: PicturesApi, tmdb: TmdbApi = OneFilmTmdb(), now: () -> Long = { 0L }) =
-        ServerCatalogueSearch(api, CatalogueSearchRepositoryImpl(tmdb, NoWikidata(), NoSparql()), now)
+    // Proxy 503 SOURCE_BUSY: nothing found while a catalogue the search needs is busy.
+    @Test
+    fun aBusyCatalogue_isSaid_withWhenToAskAgain_byItsBodyOrItsHeader() = runBlocking {
+        val api = FakePicturesApi(PicturesDto())
+        api.refuse = { refused(503, """{"code":"SOURCE_BUSY","retryAt":9000,"busy":["anilist"]}""", retryAfter = "4") }
+        val busy = search(api, now = { 1_000L }).search("naruto", "en", 1, PictureScope.Anime).exceptionOrNull()
+        assertEquals(9_000L, (busy as SearchRefusal.Busy).retryAt)
+
+        api.refuse = { refused(503, """{"code":"SOURCE_BUSY"}""", retryAfter = "4") }
+        val byHeader = search(api, now = { 1_000L }).search("naruto", "en", 1, PictureScope.Anime).exceptionOrNull()
+        assertEquals(5_000L, (byHeader as SearchRefusal.Busy).retryAt)
+
+        api.refuse = { refused(503, """{"code":"UNAVAILABLE"}""", retryAfter = "4") }
+        assertTrue(search(api).search("naruto", "en", 1).exceptionOrNull() is HttpException)
+    }
+
+    @Test
+    fun aGapLeftByABusyCatalogue_comesWithTheAnswer_andWhenToFillIt() = runBlocking {
+        val hit = PictureHitDto(id = "tmdb:1", title = "Naruto", imageUrl = "https://t/1.jpg", source = "tmdb", kind = "tv")
+        val api = FakePicturesApi(PicturesDto(items = listOf(hit), busy = listOf("anilist"), retryAt = 9_000))
+
+        val page = search(api).search("naruto", "en", 1, PictureScope.Anime).getOrThrow()
+
+        assertTrue(page.busy)
+        assertEquals(9_000L, page.retryAt)
+        assertEquals("tv", page.items.single().kind)
+        assertEquals("tmdb", page.items.single().source)
+
+        val whole = search(FakePicturesApi(PicturesDto(items = listOf(hit.copy(kind = "", source = ""))))).search("naruto", "en", 1).getOrThrow()
+        assertFalse(whole.busy)
+        assertNull(whole.retryAt)
+        assertNull(whole.items.single().kind)
+        assertNull(whole.items.single().source)
+    }
+
+    @Test
+    fun theLanguage_isTheSitesTag_soBothShareTheServersAnswer() = runBlocking {
+        val api = FakePicturesApi(PicturesDto())
+        val american = ServerCatalogueSearch(api, { 0L }, { Locale.US })
+
+        american.search("dune", null, 1)
+        american.search("dune", "pt-BR", 1)
+        american.search("dune", "uk", 1)
+        ServerCatalogueSearch(api, { 0L }, { Locale.forLanguageTag("pt-PT") }).search("dune", null, 1)
+        ServerCatalogueSearch(api, { 0L }, { Locale.ITALIAN }).search("dune", null, 1)
+        ServerCatalogueSearch(api, { 0L }, { Locale.forLanguageTag("es-MX") }).search("dune", null, 1)
+
+        assertEquals(listOf("en", "pt-BR", "uk", "pt-BR", "en", "es"), api.asked.map { it.language })
+        assertEquals("ja", searchLanguage("ja", Locale.US))
+    }
+
+    private fun search(api: PicturesApi, now: () -> Long = { 0L }) = ServerCatalogueSearch(api, now) { Locale.US }
 }
 
-private fun tooMany(body: String, retryAfter: String): HttpException {
+private fun refused(code: Int, body: String, retryAfter: String): HttpException {
     val raw = okhttp3.Response.Builder()
-        .code(429)
-        .message("Too Many Requests")
+        .code(code)
+        .message("Refused")
         .protocol(Protocol.HTTP_1_1)
         .request(Request.Builder().url("https://proxy.invalid/pictures").build())
         .header("Retry-After", retryAfter)
@@ -208,33 +245,4 @@ private class FakePicturesApi(private val answer: PicturesDto = PicturesDto(), p
         refuse?.let { throw it() }
         return answer
     }
-}
-
-private class OneFilmTmdb : TmdbApi {
-    var searches = 0
-
-    override suspend fun searchMulti(query: String, language: String, page: Int): MovieSearchResponseDto {
-        searches++
-        return MovieSearchResponseDto(
-            page = 1,
-            results = listOf(MovieDto(id = 7, mediaType = "movie", title = "Dune", posterPath = "/dune.jpg")),
-            totalPages = 1,
-        )
-    }
-}
-
-private class NoWikidata : WikidataApi {
-    override suspend fun searchEntities(
-        search: String,
-        language: String,
-        uselang: String,
-        action: String,
-        type: String,
-        format: String,
-        limit: Int,
-    ): WikidataSearchResponseDto = throw IOException("not asked in this test")
-}
-
-private class NoSparql : WikidataSparqlApi {
-    override suspend fun query(query: String): WikidataSparqlResponseDto = throw IOException("not asked in this test")
 }
