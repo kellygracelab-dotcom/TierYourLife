@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.color.ReadyColours
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.color.hueColorScheme
+import com.artiuillab.tieryourlife.core.theme.color.vividHue
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.feature.settings.presentation.R
@@ -125,21 +126,22 @@ private fun ColourPreview(hue: Int) {
 @Composable
 private fun HueSlider(hue: Int, onHue: (Int) -> Unit) {
     val label = stringResource(R.string.colour_hue)
-    val thumb = remember(hue) { hueColorScheme(hue, dark = false).primary }
+    val thumb = remember(hue) { vividHue(hue) }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Box(Modifier.fillMaxWidth().height(12.dp).clip(CircleShape).background(HueStrip))
         Slider(
             value = hue.toFloat(),
             onValueChange = { onHue(it.roundToInt().mod(ReadyColours.FULL_TURN)) },
             valueRange = 0f..(ReadyColours.FULL_TURN - 1).toFloat(),
-            colors = SliderDefaults.colors(thumbColor = thumb, activeTrackColor = thumb, inactiveTrackColor = thumb.copy(alpha = 0.24f)),
+            colors = SliderDefaults.colors(thumbColor = thumb, activeTrackColor = thumb.copy(alpha = 0.24f), inactiveTrackColor = thumb.copy(alpha = 0.24f)),
             modifier = Modifier.fillMaxWidth().semantics { contentDescription = label }.testTag(SettingsTestTags.HUE_SLIDER),
         )
     }
 }
 
+/** The rainbow under the slider: where each hue lies. */
 private val HueStrip: Brush = Brush.horizontalGradient(
-    (0..ReadyColours.FULL_TURN step 30).map { hueColorScheme(it % ReadyColours.FULL_TURN, dark = false).primary },
+    (0..ReadyColours.FULL_TURN step 15).map { vividHue(it % ReadyColours.FULL_TURN) },
 )
 
 private const val ROW_TINT = 0.12f

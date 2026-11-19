@@ -80,6 +80,12 @@ fun hueColorScheme(hue: Int, dark: Boolean): ColorScheme {
 /** The seed a hue makes, as its own colour: the swatch that stands for it. */
 fun hueSeed(hue: Int): Color = Color(Hct.from(hue.toDouble(), SEED_CHROMA, SEED_TONE).toInt())
 
+/** The hue as vivid as a screen shows it: the rainbow one's own colour is picked on. */
+fun vividHue(hue: Int): Color = Color(Hct.from(hue.toDouble(), VIVID_CHROMA, VIVID_TONE).toInt())
+
+/** A colour's light page, whatever the mode: its swatch looks the same in light and dark (artboard 59). */
+fun swatchScheme(colour: ThemeColour, context: Context): ColorScheme = colorSchemeFor(colour, dark = false, context)
+
 internal fun colorSchemeFor(colour: ThemeColour, dark: Boolean, context: Context): ColorScheme = when (colour) {
     ThemeColour.Lavender -> if (dark) DarkColorScheme else LightColorScheme
     is ThemeColour.FromHue -> hueColorScheme(colour.hue, dark)
@@ -108,6 +114,8 @@ internal fun mediaColorsFor(colour: ThemeColour, dark: Boolean, scheme: ColorSch
 
 private const val SEED_CHROMA = 36.0
 private const val SEED_TONE = 50.0
+private const val VIVID_CHROMA = 120.0
+private const val VIVID_TONE = 60.0
 
 /** The names the account keeps a colour by (CONTRACT.md, boards, Settings), and the ready colours' hues. */
 object ReadyColours {

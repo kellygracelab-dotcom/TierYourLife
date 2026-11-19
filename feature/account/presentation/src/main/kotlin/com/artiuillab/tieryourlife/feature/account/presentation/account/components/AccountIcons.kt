@@ -22,14 +22,6 @@ internal fun CloseIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scal
 }
 
 @Composable
-internal fun PencilIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
-    drawLine(color, Offset(4f * scale, 20f * scale), Offset(8f * scale, 19f * scale), 1.7f * scale, StrokeCap.Round)
-    drawLine(color, Offset(7f * scale, 19.5f * scale), Offset(19f * scale, 7.5f * scale), 1.7f * scale, StrokeCap.Round)
-    drawLine(color, Offset(4.5f * scale, 19.5f * scale), Offset(16.5f * scale, 5f * scale), 1.7f * scale, StrokeCap.Round)
-    drawLine(color, Offset(16.5f * scale, 5f * scale), Offset(19f * scale, 7.5f * scale), 1.7f * scale, StrokeCap.Round)
-}
-
-@Composable
 internal fun PersonIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     drawCircle(color, radius = 4f * scale, center = Offset(12f * scale, 8f * scale))
     drawArc(

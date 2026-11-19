@@ -16,8 +16,8 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,11 +30,14 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.settings.ColourChoice
 import com.artiuillab.tieryourlife.core.settings.ColourSetting
 import com.artiuillab.tieryourlife.core.theme.color.ReadyColours
-import com.artiuillab.tieryourlife.core.theme.color.hueColorScheme
+import com.artiuillab.tieryourlife.core.theme.color.swatchScheme
+import com.artiuillab.tieryourlife.core.theme.color.vividHue
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PencilIcon
 import com.artiuillab.tieryourlife.feature.settings.presentation.R
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsTestTags
 
@@ -90,6 +93,10 @@ internal fun ColourSection(setting: ColourSetting?, onChoose: (name: String) -> 
     }
 }
 
+/** "Your colour" opens on the hue the app is in now: a ready colour's own, else the last own one. */
+internal fun startHueOf(setting: ColourSetting?): Int =
+    setting?.let { ReadyColours.hueOf(it.name) ?: it.hue } ?: ColourChoice.LAVENDER_HUE
+
 @Composable
 internal fun colourLabel(name: String): String = stringResource(
     when (name) {
@@ -102,10 +109,18 @@ internal fun colourLabel(name: String): String = stringResource(
     },
 )
 
+/**
+ * A colour as its light page shows it, in light and dark alike: the page's light tone with its main colour
+ * as a dot. One's own has a pencil, on the rainbow until it is the one chosen, then on its own colour.
+ */
 @Composable
 private fun ColourCircle(name: String, ownHue: Int?, selected: Boolean, onClick: () -> Unit) {
     val label = colourLabel(name)
     val ring = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outlineVariant
+    val own = name == ReadyColours.CUSTOM
+    val context = LocalContext.current
+    val colour = if (own) ownHue?.takeIf { selected }?.let { ReadyColours.colourOf(name, it) } else ReadyColours.colourOf(name, 0)
+    val swatch = colour?.let { remember(it) { swatchScheme(it, context) } }
     Box(
         modifier = Modifier
             .size(48.dp)
@@ -115,32 +130,30 @@ private fun ColourCircle(name: String, ownHue: Int?, selected: Boolean, onClick:
             .border(if (selected) 2.dp else 1.dp, ring, CircleShape)
             .padding(4.dp)
             .clip(CircleShape)
-            .background(swatchOf(name, ownHue.takeIf { selected }))
+            .background(swatch?.let { Brush.linearGradient(listOf(it.primaryContainer, it.primaryContainer)) } ?: HueWheel)
             .testTag(SettingsTestTags.colour(name)),
         contentAlignment = Alignment.Center,
     ) {
-        if (selected) CheckIcon(20.dp, Color.White)
+        if (swatch == null) {
+            Mark(MaterialTheme.colorScheme.surface) { PencilIcon(16.dp, MaterialTheme.colorScheme.onSurface) }
+        } else {
+            Mark(swatch.primary, large = selected || own) {
+                if (own) PencilIcon(16.dp, swatch.onPrimary) else if (selected) CheckIcon(16.dp, swatch.onPrimary)
+            }
+        }
     }
 }
 
-/** What a circle is filled with: the colour's main button; one's own, the whole wheel until it is the one chosen. */
+/** The dot in a circle: the colour's main one, larger with a check or one's own pencil. */
 @Composable
-private fun swatchOf(name: String, ownHue: Int?): Brush {
-    val hue = ReadyColours.hueOf(name)
-    return when {
-        hue != null -> solidBrush(hueColorScheme(hue, dark = false).primary)
-        name == ReadyColours.PHONE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
-            solidBrush(dynamicLightColorScheme(LocalContext.current).primary)
-        name == ReadyColours.CUSTOM -> ownHue?.let { solidBrush(hueColorScheme(it, dark = false).primary) } ?: HueWheel
-        else -> solidBrush(LAVENDER)
-    }
+private fun Mark(color: Color, large: Boolean = true, content: @Composable () -> Unit) {
+    Box(
+        Modifier.size(if (large) 24.dp else 16.dp).clip(CircleShape).background(color),
+        contentAlignment = Alignment.Center,
+    ) { content() }
 }
 
-private fun solidBrush(color: Color): Brush = Brush.linearGradient(listOf(color, color))
-
-/** Lavender's own main button, light: the app as it always was. */
-private val LAVENDER = Color(0xFF4A5BAA)
-
+/** Every hue as vivid as the screen shows it, around the circle. */
 internal val HueWheel: Brush = Brush.sweepGradient(
-    (0..ReadyColours.FULL_TURN step 30).map { hueColorScheme(it % ReadyColours.FULL_TURN, dark = false).primary },
+    (0..ReadyColours.FULL_TURN step 15).map { vividHue(it % ReadyColours.FULL_TURN) },
 )
