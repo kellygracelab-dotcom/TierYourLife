@@ -6,7 +6,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 
 private val STORAGE_PREFIX = "https://firebasestorage.googleapis.com/v0/b/tieryourlife.firebasestorage.app/o".toHttpUrl()
-private const val PUBLIC_ORIGIN = "https://tieryourlife.web.app"
+private const val PUBLIC_ORIGIN = "https://tieryourlife.com"
 private const val PUBLIC_PATH_PARTS = 3
 private const val MAX_OBJECT_PATH_LENGTH = 1024
 private val PUBLIC_KINDS = setOf("published", "avatars", "sections", "topics")

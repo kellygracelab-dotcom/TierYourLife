@@ -5,7 +5,7 @@ object AppLinks {
     const val PACKAGE = "com.artiuillab.tieryourlife"
     const val PLAY_PAGE = "https://play.google.com/store/apps/details?id=$PACKAGE"
     const val PLAY_APP = "market://details?id=$PACKAGE"
-    const val SITE = "https://tieryourlife.web.app"
+    const val SITE = "https://tieryourlife.com"
 
     /** The developer's public address, as on the privacy page. */
     const val FEEDBACK_EMAIL = "kellygracelab@gmail.com"

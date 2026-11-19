@@ -58,6 +58,6 @@ class SharedPictureTest {
 
     @Test
     fun aPublishedList_linksToItself() {
-        assertEquals("https://tieryourlife.web.app/l/a1B2c3", publishedListLink("a1B2c3"))
+        assertEquals("https://tieryourlife.com/l/a1B2c3", publishedListLink("a1B2c3"))
     }
 }
