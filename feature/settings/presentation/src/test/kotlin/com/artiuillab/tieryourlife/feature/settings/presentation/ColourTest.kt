@@ -125,11 +125,7 @@ class ColourTest {
     // Site check of 19.11, point 5: not always 265.
     @Test
     fun yourColour_opensOnTheHueTheAppIsIn() {
-<<<<<<< HEAD
         assertEquals(136, startHueOf(ColourSetting(ReadyColours.MATCHA, 300, 1)))
-=======
-        assertEquals(125, startHueOf(ColourSetting(ReadyColours.MATCHA, 300, 1)))
->>>>>>> origin/main
         assertEquals(300, startHueOf(ColourSetting(ReadyColours.CUSTOM, 300, 1)))
         assertEquals(300, startHueOf(ColourSetting(ReadyColours.LAVENDER, 300, 1)))
         assertEquals(265, startHueOf(null))
