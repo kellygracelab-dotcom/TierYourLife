@@ -12,6 +12,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.UploadRoom
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
@@ -62,6 +63,23 @@ class PictureSyncTest {
 
         assertEquals(listOf("pic-1"), vault.written)
         assertArrayEquals(byteArrayOf(1, 2, 3), vault.held["pic-1"])
+    }
+
+    // Proxy #174: past the day's limit the server removes what lands; those wait, unrecorded, for another day.
+    @Test
+    fun pastTodaysLimit_theRestWait_unrecorded() = runBlocking {
+        val vault = FakePictures()
+        var room: UploadRoom = UploadRoom.Left(1, 0)
+        val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways) { room }
+        givenCard(pictureId = "pic-1", bytes = byteArrayOf(1))
+        givenCard(pictureId = "pic-2", bytes = byteArrayOf(2))
+
+        sync.push(ANN)
+        assertEquals(1, vault.written.size)
+
+        room = UploadRoom.Left(5, 0)
+        sync.push(ANN)
+        assertEquals(setOf("pic-1", "pic-2"), vault.written.toSet())
     }
 
     // Recording it anyway would lose it quietly, which is the one outcome the

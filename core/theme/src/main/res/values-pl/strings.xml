@@ -49,6 +49,7 @@
     <string name="refusal_picture_unchecked">Nie można sprawdzić tego obrazu. Spróbuj zwykłego zdjęcia.</string>
     <string name="refusal_pictures_checked_today">Dziś nie można już sprawdzić więcej zdjęć. Spróbuj później.</string>
     <string name="snack_reports_today">Dziś nie można już wysłać więcej zgłoszeń. Spróbuj później.</string>
+    <string name="snack_uploads_today">Dodano dziś dużo obrazów. Zostają na tym telefonie i zsynchronizują się jutro.</string>
     <string name="refusal_too_many_web_pictures">Lista może mieć do 200 obrazów z innych stron. Usuń kilka i spróbuj ponownie.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Opublikowano. Nie udało się dodać %1$d obrazu z innej strony.</item>

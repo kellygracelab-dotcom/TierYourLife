@@ -44,6 +44,7 @@
     <string name="refusal_picture_unchecked">Não é possível verificar esta imagem. Tente uma foto estática.</string>
     <string name="refusal_pictures_checked_today">Hoje não é possível verificar mais fotos. Tente novamente mais tarde.</string>
     <string name="snack_reports_today">Hoje não é possível enviar mais denúncias. Tente novamente mais tarde.</string>
+    <string name="snack_uploads_today">Você adicionou muitas imagens hoje. Elas ficam neste celular e serão sincronizadas amanhã.</string>
     <string name="refusal_too_many_web_pictures">Uma lista pode ter até 200 imagens de outros sites. Remova algumas e tente de novo.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Publicada. Não foi possível adicionar %1$d imagem de outro site.</item>

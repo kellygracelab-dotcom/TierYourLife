@@ -44,6 +44,7 @@
     <string name="refusal_picture_unchecked">Impossible de vérifier cette image. Essayez une photo fixe.</string>
     <string name="refusal_pictures_checked_today">Plus aucune photo ne peut être vérifiée aujourd’hui. Réessayez plus tard.</string>
     <string name="snack_reports_today">Plus aucun signalement ne peut être envoyé aujourd’hui. Réessayez plus tard.</string>
+    <string name="snack_uploads_today">Vous avez ajouté beaucoup d’images aujourd’hui. Elles restent sur ce téléphone et seront synchronisées demain.</string>
     <string name="refusal_too_many_web_pictures">Une liste peut avoir jusqu’à 200 images d’autres sites. Retirez-en quelques-unes et réessayez.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Publiée. %1$d image d’un autre site n’a pas pu être ajoutée.</item>

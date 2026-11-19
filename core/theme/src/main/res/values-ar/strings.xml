@@ -59,6 +59,7 @@
     <string name="refusal_picture_unchecked">تعذّر فحص هذه الصورة. جرّب صورة ثابتة.</string>
     <string name="refusal_pictures_checked_today">لا يمكن فحص المزيد من الصور اليوم. حاول مرة أخرى لاحقًا.</string>
     <string name="snack_reports_today">لا يمكن إرسال المزيد من البلاغات اليوم. حاول مرة أخرى لاحقًا.</string>
+    <string name="snack_uploads_today">أضفت صورًا كثيرة اليوم. ستبقى على هذا الهاتف وستتم مزامنتها غدًا.</string>
     <string name="refusal_too_many_web_pictures">يمكن أن تضم القائمة حتى 200 صورة من مواقع أخرى. احذف بعضها وحاول مرة أخرى.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="zero">نُشرت. لم تُضَف أي صورة من مواقع أخرى.</item>

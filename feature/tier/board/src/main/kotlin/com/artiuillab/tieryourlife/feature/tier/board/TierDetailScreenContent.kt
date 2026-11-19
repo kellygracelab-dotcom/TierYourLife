@@ -419,6 +419,7 @@ private fun TierScreenBody(
             snackbar.show(
                 when (message) {
                     UserMessage.PublishedUnderReview -> underReviewMessage
+                    UserMessage.UploadsToday -> resources.getString(ThemeR.string.snack_uploads_today)
                     is UserMessage.PicturesDropped -> message.text(resources)
                     else -> actionFailedMessage
                 },

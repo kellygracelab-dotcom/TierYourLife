@@ -5,7 +5,9 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.api.PictureLinksApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.PictureSearchTimeouts
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.PicturesApi
 import com.artiuillab.tieryourlife.feature.tier.data.repository.ServerPictureLinks
+import com.artiuillab.tieryourlife.feature.tier.data.repository.ServerUploadAllowance
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.PictureLinks
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.UploadAllowance
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,4 +36,7 @@ object PicturesModule {
 
     @Provides
     fun providePictureLinks(links: ServerPictureLinks): PictureLinks = links
+
+    @Provides
+    fun provideUploadAllowance(allowance: ServerUploadAllowance): UploadAllowance = allowance
 }
