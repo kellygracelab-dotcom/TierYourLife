@@ -3,12 +3,15 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import androidx.lifecycle.SavedStateHandle
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
+import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.UploadAllowance
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.UploadRoom
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +19,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -42,6 +46,24 @@ class TierDetailAccountTest {
 
         val shown = viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.title == "Sci-fi films, from the website" }
         assertTrue(shown is TierDetailUiState.Success)
+    }
+
+    // Proxy #174: past the day's limit the pictures stay here and go up tomorrow, which is said once.
+    @Test
+    fun picturesPastTheDaysLimit_areKept_andSaidToWaitForTomorrow() = runBlocking {
+        val repository = FakeTierRepository(listWithOneCard())
+        val viewModel = TierDetailViewModel(
+            repository,
+            FakeCommunityRepositoryForDetail(),
+            FakeAccountRepository(FakeAccountRepository.signedIn),
+            savedStateHandle(),
+            uploads = UploadAllowance { UploadRoom.Full(9_000, guest = false) },
+        )
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+
+        viewModel.addManualItem("", listOf("content://media/1", "content://media/2"))
+
+        assertEquals(UserMessage.UploadsToday, viewModel.userMessages.firstWithin { true })
     }
 
     private fun savedStateHandle(): SavedStateHandle = SavedStateHandle(mapOf("tierListId" to 1L, "startInTitleEdit" to false))

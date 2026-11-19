@@ -5,6 +5,8 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.PictureSyncEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.MAX_ACCOUNT_PICTURE_BYTES
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.UploadAllowance
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.budget
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PictureRestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +28,11 @@ class PictureSync @Inject constructor(
     private val vault: Pictures,
     private val preferences: AppPreferences,
     private val connection: Connection,
+    private val allowance: UploadAllowance,
 ) : PictureRestore {
+
+    constructor(dao: BoardSyncDao, images: TierImageStore, vault: Pictures, preferences: AppPreferences, connection: Connection) :
+        this(dao, images, vault, preferences, connection, UploadAllowance.None)
 
     private val _restoring = MutableStateFlow(PictureRestore.Progress.Idle)
     override val restoring: StateFlow<PictureRestore.Progress> = _restoring.asStateFlow()
@@ -47,7 +53,8 @@ class PictureSync @Inject constructor(
         val sent = dao.sentPictureIds(account).toSet()
         val here = (dao.imageUrlsOf(account) + dao.coverUrlsOf(account)).mapNotNull(images::pictureIdOf).distinct()
 
-        for (pictureId in here.filterNot { it in sent || tooLarge(it) }) {
+        val waiting = here.filterNot { it in sent || tooLarge(it) }
+        for (pictureId in withinToday(waiting)) {
             if (stopped()) return
             val bytes = images.read(pictureId) ?: continue
             if (vault.put(pictureId, bytes)) {
@@ -56,6 +63,17 @@ class PictureSync @Inject constructor(
                 Timber.d("Picture %s did not go up; it will be tried again", pictureId)
             }
         }
+    }
+
+    /**
+     * As many of [waiting] as may go up today: the server removes every upload past the day's limit after it
+     * lands, and the card would lose its picture everywhere. The rest stay unrecorded and go another day.
+     */
+    private suspend fun withinToday(waiting: List<String>): List<String> {
+        if (waiting.isEmpty()) return waiting
+        val budget = allowance.ask(null).budget()
+        if (budget < waiting.size) Timber.i("%d pictures wait for tomorrow's uploads", waiting.size - budget)
+        return waiting.take(budget)
     }
 
     /** The account's folder refuses it every time; said once a run of the app, not on every sync. */
@@ -74,7 +92,7 @@ class PictureSync @Inject constructor(
         if (pictureIds.isEmpty()) return emptySet()
         val sent = dao.sentPictureIds(account).toMutableSet()
 
-        pictureIds.filterNot { it in sent }.forEach { pictureId ->
+        withinToday(pictureIds.filterNot { it in sent }).forEach { pictureId ->
             val bytes = images.read(pictureId) ?: return@forEach
             if (vault.put(pictureId, bytes)) {
                 dao.rememberPicture(PictureSyncEntity(account, pictureId, System.currentTimeMillis()))

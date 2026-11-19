@@ -27,6 +27,9 @@ sealed interface UserMessage {
     /** As many reports today as one may send in a day. */
     data object ReportsToday : UserMessage
 
+    /** More own pictures today than the account may send up; they wait on this phone for the next day. */
+    data object UploadsToday : UserMessage
+
     /** Published, but [count] pictures from other sites could not be added. */
     data class PicturesDropped(val count: Int) : UserMessage
 }

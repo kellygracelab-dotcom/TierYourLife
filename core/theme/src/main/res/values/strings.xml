@@ -40,6 +40,7 @@
     <string name="refusal_picture_unchecked">This picture can’t be checked. Try a still photo.</string>
     <string name="refusal_pictures_checked_today">That’s as many photos as can be checked today. Try again later.</string>
     <string name="snack_reports_today">That’s as many reports as can be sent today. Try again later.</string>
+    <string name="snack_uploads_today">You’ve added a lot of pictures today. They’re on this phone and will sync tomorrow.</string>
     <string name="refusal_too_many_web_pictures">A list can have up to 200 pictures from other sites. Remove some and try again.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Published. %1$d picture from another site couldn’t be added.</item>

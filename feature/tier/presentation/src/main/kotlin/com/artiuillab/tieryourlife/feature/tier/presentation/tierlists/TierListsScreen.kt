@@ -250,7 +250,7 @@ fun TierListsScreenContent(
             snackbarHostState.showSnackbar(
                 when (message) {
                     // Published is said on the board it went out from, never here.
-                    UserMessage.ActionFailed, UserMessage.TargetIsStaff, UserMessage.ReportsToday, is UserMessage.PicturesDropped, is UserMessage.Published,
+                    UserMessage.ActionFailed, UserMessage.TargetIsStaff, UserMessage.ReportsToday, UserMessage.UploadsToday, is UserMessage.PicturesDropped, is UserMessage.Published,
                     -> actionFailedMessage
                     UserMessage.PublishedListStillPublic -> stillPublicMessage
                     UserMessage.PublishedUnderReview -> underReviewMessage

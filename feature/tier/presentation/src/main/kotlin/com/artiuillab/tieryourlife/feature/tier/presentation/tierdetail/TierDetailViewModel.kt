@@ -27,6 +27,8 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.UploadAllowance
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.fits
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailRoute
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardPublicationController
@@ -57,6 +59,7 @@ class TierDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val boardSync: BoardSync = BoardSync.None,
     private val reviewMoments: ReviewMoments = ReviewMoments.None,
+    private val uploads: UploadAllowance = UploadAllowance.None,
 ) : ViewModel() {
 
     private val tierListId = savedStateHandle.tierDetailRoute().tierListId
@@ -308,6 +311,15 @@ class TierDetailViewModel @Inject constructor(
                     repository.attachImageToItem(newItemId, photoUri)
                 }
             }
+        }
+        if (photoUris.isNotEmpty()) sayWhenTheyWait(photoUris.size)
+    }
+
+    /** Kept here either way; past today's limit for the account they go up tomorrow, which is said once for the choice. */
+    private fun sayWhenTheyWait(count: Int) {
+        if (accountRepository.current() !is Account.SignedIn) return
+        viewModelScope.launch {
+            if (!uploads.ask(count).fits(count)) messages.send(UserMessage.UploadsToday)
         }
     }
 

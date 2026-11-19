@@ -49,6 +49,7 @@
     <string name="refusal_picture_unchecked">Эту картинку не удаётся проверить. Попробуйте обычное фото.</string>
     <string name="refusal_pictures_checked_today">На сегодня проверено максимум фото. Попробуйте позже.</string>
     <string name="snack_reports_today">На сегодня отправлено максимум жалоб. Попробуйте позже.</string>
+    <string name="snack_uploads_today">Сегодня вы добавили много картинок. Они сохранены на телефоне и синхронизируются завтра.</string>
     <string name="refusal_too_many_web_pictures">В списке может быть до 200 картинок с других сайтов. Уберите часть и попробуйте ещё раз.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Опубликовано. Не удалось добавить %1$d картинку с другого сайта.</item>

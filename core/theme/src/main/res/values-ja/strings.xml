@@ -34,6 +34,7 @@
     <string name="refusal_picture_unchecked">この画像は確認できません。静止画の写真をお試しください。</string>
     <string name="refusal_pictures_checked_today">本日確認できる写真の上限に達しました。しばらくしてからもう一度お試しください。</string>
     <string name="snack_reports_today">本日送信できる報告の上限に達しました。しばらくしてからもう一度お試しください。</string>
+    <string name="snack_uploads_today">今日はたくさんの画像を追加しました。画像はこの端末に保存され、明日同期されます。</string>
     <string name="refusal_too_many_web_pictures">1つのリストに使える他のサイトの画像は200枚までです。いくつか外してからもう一度お試しください。</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="other">公開しました。他のサイトの画像%1$d枚を追加できませんでした。</item>

@@ -39,6 +39,7 @@
     <string name="refusal_picture_unchecked">Dieses Bild kann nicht geprüft werden. Versuche ein normales Foto.</string>
     <string name="refusal_pictures_checked_today">Heute können keine weiteren Fotos geprüft werden. Versuche es später erneut.</string>
     <string name="snack_reports_today">Heute können keine weiteren Meldungen gesendet werden. Versuche es später erneut.</string>
+    <string name="snack_uploads_today">Du hast heute viele Bilder hinzugefügt. Sie bleiben auf diesem Telefon und werden morgen synchronisiert.</string>
     <string name="refusal_too_many_web_pictures">Eine Liste kann bis zu 200 Bilder von anderen Websites haben. Entferne einige und versuche es erneut.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Veröffentlicht. %1$d Bild von einer anderen Website konnte nicht hinzugefügt werden.</item>

@@ -6,6 +6,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.api.PictureLinksApi
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.LinkAnswerDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.LinkAskDto
 import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.PictureAttributionDto
+import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.UploadsAnswerDto
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkPicture
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkRefusal
@@ -121,6 +122,8 @@ class ServerPictureLinksTest {
 
 private class FakeLinksApi(private val answer: () -> LinkAnswerDto) : PictureLinksApi {
     val asked = mutableListOf<LinkAskDto>()
+
+    override suspend fun uploads(count: Int?): UploadsAnswerDto = error("not asked")
 
     override suspend fun link(ask: LinkAskDto): LinkAnswerDto {
         asked += ask
