@@ -9,9 +9,11 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.dynamiccolor.DynamicColor
+import com.materialkolor.dynamiccolor.DynamicScheme
 import com.materialkolor.dynamiccolor.MaterialDynamicColors
+import com.materialkolor.dynamiccolor.Variant
 import com.materialkolor.hct.Hct
-import com.materialkolor.scheme.SchemeTonalSpot
+import com.materialkolor.palettes.TonalPalette
 
 /**
  * The colour the app is drawn in (artboards 58–59). Light or dark stays a choice of its own; tier colours
@@ -24,17 +26,34 @@ sealed interface ThemeColour {
     /** The wallpaper's colours, Android 12 and later; lavender before that. */
     data object Phone : ThemeColour
 
-    /** Built from one hue, 0–359: the ready colours and one's own. */
+    /** The Designer's ready colours: matcha, peach and sky, fixed tables. */
+    data class Ready(val name: String) : ThemeColour
+
+    /** One's own colour, built from one hue, 0–359. */
     data class FromHue(val hue: Int) : ThemeColour
 }
 
 /**
- * Material Color Utilities as the proxy's vectors have them (CONTRACT.md, boards, Settings): SchemeTonalSpot,
- * spec 2021, contrast 0, from the seed Hct(hue, 36, 50). The site builds the same colours from the same file.
+ * One's own colour as the proxy's vectors have it (CONTRACT.md, boards, Settings; theme-vectors.json,
+ * algorithm.ownColour): a TONAL_SPOT scheme, spec 2021, contrast 0, over five palettes from the hue of the
+ * seed Hct(hue, 36, 50), the neutrals a little stronger than SchemeTonalSpot's. The site builds the same.
  */
 fun hueColorScheme(hue: Int, dark: Boolean): ColorScheme {
     val seed = Hct.fromInt(Hct.from(hue.toDouble(), SEED_CHROMA, SEED_TONE).toInt())
-    val scheme = SchemeTonalSpot(seed, dark, 0.0, ColorSpec.SpecVersion.SPEC_2021)
+    val h = seed.hue
+    fun palette(hueOf: Double, chroma: Double) = TonalPalette.fromHueAndChroma(hueOf, chroma)
+    val scheme = DynamicScheme(
+        sourceColorHct = seed,
+        variant = Variant.TONAL_SPOT,
+        isDark = dark,
+        contrastLevel = 0.0,
+        specVersion = ColorSpec.SpecVersion.SPEC_2021,
+        primaryPalette = palette(h, SEED_CHROMA),
+        secondaryPalette = palette(h, SECONDARY_CHROMA),
+        tertiaryPalette = palette((h + TERTIARY_TURN).mod(FULL_TURN_DEGREES), TERTIARY_CHROMA),
+        neutralPalette = palette(h, NEUTRAL_CHROMA),
+        neutralVariantPalette = palette(h, NEUTRAL_VARIANT_CHROMA),
+    )
     val roles = MaterialDynamicColors()
     fun DynamicColor.of() = Color(getArgb(scheme))
     return lightColorScheme(
@@ -77,13 +96,18 @@ fun hueColorScheme(hue: Int, dark: Boolean): ColorScheme {
     )
 }
 
+/** A ready colour's table, laid out as [hueAppScheme] is. */
+fun readyAppScheme(name: String, dark: Boolean): ColorScheme? = readyColorScheme(name, dark)?.laidOut(dark)
+
 /**
  * A built colour as the app and the site lay it out (19.11): in light the page is surfaceContainerHigh and the
  * cards (surfaceContainerLow) lighter than it, and what lay on surfaceContainerHigh a step darker, so it still
  * stands out; in dark the page is surface and the cards surfaceContainer.
  * Lavender keeps its own page.
  */
-fun hueAppScheme(hue: Int, dark: Boolean): ColorScheme = hueColorScheme(hue, dark).let { scheme ->
+fun hueAppScheme(hue: Int, dark: Boolean): ColorScheme = hueColorScheme(hue, dark).laidOut(dark)
+
+private fun ColorScheme.laidOut(dark: Boolean): ColorScheme = let { scheme ->
     if (dark) {
         scheme.copy(surfaceContainerLow = scheme.surfaceContainer)
     } else {
@@ -106,6 +130,7 @@ fun swatchScheme(colour: ThemeColour, context: Context): ColorScheme = colorSche
 
 internal fun colorSchemeFor(colour: ThemeColour, dark: Boolean, context: Context): ColorScheme = when (colour) {
     ThemeColour.Lavender -> if (dark) DarkColorScheme else LightColorScheme
+    is ThemeColour.Ready -> readyAppScheme(colour.name, dark) ?: if (dark) DarkColorScheme else LightColorScheme
     is ThemeColour.FromHue -> hueAppScheme(colour.hue, dark)
     ThemeColour.Phone -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -132,10 +157,16 @@ internal fun mediaColorsFor(colour: ThemeColour, dark: Boolean, scheme: ColorSch
 
 private const val SEED_CHROMA = 36.0
 private const val SEED_TONE = 50.0
+private const val SECONDARY_CHROMA = 16.0
+private const val TERTIARY_TURN = 60.0
+private const val FULL_TURN_DEGREES = 360.0
+private const val TERTIARY_CHROMA = 24.0
+private const val NEUTRAL_CHROMA = 8.0
+private const val NEUTRAL_VARIANT_CHROMA = 10.0
 private const val VIVID_CHROMA = 120.0
 private const val VIVID_TONE = 60.0
 
-/** The names the account keeps a colour by (CONTRACT.md, boards, Settings), and the ready colours' hues. */
+/** The names the account keeps a colour by (CONTRACT.md, boards, Settings), and the ready colours' main hues. */
 object ReadyColours {
     const val LAVENDER = "lavender"
     const val MATCHA = "matcha"
@@ -144,7 +175,8 @@ object ReadyColours {
     const val PHONE = "phone"
     const val CUSTOM = "custom"
 
-    private val HUES = mapOf(MATCHA to 125, PEACH to 42, SKY to 212)
+    /** Each table's primary palette hue: where one's own colour starts from a ready one. */
+    private val HUES = mapOf(MATCHA to 136, PEACH to 41, SKY to 220)
 
     fun hueOf(name: String): Int? = HUES[name]
 
@@ -152,7 +184,8 @@ object ReadyColours {
     fun colourOf(name: String, hue: Int): ThemeColour = when (name) {
         PHONE -> ThemeColour.Phone
         CUSTOM -> ThemeColour.FromHue(hue.mod(FULL_TURN))
-        else -> HUES[name]?.let { ThemeColour.FromHue(it) } ?: ThemeColour.Lavender
+        MATCHA, PEACH, SKY -> ThemeColour.Ready(name)
+        else -> ThemeColour.Lavender
     }
 
     const val FULL_TURN = 360

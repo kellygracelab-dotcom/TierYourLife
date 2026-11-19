@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.double
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -13,10 +14,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 /**
- * The proxy's `functions/test/theme-vectors.json`, copied unchanged: every role of the three ready colours and
- * twelve own hues, light and dark, within 1 on each channel, as the site builds them.
+ * The proxy's `functions/test/theme-vectors.json`, copied unchanged: every role of the three ready colours'
+ * tables and of twelve own hues, light and dark, within 1 on each channel, as the site has them.
  */
 class ThemeVectorsTest {
 
@@ -31,9 +33,9 @@ class ThemeVectorsTest {
         val presets = vectors.getValue("presets").jsonObject
         assertEquals(setOf("matcha", "peach", "sky"), presets.keys)
         for ((name, preset) in presets) {
-            val hue = preset.jsonObject.getValue("hue").jsonPrimitive.int
-            assertEquals(name, ReadyColours.hueOf(name), hue)
-            check("$name ($hue)", hue, preset.jsonObject)
+            val primary = preset.jsonObject.getValue("palettes").jsonObject.getValue("primary").jsonObject
+            assertEquals(name, ReadyColours.hueOf(name), primary.getValue("hue").jsonPrimitive.double.roundToInt())
+            check(name, preset.jsonObject) { dark -> checkNotNull(readyColorScheme(name, dark)) }
         }
     }
 
@@ -43,7 +45,7 @@ class ThemeVectorsTest {
         assertTrue(hues.size >= 12)
         for (own in hues) {
             val hue = own.jsonObject.getValue("hue").jsonPrimitive.int
-            check("hue $hue", hue, own.jsonObject)
+            check("hue $hue", own.jsonObject) { dark -> hueColorScheme(hue, dark) }
         }
     }
 
@@ -55,10 +57,10 @@ class ThemeVectorsTest {
         }
     }
 
-    private fun check(what: String, hue: Int, expected: JsonObject) {
+    private fun check(what: String, expected: JsonObject, schemeOf: (dark: Boolean) -> ColorScheme) {
         for (dark in listOf(false, true)) {
             val roles = expected.getValue(if (dark) "dark" else "light").jsonObject
-            val scheme = hueColorScheme(hue, dark)
+            val scheme = schemeOf(dark)
             assertEquals("$what: every role", 36, roles.size)
             for ((role, hex) in roles) {
                 assertClose("$what ${if (dark) "dark" else "light"} $role", hex.jsonPrimitive.content, scheme.role(role))
