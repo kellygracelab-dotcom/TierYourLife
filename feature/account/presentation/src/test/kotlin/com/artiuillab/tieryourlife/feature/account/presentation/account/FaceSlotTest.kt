@@ -11,6 +11,7 @@ import com.artiuillab.tieryourlife.feature.account.domain.FakeFacePhotoSlot
 import com.artiuillab.tieryourlife.feature.account.domain.FakeFacePhotos
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
+import com.artiuillab.tieryourlife.feature.account.presentation.account.face.sameFace
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
 import kotlinx.coroutines.delay
@@ -18,6 +19,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -38,6 +40,29 @@ class FaceSlotTest {
     private val community = object : FakeCommunityRepository() {
         override suspend fun makeFace(pictureId: String, upload: Boolean): Result<String> =
             super.makeFace(pictureId, upload).onSuccess { if (upload) slot.photo = it }
+    }
+
+    // QA D18, 587 and 589: after an upload "Your photo" was not ticked, not even after the screen was opened again.
+    @Test
+    fun anUpload_isTicked_asItIsWorn_andAfterTheScreenOpensAgain() = runBlocking {
+        val answered = "https://tieryourlife.web.app/img/original/avatars/ann/${FakeFacePhotos.PICTURE_ID}"
+        val kept = "https://firebasestorage.googleapis.com/v0/b/tieryourlife.firebasestorage.app/o/avatars%2Fann%2F${FakeFacePhotos.PICTURE_ID}?alt=media&token=t"
+        val server = object : FakeCommunityRepository() {
+            override suspend fun makeFace(pictureId: String, upload: Boolean): Result<String> {
+                if (upload) slot.photo = kept
+                return Result.success(answered)
+            }
+        }
+        val viewModel = viewModel(facePhotos = FakeFacePhotos(), community = server)
+        viewModel.face.position("content://photos/1", fromGallery = true)
+        viewModel.face.confirmPosition(null)
+        viewModel.state.firstWithin { !it.makingFace && repository.photoUrls.isNotEmpty() }
+        assertTrue(viewModel.state.value.let { sameFace(it.faceInSheet, it.ownFace) })
+
+        viewModel.face.load()
+        val reopened = viewModel.state.firstWithin { it.ownFace == kept }
+
+        assertTrue(sameFace(reopened.faceInSheet, reopened.ownFace))
     }
 
     // Danylo's bug of 19.11: the letter wiped the uploaded photo, and there was no way back to it.
@@ -208,6 +233,7 @@ class FaceSlotTest {
         facePhotos: FakeFacePhotos = FakeFacePhotos(),
         publishedLists: OwnLists = FakeOwnLists(),
         slot: FakeFacePhotoSlot = this.slot,
+        community: FakeCommunityRepository = this.community,
     ) = AccountViewModel(
         repository,
         FakeGenerationCredits(),

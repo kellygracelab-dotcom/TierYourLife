@@ -17,4 +17,15 @@ class SameFaceTest {
         assertFalse(sameFace(slot, null))
         assertFalse(sameFace(slot, "https://firebasestorage.googleapis.com/v0/b/app/o/avatars%2Fann%2Fp2?alt=media&token=aaa"))
     }
+
+    // QA D18, 589: the upload's answer gives the site's public address, the slot Storage's own.
+    @Test
+    fun theSitesPublicAddress_andStoragesOwn_areOneFace() {
+        val slot = "https://firebasestorage.googleapis.com/v0/b/tieryourlife.firebasestorage.app/o/avatars%2Fann%2Fp1?alt=media&token=aaa"
+        val answered = "https://tieryourlife.web.app/img/original/avatars/ann/p1"
+
+        assertTrue(sameFace(slot, answered))
+        assertFalse(sameFace(answered, "https://tieryourlife.web.app/img/original/avatars/ann/p2"))
+        assertFalse(sameFace(slot, "https://example.test/avatars/ann/p1"))
+    }
 }
