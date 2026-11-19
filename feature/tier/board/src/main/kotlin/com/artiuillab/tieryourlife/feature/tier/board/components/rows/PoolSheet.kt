@@ -322,11 +322,16 @@ private fun stripCounts(countWhenEmpty: Boolean, cards: Int, readOnly: Boolean):
 
 /** The pool's name and count, or, on a reader's pool, how many cards are left to place. */
 @Composable
-internal fun poolTitle(count: Int, countsCardsLeft: Boolean): String = if (countsCardsLeft) {
-    pluralStringResource(R.plurals.pool_cards_left, count, count)
-} else {
-    pluralStringResource(R.plurals.tier_detail_pool_unranked_count, count, count)
+internal fun poolTitle(count: Int, countsCardsLeft: Boolean): String = when {
+    LocalTierPlacing.current != null -> stringResource(R.string.pool_tap_a_tier)
+    countsCardsLeft -> pluralStringResource(R.plurals.pool_cards_left, count, count)
+    else -> pluralStringResource(R.plurals.tier_detail_pool_unranked_count, count, count)
 }
+
+/** The pool's head while a card picked by a tap waits for its tier; else [counts]. */
+@Composable
+internal fun tapATierOr(counts: String): String =
+    if (LocalTierPlacing.current != null) stringResource(R.string.pool_tap_a_tier) else counts
 
 /** The first few pictures, small, so a folded pool still says what is in it. */
 @Composable
@@ -590,7 +595,9 @@ private fun DockedHead(
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = if (countsCardsLeft) pluralStringResource(R.plurals.pool_cards_left, count, count) else stringResource(R.string.tier_detail_pool_count, count),
+                text = tapATierOr(
+                    if (countsCardsLeft) pluralStringResource(R.plurals.pool_cards_left, count, count) else stringResource(R.string.tier_detail_pool_count, count),
+                ),
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,

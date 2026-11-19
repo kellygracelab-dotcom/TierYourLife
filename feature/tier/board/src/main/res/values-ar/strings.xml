@@ -233,6 +233,7 @@
     <string name="board_published_view">عرض</string>
     <string name="board_publishing">جارٍ النشر…</string>
     <string name="board_updating">جارٍ التحديث…</string>
+    <string name="pool_tap_a_tier">اضغط على مستوى</string>
     <plurals name="pool_cards_left">
         <item quantity="zero">لم تبقَ بطاقات</item>
         <item quantity="one">بقيت بطاقة واحدة</item>

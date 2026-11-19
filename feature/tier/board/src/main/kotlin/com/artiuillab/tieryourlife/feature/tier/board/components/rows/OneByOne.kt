@@ -98,6 +98,10 @@ internal class TapPlacing(private val move: (itemId: Long, toTierId: Long, toPos
         selectedId = itemId.takeUnless { it == selectedId }
     }
 
+    fun letGo() {
+        selectedId = null
+    }
+
     /** The picked card, if it is still on [list]. */
     fun picked(list: TierList): Long? = selectedId?.takeIf { id -> list.where(id) != null }
 

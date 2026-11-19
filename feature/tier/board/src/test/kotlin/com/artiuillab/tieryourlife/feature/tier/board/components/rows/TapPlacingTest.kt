@@ -1,11 +1,13 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -34,7 +36,7 @@ import org.robolectric.annotation.GraphicsMode
 class TapPlacingTest {
 
     @get:Rule
-    val composeRule = createComposeRule()
+    val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     private val moves = mutableListOf<Triple<Long, Long, Int>>()
     private var list by mutableStateOf(board())
@@ -78,6 +80,33 @@ class TapPlacingTest {
         composeRule.onNodeWithTag(TierDetailTestTags.tierRow(TIER_B)).performClick()
 
         assertEquals(listOf(Triple(RANKED, TIER_B, 0)), moves)
+    }
+
+    // The Designer, 19.11: the bottom panel says what to do next, a tap on another card moves the pick, Back lets go.
+    @Test
+    fun whileACardIsPicked_thePanelSaysTapATier_anotherCardTakesThePick_andBackLetsGo() {
+        setBoard()
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(POOL_FIRST)).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_COUNT, useUnmergedTree = true).assertTextEquals("Tap a tier")
+
+        composeRule.mainClock.advanceTimeBy(DOUBLE_TAP_GAP)
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(POOL_FIRST + 1)).performClick()
+        composeRule.runOnUiThread { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
+        composeRule.onNodeWithTag(TierDetailTestTags.tierBand(TIER_B)).performClick()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SHEET).assertIsDisplayed()
+        assertEquals(emptyList<Triple<Long, Long, Int>>(), moves)
+    }
+
+    @Test
+    fun aTapOnAnotherCard_movesThePickToIt() {
+        setBoard()
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(POOL_FIRST)).performClick()
+        composeRule.mainClock.advanceTimeBy(DOUBLE_TAP_GAP)
+        composeRule.onNodeWithTag(TierDetailTestTags.tile(POOL_FIRST + 1)).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.tierRow(TIER_B)).performClick()
+
+        assertEquals(listOf(Triple(POOL_FIRST + 1, TIER_B, 0)), moves)
     }
 
     private fun setBoard() {

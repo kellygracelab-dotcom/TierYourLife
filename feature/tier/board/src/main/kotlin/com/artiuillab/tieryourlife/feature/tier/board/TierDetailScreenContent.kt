@@ -536,6 +536,8 @@ private fun TierScreenBody(
                 else -> null
             }
         }
+        // Back lets the picked card go before it leaves the board.
+        BackHandler(enabled = tapPicked != null) { tapPlacing.letGo() }
         val placing: ((Long) -> Unit)? = if (tapPicked != null) {
             { tierId -> tapPlacing.place(list, tierId) }
         } else {
