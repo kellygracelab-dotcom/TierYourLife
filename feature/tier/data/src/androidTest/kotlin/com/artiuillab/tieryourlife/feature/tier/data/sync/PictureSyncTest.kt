@@ -72,7 +72,7 @@ class PictureSyncTest {
         var room: UploadRoom = UploadRoom.Left(1, 0)
         val sync = PictureSync(dao, images, vault, OnWifiAlways, OnWifiAlways) { room }
         givenCard(pictureId = "pic-1", bytes = byteArrayOf(1))
-        givenCard(pictureId = "pic-2", bytes = byteArrayOf(2))
+        givenCard(pictureId = "pic-2", bytes = byteArrayOf(2), itemUid = "item-2")
 
         sync.push(ANN)
         assertEquals(1, vault.written.size)
