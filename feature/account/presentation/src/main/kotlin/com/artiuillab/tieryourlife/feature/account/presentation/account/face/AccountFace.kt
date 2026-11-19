@@ -75,7 +75,7 @@ internal class AccountFace(
     fun removeOwnPhoto() {
         val photo = state.value.ownFace ?: return
         if (state.value.makingFace) return
-        val worn = photo == state.value.shownFace
+        val worn = sameFace(photo, state.value.shownFace)
         keepOwn(null)
         state.update {
             it.copy(notice = AccountNotice.PhotoRemoved, pendingFace = if (worn) PendingFace(shown = null) else it.pendingFace)
@@ -83,7 +83,13 @@ internal class AccountFace(
         changingSlot {
             slot.remove()
                 // The server took it off the account; this phone's profile and token follow.
-                .onSuccess { removed -> if (removed.wasWorn || worn) wear(null, chosen = false) }
+                .onSuccess { removed ->
+                    if (removed.wasWorn || worn) {
+                        // The server's word that it was worn: the letter at once, as the answer says (QA D16).
+                        state.update { it.copy(pendingFace = PendingFace(shown = null)) }
+                        wear(null, chosen = false)
+                    }
+                }
                 .onFailure {
                     Timber.w(it, "The photo was not removed")
                     keepOwn(photo)
@@ -134,7 +140,7 @@ internal class AccountFace(
     /** The photo, worn again as it is: nothing goes up. */
     fun wearOwnPhoto() {
         val photo = state.value.ownFace ?: return
-        if (state.value.makingFace || photo == state.value.shownFace) return
+        if (state.value.makingFace || sameFace(photo, state.value.shownFace)) return
         wearAtOnce(photo)
     }
 

@@ -1,5 +1,8 @@
 package com.artiuillab.tieryourlife.feature.account.presentation.account
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
@@ -41,6 +44,29 @@ class AccountScreenContentTest {
 
     private fun string(resourceId: Int, vararg formatArgs: Any): String =
         InstrumentationRegistry.getInstrumentation().targetContext.getString(resourceId, *formatArgs)
+
+    // QA D16, 587: the notice was cleared as the offer began, and that cancelled it: no Undo anywhere.
+    @Test
+    fun aRemovedPhoto_offersUndo_thoughTheNoticeIsClearedAtOnce() {
+        var undone = 0
+        var state by mutableStateOf(signedIn().copy(notice = AccountNotice.PhotoRemoved))
+        composeRule.setContent {
+            TierYourLifeTheme {
+                AccountScreenContent(
+                    state = state,
+                    onClose = {},
+                    onSignIn = {},
+                    onSignOut = {},
+                    onUndoRemovePhoto = { undone++ },
+                    onNoticeShown = { state = state.copy(notice = null) },
+                )
+            }
+        }
+
+        composeRule.onNodeWithText(string(R.string.account_face_undo)).performClick()
+
+        composeRule.runOnIdle { assertEquals(1, undone) }
+    }
 
     private fun setContent(state: AccountUiState) {
         closed = 0

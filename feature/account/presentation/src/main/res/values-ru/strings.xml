@@ -41,6 +41,7 @@
     <string name="account_face_gallery">Загрузить</string>
     <string name="account_face_note">Ваше лицо видно рядом с именем на опубликованных листах. Выбранная карточка или фото проверяются и хранятся с вашим аккаунтом.</string>
     <string name="account_face_your_photo">Ваше фото</string>
+    <string name="account_face_card">Из ваших списков, карточка %1$d</string>
     <string name="account_face_remove_photo">Убрать ваше фото</string>
     <string name="account_face_photo_removed">Фото убрано</string>
     <string name="account_face_undo">Отменить</string>

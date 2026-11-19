@@ -38,6 +38,7 @@
     <string name="account_face_gallery">アップロード</string>
     <string name="account_face_note">公開したリストでは、名前の横にアイコンが表示されます。選んだカードや写真は確認され、アカウントに保存されます。</string>
     <string name="account_face_your_photo">あなたの写真</string>
+    <string name="account_face_card">リストのカード %1$d</string>
     <string name="account_face_remove_photo">写真を削除</string>
     <string name="account_face_photo_removed">写真を削除しました</string>
     <string name="account_face_undo">元に戻す</string>

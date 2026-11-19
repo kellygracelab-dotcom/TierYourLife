@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,6 +38,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.feature.account.presentation.R
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountTestTags
+import com.artiuillab.tieryourlife.feature.account.presentation.account.face.sameFace
 
 private val CHOICE_SIZE = 64.dp
 private val TILE_WIDTH = 76.dp
@@ -101,7 +102,7 @@ internal fun FaceSheet(
                 }
                 if (ownPhoto != null) {
                     item {
-                        FaceTile(yourPhoto, selected = current == ownPhoto, onClick = onWearOwnPhoto, testTag = AccountTestTags.FACE_OWN_PHOTO) {
+                        FaceTile(yourPhoto, selected = sameFace(current, ownPhoto), onClick = onWearOwnPhoto, testTag = AccountTestTags.FACE_OWN_PHOTO) {
                             FacePicture(ownPhoto)
                         }
                     }
@@ -111,8 +112,15 @@ internal fun FaceSheet(
                         UploadIcon(28.dp, MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-                items(cardImages) { url ->
-                    FaceTile(null, selected = url == current, onClick = { onChoose(url) }, testTag = AccountTestTags.faceChoice(url)) {
+                itemsIndexed(cardImages) { index, url ->
+                    FaceTile(
+                        caption = null,
+                        selected = sameFace(url, current),
+                        onClick = { onChoose(url) },
+                        testTag = AccountTestTags.faceChoice(url),
+                        // QA D17: a card had nothing for a screen reader to say.
+                        description = stringResource(R.string.account_face_card, index + 1),
+                    ) {
                         FacePicture(url)
                     }
                 }
@@ -158,6 +166,7 @@ private fun FaceTile(
     selected: Boolean?,
     onClick: () -> Unit,
     testTag: String,
+    description: String? = caption,
     content: @Composable () -> Unit,
 ) {
     Column(
@@ -167,7 +176,7 @@ private fun FaceTile(
             .clickable(role = if (selected == null) Role.Button else Role.RadioButton, onClick = onClick)
             .semantics {
                 if (selected != null) this.selected = selected
-                if (caption != null) contentDescription = caption
+                if (description != null) contentDescription = description
             }
             .padding(vertical = 4.dp)
             .testTag(testTag),
