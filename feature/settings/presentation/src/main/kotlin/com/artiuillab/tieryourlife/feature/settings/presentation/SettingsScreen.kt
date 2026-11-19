@@ -51,7 +51,6 @@ import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.settings.AppLinks
-import com.artiuillab.tieryourlife.core.settings.ColourChoice
 import com.artiuillab.tieryourlife.core.settings.ColourSetting
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -91,6 +90,7 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.components.Your
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.appVersion
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.rateTheApp
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.shareTheApp
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.startHueOf
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.writeToUs
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.TierListsExportStrings
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupSettings
@@ -322,7 +322,7 @@ fun SettingsScreenContent(
     var choosingOwn by rememberSaveable { mutableStateOf(false) }
     if (choosingOwn) {
         YourColourSheet(
-            startHue = colour?.hue ?: ColourChoice.LAVENDER_HUE,
+            startHue = startHueOf(colour),
             onDone = { hue ->
                 choosingOwn = false
                 onColourChoose(ReadyColours.CUSTOM, hue)

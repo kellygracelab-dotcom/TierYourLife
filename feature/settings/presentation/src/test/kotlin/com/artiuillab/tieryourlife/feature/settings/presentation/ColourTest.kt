@@ -21,6 +21,7 @@ import com.artiuillab.tieryourlife.core.theme.color.ReadyColours
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.colourNames
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.shownColour
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.startHueOf
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -120,6 +121,18 @@ class ColourTest {
         assertEquals(ReadyColours.LAVENDER, shownColour(ColourSetting("rose", 0, 1)))
         assertEquals(ReadyColours.LAVENDER, shownColour(null))
     }
+
+    // Site check of 19.11, point 5: not always 265.
+    @Test
+    fun yourColour_opensOnTheHueTheAppIsIn() {
+        assertEquals(125, startHueOf(ColourSetting(ReadyColours.MATCHA, 300, 1)))
+        assertEquals(300, startHueOf(ColourSetting(ReadyColours.CUSTOM, 300, 1)))
+        assertEquals(300, startHueOf(ColourSetting(ReadyColours.LAVENDER, 300, 1)))
+        assertEquals(265, startHueOf(null))
+    }
+
+    @Test
+    fun settings_ownColour_dark() = capture("colour_settings_own_dark", ColourSetting(ReadyColours.CUSTOM, 330, 1), dark = true)
 
     @Test
     fun settings_matcha() = capture("colour_settings_matcha", ColourSetting(ReadyColours.MATCHA, 125, 1))
