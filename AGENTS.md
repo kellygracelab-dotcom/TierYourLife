@@ -56,7 +56,7 @@ for the R8 sideload build. A version override must be recorded explicitly and
 must not lower the installed version.
 
 The fast-build command above is for explicitly authorized compatible local
-installations, not the Play-installed Samsung R5CXC22CC4K. The coordinator verifies
+installations, not Danylo's Play-installed Samsung. The coordinator verifies
 its installer, version, launch and fresh login through Play. This Android chat
 reports Internal workflow source/version/hash and actual publication evidence;
 it does not duplicate that device session or retrieve keys from local settings.
