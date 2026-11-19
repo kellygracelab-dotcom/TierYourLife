@@ -40,6 +40,7 @@
     <string name="account_face_gallery">Subir</string>
     <string name="account_face_note">La gente ve tu imagen junto a tu nombre en las listas que publicas. La tarjeta o la foto que elijas se revisa y se guarda con tu cuenta.</string>
     <string name="account_face_your_photo">Tu foto</string>
+    <string name="account_face_card">De tus listas, carta %1$d</string>
     <string name="account_face_remove_photo">Quitar tu foto</string>
     <string name="account_face_photo_removed">Foto quitada</string>
     <string name="account_face_undo">Deshacer</string>

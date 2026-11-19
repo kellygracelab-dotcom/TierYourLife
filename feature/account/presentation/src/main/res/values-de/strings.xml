@@ -39,6 +39,7 @@
     <string name="account_face_gallery">Hochladen</string>
     <string name="account_face_note">Andere sehen dein Bild neben deinem Namen auf den Listen, die du veröffentlichst. Eine gewählte Karte oder ein Foto wird geprüft und bei deinem Konto gespeichert.</string>
     <string name="account_face_your_photo">Dein Foto</string>
+    <string name="account_face_card">Aus deinen Listen, Karte %1$d</string>
     <string name="account_face_remove_photo">Dein Foto entfernen</string>
     <string name="account_face_photo_removed">Foto entfernt</string>
     <string name="account_face_undo">Rückgängig</string>

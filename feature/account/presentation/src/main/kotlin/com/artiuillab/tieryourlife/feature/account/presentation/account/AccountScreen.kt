@@ -27,6 +27,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,6 +63,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.componen
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountSigningInState
 import com.artiuillab.tieryourlife.feature.account.presentation.account.face.FacePositioner
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.rememberGoogleCredential
+import kotlinx.coroutines.launch
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
@@ -121,14 +124,19 @@ internal fun AccountScreenContent(
     var faceSheetVisible by rememberSaveable { mutableStateOf(false) }
     val noticeText = state.notice?.let { stringResource(it.messageRes()) }
     val undo = stringResource(R.string.account_face_undo)
+    val offering = rememberCoroutineScope()
+    val undoRemove by rememberUpdatedState(onUndoRemovePhoto)
 
     LaunchedEffect(state.notice) {
         if (noticeText != null) {
             if (state.notice == AccountNotice.PhotoRemoved) {
-                // Cleared before the wait: a notice that follows must not be lost behind this one.
+                // Offered outside this effect: clearing the notice restarts it, which cancelled the offer
+                // before it showed (QA D16). Cleared at once, so a notice that follows is not lost behind it.
+                offering.launch {
+                    val answer = snackbarHostState.showSnackbar(noticeText, actionLabel = undo, duration = SnackbarDuration.Long)
+                    if (answer == SnackbarResult.ActionPerformed) undoRemove()
+                }
                 onNoticeShown()
-                val answer = snackbarHostState.showSnackbar(noticeText, actionLabel = undo, duration = SnackbarDuration.Long)
-                if (answer == SnackbarResult.ActionPerformed) onUndoRemovePhoto()
             } else {
                 snackbarHostState.showSnackbar(noticeText)
                 onNoticeShown()

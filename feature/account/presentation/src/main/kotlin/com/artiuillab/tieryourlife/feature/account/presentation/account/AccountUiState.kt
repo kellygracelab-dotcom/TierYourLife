@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 import com.artiuillab.tieryourlife.core.settings.CardFace
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
+import com.artiuillab.tieryourlife.feature.account.presentation.account.face.sameFace
 
 data class AccountUiState(
     val account: Account = Account.Unknown,
@@ -50,7 +51,7 @@ data class AccountUiState(
     val faceInSheet: String?
         get() {
             val worn = if (makingFace) shownFace else (account as? Account.SignedIn)?.photoUrl
-            return if (worn != null && worn == cardFace?.face) cardFace.card else worn
+            return if (worn != null && sameFace(worn, cardFace?.face)) cardFace?.card else worn
         }
 
     /** The square to show of [shownFace] while the picture is still the whole photo, before it is cut. */

@@ -41,6 +41,7 @@
     <string name="account_face_gallery">Prześlij</string>
     <string name="account_face_note">Inni widzą twoje zdjęcie obok twojej nazwy na listach, które publikujesz. Wybrana karta lub zdjęcie są sprawdzane i przechowywane przy twoim koncie.</string>
     <string name="account_face_your_photo">Twoje zdjęcie</string>
+    <string name="account_face_card">Z Twoich list, karta %1$d</string>
     <string name="account_face_remove_photo">Usuń swoje zdjęcie</string>
     <string name="account_face_photo_removed">Zdjęcie usunięte</string>
     <string name="account_face_undo">Cofnij</string>

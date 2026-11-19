@@ -112,6 +112,20 @@ class FaceSlotTest {
         assertNull(viewModel.state.value.ownFace)
     }
 
+    // QA D16, 587: worn under another token, the photo was not seen as worn and stayed in the header.
+    @Test
+    fun removingTheWornPhoto_underAnotherToken_wearsTheLetterAtOnce() = runBlocking {
+        slot.photo = "$OWN_PHOTO?token=slot"
+        repository.setPhotoUrl("$OWN_PHOTO?token=profile")
+        val viewModel = viewModel()
+        viewModel.state.firstWithin { it.ownFace != null && it.shownFace != null }
+
+        viewModel.face.removeOwnPhoto()
+
+        assertNull(viewModel.state.value.shownFace)
+        assertEquals(AccountNotice.PhotoRemoved, viewModel.state.value.notice)
+    }
+
     @Test
     fun removingTheWornPhoto_wearsTheLetterAtOnce_andUndoPutsItBackOn() = runBlocking {
         slot.photo = OWN_PHOTO
