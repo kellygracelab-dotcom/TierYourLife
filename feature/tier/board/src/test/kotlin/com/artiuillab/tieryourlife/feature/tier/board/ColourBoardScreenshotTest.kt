@@ -3,7 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.board
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
-import com.artiuillab.tieryourlife.core.theme.color.ThemeColour
+import com.artiuillab.tieryourlife.core.theme.color.ReadyColours
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziOptions
@@ -24,9 +24,9 @@ class ColourBoardScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private fun capture(name: String, hue: Int, dark: Boolean) {
+    private fun capture(name: String, colour: String, dark: Boolean) {
         composeRule.setContent {
-            TierYourLifeTheme(darkTheme = dark, colour = ThemeColour.FromHue(hue)) {
+            TierYourLifeTheme(darkTheme = dark, colour = ReadyColours.colourOf(colour, 0)) {
                 TierDetailScreenContent(state = TierDetailUiState.Success(previewTierList))
             }
         }
@@ -34,13 +34,13 @@ class ColourBoardScreenshotTest {
     }
 
     @Test
-    fun matcha_light() = capture("board_colour_matcha", hue = 125, dark = false)
+    fun matcha_light() = capture("board_colour_matcha", ReadyColours.MATCHA, dark = false)
 
     @Test
-    fun peach_light() = capture("board_colour_peach", hue = 42, dark = false)
+    fun peach_light() = capture("board_colour_peach", ReadyColours.PEACH, dark = false)
 
     @Test
-    fun sky_dark() = capture("board_colour_sky_dark", hue = 212, dark = true)
+    fun sky_dark() = capture("board_colour_sky_dark", ReadyColours.SKY, dark = true)
 
     private companion object {
         val OPTIONS = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.01F))
