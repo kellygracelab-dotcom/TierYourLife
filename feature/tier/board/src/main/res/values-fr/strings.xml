@@ -201,6 +201,7 @@
     <string name="board_published_view">Voir</string>
     <string name="board_publishing">Publication…</string>
     <string name="board_updating">Mise à jour…</string>
+    <string name="pool_tap_a_tier">Touchez un niveau</string>
     <plurals name="pool_cards_left">
         <item quantity="one">%d carte restante</item>
         <item quantity="many">%d cartes restantes</item>

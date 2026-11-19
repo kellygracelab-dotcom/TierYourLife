@@ -190,6 +190,7 @@
     <string name="board_published_view">Gör</string>
     <string name="board_publishing">Yayımlanıyor…</string>
     <string name="board_updating">Güncelleniyor…</string>
+    <string name="pool_tap_a_tier">Bir seviyeye dokunun</string>
     <plurals name="pool_cards_left">
         <item quantity="one">%d kart kaldı</item>
         <item quantity="other">%d kart kaldı</item>

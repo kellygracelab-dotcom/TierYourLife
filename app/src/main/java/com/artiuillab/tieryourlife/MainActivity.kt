@@ -42,6 +42,11 @@ class MainActivity : AppCompatActivity() {
         EntryPointAccessors.fromApplication(applicationContext, AppPreferencesEntryPoint::class.java).reviewMoments()
     }
 
+    override fun onStart() {
+        super.onStart()
+        (application as TierYourLifeApplication).colourSync.backOnScreen()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         applyStoredLocale()
         super.onCreate(savedInstanceState)

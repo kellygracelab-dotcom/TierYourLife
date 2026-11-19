@@ -191,6 +191,7 @@
     <string name="board_published_view">View</string>
     <string name="board_publishing">Publishing…</string>
     <string name="board_updating">Updating…</string>
+    <string name="pool_tap_a_tier">Tap a tier</string>
     <plurals name="pool_cards_left">
         <item quantity="one">%d card left</item>
         <item quantity="other">%d cards left</item>

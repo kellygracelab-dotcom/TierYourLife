@@ -212,6 +212,7 @@
     <string name="board_published_view">Zobacz</string>
     <string name="board_publishing">Publikowanie…</string>
     <string name="board_updating">Aktualizowanie…</string>
+    <string name="pool_tap_a_tier">Dotknij poziomu</string>
     <plurals name="pool_cards_left">
         <item quantity="one">Została %d karta</item>
         <item quantity="few">Zostały %d karty</item>

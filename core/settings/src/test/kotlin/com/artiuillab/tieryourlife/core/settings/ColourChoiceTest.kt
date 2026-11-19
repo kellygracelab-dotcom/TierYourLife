@@ -26,8 +26,9 @@ class ColourChoiceTest {
 
         choice.choose("matcha")
 
-        assertEquals(ColourSetting("matcha", ColourChoice.LAVENDER_HUE, 1_000L), heard.await())
-        assertEquals(ColourSetting("matcha", ColourChoice.LAVENDER_HUE, 1_000L), preferences.colourSetting())
+        assertEquals(ColourSetting("matcha", null, 1_000L), heard.await())
+        // No own colour yet: none is made up for it (CONTRACT.md: hue null when they never made one).
+        assertEquals(ColourSetting("matcha", null, 1_000L), preferences.colourSetting())
         assertEquals(preferences.colourSetting(), ColourChoice(preferences).current.value)
     }
 

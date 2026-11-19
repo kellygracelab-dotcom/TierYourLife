@@ -142,6 +142,37 @@ class ColourSyncTest {
         assertEquals(emptyList<ColourWriteDto>(), account.writes)
     }
 
+    // QA D4, 19.11: a colour chosen on the site shows when the app is back on screen, read at most every half minute.
+    @Test
+    fun backOnScreen_readsTheAccountsColour_atMostEveryHalfMinute() = runBlocking {
+        var clock = 1_000_000L
+        val account = FakeSettings(ColourDto("sky", 300, changedAt = 200))
+        val sync = ColourSync(account, colour, accounts, MutableSharedFlow(), CoroutineScope(Dispatchers.Unconfined)) { clock }
+
+        sync.backOnScreen()
+        assertEquals(ColourSetting("sky", 300, 200), colour.current.value)
+        account.colour = ColourDto("matcha", 300, changedAt = 300)
+        clock += 10_000
+        sync.backOnScreen()
+        assertEquals(1, account.reads)
+
+        clock += 30_000
+        sync.backOnScreen()
+        assertEquals(2, account.reads)
+        assertEquals("matcha", colour.current.value?.name)
+    }
+
+    // An account where no own colour was ever made: its hue stays none, and none goes back up.
+    @Test
+    fun noOwnHue_staysNone() = runBlocking {
+        val account = FakeSettings(ColourDto("sky", null, changedAt = 200))
+
+        sync(account).meet()
+
+        assertEquals(ColourSetting("sky", null, 200), colour.current.value)
+        assertEquals(emptyList<ColourWriteDto>(), account.writes)
+    }
+
     private companion object {
         const val WAIT = 2_000L
     }

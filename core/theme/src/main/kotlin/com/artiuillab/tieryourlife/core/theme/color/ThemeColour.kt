@@ -181,9 +181,9 @@ object ReadyColours {
     fun hueOf(name: String): Int? = HUES[name]
 
     /** A name this build does not know (one added later) shows as lavender, and the setting is kept as it is. */
-    fun colourOf(name: String, hue: Int): ThemeColour = when (name) {
+    fun colourOf(name: String, hue: Int?): ThemeColour = when (name) {
         PHONE -> ThemeColour.Phone
-        CUSTOM -> ThemeColour.FromHue(hue.mod(FULL_TURN))
+        CUSTOM -> hue?.let { ThemeColour.FromHue(it.mod(FULL_TURN)) } ?: ThemeColour.Lavender
         MATCHA, PEACH, SKY -> ThemeColour.Ready(name)
         else -> ThemeColour.Lavender
     }

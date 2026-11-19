@@ -87,6 +87,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TrashTarge
 import com.artiuillab.tieryourlife.feature.tier.board.components.previewTierList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.CardPicking
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalCardPicking
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTierPlacing
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OWN_BAR_BESIDE_PUBLISH
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.OneByOnePanel
@@ -107,6 +108,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.boardCount
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.everyCardPlaced
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishingOf
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberOneByOne
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.rememberTapPlacing
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.MoveItemSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorActions
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
@@ -523,8 +525,23 @@ private fun TierScreenBody(
         val oneByOne = rememberOneByOne(onMoveItem)
         val oneByOneOffered = pool != null && !readOnly && !glanceable && list.displayMode != TierListDisplayMode.FLAT_RANKED
         val oneByOneOn = oneByOneOffered && layoutMemory.oneCardAtATime
-        val picking = remember(oneByOneOn, oneByOne.selectedId) {
-            if (oneByOneOn) CardPicking(oneByOne.selectedId, oneByOne::pick) else null
+        // Off one at a time, a card is still picked by a tap and placed by a tap on a tier ("Start here").
+        val tapPlacing = rememberTapPlacing(onMoveItem)
+        val tapOffered = !oneByOneOn && !readOnly && !glanceable && list.displayMode != TierListDisplayMode.FLAT_RANKED
+        val tapPicked = if (tapOffered) tapPlacing.picked(list) else null
+        val picking = remember(oneByOneOn, oneByOne.selectedId, tapOffered, tapPicked) {
+            when {
+                oneByOneOn -> CardPicking(oneByOne.selectedId, oneByOne::pick)
+                tapOffered -> CardPicking(tapPicked, tapPlacing::pick)
+                else -> null
+            }
+        }
+        // Back lets the picked card go before it leaves the board.
+        BackHandler(enabled = tapPicked != null) { tapPlacing.letGo() }
+        val placing: ((Long) -> Unit)? = if (tapPicked != null) {
+            { tierId -> tapPlacing.place(list, tierId) }
+        } else {
+            null
         }
         val oneByOnePanel: (@Composable (Boolean) -> Unit)? = if (oneByOneOffered) {
             { beside ->
@@ -762,7 +779,11 @@ private fun TierScreenBody(
             }
         }
 
-        CompositionLocalProvider(LocalTierRowDensity provides rowDensity, LocalCardPicking provides picking) {
+        CompositionLocalProvider(
+            LocalTierRowDensity provides rowDensity,
+            LocalCardPicking provides picking,
+            LocalTierPlacing provides placing,
+        ) {
             if (short) {
                 // The inset stays with the screen; the bar slides under it and back.
                 ScrollAwayHeader(header = bar, modifier = Modifier.fillMaxSize().statusBarsPadding()) {

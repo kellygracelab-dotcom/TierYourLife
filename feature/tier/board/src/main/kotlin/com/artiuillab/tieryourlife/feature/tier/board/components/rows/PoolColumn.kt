@@ -322,7 +322,9 @@ private fun OpenHead(count: Int, roomy: Boolean, onFold: () -> Unit, cardsLeft: 
     val foldDescription = pluralStringResource(R.plurals.tier_detail_ranked_pool_expanded_description, count, count)
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = if (cardsLeft) pluralStringResource(R.plurals.pool_cards_left, count, count) else stringResource(R.string.tier_detail_pool_count, count),
+            text = tapATierOr(
+                if (cardsLeft) pluralStringResource(R.plurals.pool_cards_left, count, count) else stringResource(R.string.tier_detail_pool_count, count),
+            ),
             modifier = Modifier.weight(1f),
             style = if (roomy) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface,

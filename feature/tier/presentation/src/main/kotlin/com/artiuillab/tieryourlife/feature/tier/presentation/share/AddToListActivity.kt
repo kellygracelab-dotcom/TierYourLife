@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.share
 
+import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -29,7 +30,7 @@ class AddToListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val shared = sharedBy(intent)
+        val shared = sharedBy(intent, ownPackage = packageName)
         if (shared == null) {
             finish()
             return
@@ -54,13 +55,27 @@ class AddToListActivity : ComponentActivity() {
     }
 }
 
-internal fun sharedBy(intent: Intent?): Shared? {
+/**
+ * What another app shares in. A picture is taken only as a raster image another app offers through its own
+ * content provider: no file:// path, no address of this app's own files, no SVG (QA, 19.11).
+ */
+internal fun sharedBy(intent: Intent?, ownPackage: String = ""): Shared? {
     if (intent?.action != Intent.ACTION_SEND) return null
-    val image = if (intent.type?.startsWith("image/") == true) streamOf(intent)?.toString() else null
+    val image = if (isPictureType(intent.type)) streamOf(intent)?.takeIf { it.isAnotherAppsContent(ownPackage) }?.toString() else null
     val text = intent.getStringExtra(Intent.EXTRA_TEXT)?.takeIf { it.isNotBlank() }
     val subject = intent.getStringExtra(Intent.EXTRA_SUBJECT) ?: intent.getStringExtra(Intent.EXTRA_TITLE)
     if (image == null && text == null) return null
     return Shared(imageUri = image, text = text, subject = subject)
+}
+
+private fun isPictureType(type: String?): Boolean {
+    val lower = type?.lowercase() ?: return false
+    return lower.startsWith("image/") && "svg" !in lower
+}
+
+private fun Uri.isAnotherAppsContent(ownPackage: String): Boolean {
+    val from = authority ?: return false
+    return scheme == ContentResolver.SCHEME_CONTENT && (ownPackage.isEmpty() || !from.startsWith(ownPackage))
 }
 
 private fun streamOf(intent: Intent): Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

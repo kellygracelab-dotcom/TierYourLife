@@ -81,6 +81,8 @@ fun DraggableTile(
     var rootPosition by remember { mutableStateOf(Offset.Zero) }
     var sizePx by remember { mutableStateOf(Offset.Zero) }
     val picking = LocalCardPicking.current
+    // Read when tapped: a pick redraws the board, and a gesture restarted then would lose the double tap's second tap.
+    val currentPicking by rememberUpdatedState(picking)
     val isDragging = dragController.draggedPayload?.itemId == item.id ||
         dragController.returning?.payload?.itemId == item.id
     val haptic = LocalHapticFeedback.current
@@ -164,10 +166,10 @@ fun DraggableTile(
                         onDragCancel = { dragController.cancelDrag() },
                     )
                 }
-                .pointerInput(item.id, picking) {
-                    // Ranking one at a time, a tap picks the card to move; a double tap still opens it.
+                .pointerInput(item.id, picking != null) {
+                    // A tap picks the card to move; a double tap still opens it.
                     if (picking != null) {
-                        detectTapThenDoubleTap(onTap = { picking.onPick(item.id) }, onDoubleTap = { onDoubleTap(item.id) })
+                        detectTapThenDoubleTap(onTap = { currentPicking?.onPick(item.id) }, onDoubleTap = { onDoubleTap(item.id) })
                     } else {
                         detectDoubleTapOnPress { onDoubleTap(item.id) }
                     }
