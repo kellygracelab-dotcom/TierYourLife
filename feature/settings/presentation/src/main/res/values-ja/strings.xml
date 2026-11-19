@@ -36,6 +36,7 @@
     <string name="settings_account_offer_action">ログイン</string>
     <string name="settings_account_offer_body">アカウントがなくても全機能が使えます。</string>
     <string name="settings_account_offer_title">生成回数を残す</string>
+    <string name="settings_account_offer_title_lists">リストを残す</string>
     <string name="settings_account_signed_in">ログイン済み</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="other">ログイン済み · %1$d クレジット</item>

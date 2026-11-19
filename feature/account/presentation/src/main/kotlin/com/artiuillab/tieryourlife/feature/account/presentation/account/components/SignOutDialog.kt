@@ -34,7 +34,7 @@ internal fun SignOutDialog(email: String?, onConfirm: () -> Unit, onDismiss: () 
                 )
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    text = stringResource(R.string.account_sign_out_body_2),
+                    text = stringResource(AccountWords.signOutWaiting),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

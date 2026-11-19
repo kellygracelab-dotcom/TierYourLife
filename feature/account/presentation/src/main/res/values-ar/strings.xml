@@ -3,6 +3,7 @@
     <string name="account_sign_in_title">احفظ عملك</string>
     <string name="account_optional">الحساب اختياري. التطبيق يعمل كما هو من دونه.</string>
     <string name="account_reason_purchases">الأرصدة والمشتريات تعود على أي جهاز.</string>
+    <string name="account_reason_settings">إعداداتك ولونك ينتقلان معك.</string>
     <string name="account_credits_note">استُعيدت من حسابك</string>
     <string name="account_action_sign_in_google">تسجيل الدخول بحساب Google</string>
     <string name="account_action_not_now">ليس الآن</string>
@@ -11,6 +12,7 @@
     <string name="account_error_no_google_account">لا يوجد حساب Google على هذا الهاتف.</string>
     <string name="account_error_unavailable">تسجيل الدخول غير متاح حاليًا.</string>
     <string name="account_notice_existing_account">هذا الحساب كان له رصيده الخاص — وهو ما لديك الآن.</string>
+    <string name="account_notice_existing_account_lists">عدت إلى حساب استخدمته من قبل. قوائمه وإعداداته هنا.</string>
     <string name="account_cd_close">إغلاق</string>
     <string name="account_action_sign_out">تسجيل الخروج</string>
     <string name="account_signing_out">جارٍ تسجيل الخروج…</string>
@@ -57,6 +59,7 @@
     <string name="account_reason_publish">نشر قائمة يتطلّب حسابًا.</string>
     <string name="account_sign_out_body_1">تبقى قوائمك في حساب %1$s وعلى هذا الهاتف، مخفية حتى تسجّل الدخول مجددًا. بعد تسجيل الخروج سترى فقط القوائم التي أُنشئت بلا حساب.</string>
     <string name="account_sign_out_body_2">الأرصدة والمشتريات تنتظرك هنا.</string>
+    <string name="account_sign_out_body_2_lists">إعداداتك أيضًا تنتظرك في الحساب.</string>
     <plurals name="account_board_count">
         <item quantity="zero">لا قوائم</item>
         <item quantity="one">قائمة واحدة</item>
@@ -75,6 +78,7 @@
     <string name="merge_name_suffix">(من هذا الهاتف)</string>
     <string name="account_sign_out_title">تسجيل الخروج؟</string>
     <string name="account_sign_out_helper">تبقى قوائمك في حسابك وعلى هذا الهاتف، مخفية حتى تسجّل الدخول مجددًا. الأرصدة والمشتريات تنتظرك هنا.</string>
+    <string name="account_sign_out_helper_lists">تبقى قوائمك في حسابك وعلى هذا الهاتف، مخفية حتى تسجّل الدخول مجددًا.</string>
     <string name="account_action_delete">حذف الحساب</string>
     <string name="account_delete_title">حذف هذا الحساب؟</string>
     <string name="account_delete_body">سيُحذف الحساب، ومعه نسخة قوائمك وكل ما نشرته والصور المرتبطة به. لا يمكن التراجع عن ذلك.</string>

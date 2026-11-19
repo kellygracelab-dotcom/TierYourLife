@@ -47,7 +47,8 @@ class AccountViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        AccountUiState(credits = credits.lastKnown()),
+        // Not even the last balance kept: no credits are spoken of while generation is held back.
+        AccountUiState(credits = credits.lastKnown().takeIf { Features.GENERATION_OFFERED }),
     )
     val state: StateFlow<AccountUiState> = _state.asStateFlow()
 

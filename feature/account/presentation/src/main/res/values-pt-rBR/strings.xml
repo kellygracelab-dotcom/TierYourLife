@@ -3,6 +3,7 @@
     <string name="account_sign_in_title">Guarde o seu trabalho</string>
     <string name="account_optional">A conta é opcional. O app funciona igual sem ela.</string>
     <string name="account_reason_purchases">Créditos e compras voltam em qualquer aparelho.</string>
+    <string name="account_reason_settings">Suas configurações e sua cor vão com você.</string>
     <string name="account_credits_note">Restaurados da sua conta</string>
     <string name="account_action_sign_in_google">Entrar com o Google</string>
     <string name="account_action_not_now">Agora não</string>
@@ -11,6 +12,7 @@
     <string name="account_error_no_google_account">Nenhuma conta do Google neste telefone.</string>
     <string name="account_error_unavailable">Entrar está indisponível agora.</string>
     <string name="account_notice_existing_account">Esta conta do Google já tinha créditos próprios — são esses que você tem agora.</string>
+    <string name="account_notice_existing_account_lists">Você voltou a uma conta que já usava. As listas e configurações dela estão aqui.</string>
     <string name="account_cd_close">Fechar</string>
     <string name="account_action_sign_out">Sair</string>
     <string name="account_signing_out">Saindo…</string>
@@ -51,6 +53,7 @@
     <string name="account_reason_publish">Publicar uma lista exige uma conta.</string>
     <string name="account_sign_out_body_1">Suas listas ficam na conta %1$s e neste telefone, ocultas até você entrar de novo. Fora da conta, você verá só as listas feitas sem conta.</string>
     <string name="account_sign_out_body_2">Créditos e compras esperam por você aqui.</string>
+    <string name="account_sign_out_body_2_lists">Suas configurações também esperam por você na conta.</string>
     <plurals name="account_board_count">
         <item quantity="one">%1$d lista</item>
         <item quantity="many">%1$d listas</item>
@@ -66,6 +69,7 @@
     <string name="merge_name_suffix">(deste telefone)</string>
     <string name="account_sign_out_title">Sair?</string>
     <string name="account_sign_out_helper">Suas listas ficam na sua conta e neste telefone, ocultas até você entrar de novo. Créditos e compras esperam por você aqui.</string>
+    <string name="account_sign_out_helper_lists">Suas listas ficam na sua conta e neste celular, ocultas até você entrar de novo.</string>
     <string name="account_action_delete">Excluir a conta</string>
     <string name="account_delete_title">Excluir esta conta?</string>
     <string name="account_delete_body">A conta some, e com ela a cópia das suas listas, tudo o que você publicou e as imagens ligadas a isso. Não dá para desfazer.</string>

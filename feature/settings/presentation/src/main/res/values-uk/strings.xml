@@ -39,6 +39,7 @@
     <string name="settings_account_offer_action">Увійти</string>
     <string name="settings_account_offer_body">Застосунок повністю працює й без нього.</string>
     <string name="settings_account_offer_title">Збережіть свої кредити</string>
+    <string name="settings_account_offer_title_lists">Збережіть свої списки</string>
     <string name="settings_account_signed_in">Вхід виконано</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="one">Вхід виконано · %1$d кредит</item>

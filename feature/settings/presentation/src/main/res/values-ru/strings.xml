@@ -39,6 +39,7 @@
     <string name="settings_account_offer_action">Войти</string>
     <string name="settings_account_offer_body">Приложение полностью работает и без него.</string>
     <string name="settings_account_offer_title">Сохраните свои кредиты</string>
+    <string name="settings_account_offer_title_lists">Сохраните свои списки</string>
     <string name="settings_account_signed_in">Вход выполнен</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="one">Вход выполнен · %1$d кредит</item>

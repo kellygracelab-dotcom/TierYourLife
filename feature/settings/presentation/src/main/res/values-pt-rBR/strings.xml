@@ -38,6 +38,7 @@
     <string name="settings_account_offer_action">Entrar</string>
     <string name="settings_account_offer_body">O app funciona por completo sem conta.</string>
     <string name="settings_account_offer_title">Mantenha seus créditos</string>
+    <string name="settings_account_offer_title_lists">Guarde suas listas</string>
     <string name="settings_account_signed_in">Conectado</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="one">Conectado · %1$d crédito</item>

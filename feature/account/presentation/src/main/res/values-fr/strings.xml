@@ -3,6 +3,7 @@
     <string name="account_sign_in_title">Gardez votre travail</string>
     <string name="account_optional">Le compte est facultatif. L’application fonctionne pareil sans.</string>
     <string name="account_reason_purchases">Les crédits et les achats reviennent sur n’importe quel appareil.</string>
+    <string name="account_reason_settings">Vos réglages et votre couleur vous suivent.</string>
     <string name="account_credits_note">Restaurés depuis votre compte</string>
     <string name="account_action_sign_in_google">Se connecter avec Google</string>
     <string name="account_action_not_now">Pas maintenant</string>
@@ -11,6 +12,7 @@
     <string name="account_error_no_google_account">Aucun compte Google sur ce téléphone.</string>
     <string name="account_error_unavailable">La connexion est indisponible pour le moment.</string>
     <string name="account_notice_existing_account">Ce compte Google avait déjà ses propres crédits — ce sont ceux que vous avez maintenant.</string>
+    <string name="account_notice_existing_account_lists">Vous êtes de retour dans un compte déjà utilisé. Ses listes et réglages sont ici.</string>
     <string name="account_cd_close">Fermer</string>
     <string name="account_action_sign_out">Se déconnecter</string>
     <string name="account_signing_out">Déconnexion…</string>
@@ -51,6 +53,7 @@
     <string name="account_reason_publish">Publier une liste demande un compte.</string>
     <string name="account_sign_out_body_1">Vos listes restent dans le compte %1$s et sur ce téléphone, masquées jusqu’à ce que vous vous reconnectiez. Déconnecté, vous ne verrez que les listes créées sans compte.</string>
     <string name="account_sign_out_body_2">Les crédits et les achats vous attendent ici.</string>
+    <string name="account_sign_out_body_2_lists">Vos réglages vous attendent aussi dans le compte.</string>
     <plurals name="account_board_count">
         <item quantity="one">%1$d liste</item>
         <item quantity="many">%1$d listes</item>
@@ -66,6 +69,7 @@
     <string name="merge_name_suffix">(de ce téléphone)</string>
     <string name="account_sign_out_title">Se déconnecter ?</string>
     <string name="account_sign_out_helper">Vos listes restent dans votre compte et sur ce téléphone, masquées jusqu’à votre prochaine connexion. Les crédits et les achats vous attendent ici.</string>
+    <string name="account_sign_out_helper_lists">Vos listes restent dans votre compte et sur ce téléphone, masquées jusqu’à votre prochaine connexion.</string>
     <string name="account_action_delete">Supprimer le compte</string>
     <string name="account_delete_title">Supprimer ce compte ?</string>
     <string name="account_delete_body">Le compte disparaît, et avec lui la copie de vos listes, tout ce que vous avez publié et les images associées. C’est irréversible.</string>

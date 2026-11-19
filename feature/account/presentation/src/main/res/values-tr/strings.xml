@@ -3,6 +3,7 @@
     <string name="account_sign_in_title">İşinizi saklayın</string>
     <string name="account_optional">Hesap isteğe bağlı. Uygulama onsuz da aynı şekilde çalışır.</string>
     <string name="account_reason_purchases">Krediler ve satın almalar her cihazda geri gelir.</string>
+    <string name="account_reason_settings">Ayarlarınız ve renginiz sizinle gelir.</string>
     <string name="account_credits_note">Hesabınızdan geri yüklendi</string>
     <string name="account_action_sign_in_google">Google ile oturum aç</string>
     <string name="account_action_not_now">Şimdi değil</string>
@@ -11,6 +12,7 @@
     <string name="account_error_no_google_account">Bu telefonda Google hesabı yok.</string>
     <string name="account_error_unavailable">Oturum açma şu anda kullanılamıyor.</string>
     <string name="account_notice_existing_account">Bu Google hesabının kendi hakları vardı — artık sizde olanlar onlar.</string>
+    <string name="account_notice_existing_account_lists">Daha önce kullandığınız bir hesaba döndünüz. Listeleri ve ayarları burada.</string>
     <string name="account_cd_close">Kapat</string>
     <string name="account_action_sign_out">Oturumu kapat</string>
     <string name="account_signing_out">Oturum kapatılıyor…</string>
@@ -49,6 +51,7 @@
     <string name="account_reason_publish">Bir listeyi yayınlamak için hesap gerekir.</string>
     <string name="account_sign_out_body_1">Listeleriniz %1$s hesabında ve bu telefonda kalır, yeniden oturum açana kadar gizlenir. Çıkış yapınca yalnızca hesapsız yapılan listeleri görürsünüz.</string>
     <string name="account_sign_out_body_2">Krediler ve satın almalar burada sizi bekler.</string>
+    <string name="account_sign_out_body_2_lists">Ayarlarınız da hesapta sizi bekler.</string>
     <plurals name="account_board_count">
         <item quantity="one">1 liste</item>
         <item quantity="other">%1$d liste</item>
@@ -63,6 +66,7 @@
     <string name="merge_name_suffix">(bu telefondan)</string>
     <string name="account_sign_out_title">Çıkış yapılsın mı?</string>
     <string name="account_sign_out_helper">Listeleriniz hesabınızda ve bu telefonda kalır, yeniden oturum açana kadar gizlenir. Krediler ve satın almalar burada sizi bekler.</string>
+    <string name="account_sign_out_helper_lists">Listeleriniz hesabınızda ve bu telefonda kalır, yeniden giriş yapana kadar gizlenir.</string>
     <string name="account_action_delete">Hesabı sil</string>
     <string name="account_delete_title">Hesap silinsin mi?</string>
     <string name="account_delete_body">Hesap silinir; onunla birlikte listelerinizin kopyası, yayımladığınız her şey ve bunlara ait görseller de gider. Bu geri alınamaz.</string>

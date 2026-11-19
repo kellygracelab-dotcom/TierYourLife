@@ -17,6 +17,7 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.account.presentation.R
+import com.artiuillab.tieryourlife.feature.account.presentation.account.components.AccountWords
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -176,7 +177,7 @@ class AccountScreenContentTest {
         composeRule.onNodeWithTag(AccountTestTags.SIGN_OUT).performScrollTo().performClick()
 
         composeRule.onNodeWithText(string(R.string.account_sign_out_body_1, "someone@example.com")).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.account_sign_out_body_2)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(AccountWords.signOutWaiting)).assertIsDisplayed()
     }
 
     // A32: waiting for a sync's call to end, the button looked as if it did nothing.

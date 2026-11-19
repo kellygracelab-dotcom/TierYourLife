@@ -3,6 +3,7 @@
     <string name="account_sign_in_title">Збережіть свою роботу</string>
     <string name="account_optional">Обліковий запис необовʼязковий. Без нього застосунок працює так само.</string>
     <string name="account_reason_purchases">Кредити та покупки повернуться на будь-якому пристрої.</string>
+    <string name="account_reason_settings">Налаштування й колір переїжджають разом із вами.</string>
     <string name="account_credits_note">Відновлено з вашого облікового запису</string>
     <string name="account_action_sign_in_google">Увійти через Google</string>
     <string name="account_action_not_now">Не зараз</string>
@@ -11,6 +12,7 @@
     <string name="account_error_no_google_account">На цьому телефоні немає облікового запису Google.</string>
     <string name="account_error_unavailable">Вхід зараз недоступний.</string>
     <string name="account_notice_existing_account">У цього облікового запису Google уже були власні кредити — тепер у вас саме вони.</string>
+    <string name="account_notice_existing_account_lists">Ви знову в акаунті, яким користувалися раніше. Його списки й налаштування тут.</string>
     <string name="account_cd_close">Закрити</string>
     <string name="account_action_sign_out">Вийти</string>
     <string name="account_signing_out">Виходимо…</string>
@@ -53,6 +55,7 @@
     <string name="account_reason_publish">Щоб опублікувати список, потрібен обліковий запис.</string>
     <string name="account_sign_out_body_1">Списки залишаться в обліковому записі %1$s і на цьому телефоні, приховані, доки ви знову не ввійдете. Без входу ви бачитимете лише списки, зроблені без облікового запису.</string>
     <string name="account_sign_out_body_2">Кредити та покупки чекатимуть на вас тут.</string>
+    <string name="account_sign_out_body_2_lists">Налаштування теж чекають на вас в акаунті.</string>
     <plurals name="account_board_count">
         <item quantity="one">%1$d список</item>
         <item quantity="few">%1$d списки</item>
@@ -69,6 +72,7 @@
     <string name="merge_name_suffix">(з цього телефона)</string>
     <string name="account_sign_out_title">Вийти?</string>
     <string name="account_sign_out_helper">Списки залишаться в обліковому записі й на телефоні, приховані до наступного входу. Кредити та покупки чекатимуть на вас тут.</string>
+    <string name="account_sign_out_helper_lists">Ваші списки залишаються в акаунті й на цьому телефоні, приховані до наступного входу.</string>
     <string name="account_action_delete">Видалити обліковий запис</string>
     <string name="account_delete_title">Видалити обліковий запис?</string>
     <string name="account_delete_body">Акаунт зникне, а разом з ним копія ваших списків, усе опубліковане й картинки за ним. Скасувати це не можна.</string>

@@ -37,6 +37,7 @@
     <string name="settings_account_offer_action">Anmelden</string>
     <string name="settings_account_offer_body">Die App funktioniert auch ohne vollständig.</string>
     <string name="settings_account_offer_title">Behalte dein Guthaben</string>
+    <string name="settings_account_offer_title_lists">Behalte deine Listen</string>
     <string name="settings_account_signed_in">Angemeldet</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="one">Angemeldet · %1$d Guthaben</item>

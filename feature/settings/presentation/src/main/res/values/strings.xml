@@ -37,6 +37,7 @@
     <string name="settings_account_offer_action">Sign in</string>
     <string name="settings_account_offer_body">The app works fully without one.</string>
     <string name="settings_account_offer_title">Keep your credits</string>
+    <string name="settings_account_offer_title_lists">Keep your lists</string>
     <string name="settings_account_signed_in">Signed in</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="one">Signed in · %1$d credit</item>

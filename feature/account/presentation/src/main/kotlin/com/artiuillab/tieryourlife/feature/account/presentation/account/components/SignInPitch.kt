@@ -26,7 +26,7 @@ private val BUTTON_HEIGHT = 52.dp
 
 private val REASONS = listOf(
     R.string.account_reason_devices,
-    R.string.account_reason_purchases,
+    AccountWords.reasonKept,
     R.string.account_reason_publish,
 )
 

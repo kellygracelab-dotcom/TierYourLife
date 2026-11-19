@@ -41,6 +41,7 @@
     <string name="settings_account_offer_action">تسجيل الدخول</string>
     <string name="settings_account_offer_body">التطبيق يعمل بالكامل من دون حساب.</string>
     <string name="settings_account_offer_title">احتفظ برصيدك</string>
+    <string name="settings_account_offer_title_lists">احتفظ بقوائمك</string>
     <string name="settings_account_signed_in">تم تسجيل الدخول</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="zero">تم تسجيل الدخول · لا أرصدة</item>

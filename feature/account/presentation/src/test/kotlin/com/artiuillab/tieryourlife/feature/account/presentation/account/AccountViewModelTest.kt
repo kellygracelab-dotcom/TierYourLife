@@ -20,6 +20,8 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.account.domain.repository.FacePhotos
+import com.artiuillab.tieryourlife.feature.account.presentation.R
+import com.artiuillab.tieryourlife.feature.account.presentation.account.components.AccountWords
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.GoogleCredentialResult
 import com.artiuillab.tieryourlife.feature.aistudio.domain.credits.GenerationCredits
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
@@ -354,6 +356,34 @@ class AccountViewModelTest {
 
         assertEquals(0, credits.reads)
         assertEquals(null, state.credits)
+    }
+
+    // Danylo, 19.11: "N generation credits · Restored from your account" came from the kept balance.
+    @Test
+    fun whileGenerationIsHeldBack_theKeptBalanceIsNotShownEither() = runBlocking {
+        assumeFalse(Features.GENERATION_OFFERED)
+        val repository = FakeAccountRepository(
+            initial = Account.SignedIn(email = "someone@example.com", photoUrl = null),
+        )
+
+        val viewModel = viewModel(repository, credits = FakeGenerationCredits(balance = 12, last = 7))
+
+        assertEquals(null, viewModel.state.value.credits)
+        assertEquals(null, viewModel.state.firstWithin { it.account is Account.SignedIn }.credits)
+    }
+
+    @Test
+    fun whileGenerationIsHeldBack_noAccountWordsMentionCreditsOrPurchases() {
+        assumeFalse(Features.GENERATION_OFFERED)
+        val words = listOf(AccountWords.reasonKept, AccountWords.existingAccount, AccountWords.signOutHelper, AccountWords.signOutWaiting)
+        val creditWords = listOf(
+            R.string.account_reason_purchases,
+            R.string.account_notice_existing_account,
+            R.string.account_sign_out_helper,
+            R.string.account_sign_out_body_2,
+        )
+
+        assertEquals(emptyList<Int>(), words.filter { it in creditWords })
     }
 
     // A guest has a balance too, but this screen is not where it belongs: the
@@ -815,8 +845,8 @@ private class FakeGoogleCredential(result: GoogleCredentialResult? = null) {
     }
 }
 
-internal class FakeGenerationCredits(private val balance: Int? = null) : GenerationCredits {
-    override fun lastKnown(): Int? = null
+internal class FakeGenerationCredits(private val balance: Int? = null, private val last: Int? = null) : GenerationCredits {
+    override fun lastKnown(): Int? = last
 
     var reads = 0
 
