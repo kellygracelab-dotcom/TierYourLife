@@ -22,7 +22,7 @@ class PublicMediaInterceptorTest {
                 val url = "$STORAGE$kind${slash}item-1${slash}w-ab12_34?alt=media&token=old-download-token"
                 val sent = send(Request.Builder().url(url).build())
 
-                assertEquals("https://tieryourlife.web.app/img/original/$kind/item-1/w-ab12_34", sent.url.toString())
+                assertEquals("https://tieryourlife.com/img/original/$kind/item-1/w-ab12_34", sent.url.toString())
             }
         }
     }
@@ -32,7 +32,7 @@ class PublicMediaInterceptorTest {
         val url = "${STORAGE}published%2Fcatalogue%2Fw-0123456789abcdef0123456789abcdef?alt=media"
 
         assertEquals(
-            "https://tieryourlife.web.app/img/original/published/catalogue/w-0123456789abcdef0123456789abcdef",
+            "https://tieryourlife.com/img/original/published/catalogue/w-0123456789abcdef0123456789abcdef",
             send(Request.Builder().url(url).build()).url.toString(),
         )
     }
@@ -79,7 +79,7 @@ class PublicMediaInterceptorTest {
             "https://firebasestorage.googleapis.com:8443/v0/b/tieryourlife.firebasestorage.app/o/published%2Flist-1%2Fphoto?alt=media",
             "http://firebasestorage.googleapis.com/v0/b/tieryourlife.firebasestorage.app/o/published%2Flist-1%2Fphoto?alt=media",
             "https://images.igdb.com/igdb/image/upload/t_cover_big/coqa1.jpg",
-            "https://tieryourlife.web.app/img/original/published/list-1/photo",
+            "https://tieryourlife.com/img/original/published/list-1/photo",
         )
         for (url in unchanged) {
             val original = Request.Builder().url(url).header("Authorization", "unchanged").build()
@@ -95,7 +95,7 @@ class PublicMediaInterceptorTest {
         val url = "${STORAGE}published%2Flist-1%2Fphoto?alt=media"
         val head = send(Request.Builder().url(url).head().build())
         assertEquals("HEAD", head.method)
-        assertEquals("https://tieryourlife.web.app/img/original/published/list-1/photo", head.url.toString())
+        assertEquals("https://tieryourlife.com/img/original/published/list-1/photo", head.url.toString())
 
         val original = Request.Builder().url(url).post("test body".toRequestBody()).build()
         val post = send(original)
@@ -109,7 +109,7 @@ class PublicMediaInterceptorTest {
         val id = "a".repeat(128)
         val picture = "p".repeat(1024 - "published//$id".length)
         val atLimit = "${STORAGE}published%2F$id%2F$picture?alt=media"
-        assertEquals("https://tieryourlife.web.app/img/original/published/$id/$picture", send(Request.Builder().url(atLimit).build()).url.toString())
+        assertEquals("https://tieryourlife.com/img/original/published/$id/$picture", send(Request.Builder().url(atLimit).build()).url.toString())
 
         for (url in listOf(
             "${STORAGE}published%2F${id}a%2Fphoto?alt=media",

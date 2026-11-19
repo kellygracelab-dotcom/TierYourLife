@@ -25,6 +25,8 @@ class SameFaceTest {
         val answered = "https://tieryourlife.web.app/img/original/avatars/ann/p1"
 
         assertTrue(sameFace(slot, answered))
+        // The site moved to tieryourlife.com (20.11); faces answered under either name are the same.
+        assertTrue(sameFace(slot, "https://tieryourlife.com/img/original/avatars/ann/p1"))
         assertFalse(sameFace(answered, "https://tieryourlife.web.app/img/original/avatars/ann/p2"))
         assertFalse(sameFace(slot, "https://example.test/avatars/ann/p1"))
     }

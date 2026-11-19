@@ -33,7 +33,7 @@ class WikimediaUserAgentInterceptorTest {
             "https://images.igdb.com/igdb/image/upload/t_cover_big/coqa1.jpg",
             "https://notwikimedia.org/picture.jpg",
             "https://upload.wikimedia.org.evil.test/picture.jpg",
-            "https://tieryourlife.web.app/img/original/published/list-1/photo",
+            "https://tieryourlife.com/img/original/published/list-1/photo",
         )
         for (url in urls) {
             assertEquals(url, "okhttp/original", sentUserAgent(url))

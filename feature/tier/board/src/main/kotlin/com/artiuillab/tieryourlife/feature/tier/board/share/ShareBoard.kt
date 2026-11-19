@@ -25,7 +25,7 @@ private const val AUTHORITY_SUFFIX = ".share"
 private const val PICTURE_WIDTH = 264
 
 /** Where the caption points. Not Play itself: until launch its page is "not found" to anyone who is not a tester, and this page links to it. */
-const val SHARE_LINK = "https://tieryourlife.web.app"
+const val SHARE_LINK = "https://tieryourlife.com"
 
 /**
  * The caption matters as much as the picture: a chat app shows it under the

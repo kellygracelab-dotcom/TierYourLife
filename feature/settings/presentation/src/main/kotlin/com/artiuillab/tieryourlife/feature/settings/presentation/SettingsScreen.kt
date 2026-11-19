@@ -633,4 +633,4 @@ private fun openPrivacyPolicy(context: Context) {
     }.onFailure { Timber.w(it, "No browser to open the privacy policy") }
 }
 
-private const val PRIVACY_POLICY = "https://tieryourlife.web.app/privacy.html"
+private const val PRIVACY_POLICY = "https://tieryourlife.com/privacy.html"
