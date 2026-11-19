@@ -79,14 +79,19 @@ fun hueColorScheme(hue: Int, dark: Boolean): ColorScheme {
 
 /**
  * A built colour as the app and the site lay it out (19.11): in light the page is surfaceContainerHigh and the
- * cards (surfaceContainerLow) lighter than it; in dark the page is surface and the cards surfaceContainer.
+ * cards (surfaceContainerLow) lighter than it, and what lay on surfaceContainerHigh a step darker, so it still
+ * stands out; in dark the page is surface and the cards surfaceContainer.
  * Lavender keeps its own page.
  */
 fun hueAppScheme(hue: Int, dark: Boolean): ColorScheme = hueColorScheme(hue, dark).let { scheme ->
     if (dark) {
         scheme.copy(surfaceContainerLow = scheme.surfaceContainer)
     } else {
-        scheme.copy(surface = scheme.surfaceContainerHigh, background = scheme.surfaceContainerHigh)
+        scheme.copy(
+            surface = scheme.surfaceContainerHigh,
+            background = scheme.surfaceContainerHigh,
+            surfaceContainerHigh = scheme.surfaceContainerHighest,
+        )
     }
 }
 

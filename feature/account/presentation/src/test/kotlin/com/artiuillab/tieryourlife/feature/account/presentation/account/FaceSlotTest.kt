@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.account.presentation.account
 import com.artiuillab.tieryourlife.core.settings.CardFace
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.settings.ThePerson
+import com.artiuillab.tieryourlife.core.testing.DEFAULT_WAIT
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
@@ -12,7 +13,9 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.OwnLists
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Rule
@@ -138,7 +141,7 @@ class FaceSlotTest {
         viewModel.state.firstWithin { it.ownFace == OWN_PHOTO }
 
         viewModel.face.removeOwnPhoto()
-        viewModel.state.firstWithin { slot.removals == 1 && it.ownFace == null }
+        until { slot.removals == 1 && viewModel.state.value.ownFace == null }
 
         assertEquals(emptyList<String?>(), repository.photoUrls)
     }
@@ -150,7 +153,7 @@ class FaceSlotTest {
         val viewModel = viewModel()
         viewModel.state.firstWithin { it.ownFace == OWN_PHOTO }
         viewModel.face.removeOwnPhoto()
-        viewModel.state.firstWithin { slot.removals == 1 }
+        until { slot.removals == 1 }
         slot.uploadedSince = OTHER_PHOTO
 
         viewModel.face.undoRemove()
@@ -182,6 +185,11 @@ class FaceSlotTest {
         viewModel.state.firstWithin { it.faceChoices.isNotEmpty() && it.faceInSheet == POSTER }
     }
 
+    /** A removal that changes nothing on screen sends no new state to wait for: it is looked for. */
+    private suspend fun until(condition: () -> Boolean) = withTimeout(DEFAULT_WAIT) {
+        while (!condition()) delay(POLL)
+    }
+
     private fun viewModel(
         facePhotos: FakeFacePhotos = FakeFacePhotos(),
         publishedLists: OwnLists = FakeOwnLists(),
@@ -202,4 +210,5 @@ class FaceSlotTest {
 
 private const val OWN_PHOTO = "https://example.test/avatars/own.jpg"
 private const val OTHER_PHOTO = "https://example.test/avatars/other.jpg"
+private const val POLL = 10L
 private const val SIGNED_IN_KEY = FakeAccountRepository.SIGNED_IN_EMAIL

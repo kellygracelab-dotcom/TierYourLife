@@ -17,6 +17,7 @@ class HueAppSchemeTest {
         assertEquals(roles.surfaceContainerHigh, app.background)
         assertEquals(roles.surfaceContainerLow, app.surfaceContainerLow)
         assertTrue(app.surfaceContainerLow.luminance() > app.surface.luminance())
+        assertTrue(app.surfaceContainerHigh.luminance() < app.surface.luminance())
     }
 
     @Test
