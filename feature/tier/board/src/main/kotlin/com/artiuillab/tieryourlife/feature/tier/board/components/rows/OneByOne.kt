@@ -79,8 +79,44 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 @Stable
 class CardPicking(val selectedId: Long?, val onPick: (itemId: Long) -> Unit)
 
-/** Null while the board is dragged as usual: a tap on a card does nothing then, and a double tap opens it. */
+/** Null where cards are not picked by a tap (a reader's board, a cover): a double tap still opens a card. */
 val LocalCardPicking = compositionLocalOf<CardPicking?> { null }
+
+/**
+ * While a card is picked on an ordinary board, a tap on a tier puts it at that tier's end (as on the site);
+ * null otherwise, and a tap on a tier's band edits it.
+ */
+val LocalTierPlacing = compositionLocalOf<((tierId: Long) -> Unit)?> { null }
+
+/** "Tap a card, then the tier it belongs in" on an ordinary board: the card picked, and where it goes. */
+@Stable
+internal class TapPlacing(private val move: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit) {
+    var selectedId by mutableStateOf<Long?>(null)
+        private set
+
+    fun pick(itemId: Long) {
+        selectedId = itemId.takeUnless { it == selectedId }
+    }
+
+    /** The picked card, if it is still on [list]. */
+    fun picked(list: TierList): Long? = selectedId?.takeIf { id -> list.where(id) != null }
+
+    fun place(list: TierList, tierId: Long) {
+        val itemId = picked(list)
+        selectedId = null
+        val tier = list.tiers.firstOrNull { it.id == tierId }
+        val from = itemId?.let { list.where(it) }
+        if (itemId == null || tier == null || from == null) return
+        val end = if (from.fromTierId == tierId) tier.items.size - 1 else tier.items.size
+        if (from.fromTierId != tierId || from.fromIndex != end) move(itemId, tierId, end)
+    }
+}
+
+@Composable
+internal fun rememberTapPlacing(move: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit): TapPlacing {
+    val latest by rememberUpdatedState(move)
+    return remember { TapPlacing { itemId, toTierId, toPosition -> latest(itemId, toTierId, toPosition) } }
+}
 
 /** Where a placed card came from, to put it back. */
 private data class Placement(val itemId: Long, val fromTierId: Long, val fromIndex: Int)

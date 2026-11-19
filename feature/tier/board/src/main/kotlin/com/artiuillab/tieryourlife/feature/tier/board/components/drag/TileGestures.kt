@@ -113,7 +113,9 @@ suspend fun PointerInputScope.detectDoubleTapOnPress(onDoubleTap: () -> Unit) = 
 /** A tap answered on release, with no wait for a second one; a second finger-down soon after is a double tap as well. */
 suspend fun PointerInputScope.detectTapThenDoubleTap(onTap: () -> Unit, onDoubleTap: () -> Unit) = awaitEachGesture {
     awaitFirstDown(requireUnconsumed = false)
-    withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) { waitForUpOrCancellation() } ?: return@awaitEachGesture
+    val up = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) { waitForUpOrCancellation() } ?: return@awaitEachGesture
+    // The tap is the card's: the row under it does not take it as well.
+    up.consume()
     onTap()
     val second = withTimeoutOrNull(viewConfiguration.doubleTapTimeoutMillis) {
         awaitFirstDown(requireUnconsumed = false)

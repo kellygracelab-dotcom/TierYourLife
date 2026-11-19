@@ -43,11 +43,11 @@ data class RestoredPhotoDto(val photo: PhotoSlotDto? = null, val wasWorn: Boolea
 @Serializable
 data class ColourDto(
     val name: String = "",
-    val hue: Int = 0,
+    val hue: Int? = null,
     val changedAt: Long = 0,
     val updatedAt: Long = 0,
     val landed: Boolean = true,
 )
 
 @Serializable
-data class ColourWriteDto(val name: String, val hue: Int, val changedAt: Long)
+data class ColourWriteDto(val name: String, val hue: Int?, val changedAt: Long)

@@ -98,9 +98,9 @@ internal fun ColourSection(setting: ColourSetting?, onChoose: (name: String) -> 
     }
 }
 
-/** "Your colour" opens on the hue the app is in now: a ready colour's own, else the last own one. */
+/** "Your colour" opens on one's own hue as kept; only when there never was one, on the hue the app is in (QA D3, 19.11). */
 internal fun startHueOf(setting: ColourSetting?): Int =
-    setting?.let { ReadyColours.hueOf(it.name) ?: it.hue } ?: ColourChoice.LAVENDER_HUE
+    setting?.hue ?: setting?.let { ReadyColours.hueOf(it.name) } ?: ColourChoice.LAVENDER_HUE
 
 @Composable
 internal fun colourLabel(name: String): String = stringResource(
