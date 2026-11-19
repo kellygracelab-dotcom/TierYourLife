@@ -48,6 +48,15 @@ open class FakeAccountRepository(
 
     override suspend fun currentAccountExists(): Boolean? = exists
 
+    /** The account as another device left it, which a reload brings here. */
+    var elsewhere: Account? = null
+    var profileReads = 0
+
+    override suspend fun refreshProfile() {
+        profileReads++
+        elsewhere?.let { accounts.value = it }
+    }
+
     companion object {
         const val SIGNED_IN_EMAIL = "someone@example.com"
         val signedIn: Account = Account.SignedIn(email = SIGNED_IN_EMAIL, photoUrl = null)

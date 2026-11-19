@@ -17,6 +17,7 @@ data class LinkAnswerDto(
 @Serializable
 data class LinkRefusalDto(
     val code: String? = null,
+    val because: String? = null,
     val retryAt: Long? = null,
     val quota: LinkQuotaDto? = null,
 )

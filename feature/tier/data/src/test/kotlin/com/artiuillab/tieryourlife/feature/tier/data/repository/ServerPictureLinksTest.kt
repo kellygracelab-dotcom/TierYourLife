@@ -64,6 +64,13 @@ class ServerPictureLinksTest {
         assertEquals(LinkPicture.Refused(LinkRefusal.Failed), links(FakeLinksApi { LinkAnswerDto(imageUrl = "http://x.org/a.jpg") }).fetch("https://x.org/a.jpg"))
     }
 
+    // Proxy #173: an animation, or a picture SafeSearch could not judge.
+    @Test
+    fun aPictureThatCannotBeChecked_isSaidSo() = runBlocking {
+        val api = FakeLinksApi { throw refusal(422, """{"code":"PICTURE_REFUSED","because":"unchecked"}""") }
+        assertEquals(LinkPicture.Refused(LinkRefusal.Unchecked), links(api).fetch("https://x.org/a.gif"))
+    }
+
     @Test
     fun eachRefusal_isSaidByWhatSomebodyCanDoAboutIt() = runBlocking {
         val said = mapOf(

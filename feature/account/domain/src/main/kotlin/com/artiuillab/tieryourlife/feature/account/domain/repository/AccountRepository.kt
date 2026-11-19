@@ -28,4 +28,7 @@ interface AccountRepository {
 
     /** Whether the signed-in account is still there, asked of the server; null when that cannot be told now. */
     suspend fun currentAccountExists(): Boolean?
+
+    /** The profile as the server has it now: a face or name changed on another device shows here too. */
+    suspend fun refreshProfile()
 }

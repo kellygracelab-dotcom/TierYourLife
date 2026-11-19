@@ -70,7 +70,7 @@ class ServerPictureLinks internal constructor(
                 when (body?.code) {
                     "NOT_A_PICTURE" -> LinkRefusal.NotAPicture
                     "TOO_BIG" -> LinkRefusal.TooBig
-                    "PICTURE_REFUSED" -> LinkRefusal.Refused
+                    "PICTURE_REFUSED" -> if (body.because == "unchecked") LinkRefusal.Unchecked else LinkRefusal.Refused
                     "UNREACHABLE", "BAD_URL", "NOT_ALLOWED", "NO_URL" -> LinkRefusal.Unreachable
                     else -> LinkRefusal.Failed
                 },

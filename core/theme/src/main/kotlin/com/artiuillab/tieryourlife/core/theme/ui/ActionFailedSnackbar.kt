@@ -27,6 +27,7 @@ fun ActionFailedSnackbar(messages: Flow<UserMessage>, modifier: Modifier = Modif
     val failed = stringResource(R.string.snack_action_failed)
     val underReview = stringResource(R.string.snack_published_under_review)
     val staff = stringResource(R.string.snack_target_is_staff)
+    val reportsToday = stringResource(R.string.snack_reports_today)
     val resources = LocalResources.current
     LaunchedEffect(messages) {
         messages.collect {
@@ -34,6 +35,7 @@ fun ActionFailedSnackbar(messages: Flow<UserMessage>, modifier: Modifier = Modif
                 when (it) {
                     UserMessage.PublishedUnderReview -> underReview
                     UserMessage.TargetIsStaff -> staff
+                    UserMessage.ReportsToday -> reportsToday
                     is UserMessage.PicturesDropped -> it.text(resources)
                     else -> failed
                 },

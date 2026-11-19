@@ -28,6 +28,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDomain
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toFocus
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toJson
+import com.artiuillab.tieryourlife.feature.community.data.remote.isPictureUnchecked
+import com.artiuillab.tieryourlife.feature.community.data.remote.isPicturesCheckedToday
 import com.artiuillab.tieryourlife.feature.community.data.remote.likeRefusal
 import com.artiuillab.tieryourlife.feature.community.data.remote.proposalError
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
@@ -50,6 +52,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.ListTranslatio
 import com.artiuillab.tieryourlife.feature.community.domain.model.ModerationReport
 import com.artiuillab.tieryourlife.feature.community.domain.model.Moderator
 import com.artiuillab.tieryourlife.feature.community.domain.model.PendingTopic
+import com.artiuillab.tieryourlife.feature.community.domain.model.PicturesCheckedToday
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalError
 import com.artiuillab.tieryourlife.feature.community.domain.model.ProposalRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKind
@@ -448,11 +451,15 @@ internal suspend fun <T> refusedOverTheLimit(block: suspend () -> T): T = try {
     throw if (refused.code() == HTTP_CONFLICT && refused.proxyCode() == TOO_MANY_FOLLOWING) TooManyFollowed() else refused
 }
 
-/** A picture SafeSearch turned down as its own failure, which a screen names; any other refusal as it came. */
+/** A picture SafeSearch turned down, or could not judge, or a day's checks used up, as its own failure, which a screen names. */
 internal suspend fun <T> refusedAsAFace(block: suspend () -> T): T = try {
     block()
 } catch (refused: HttpException) {
-    throw if (refused.code() == HTTP_UNPROCESSABLE_FACE) FaceRefused() else refused
+    throw when {
+        refused.code() == HTTP_UNPROCESSABLE_FACE -> FaceRefused(unchecked = refused.isPictureUnchecked())
+        refused.isPicturesCheckedToday() -> PicturesCheckedToday()
+        else -> refused
+    }
 }
 
 /** Not found is an answer about the list, not about the network: it is gone. */

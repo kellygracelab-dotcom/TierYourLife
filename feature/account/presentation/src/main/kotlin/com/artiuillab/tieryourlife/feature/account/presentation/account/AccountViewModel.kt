@@ -55,6 +55,8 @@ class AccountViewModel @Inject constructor(
     internal val face = AccountFace(_state, viewModelScope, repository, community, facePhotos, facePhotoSlot, preferences, ::refreshPublishedAuthor)
 
     init {
+        // Your face as the account wears it now, though it was changed on the site (19.11).
+        viewModelScope.launch { repository.refreshProfile() }
         viewModelScope.launch {
             repository.account.collect { account ->
                 // A face chosen here belongs to the account it was chosen on.

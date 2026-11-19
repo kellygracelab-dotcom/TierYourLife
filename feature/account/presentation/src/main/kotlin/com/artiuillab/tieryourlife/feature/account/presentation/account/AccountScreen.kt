@@ -60,6 +60,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.componen
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.previewAccountSigningInState
 import com.artiuillab.tieryourlife.feature.account.presentation.account.face.FacePositioner
 import com.artiuillab.tieryourlife.feature.account.presentation.signin.rememberGoogleCredential
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
 fun AccountScreen(
@@ -285,6 +286,8 @@ private fun AccountNotice.messageRes(): Int = when (this) {
     AccountNotice.SignInUnavailable -> R.string.account_error_unavailable
     AccountNotice.SignedInToExistingAccount -> R.string.account_notice_existing_account
     AccountNotice.FaceNotMade -> R.string.account_error_face_not_made
+    AccountNotice.FaceUnchecked -> ThemeR.string.refusal_picture_unchecked
+    AccountNotice.FacesCheckedToday -> ThemeR.string.refusal_pictures_checked_today
     AccountNotice.FaceNotSaved -> R.string.account_error_face_not_saved
     AccountNotice.NameNotSaved -> R.string.account_error_name_not_saved
     AccountNotice.PhotoRemoved -> R.string.account_face_photo_removed

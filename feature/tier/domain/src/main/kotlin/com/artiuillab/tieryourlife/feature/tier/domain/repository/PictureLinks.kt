@@ -20,7 +20,7 @@ sealed interface LinkPicture {
     data object SignInNeeded : LinkPicture
 }
 
-enum class LinkRefusal { NotAPicture, Unreachable, TooBig, Refused, Failed }
+enum class LinkRefusal { NotAPicture, Unreachable, TooBig, Refused, Unchecked, Failed }
 
 /** The first http or https address in [text], as somebody would paste or share it. */
 fun linkIn(text: String): String? = text.trim().split(Regex("\\s+")).firstOrNull { word ->

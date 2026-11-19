@@ -44,7 +44,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        (application as TierYourLifeApplication).colourSync.backOnScreen()
+        val app = application as TierYourLifeApplication
+        app.colourSync.backOnScreen()
+        app.profileOnReturn.backOnScreen()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

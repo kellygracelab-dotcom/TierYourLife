@@ -46,6 +46,9 @@
     <string name="snack_published_under_review">Zapisana. Czeka na moderatora, zanim inni będą mogli ją zobaczyć.</string>
     <string name="snack_target_is_staff">Autorem jest moderator lub właściciel. Tylko właściciel może zająć się tą listą.</string>
     <string name="refusal_web_pictures_today">To więcej obrazów z innych stron, niż można dziś dodać. Spróbuj jutro.</string>
+    <string name="refusal_picture_unchecked">Nie można sprawdzić tego obrazu. Spróbuj zwykłego zdjęcia.</string>
+    <string name="refusal_pictures_checked_today">Dziś nie można już sprawdzić więcej zdjęć. Spróbuj później.</string>
+    <string name="snack_reports_today">Dziś nie można już wysłać więcej zgłoszeń. Spróbuj później.</string>
     <string name="refusal_too_many_web_pictures">Lista może mieć do 200 obrazów z innych stron. Usuń kilka i spróbuj ponownie.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Opublikowano. Nie udało się dodać %1$d obrazu z innej strony.</item>

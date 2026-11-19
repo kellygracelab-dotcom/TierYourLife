@@ -715,6 +715,7 @@ private fun PublishError.message(): String = publishErrorText(this, LocalResourc
 fun PublishError.fixedInSettings(): Boolean = when (this) {
     PublishError.NothingToPublish,
     PublishError.PictureRefused,
+    PublishError.PictureUnchecked,
     PublishError.SectionUnavailable,
     PublishError.TopicUnavailable,
     PublishError.TooManyPendingTopics,
@@ -757,6 +758,8 @@ private fun PublishError.messageRes(): Int = when (this) {
     PublishError.RankInstead -> R.string.list_settings_public_rank_instead
     PublishError.NotTakenDown -> R.string.list_settings_unpublish_failed
     PublishError.PictureRefused -> R.string.list_settings_public_picture_refused
+    PublishError.PictureUnchecked -> R.string.list_settings_public_picture_unchecked
+    PublishError.PicturesCheckedToday -> ThemeR.string.refusal_pictures_checked_today
     is PublishError.Banned -> R.string.list_settings_public_banned_forever
     PublishError.Offline -> R.string.list_settings_public_offline
     PublishError.NotVerified -> R.string.list_settings_public_unverified

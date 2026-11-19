@@ -46,6 +46,9 @@
     <string name="snack_published_under_review">Сохранено. Список ждёт модератора, прежде чем его увидят другие.</string>
     <string name="snack_target_is_staff">Автор списка — модератор или владелец. Действовать здесь может только владелец.</string>
     <string name="refusal_web_pictures_today">Картинок с других сайтов больше, чем можно добавить сегодня. Попробуйте завтра.</string>
+    <string name="refusal_picture_unchecked">Эту картинку не удаётся проверить. Попробуйте обычное фото.</string>
+    <string name="refusal_pictures_checked_today">На сегодня проверено максимум фото. Попробуйте позже.</string>
+    <string name="snack_reports_today">На сегодня отправлено максимум жалоб. Попробуйте позже.</string>
     <string name="refusal_too_many_web_pictures">В списке может быть до 200 картинок с других сайтов. Уберите часть и попробуйте ещё раз.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Опубликовано. Не удалось добавить %1$d картинку с другого сайта.</item>

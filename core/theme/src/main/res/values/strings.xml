@@ -37,6 +37,9 @@
     <string name="snack_published_under_review">Saved. It waits for a moderator before others can see it.</string>
     <string name="snack_target_is_staff">Its author is a moderator or the owner. Only the owner can act on this list.</string>
     <string name="refusal_web_pictures_today">That’s more pictures from other sites than can be added today. Try again tomorrow.</string>
+    <string name="refusal_picture_unchecked">This picture can’t be checked. Try a still photo.</string>
+    <string name="refusal_pictures_checked_today">That’s as many photos as can be checked today. Try again later.</string>
+    <string name="snack_reports_today">That’s as many reports as can be sent today. Try again later.</string>
     <string name="refusal_too_many_web_pictures">A list can have up to 200 pictures from other sites. Remove some and try again.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Published. %1$d picture from another site couldn’t be added.</item>

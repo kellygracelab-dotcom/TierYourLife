@@ -24,6 +24,9 @@ sealed interface UserMessage {
     /** A moderator reported a list by staff, which only the owner may judge. */
     data object TargetIsStaff : UserMessage
 
+    /** As many reports today as one may send in a day. */
+    data object ReportsToday : UserMessage
+
     /** Published, but [count] pictures from other sites could not be added. */
     data class PicturesDropped(val count: Int) : UserMessage
 }
