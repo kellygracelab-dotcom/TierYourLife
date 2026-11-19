@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -97,6 +98,8 @@ fun TierRow(
 ) {
     val colors = tierRowColors(tier.colorLight, tier.colorDark)
     val rowDensity = LocalTierRowDensity.current
+    val placing = LocalTierPlacing.current?.takeUnless { tier.isPool }
+    val currentPlacing by rememberUpdatedState(placing)
     val isHovered = dragController.isDragging && dragController.hoveredTierId == tier.id
     val surface = MaterialTheme.colorScheme.surface
     val rowBackground = if (isHovered) rowTintFor(colors.band, surface, ROW_HOVER_TINT_ALPHA) else colors.rowTint
@@ -146,6 +149,10 @@ fun TierRow(
                 .clip(RoundedCornerShape(12.dp))
                 .onGloballyPositioned { coordinates -> dragController.registerRowBounds(tier.id, coordinates.boundsInRoot()) }
                 .testTag(TierDetailTestTags.tierRow(tier.id))
+                .then(
+                    // A card picked by a tap goes where the row is tapped; a card's own tap is its own.
+                    if (placing != null) Modifier.pointerInput(tier.id) { detectTapGestures { currentPlacing?.invoke(tier.id) } } else Modifier,
+                )
                 .background(rowBackground)
                 .then(
                     if (isHovered) {
@@ -195,7 +202,7 @@ fun TierRow(
                                     )
                                 }
                                 .pointerInput(tier.id) {
-                                    detectTapGestures(onTap = { onEditTier(tier.id) })
+                                    detectTapGestures(onTap = { currentPlacing?.invoke(tier.id) ?: onEditTier(tier.id) })
                                 }
                         } else {
                             Modifier

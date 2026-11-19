@@ -65,13 +65,14 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun colourSetting(): ColourSetting? {
         val name = prefs.getString(KEY_COLOUR_NAME, null) ?: return null
-        return ColourSetting(name, prefs.getInt(KEY_COLOUR_HUE, ColourChoice.LAVENDER_HUE), prefs.getLong(KEY_COLOUR_CHANGED_AT, 0L))
+        val hue = if (prefs.contains(KEY_COLOUR_HUE)) prefs.getInt(KEY_COLOUR_HUE, ColourChoice.LAVENDER_HUE) else null
+        return ColourSetting(name, hue, prefs.getLong(KEY_COLOUR_CHANGED_AT, 0L))
     }
 
     override fun setColourSetting(setting: ColourSetting) {
         prefs.edit {
             putString(KEY_COLOUR_NAME, setting.name)
-            putInt(KEY_COLOUR_HUE, setting.hue)
+            if (setting.hue != null) putInt(KEY_COLOUR_HUE, setting.hue) else remove(KEY_COLOUR_HUE)
             putLong(KEY_COLOUR_CHANGED_AT, setting.changedAt)
         }
     }

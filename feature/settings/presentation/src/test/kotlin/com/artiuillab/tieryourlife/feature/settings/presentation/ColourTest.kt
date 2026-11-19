@@ -122,12 +122,13 @@ class ColourTest {
         assertEquals(ReadyColours.LAVENDER, shownColour(null))
     }
 
-    // Site check of 19.11, point 5: not always 265.
+    // QA D3, 19.11: one's own 264, then Sky, then "Your own" opens on 264 again, not on Sky's.
     @Test
-    fun yourColour_opensOnTheHueTheAppIsIn() {
-        assertEquals(136, startHueOf(ColourSetting(ReadyColours.MATCHA, 300, 1)))
+    fun yourColour_opensOnOnesOwnHue_andOnTheThemesOnlyWhenThereNeverWasOne() {
+        assertEquals(264, startHueOf(ColourSetting(ReadyColours.SKY, 264, 1)))
         assertEquals(300, startHueOf(ColourSetting(ReadyColours.CUSTOM, 300, 1)))
-        assertEquals(300, startHueOf(ColourSetting(ReadyColours.LAVENDER, 300, 1)))
+        assertEquals(136, startHueOf(ColourSetting(ReadyColours.MATCHA, null, 1)))
+        assertEquals(265, startHueOf(ColourSetting(ReadyColours.LAVENDER, null, 1)))
         assertEquals(265, startHueOf(null))
     }
 

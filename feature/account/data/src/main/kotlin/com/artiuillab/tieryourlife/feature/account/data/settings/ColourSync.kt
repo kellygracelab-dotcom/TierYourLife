@@ -21,13 +21,15 @@ import kotlinx.coroutines.sync.withLock
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * The colour follows the account (CONTRACT.md, boards, Settings). At start and after each sign-in the account's
- * colour is read: taken when it changed later than this device's, else this device's goes up. Each choice made
- * here goes up at once; when the account kept a later one, that one is shown. A guest's stays on the device.
+ * The colour follows the account (CONTRACT.md, boards, Settings). At start, after each sign-in and when the app
+ * comes back on screen (at most once a [REREAD_AFTER_MS]) the account's colour is read: taken when it changed
+ * later than this device's, else this device's goes up. Each choice made here goes up at once; when the account
+ * kept a later one, that one is shown. A guest's stays on the device.
  */
 @Singleton
 class ColourSync internal constructor(
@@ -36,6 +38,7 @@ class ColourSync internal constructor(
     private val accounts: AccountRepository,
     private val signIns: Flow<String>,
     private val scope: CoroutineScope,
+    private val now: () -> Long = System::currentTimeMillis,
 ) {
 
     @Inject
@@ -48,10 +51,22 @@ class ColourSync internal constructor(
     )
 
     private val mutex = Mutex()
+    private val lastRead = AtomicLong(Long.MIN_VALUE / 2)
 
     fun start() {
-        scope.launch { signIns.collect { quietly("Reading the account's colour") { meet() } } }
+        scope.launch { signIns.collect { read() } }
         scope.launch { colour.chosen.collect { chosen -> quietly("Keeping the colour") { keep(chosen) } } }
+    }
+
+    /** The app is on screen again: a colour chosen on the site meanwhile shows without a restart (QA D4, 19.11). */
+    fun backOnScreen() {
+        if (now() - lastRead.get() < REREAD_AFTER_MS) return
+        scope.launch { read() }
+    }
+
+    private suspend fun read() {
+        lastRead.set(now())
+        quietly("Reading the account's colour") { meet() }
     }
 
     /** Whichever of the account's colour and this device's changed later becomes both. */
@@ -86,5 +101,7 @@ class ColourSync internal constructor(
         }
     }
 }
+
+private const val REREAD_AFTER_MS = 30_000L
 
 private fun ColourDto.toSetting() = ColourSetting(name = name, hue = hue, changedAt = changedAt)

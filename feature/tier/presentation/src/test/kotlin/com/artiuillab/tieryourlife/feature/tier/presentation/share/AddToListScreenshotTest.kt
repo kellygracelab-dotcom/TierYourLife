@@ -80,7 +80,21 @@ class AddToListScreenshotTest {
         assertNull(sharedBy(Intent(Intent.ACTION_VIEW)))
     }
 
+    // QA, 19.11: any EXTRA_STREAM was taken.
+    @Test
+    fun aPicture_onlyAnotherAppsContent_neverAPathOurOwnFilesOrAnSvg() {
+        fun shared(type: String, uri: String) =
+            sharedBy(Intent(Intent.ACTION_SEND).setType(type).putExtra(Intent.EXTRA_STREAM, Uri.parse(uri)), ownPackage = OWN)
+        assertEquals(Shared(imageUri = "content://media/external/images/1"), shared("image/png", "content://media/external/images/1"))
+        assertNull(shared("image/jpeg", "file:///data/data/$OWN/files/secret.jpg"))
+        assertNull(shared("image/jpeg", "content://$OWN.share/boards/1.png"))
+        assertNull(shared("image/svg+xml", "content://media/external/images/2"))
+        assertNull(shared("application/octet-stream", "content://media/external/images/3"))
+    }
+
     private companion object {
         val OPTIONS = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.01F))
     }
 }
+
+private const val OWN = "com.artiuillab.tieryourlife"

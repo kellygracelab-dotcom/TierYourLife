@@ -189,6 +189,7 @@
     <string name="board_published_view">Ansehen</string>
     <string name="board_publishing">Wird veröffentlicht…</string>
     <string name="board_updating">Wird aktualisiert…</string>
+    <string name="pool_tap_a_tier">Tippe auf eine Stufe</string>
     <plurals name="pool_cards_left">
         <item quantity="one">Noch %d Karte</item>
         <item quantity="other">Noch %d Karten</item>

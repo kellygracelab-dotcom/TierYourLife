@@ -178,6 +178,7 @@
     <string name="board_published_view">見る</string>
     <string name="board_publishing">公開中…</string>
     <string name="board_updating">更新中…</string>
+    <string name="pool_tap_a_tier">ティアをタップ</string>
     <plurals name="pool_cards_left">
         <item quantity="other">残り %d 枚</item>
     </plurals>

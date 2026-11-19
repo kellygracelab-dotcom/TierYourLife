@@ -211,6 +211,7 @@
     <string name="board_published_view">Переглянути</string>
     <string name="board_publishing">Публікуємо…</string>
     <string name="board_updating">Оновлюємо…</string>
+    <string name="pool_tap_a_tier">Торкніться тіру</string>
     <plurals name="pool_cards_left">
         <item quantity="one">Залишилася %d картка</item>
         <item quantity="few">Залишилося %d картки</item>

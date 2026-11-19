@@ -11,10 +11,10 @@ import javax.inject.Singleton
 
 /**
  * The colour the app is drawn in, as the account keeps it (Proxy CONTRACT.md, boards, Settings): a [name]
- * (lavender, matcha, peach, sky, phone, custom, or one added later), the [hue] the last own colour had, and
- * when the person chose it here or elsewhere.
+ * (lavender, matcha, peach, sky, phone, custom, or one added later), the [hue] the last own colour had (null
+ * when there never was one; a ready colour keeps it), and when the person chose it here or elsewhere.
  */
-data class ColourSetting(val name: String, val hue: Int, val changedAt: Long)
+data class ColourSetting(val name: String, val hue: Int?, val changedAt: Long)
 
 /**
  * This device's colour: what the person chose, and what the account said when that was later. Everything
@@ -38,8 +38,8 @@ class ColourChoice internal constructor(
     /** The hue an own colour starts from: the last one, or lavender's. */
     val lastHue: Int get() = state.value?.hue ?: LAVENDER_HUE
 
-    /** A colour named here; the hue is kept with every name, so one's own colour comes back as it was. */
-    fun choose(name: String, hue: Int = lastHue) {
+    /** A colour named here; the own hue is kept with every name, so one's own colour comes back as it was. */
+    fun choose(name: String, hue: Int? = state.value?.hue) {
         val setting = ColourSetting(name, hue, now())
         keep(setting)
         choices.tryEmit(setting)
