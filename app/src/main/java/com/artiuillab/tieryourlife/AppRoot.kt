@@ -19,8 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import com.artiuillab.tieryourlife.core.settings.ColourSetting
 import com.artiuillab.tieryourlife.core.settings.ThemeChoice
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.color.ReadyColours
+import com.artiuillab.tieryourlife.core.theme.color.ThemeColour
 import com.artiuillab.tieryourlife.core.theme.layout.BoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
@@ -35,6 +38,7 @@ import com.artiuillab.tieryourlife.navigation.TierYourLifeContent
 @Composable
 fun AppRoot(
     state: AppUiState,
+    colour: ColourSetting? = null,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
     onLanguageTagChange: (String?) -> Unit,
     boardLayoutMemory: BoardLayoutMemory = remember { InMemoryBoardLayoutMemory() },
@@ -48,7 +52,8 @@ fun AppRoot(
 
     SystemBarIconsFor(darkTheme)
 
-    TierYourLifeTheme(darkTheme = darkTheme) {
+    val themeColour = colour?.let { ReadyColours.colourOf(it.name, it.hue) } ?: ThemeColour.Lavender
+    TierYourLifeTheme(darkTheme = darkTheme, colour = themeColour) {
         // Screens pad for the system bars at the top and bottom only; sideways,
         // or on a cover screen, the navigation bar moves to an edge nothing
         // padded for. Horizontal only, so nothing is padded twice; on an

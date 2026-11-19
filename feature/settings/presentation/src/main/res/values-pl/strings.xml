@@ -117,4 +117,15 @@
     <string name="how_again">Pokaż podpowiedzi ponownie</string>
     <string name="how_again_done">Podpowiedzi pokażą się ponownie.</string>
     <string name="how_close">Zamknij</string>
+    <string name="settings_colour">Kolor</string>
+    <string name="colour_lavender">Lawenda</string>
+    <string name="colour_matcha">Matcha</string>
+    <string name="colour_peach">Brzoskwinia</string>
+    <string name="colour_sky">Niebo</string>
+    <string name="colour_phone">Kolory telefonu</string>
+    <string name="colour_custom">Własny</string>
+    <string name="your_colour">Twój kolor</string>
+    <string name="colour_hue">Odcień</string>
+    <string name="colour_done">Gotowe</string>
+    <string name="colour_cancel">Anuluj</string>
 </resources>

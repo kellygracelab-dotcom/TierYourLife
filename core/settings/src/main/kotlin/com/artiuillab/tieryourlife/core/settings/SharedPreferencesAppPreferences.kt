@@ -10,6 +10,9 @@ import javax.inject.Singleton
 private const val PREFS_NAME = "tier_your_life_prefs"
 private const val KEY_THEME_CHOICE = "theme_choice"
 private const val KEY_LANGUAGE_TAG = "language_tag"
+private const val KEY_COLOUR_NAME = "colour_name"
+private const val KEY_COLOUR_HUE = "colour_hue"
+private const val KEY_COLOUR_CHANGED_AT = "colour_changed_at"
 private const val KEY_LAST_KNOWN_CREDITS = "last_known_credits"
 private const val KEY_HIDDEN_LISTS = "hidden_list_ids"
 private const val KEY_HIDDEN_AUTHORS = "hidden_author_uids"
@@ -58,6 +61,19 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setThemeChoice(choice: ThemeChoice) {
         prefs.edit { putString(KEY_THEME_CHOICE, choice.name) }
+    }
+
+    override fun colourSetting(): ColourSetting? {
+        val name = prefs.getString(KEY_COLOUR_NAME, null) ?: return null
+        return ColourSetting(name, prefs.getInt(KEY_COLOUR_HUE, ColourChoice.LAVENDER_HUE), prefs.getLong(KEY_COLOUR_CHANGED_AT, 0L))
+    }
+
+    override fun setColourSetting(setting: ColourSetting) {
+        prefs.edit {
+            putString(KEY_COLOUR_NAME, setting.name)
+            putInt(KEY_COLOUR_HUE, setting.hue)
+            putLong(KEY_COLOUR_CHANGED_AT, setting.changedAt)
+        }
     }
 
     override fun languageTag(): String? = prefs.getString(KEY_LANGUAGE_TAG, null)

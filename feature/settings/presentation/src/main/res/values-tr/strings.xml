@@ -109,4 +109,15 @@
     <string name="how_again">İpuçlarını yeniden göster</string>
     <string name="how_again_done">İpuçları yeniden gösterilecek.</string>
     <string name="how_close">Kapat</string>
+    <string name="settings_colour">Renk</string>
+    <string name="colour_lavender">Lavanta</string>
+    <string name="colour_matcha">Matcha</string>
+    <string name="colour_peach">Şeftali</string>
+    <string name="colour_sky">Gökyüzü</string>
+    <string name="colour_phone">Telefonun renkleri</string>
+    <string name="colour_custom">Kendi rengin</string>
+    <string name="your_colour">Senin rengin</string>
+    <string name="colour_hue">Ton</string>
+    <string name="colour_done">Bitti</string>
+    <string name="colour_cancel">İptal</string>
 </resources>

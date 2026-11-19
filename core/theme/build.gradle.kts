@@ -13,4 +13,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     // Back closes a tip (TipHost).
     implementation(libs.androidx.activity.compose)
+    implementation(libs.material.color.utilities)
+    // The proxy's colour vectors, read as they are.
+    testImplementation(libs.kotlinx.serialization.json)
 }

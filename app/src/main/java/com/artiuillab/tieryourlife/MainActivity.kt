@@ -53,12 +53,14 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val viewModel: AppViewModel = viewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val colour by viewModel.colour.collectAsStateWithLifecycle()
 
             val boardLayoutMemory = remember { PreferencesBoardLayoutMemory(appPreferences) }
             val tipMemory = remember { PreferencesTipMemory(appPreferences) }
 
             AppRoot(
                 state = state,
+                colour = colour,
                 boardLayoutMemory = boardLayoutMemory,
                 tipMemory = tipMemory,
                 onThemeChoiceChange = viewModel::setThemeChoice,

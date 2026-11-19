@@ -109,4 +109,15 @@
     <string name="how_again">Show the tips again</string>
     <string name="how_again_done">The tips will show again.</string>
     <string name="how_close">Close</string>
+    <string name="settings_colour">Colour</string>
+    <string name="colour_lavender">Lavender</string>
+    <string name="colour_matcha">Matcha</string>
+    <string name="colour_peach">Peach</string>
+    <string name="colour_sky">Sky</string>
+    <string name="colour_phone">Phone colours</string>
+    <string name="colour_custom">Your own</string>
+    <string name="your_colour">Your colour</string>
+    <string name="colour_hue">Hue</string>
+    <string name="colour_done">Done</string>
+    <string name="colour_cancel">Cancel</string>
 </resources>

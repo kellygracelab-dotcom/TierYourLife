@@ -113,4 +113,15 @@
     <string name="how_again">Mostrar as dicas de novo</string>
     <string name="how_again_done">As dicas vão aparecer de novo.</string>
     <string name="how_close">Fechar</string>
+    <string name="settings_colour">Cor</string>
+    <string name="colour_lavender">Lavanda</string>
+    <string name="colour_matcha">Matcha</string>
+    <string name="colour_peach">Pêssego</string>
+    <string name="colour_sky">Céu</string>
+    <string name="colour_phone">Cores do celular</string>
+    <string name="colour_custom">A sua</string>
+    <string name="your_colour">Sua cor</string>
+    <string name="colour_hue">Tom</string>
+    <string name="colour_done">Concluído</string>
+    <string name="colour_cancel">Cancelar</string>
 </resources>

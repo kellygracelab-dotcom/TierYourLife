@@ -6,6 +6,11 @@ interface AppPreferences {
 
     fun setThemeChoice(choice: ThemeChoice)
 
+    /** The colour chosen here or taken from the account; null until either. Kept when the person signs out. */
+    fun colourSetting(): ColourSetting? = null
+
+    fun setColourSetting(setting: ColourSetting) = Unit
+
     fun languageTag(): String?
 
     fun setLanguageTag(tag: String?)

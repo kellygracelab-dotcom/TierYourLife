@@ -117,4 +117,15 @@
     <string name="how_again">Показати підказки знову</string>
     <string name="how_again_done">Підказки зʼявляться знову.</string>
     <string name="how_close">Закрити</string>
+    <string name="settings_colour">Колір</string>
+    <string name="colour_lavender">Лаванда</string>
+    <string name="colour_matcha">Матча</string>
+    <string name="colour_peach">Персик</string>
+    <string name="colour_sky">Небо</string>
+    <string name="colour_phone">Кольори телефона</string>
+    <string name="colour_custom">Свій</string>
+    <string name="your_colour">Ваш колір</string>
+    <string name="colour_hue">Відтінок</string>
+    <string name="colour_done">Готово</string>
+    <string name="colour_cancel">Скасувати</string>
 </resources>

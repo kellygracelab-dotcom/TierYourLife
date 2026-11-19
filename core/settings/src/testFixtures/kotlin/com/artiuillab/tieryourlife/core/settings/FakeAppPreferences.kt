@@ -19,6 +19,11 @@ class FakeAppPreferences(
 
     override fun themeChoice(): ThemeChoice = ThemeChoice.SYSTEM
     override fun setThemeChoice(choice: ThemeChoice) = Unit
+    var colour: ColourSetting? = null
+    override fun colourSetting(): ColourSetting? = colour
+    override fun setColourSetting(setting: ColourSetting) {
+        colour = setting
+    }
     override fun languageTag(): String? = null
     override fun setLanguageTag(tag: String?) = Unit
     override fun lastKnownCredits(): Int? = null

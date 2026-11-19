@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.account.data.di
 
 import com.artiuillab.tieryourlife.core.network.ProxyRetrofit
 import com.artiuillab.tieryourlife.feature.account.data.remote.AccountApi
+import com.artiuillab.tieryourlife.feature.account.data.remote.SettingsApi
 import com.artiuillab.tieryourlife.feature.account.data.repository.FirebaseAccountRepository
 import com.artiuillab.tieryourlife.feature.account.data.repository.RetrofitAccountErasure
 import com.artiuillab.tieryourlife.feature.account.data.repository.StorageFacePhotos
@@ -42,5 +43,10 @@ abstract class AccountModule {
         @Singleton
         fun provideAccountApi(@ProxyRetrofit retrofit: Retrofit): AccountApi =
             retrofit.create(AccountApi::class.java)
+
+        @Provides
+        @Singleton
+        fun provideSettingsApi(@ProxyRetrofit retrofit: Retrofit): SettingsApi =
+            retrofit.create(SettingsApi::class.java)
     }
 }
