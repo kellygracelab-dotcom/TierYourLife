@@ -38,6 +38,9 @@
     <string name="account_face_gallery">Enviar</string>
     <string name="account_face_note">As pessoas veem sua imagem ao lado do seu nome nas listas que você publica. O cartão ou a foto que você escolher é verificado e fica com sua conta.</string>
     <string name="account_face_your_photo">Sua foto</string>
+    <string name="account_face_remove_photo">Remover sua foto</string>
+    <string name="account_face_photo_removed">Foto removida</string>
+    <string name="account_face_undo">Desfazer</string>
     <string name="account_cd_change_face">Alterar a imagem</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d geração</item>

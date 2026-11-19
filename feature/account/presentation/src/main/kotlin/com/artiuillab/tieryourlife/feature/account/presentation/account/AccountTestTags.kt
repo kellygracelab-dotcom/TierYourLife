@@ -27,6 +27,7 @@ internal object AccountTestTags {
     const val FACE_LETTER = "account_face_letter"
     const val FACE_GALLERY = "account_face_gallery"
     const val FACE_OWN_PHOTO = "account_face_own_photo"
+    const val FACE_REMOVE_PHOTO = "account_face_remove_photo"
     const val FACE_POSITIONER = "account_face_positioner"
     const val FACE_POSITION_CONFIRM = "account_face_position_confirm"
     const val FACE_POSITION_CANCEL = "account_face_position_cancel"

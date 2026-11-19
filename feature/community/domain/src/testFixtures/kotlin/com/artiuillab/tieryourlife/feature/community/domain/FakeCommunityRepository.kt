@@ -131,7 +131,13 @@ open class FakeCommunityRepository : CommunityRepository {
 
     override suspend fun unpublish(publishedId: String): Result<Unit> = Result.success(Unit)
 
-    override suspend fun makeFace(pictureId: String): Result<String> = Result.success(FACE_URL)
+    /** Each face made, and whether it went as a device upload. */
+    val facesMade = mutableListOf<Pair<String, Boolean>>()
+
+    override suspend fun makeFace(pictureId: String, upload: Boolean): Result<String> {
+        facesMade += pictureId to upload
+        return Result.success(FACE_URL)
+    }
 
     override suspend fun refreshAuthor(): Result<Unit> = Result.success(Unit)
 

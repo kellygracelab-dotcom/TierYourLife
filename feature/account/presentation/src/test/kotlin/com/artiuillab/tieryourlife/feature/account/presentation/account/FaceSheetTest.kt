@@ -42,6 +42,7 @@ class FaceSheetTest {
                     onChoose = { taps += "choose:$it" },
                     onPickPhoto = { taps += "upload" },
                     onWearOwnPhoto = { taps += "own" },
+                    onRemoveOwnPhoto = { taps += "remove" },
                 )
             }
         }
@@ -69,12 +70,22 @@ class FaceSheetTest {
     }
 
     @Test
-    fun noPhotoYet_noTileForIt() {
+    fun noPhotoYet_noTileForIt_andNothingToRemove() {
         open(current = null, ownPhoto = null)
 
         composeRule.onNodeWithTag(AccountTestTags.FACE_OWN_PHOTO).assertDoesNotExist()
+        composeRule.onNodeWithTag(AccountTestTags.FACE_REMOVE_PHOTO).assertDoesNotExist()
         composeRule.onNodeWithTag(AccountTestTags.FACE_GALLERY).performClick()
         assertEquals(listOf("upload"), taps)
+    }
+
+    @Test
+    fun removeYourPhoto_isOffered_whileThereIsOne() {
+        open(current = OWN, ownPhoto = OWN)
+
+        composeRule.onNodeWithTag(AccountTestTags.FACE_REMOVE_PHOTO).performClick()
+
+        assertEquals(listOf("remove"), taps)
     }
 
     @Test

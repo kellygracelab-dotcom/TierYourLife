@@ -194,8 +194,11 @@ interface CommunityRepository {
 
     suspend fun unpublish(publishedId: String): Result<Unit>
 
-    /** Copies one of this person's own pictures where the community can see it: a face cannot live in the folder only they may read. */
-    suspend fun makeFace(pictureId: String): Result<String>
+    /**
+     * Copies one of this person's own pictures where the community can see it: a face cannot live in the folder only they may read.
+     * [upload]: a photo from the device, which becomes the account's photo; a card's picture never does.
+     */
+    suspend fun makeFace(pictureId: String, upload: Boolean = false): Result<String>
 
     /** A snapshot freezes what was ranked, not who ranked it. */
     suspend fun refreshAuthor(): Result<Unit>

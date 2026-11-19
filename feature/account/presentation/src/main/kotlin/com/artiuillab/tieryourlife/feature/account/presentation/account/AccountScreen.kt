@@ -17,8 +17,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -84,6 +86,8 @@ fun AccountScreen(
         onConfirmPosition = viewModel.face::confirmPosition,
         onPickPhoto = { pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
         onWearOwnPhoto = viewModel.face::wearOwnPhoto,
+        onRemoveOwnPhoto = viewModel.face::removeOwnPhoto,
+        onUndoRemovePhoto = viewModel.face::undoRemove,
         onNoticeShown = viewModel::dismissNotice,
         onMoveGuestBoardsIn = { viewModel.moveGuestBoardsIn(fromThisPhone) },
         onKeepGuestBoardsHere = viewModel::keepGuestBoardsHere,
@@ -104,6 +108,8 @@ internal fun AccountScreenContent(
     onCancelPositioning: () -> Unit = {},
     onConfirmPosition: (FaceCrop?) -> Unit = {},
     onWearOwnPhoto: () -> Unit = {},
+    onRemoveOwnPhoto: () -> Unit = {},
+    onUndoRemovePhoto: () -> Unit = {},
     onNoticeShown: () -> Unit = {},
     onMoveGuestBoardsIn: () -> Unit = {},
     onKeepGuestBoardsHere: () -> Unit = {},
@@ -112,11 +118,19 @@ internal fun AccountScreenContent(
     var nicknameDialogVisible by rememberSaveable { mutableStateOf(false) }
     var faceSheetVisible by rememberSaveable { mutableStateOf(false) }
     val noticeText = state.notice?.let { stringResource(it.messageRes()) }
+    val undo = stringResource(R.string.account_face_undo)
 
     LaunchedEffect(state.notice) {
         if (noticeText != null) {
-            snackbarHostState.showSnackbar(noticeText)
-            onNoticeShown()
+            if (state.notice == AccountNotice.PhotoRemoved) {
+                // Cleared before the wait: a notice that follows must not be lost behind this one.
+                onNoticeShown()
+                val answer = snackbarHostState.showSnackbar(noticeText, actionLabel = undo, duration = SnackbarDuration.Long)
+                if (answer == SnackbarResult.ActionPerformed) onUndoRemovePhoto()
+            } else {
+                snackbarHostState.showSnackbar(noticeText)
+                onNoticeShown()
+            }
         }
     }
 
@@ -219,6 +233,11 @@ internal fun AccountScreenContent(
                     onWearOwnPhoto()
                     faceSheetVisible = false
                 },
+                // Closed, so "Photo removed · Undo" is in sight.
+                onRemoveOwnPhoto = {
+                    onRemoveOwnPhoto()
+                    faceSheetVisible = false
+                },
             )
         }
 
@@ -268,6 +287,7 @@ private fun AccountNotice.messageRes(): Int = when (this) {
     AccountNotice.FaceNotMade -> R.string.account_error_face_not_made
     AccountNotice.FaceNotSaved -> R.string.account_error_face_not_saved
     AccountNotice.NameNotSaved -> R.string.account_error_name_not_saved
+    AccountNotice.PhotoRemoved -> R.string.account_face_photo_removed
     AccountNotice.NotDeleted -> R.string.account_error_not_deleted
     AccountNotice.BoardsNotCopied -> R.string.account_error_boards_not_copied
 }

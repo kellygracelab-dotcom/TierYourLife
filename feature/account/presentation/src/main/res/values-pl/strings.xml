@@ -39,6 +39,9 @@
     <string name="account_face_gallery">Prześlij</string>
     <string name="account_face_note">Inni widzą twoje zdjęcie obok twojej nazwy na listach, które publikujesz. Wybrana karta lub zdjęcie są sprawdzane i przechowywane przy twoim koncie.</string>
     <string name="account_face_your_photo">Twoje zdjęcie</string>
+    <string name="account_face_remove_photo">Usuń swoje zdjęcie</string>
+    <string name="account_face_photo_removed">Zdjęcie usunięte</string>
+    <string name="account_face_undo">Cofnij</string>
     <string name="account_cd_change_face">Zmień zdjęcie</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d generacja</item>

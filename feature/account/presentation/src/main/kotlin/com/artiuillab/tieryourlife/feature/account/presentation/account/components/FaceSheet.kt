@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +46,7 @@ private val CHECK_SIZE = 22.dp
 /**
  * Letter · Your photo · Upload · the cards, one row, the check on the face worn
  * (FACE-PHOTO-2026-11-19). The uploaded photo keeps its tile whatever is worn,
- * so it is put back with a tap; only a new upload replaces it.
+ * so it is put back with a tap; only a new upload or "Remove your photo" takes it away.
  */
 @Composable
 internal fun FaceSheet(
@@ -57,6 +58,7 @@ internal fun FaceSheet(
     onChoose: (String?) -> Unit,
     onPickPhoto: () -> Unit,
     onWearOwnPhoto: () -> Unit = {},
+    onRemoveOwnPhoto: () -> Unit = {},
 ) {
     AdaptiveSheet(
         onDismiss = onDismiss,
@@ -116,9 +118,22 @@ internal fun FaceSheet(
                 }
             }
 
+            if (ownPhoto != null) {
+                TextButton(
+                    onClick = onRemoveOwnPhoto,
+                    modifier = Modifier
+                        .padding(start = 12.dp, top = 8.dp)
+                        .testTag(AccountTestTags.FACE_REMOVE_PHOTO),
+                ) {
+                    Text(
+                        text = stringResource(R.string.account_face_remove_photo),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
             Text(
                 text = stringResource(R.string.account_face_note),
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 8.dp),
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = if (ownPhoto != null) 4.dp else 16.dp, bottom = 8.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
             )

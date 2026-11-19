@@ -200,8 +200,9 @@ interface CommunityApi {
     @DELETE("lists/{id}")
     suspend fun unpublish(@Path("id") id: String)
 
+    /** [upload] 1: a photo from the device, which takes the account's photo slot; null for a card's picture. */
     @POST("lists/face/{pictureId}")
-    suspend fun makeFace(@Path("pictureId") pictureId: String): FaceDto
+    suspend fun makeFace(@Path("pictureId") pictureId: String, @Query("upload") upload: Int? = null): FaceDto
 
     @PATCH("lists")
     suspend fun refreshAuthor()
