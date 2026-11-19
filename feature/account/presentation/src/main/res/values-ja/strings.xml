@@ -36,6 +36,9 @@
     <string name="account_face_gallery">アップロード</string>
     <string name="account_face_note">公開したリストでは、名前の横にアイコンが表示されます。選んだカードや写真は確認され、アカウントに保存されます。</string>
     <string name="account_face_your_photo">あなたの写真</string>
+    <string name="account_face_remove_photo">写真を削除</string>
+    <string name="account_face_photo_removed">写真を削除しました</string>
+    <string name="account_face_undo">元に戻す</string>
     <string name="account_cd_change_face">アイコンを変更</string>
     <plurals name="account_credits">
         <item quantity="other">%1$d 回の生成</item>

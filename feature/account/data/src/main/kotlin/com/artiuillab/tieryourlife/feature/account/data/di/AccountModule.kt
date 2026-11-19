@@ -2,12 +2,15 @@ package com.artiuillab.tieryourlife.feature.account.data.di
 
 import com.artiuillab.tieryourlife.core.network.ProxyRetrofit
 import com.artiuillab.tieryourlife.feature.account.data.remote.AccountApi
+import com.artiuillab.tieryourlife.feature.account.data.remote.FacePhotoApi
 import com.artiuillab.tieryourlife.feature.account.data.remote.SettingsApi
 import com.artiuillab.tieryourlife.feature.account.data.repository.FirebaseAccountRepository
 import com.artiuillab.tieryourlife.feature.account.data.repository.RetrofitAccountErasure
 import com.artiuillab.tieryourlife.feature.account.data.repository.StorageFacePhotos
+import com.artiuillab.tieryourlife.feature.account.data.settings.ProxyFacePhotoSlot
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.account.domain.repository.FacePhotoSlot
 import com.artiuillab.tieryourlife.feature.account.domain.repository.FacePhotos
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
@@ -34,6 +37,9 @@ abstract class AccountModule {
     @Singleton
     abstract fun bindFacePhotos(implementation: StorageFacePhotos): FacePhotos
 
+    @Binds
+    abstract fun bindFacePhotoSlot(implementation: ProxyFacePhotoSlot): FacePhotoSlot
+
     companion object {
         @Provides
         @Singleton
@@ -48,5 +54,9 @@ abstract class AccountModule {
         @Singleton
         fun provideSettingsApi(@ProxyRetrofit retrofit: Retrofit): SettingsApi =
             retrofit.create(SettingsApi::class.java)
+
+        @Provides
+        fun provideFacePhotoApi(@ProxyRetrofit retrofit: Retrofit): FacePhotoApi =
+            retrofit.create(FacePhotoApi::class.java)
     }
 }

@@ -38,6 +38,9 @@
     <string name="account_face_gallery">Importer</string>
     <string name="account_face_note">Votre image apparaît à côté de votre nom sur les listes que vous publiez. La carte ou la photo choisie est vérifiée et gardée avec votre compte.</string>
     <string name="account_face_your_photo">Votre photo</string>
+    <string name="account_face_remove_photo">Retirer votre photo</string>
+    <string name="account_face_photo_removed">Photo retirée</string>
+    <string name="account_face_undo">Annuler</string>
     <string name="account_cd_change_face">Changer l’image</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d génération</item>

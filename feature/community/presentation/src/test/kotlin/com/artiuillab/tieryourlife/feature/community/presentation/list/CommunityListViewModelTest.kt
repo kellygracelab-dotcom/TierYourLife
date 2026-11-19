@@ -764,5 +764,5 @@ class CommunityListViewModelTest {
 }
 
 private class FailingCommunityRepository : FakeCommunityRepository() {
-    override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(IllegalStateException())
+    override suspend fun makeFace(pictureId: String, upload: Boolean): Result<String> = Result.failure(IllegalStateException())
 }

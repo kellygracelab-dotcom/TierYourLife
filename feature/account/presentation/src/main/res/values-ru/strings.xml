@@ -39,6 +39,9 @@
     <string name="account_face_gallery">Загрузить</string>
     <string name="account_face_note">Ваше лицо видно рядом с именем на опубликованных листах. Выбранная карточка или фото проверяются и хранятся с вашим аккаунтом.</string>
     <string name="account_face_your_photo">Ваше фото</string>
+    <string name="account_face_remove_photo">Убрать ваше фото</string>
+    <string name="account_face_photo_removed">Фото убрано</string>
+    <string name="account_face_undo">Отменить</string>
     <string name="account_cd_change_face">Сменить аватар</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d генерация</item>

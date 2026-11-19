@@ -13,7 +13,7 @@ data class AccountUiState(
     val publicListCount: Int = 0,
     /** Card pictures the reader can wear as a face. */
     val faceChoices: List<String> = emptyList(),
-    /** The photo uploaded as the face, kept whatever is worn now: one slot, until a new upload. */
+    /** The photo uploaded as the face, kept whatever is worn now: one slot, until a new upload or Remove. */
     val ownFace: String? = null,
     /** The card whose copy is worn, when one is. */
     val cardFace: CardFace? = null,
@@ -82,6 +82,9 @@ enum class AccountNotice {
 
     /** The picture did not reach the server, or the server did not answer. The old face stays. */
     FaceNotSaved,
+
+    /** The uploaded photo is out of its slot; Undo puts it back. */
+    PhotoRemoved,
 
     /** The account is still there. Saying nothing would read as "it worked". */
     NotDeleted,

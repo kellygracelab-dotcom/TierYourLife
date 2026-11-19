@@ -41,6 +41,9 @@
     <string name="account_face_gallery">رفع</string>
     <string name="account_face_note">يرى الناس صورتك بجانب اسمك في القوائم التي تنشرها. البطاقة أو الصورة التي تختارها تُفحص وتُحفظ مع حسابك.</string>
     <string name="account_face_your_photo">صورتك</string>
+    <string name="account_face_remove_photo">إزالة صورتك</string>
+    <string name="account_face_photo_removed">أُزيلت الصورة</string>
+    <string name="account_face_undo">تراجع</string>
     <string name="account_cd_change_face">تغيير الصورة</string>
     <plurals name="account_credits">
         <item quantity="zero">لا عمليات توليد</item>

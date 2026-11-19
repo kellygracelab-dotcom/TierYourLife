@@ -37,6 +37,9 @@
     <string name="account_face_gallery">Yükle</string>
     <string name="account_face_note">Yayımladığınız listelerde profil resminiz adınızın yanında görünür. Seçtiğiniz kart ya da fotoğraf kontrol edilir ve hesabınızla saklanır.</string>
     <string name="account_face_your_photo">Fotoğrafınız</string>
+    <string name="account_face_remove_photo">Fotoğrafınızı kaldırın</string>
+    <string name="account_face_photo_removed">Fotoğraf kaldırıldı</string>
+    <string name="account_face_undo">Geri al</string>
     <string name="account_cd_change_face">Resmi değiştir</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d üretim</item>

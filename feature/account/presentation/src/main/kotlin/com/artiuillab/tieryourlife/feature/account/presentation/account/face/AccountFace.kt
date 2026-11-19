@@ -5,7 +5,9 @@ import com.artiuillab.tieryourlife.core.settings.CardFace
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.account.domain.repository.FacePhotoSlot
 import com.artiuillab.tieryourlife.feature.account.domain.repository.FacePhotos
+import com.artiuillab.tieryourlife.feature.account.domain.repository.RestoredPhoto
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountNotice
 import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountUiState
 import com.artiuillab.tieryourlife.feature.account.presentation.account.FaceToPosition
@@ -24,9 +26,10 @@ import timber.log.Timber
  * old face back and says so. Catalogue art left where it is needs no copy;
  * anything cut by the person, or from their phone, is cut here and sent up.
  *
- * A photo uploaded here is the account's own and keeps its slot whatever is
- * worn next: the letter or a card never wipes it. A card, cut or not, never
- * takes the slot (FACE-PHOTO-2026-11-19).
+ * A photo uploaded here is the account's own and keeps its slot, which the
+ * account holds, whatever is worn next: the letter or a card never wipes it.
+ * A card, cut or not, never takes the slot (FACE-PHOTO-2026-11-19). This
+ * phone keeps a copy of the slot to show until the account answers.
  */
 internal class AccountFace(
     private val state: MutableStateFlow<AccountUiState>,
@@ -34,11 +37,19 @@ internal class AccountFace(
     private val repository: AccountRepository,
     private val community: CommunityRepository,
     private val facePhotos: FacePhotos,
+    private val slot: FacePhotoSlot,
     private val preferences: AppPreferences,
     private val afterChange: suspend () -> Unit,
 ) {
 
-    /** The slot of the account now on screen. */
+    /**
+     * Counts the slot's changes made here: an answer read before one of them, or
+     * while one is on its way, is older than what is shown and is not taken.
+     */
+    private var slotChanges = 0
+    private var slotChangesUnderWay = 0
+
+    /** The slot of the account now on screen: this phone's copy at once, then the account's. */
     fun load() {
         val key = (state.value.account as? Account.SignedIn)?.recordKey
         state.update {
@@ -47,17 +58,76 @@ internal class AccountFace(
                 cardFace = key?.let(preferences::cardFace),
             )
         }
+        if (key == null) return
+        val asked = slotChanges
+        scope.launch {
+            slot.photo()
+                .onSuccess { photo -> if (keyNow() == key && asked == slotChanges && slotChangesUnderWay == 0) keepOwn(photo) }
+                .onFailure { Timber.i(it, "The account's photo is read again next time") }
+        }
     }
 
     /**
-     * A face worn that is none of the cards is the account's photo: put on from
-     * another device, or before the slot was kept. Asked only once the cards are known.
+     * Gone from the account at once and everywhere it shows; the letter is worn
+     * when it was worn. "Photo removed · Undo" puts it back while the server keeps it.
      */
-    fun takeWornPhoto() {
-        val now = state.value
-        val worn = (now.account as? Account.SignedIn)?.photoUrl ?: return
-        val known = now.faceChoices + listOfNotNull(now.cardFace?.face, now.ownFace)
-        if (now.pendingFace == null && worn !in known) keepOwn(worn)
+    fun removeOwnPhoto() {
+        val photo = state.value.ownFace ?: return
+        if (state.value.makingFace) return
+        val worn = photo == state.value.shownFace
+        keepOwn(null)
+        state.update {
+            it.copy(notice = AccountNotice.PhotoRemoved, pendingFace = if (worn) PendingFace(shown = null) else it.pendingFace)
+        }
+        changingSlot {
+            slot.remove()
+                // The server took it off the account; this phone's profile and token follow.
+                .onSuccess { removed -> if (removed.wasWorn || worn) wear(null, chosen = false) }
+                .onFailure {
+                    Timber.w(it, "The photo was not removed")
+                    keepOwn(photo)
+                    state.update { now ->
+                        now.copy(pendingFace = if (worn) null else now.pendingFace, notice = AccountNotice.FaceNotSaved)
+                    }
+                }
+        }
+    }
+
+    fun undoRemove() {
+        changingSlot {
+            slot.restore()
+                .onSuccess { restored ->
+                    when (restored) {
+                        is RestoredPhoto.Back -> {
+                            keepOwn(restored.url)
+                            if (restored.wasWorn) {
+                                state.update { it.copy(makingFace = true, pendingFace = PendingFace(shown = restored.url)) }
+                                wear(restored.url, chosen = true)
+                            }
+                        }
+                        is RestoredPhoto.Replaced -> keepOwn(restored.url)
+                        RestoredPhoto.Gone -> state.update { it.copy(notice = AccountNotice.FaceNotSaved) }
+                    }
+                }
+                .onFailure {
+                    Timber.w(it, "The photo was not put back")
+                    state.update { it.copy(notice = AccountNotice.FaceNotSaved) }
+                }
+        }
+    }
+
+    private fun keyNow(): String? = (state.value.account as? Account.SignedIn)?.recordKey
+
+    private fun changingSlot(change: suspend () -> Unit) {
+        slotChanges++
+        slotChangesUnderWay++
+        scope.launch {
+            try {
+                change()
+            } finally {
+                slotChangesUnderWay--
+            }
+        }
     }
 
     /** The photo, worn again as it is: nothing goes up. */
@@ -67,7 +137,7 @@ internal class AccountFace(
         wearAtOnce(photo)
     }
 
-    private fun keepOwn(photo: String) {
+    private fun keepOwn(photo: String?) {
         val account = state.value.account as? Account.SignedIn ?: return
         preferences.setOwnFace(account.recordKey, photo)
         state.update { it.copy(ownFace = photo) }
@@ -142,7 +212,8 @@ internal class AccountFace(
             state.update { it.copy(pendingFace = PendingFace(shown = prepared)) }
             val made = facePhotos.upload(prepared)
                 .onFailure { Timber.w(it, "The chosen photo did not go up") }
-                .fold(onSuccess = { pictureId -> community.makeFace(pictureId) }, onFailure = { Result.failure(it) })
+                // Only a photo from the device takes the account's photo slot.
+                .fold(onSuccess = { pictureId -> community.makeFace(pictureId, upload = card == null) }, onFailure = { Result.failure(it) })
             wear(made.getOrNull(), chosen = true, failure = made.failureNotice(), card = card, own = card == null)
         }
     }
@@ -162,7 +233,11 @@ internal class AccountFace(
             state.update { it.copy(makingFace = false, pendingFace = null, notice = failure) }
             return
         }
-        if (address != null && own) keepOwn(address)
+        if (address != null && own) {
+            // A slot change made here: an answer read before it is older.
+            slotChanges++
+            keepOwn(address)
+        }
         if (address != null && card != null) keepCardFace(CardFace(card, address))
         val saved = repository.setPhotoUrl(address)
         state.update {

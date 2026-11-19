@@ -377,10 +377,10 @@ class RetrofitCommunityRepository @Inject constructor(
         api.unpublish(publishedId)
     }
 
-    override suspend fun makeFace(pictureId: String): Result<String> = attempt("Making that picture a face") {
+    override suspend fun makeFace(pictureId: String, upload: Boolean): Result<String> = attempt("Making that picture a face") {
         // Sent up first, as for publishing.
         pictures.sendNow(listOf(pictureId))
-        refusedAsAFace { api.makeFace(pictureId).url }
+        refusedAsAFace { api.makeFace(pictureId, upload = if (upload) 1 else null).url }
     }
 
     override suspend fun refreshAuthor(): Result<Unit> = attempt("Refreshing the author on published lists") { api.refreshAuthor() }
