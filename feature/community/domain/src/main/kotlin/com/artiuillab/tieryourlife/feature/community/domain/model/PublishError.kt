@@ -42,6 +42,12 @@ sealed interface PublishError {
     /** One of the photographs on the board may not go into a public feed. */
     data object PictureRefused : PublishError
 
+    /** One of the photographs could not be checked, an animation perhaps: a still one may go. */
+    data object PictureUnchecked : PublishError
+
+    /** The server has checked as many of this account's photographs today as it does in a day. */
+    data object PicturesCheckedToday : PublishError
+
     /** A moderator took one of their lists down and kept them from publishing. Null for a ban with no end. */
     data class Banned(val untilMillis: Long?) : PublishError
 

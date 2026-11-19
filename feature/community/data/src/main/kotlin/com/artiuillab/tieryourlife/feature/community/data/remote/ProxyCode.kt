@@ -13,6 +13,7 @@ private data class CodedRefusalDto(
     @SerialName("code") val code: String? = null,
     @SerialName("detail") val detail: String? = null,
     @SerialName("error") val error: String? = null,
+    @SerialName("because") val because: String? = null,
 )
 
 /**
@@ -27,6 +28,9 @@ fun Throwable.isTargetStaff(): Boolean =
 
 /** Which field a `400 INVALID` was about, such as "category". */
 fun Throwable.proxyDetail(): String? = codedRefusal()?.detail
+
+/** Why a `422 PICTURE_REFUSED` picture was refused: adult, racy, violence, or unchecked. */
+internal fun Throwable.proxyBecause(): String? = codedRefusal()?.because
 
 /** The refusal in words, which is all that tells one `413 TOO_LARGE` limit from another. */
 internal fun Throwable.proxyError(): String? = codedRefusal()?.error

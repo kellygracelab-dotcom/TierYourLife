@@ -5,6 +5,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.banNotice
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishListRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIdDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.isAppUnverified
+import com.artiuillab.tieryourlife.feature.community.data.remote.isPictureUnchecked
+import com.artiuillab.tieryourlife.feature.community.data.remote.isPicturesCheckedToday
 import com.artiuillab.tieryourlife.feature.community.data.remote.isTooManyWebPictures
 import com.artiuillab.tieryourlife.feature.community.data.remote.isWebPicturesToday
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
@@ -36,8 +38,12 @@ internal fun Throwable.asPublishError(): PublishError = when {
             else -> PublishError.Unknown
         }
         HTTP_TOO_LARGE -> if (isTooManyWebPictures()) PublishError.TooManyWebPictures else PublishError.TooLarge
-        HTTP_TOO_MANY_REQUESTS -> if (isWebPicturesToday()) PublishError.WebPicturesToday else PublishError.Unknown
-        HTTP_UNPROCESSABLE -> PublishError.PictureRefused
+        HTTP_TOO_MANY_REQUESTS -> when {
+            isWebPicturesToday() -> PublishError.WebPicturesToday
+            isPicturesCheckedToday() -> PublishError.PicturesCheckedToday
+            else -> PublishError.Unknown
+        }
+        HTTP_UNPROCESSABLE -> if (isPictureUnchecked()) PublishError.PictureUnchecked else PublishError.PictureRefused
         else -> PublishError.Unknown
     }
 

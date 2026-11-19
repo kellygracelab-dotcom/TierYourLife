@@ -36,6 +36,9 @@
     <string name="snack_published_under_review">Kaydedildi. Başkaları görmeden önce bir moderatörü bekliyor.</string>
     <string name="snack_target_is_staff">Bu listenin yazarı bir moderatör ya da sahibi. Bu listeyle ilgili yalnızca sahibi işlem yapabilir.</string>
     <string name="refusal_web_pictures_today">Bugün eklenebilecek olandan daha fazla başka siteden resim var. Yarın yeniden deneyin.</string>
+    <string name="refusal_picture_unchecked">Bu görsel kontrol edilemiyor. Hareketsiz bir fotoğraf deneyin.</string>
+    <string name="refusal_pictures_checked_today">Bugün daha fazla fotoğraf kontrol edilemiyor. Daha sonra tekrar deneyin.</string>
+    <string name="snack_reports_today">Bugün daha fazla şikâyet gönderilemiyor. Daha sonra tekrar deneyin.</string>
     <string name="refusal_too_many_web_pictures">Bir listede başka sitelerden en fazla 200 resim olabilir. Birkaçını kaldırıp yeniden deneyin.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Yayınlandı. Başka bir siteden %1$d resim eklenemedi.</item>

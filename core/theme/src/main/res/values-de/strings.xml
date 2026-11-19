@@ -36,6 +36,9 @@
     <string name="snack_published_under_review">Gespeichert. Sie wartet auf einen Moderator, bevor andere sie sehen können.</string>
     <string name="snack_target_is_staff">Diese Liste stammt von einem Moderator oder dem Inhaber. Nur der Inhaber kann hier etwas tun.</string>
     <string name="refusal_web_pictures_today">Das sind mehr Bilder von anderen Websites, als heute hinzugefügt werden können. Versuche es morgen erneut.</string>
+    <string name="refusal_picture_unchecked">Dieses Bild kann nicht geprüft werden. Versuche ein normales Foto.</string>
+    <string name="refusal_pictures_checked_today">Heute können keine weiteren Fotos geprüft werden. Versuche es später erneut.</string>
+    <string name="snack_reports_today">Heute können keine weiteren Meldungen gesendet werden. Versuche es später erneut.</string>
     <string name="refusal_too_many_web_pictures">Eine Liste kann bis zu 200 Bilder von anderen Websites haben. Entferne einige und versuche es erneut.</string>
     <plurals name="snack_pictures_dropped">
         <item quantity="one">Veröffentlicht. %1$d Bild von einer anderen Website konnte nicht hinzugefügt werden.</item>

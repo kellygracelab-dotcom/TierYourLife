@@ -586,7 +586,11 @@ private fun ListSnackbar(
     val onTop by rememberUpdatedState(sheetHost)
     LaunchedEffect(userMessages) {
         userMessages.collect {
-            val text = if (it == UserMessage.TargetIsStaff) ThemeR.string.snack_target_is_staff else ThemeR.string.snack_action_failed
+            val text = when (it) {
+                UserMessage.TargetIsStaff -> ThemeR.string.snack_target_is_staff
+                UserMessage.ReportsToday -> ThemeR.string.snack_reports_today
+                else -> ThemeR.string.snack_action_failed
+            }
             (onTop() ?: host).showSnackbar(resources.getString(text))
         }
     }

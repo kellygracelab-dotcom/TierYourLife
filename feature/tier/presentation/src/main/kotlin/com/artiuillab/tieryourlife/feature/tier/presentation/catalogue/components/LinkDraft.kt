@@ -48,6 +48,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchTestTags
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.LinkUiState
 import java.util.Date
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 /** What the field's address and the chip above the scopes do. */
 class LinkChoice(
@@ -255,6 +256,7 @@ private fun LinkRefusal.message(): Int = when (this) {
     LinkRefusal.Unreachable -> R.string.item_search_link_unreachable
     LinkRefusal.TooBig -> R.string.item_search_link_too_big
     LinkRefusal.Refused -> R.string.item_search_link_refused
+    LinkRefusal.Unchecked -> ThemeR.string.refusal_picture_unchecked
     LinkRefusal.Failed -> R.string.item_search_link_failed
 }
 

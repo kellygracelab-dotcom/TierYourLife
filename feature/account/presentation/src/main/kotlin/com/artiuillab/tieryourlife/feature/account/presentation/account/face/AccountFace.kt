@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.account.presentation.account.AccountU
 import com.artiuillab.tieryourlife.feature.account.presentation.account.FaceToPosition
 import com.artiuillab.tieryourlife.feature.account.presentation.account.PendingFace
 import com.artiuillab.tieryourlife.feature.community.domain.model.FaceRefused
+import com.artiuillab.tieryourlife.feature.community.domain.model.PicturesCheckedToday
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -251,5 +252,8 @@ internal class AccountFace(
     }
 }
 
-private fun Result<String>.failureNotice(): AccountNotice =
-    if (exceptionOrNull() is FaceRefused) AccountNotice.FaceNotMade else AccountNotice.FaceNotSaved
+private fun Result<String>.failureNotice(): AccountNotice = when (val failure = exceptionOrNull()) {
+    is FaceRefused -> if (failure.unchecked) AccountNotice.FaceUnchecked else AccountNotice.FaceNotMade
+    is PicturesCheckedToday -> AccountNotice.FacesCheckedToday
+    else -> AccountNotice.FaceNotSaved
+}

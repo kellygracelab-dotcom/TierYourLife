@@ -80,6 +80,12 @@ enum class AccountNotice {
     /** The picture was refused, or could not be read. The old face stays. */
     FaceNotMade,
 
+    /** The server could not judge the picture, an animation perhaps; a still photo may go. */
+    FaceUnchecked,
+
+    /** No more pictures are checked today; later they are. */
+    FacesCheckedToday,
+
     /** The picture did not reach the server, or the server did not answer. The old face stays. */
     FaceNotSaved,
 

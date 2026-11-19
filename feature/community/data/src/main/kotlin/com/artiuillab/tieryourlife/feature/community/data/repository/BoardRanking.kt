@@ -5,6 +5,8 @@ import com.artiuillab.tieryourlife.feature.community.data.remote.dto.PublishedIt
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.RankingDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.ShowRankingRequestDto
 import com.artiuillab.tieryourlife.feature.community.data.remote.dto.toDto
+import com.artiuillab.tieryourlife.feature.community.data.remote.isPictureUnchecked
+import com.artiuillab.tieryourlife.feature.community.data.remote.isPicturesCheckedToday
 import com.artiuillab.tieryourlife.feature.community.data.remote.proxyCode
 import com.artiuillab.tieryourlife.feature.community.data.remote.rankingRefusal
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
@@ -111,7 +113,9 @@ private const val MAX_RANKING_PAGES = 40
 /** A refused board ranking in the board's words. */
 internal fun Throwable.boardRankingError(): PublishError = when {
     this is PublishRefused -> error
+    isPictureUnchecked() -> PublishError.PictureUnchecked
     proxyCode() == "PICTURE_REFUSED" -> PublishError.PictureRefused
+    isPicturesCheckedToday() -> PublishError.PicturesCheckedToday
     else -> when (rankingRefusal()) {
         RankingRefusal.NotSignedIn -> PublishError.NotSignedIn
         RankingRefusal.Banned -> PublishError.Banned(null)
