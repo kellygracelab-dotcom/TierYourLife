@@ -49,6 +49,7 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
 import com.artiuillab.tieryourlife.feature.account.presentation.R
+import com.artiuillab.tieryourlife.feature.account.presentation.account.components.AccountWords
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.CloseIcon
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.FaceSheet
 import com.artiuillab.tieryourlife.feature.account.presentation.account.components.MergePicker
@@ -284,7 +285,7 @@ private fun AccountNotice.messageRes(): Int = when (this) {
     AccountNotice.SignInFailed -> R.string.account_error_sign_in_failed
     AccountNotice.NoGoogleAccount -> R.string.account_error_no_google_account
     AccountNotice.SignInUnavailable -> R.string.account_error_unavailable
-    AccountNotice.SignedInToExistingAccount -> R.string.account_notice_existing_account
+    AccountNotice.SignedInToExistingAccount -> AccountWords.existingAccount
     AccountNotice.FaceNotMade -> R.string.account_error_face_not_made
     AccountNotice.FaceUnchecked -> ThemeR.string.refusal_picture_unchecked
     AccountNotice.FacesCheckedToday -> ThemeR.string.refusal_pictures_checked_today

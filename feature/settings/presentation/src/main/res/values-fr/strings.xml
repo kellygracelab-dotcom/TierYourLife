@@ -38,6 +38,7 @@
     <string name="settings_account_offer_action">Se connecter</string>
     <string name="settings_account_offer_body">L’application fonctionne entièrement sans compte.</string>
     <string name="settings_account_offer_title">Gardez vos crédits</string>
+    <string name="settings_account_offer_title_lists">Gardez vos listes</string>
     <string name="settings_account_signed_in">Connecté</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="one">Connecté · %1$d crédit</item>

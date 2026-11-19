@@ -171,7 +171,7 @@ internal fun SignedInPanel(
         // Replaced "your lists stay on this phone", which became a half-truth
         // once they also lived in the account.
         Text(
-            text = stringResource(R.string.account_sign_out_helper),
+            text = stringResource(AccountWords.signOutHelper),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

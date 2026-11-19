@@ -37,6 +37,7 @@
     <string name="settings_account_offer_action">Oturum aç</string>
     <string name="settings_account_offer_body">Uygulama hesapsız da tam çalışır.</string>
     <string name="settings_account_offer_title">Haklarınızı koruyun</string>
+    <string name="settings_account_offer_title_lists">Listelerinizi koruyun</string>
     <string name="settings_account_signed_in">Oturum açıldı</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="one">Oturum açıldı · %1$d kredi</item>

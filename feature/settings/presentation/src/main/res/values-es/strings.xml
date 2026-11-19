@@ -38,6 +38,7 @@
     <string name="settings_account_offer_action">Iniciar sesión</string>
     <string name="settings_account_offer_body">La app funciona por completo sin cuenta.</string>
     <string name="settings_account_offer_title">Conserva tus créditos</string>
+    <string name="settings_account_offer_title_lists">Conserva tus listas</string>
     <string name="settings_account_signed_in">Sesión iniciada</string>
     <plurals name="settings_account_signed_in_credits">
         <item quantity="one">Sesión iniciada · %1$d crédito</item>

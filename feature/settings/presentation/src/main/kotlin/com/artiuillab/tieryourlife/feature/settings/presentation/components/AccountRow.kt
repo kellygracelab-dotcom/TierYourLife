@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
@@ -89,7 +90,7 @@ private fun SignInOffer(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .padding(20.dp),
     ) {
         Text(
-            text = stringResource(R.string.settings_account_offer_title),
+            text = stringResource(if (Features.GENERATION_OFFERED) R.string.settings_account_offer_title else R.string.settings_account_offer_title_lists),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
