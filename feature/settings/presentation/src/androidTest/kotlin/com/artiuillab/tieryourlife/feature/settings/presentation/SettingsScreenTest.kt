@@ -67,7 +67,7 @@ class SettingsScreenTest {
 
         assertEquals(11, LanguageOptions.size)
         LanguageOptions.forEach { option ->
-            composeRule.onNodeWithTag(SettingsTestTags.languageOption(option.persistTag)).assertIsDisplayed()
+            composeRule.onNodeWithTag(SettingsTestTags.languageOption(option.persistTag)).performScrollTo().assertIsDisplayed()
         }
     }
 
@@ -178,6 +178,8 @@ class SettingsScreenTest {
             }
             }
         }
+        // Under Theme and Colour the language row is below the fold of the smallest phones (CI's 320×640).
+        composeRule.onNodeWithTag(SettingsTestTags.LANGUAGE_ROW).performScrollTo()
     }
 
     private companion object {
