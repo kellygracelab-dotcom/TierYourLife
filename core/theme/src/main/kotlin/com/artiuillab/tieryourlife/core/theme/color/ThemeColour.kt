@@ -96,18 +96,25 @@ fun hueColorScheme(hue: Int, dark: Boolean): ColorScheme {
     )
 }
 
+<<<<<<< HEAD
 /** A ready colour's table, laid out as [hueAppScheme] is. */
 fun readyAppScheme(name: String, dark: Boolean): ColorScheme? = readyColorScheme(name, dark)?.laidOut(dark)
 
+=======
+>>>>>>> origin/main
 /**
  * A built colour as the app and the site lay it out (19.11): in light the page is surfaceContainerHigh and the
  * cards (surfaceContainerLow) lighter than it, and what lay on surfaceContainerHigh a step darker, so it still
  * stands out; in dark the page is surface and the cards surfaceContainer.
  * Lavender keeps its own page.
  */
+<<<<<<< HEAD
 fun hueAppScheme(hue: Int, dark: Boolean): ColorScheme = hueColorScheme(hue, dark).laidOut(dark)
 
 private fun ColorScheme.laidOut(dark: Boolean): ColorScheme = let { scheme ->
+=======
+fun hueAppScheme(hue: Int, dark: Boolean): ColorScheme = hueColorScheme(hue, dark).let { scheme ->
+>>>>>>> origin/main
     if (dark) {
         scheme.copy(surfaceContainerLow = scheme.surfaceContainer)
     } else {
@@ -130,7 +137,10 @@ fun swatchScheme(colour: ThemeColour, context: Context): ColorScheme = colorSche
 
 internal fun colorSchemeFor(colour: ThemeColour, dark: Boolean, context: Context): ColorScheme = when (colour) {
     ThemeColour.Lavender -> if (dark) DarkColorScheme else LightColorScheme
+<<<<<<< HEAD
     is ThemeColour.Ready -> readyAppScheme(colour.name, dark) ?: if (dark) DarkColorScheme else LightColorScheme
+=======
+>>>>>>> origin/main
     is ThemeColour.FromHue -> hueAppScheme(colour.hue, dark)
     ThemeColour.Phone -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -157,12 +167,15 @@ internal fun mediaColorsFor(colour: ThemeColour, dark: Boolean, scheme: ColorSch
 
 private const val SEED_CHROMA = 36.0
 private const val SEED_TONE = 50.0
+<<<<<<< HEAD
 private const val SECONDARY_CHROMA = 16.0
 private const val TERTIARY_TURN = 60.0
 private const val FULL_TURN_DEGREES = 360.0
 private const val TERTIARY_CHROMA = 24.0
 private const val NEUTRAL_CHROMA = 8.0
 private const val NEUTRAL_VARIANT_CHROMA = 10.0
+=======
+>>>>>>> origin/main
 private const val VIVID_CHROMA = 120.0
 private const val VIVID_TONE = 60.0
 

@@ -30,6 +30,7 @@ class HueAppSchemeTest {
         assertEquals(roles.primary, app.primary)
     }
 
+<<<<<<< HEAD
     @Test
     fun theReadyTables_areLaidOutTheSame() {
         val table = checkNotNull(readyColorScheme(ReadyColours.MATCHA, dark = false))
@@ -39,6 +40,8 @@ class HueAppSchemeTest {
         assertEquals(table.surfaceContainerLow, app.surfaceContainerLow)
     }
 
+=======
+>>>>>>> origin/main
     private companion object {
         const val MATCHA = 125
     }
