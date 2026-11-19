@@ -125,6 +125,7 @@
     <string name="colour_phone">Кольори телефона</string>
     <string name="colour_custom">Свій</string>
     <string name="your_colour">Ваш колір</string>
+    <string name="your_colour_hint">Оберіть відтінок. Яскравість і контраст підберуться самі.</string>
     <string name="colour_hue">Відтінок</string>
     <string name="colour_done">Готово</string>
     <string name="colour_cancel">Скасувати</string>

@@ -117,6 +117,7 @@
     <string name="colour_phone">Phone colours</string>
     <string name="colour_custom">Your own</string>
     <string name="your_colour">Your colour</string>
+    <string name="your_colour_hint">Pick a hue. Lightness and contrast are set for you.</string>
     <string name="colour_hue">Hue</string>
     <string name="colour_done">Done</string>
     <string name="colour_cancel">Cancel</string>

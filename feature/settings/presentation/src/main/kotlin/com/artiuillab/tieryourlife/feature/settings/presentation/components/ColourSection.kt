@@ -5,9 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.settings.ColourChoice
 import com.artiuillab.tieryourlife.core.settings.ColourSetting
@@ -59,7 +60,6 @@ internal fun shownColour(setting: ColourSetting?, sdk: Int = Build.VERSION.SDK_I
  * Settings → Appearance → Colour (artboard 59): a tap recolours the app at once, with nothing to apply.
  * One's own colour opens [YourColourSheet].
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ColourSection(setting: ColourSetting?, onChoose: (name: String) -> Unit, onOwnColour: () -> Unit) {
     val shown = shownColour(setting)
@@ -76,18 +76,23 @@ internal fun ColourSection(setting: ColourSetting?, onChoose: (name: String) -> 
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        FlowRow(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp).selectableGroup(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            for (name in colourNames()) {
-                ColourCircle(
-                    name = name,
-                    ownHue = setting?.hue,
-                    selected = name == shown,
-                    onClick = { if (name == ReadyColours.CUSTOM) onOwnColour() else onChoose(name) },
-                )
+        // One row, as on artboard 59: the circles share the width, 40–44 dp on a phone.
+        BoxWithConstraints(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, bottom = 16.dp)) {
+            val names = colourNames()
+            val circle = ((maxWidth - MIN_GAP * (names.size - 1)) / names.size).coerceIn(MIN_CIRCLE, MAX_CIRCLE)
+            Row(
+                modifier = Modifier.fillMaxWidth().selectableGroup(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                for (name in names) {
+                    ColourCircle(
+                        name = name,
+                        ownHue = setting?.hue,
+                        selected = name == shown,
+                        size = circle,
+                        onClick = { if (name == ReadyColours.CUSTOM) onOwnColour() else onChoose(name) },
+                    )
+                }
             }
         }
     }
@@ -114,7 +119,7 @@ internal fun colourLabel(name: String): String = stringResource(
  * as a dot. One's own has a pencil, on the rainbow until it is the one chosen, then on its own colour.
  */
 @Composable
-private fun ColourCircle(name: String, ownHue: Int?, selected: Boolean, onClick: () -> Unit) {
+private fun ColourCircle(name: String, ownHue: Int?, selected: Boolean, size: Dp, onClick: () -> Unit) {
     val label = colourLabel(name)
     val ring = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outlineVariant
     val own = name == ReadyColours.CUSTOM
@@ -123,7 +128,7 @@ private fun ColourCircle(name: String, ownHue: Int?, selected: Boolean, onClick:
     val swatch = colour?.let { remember(it) { swatchScheme(it, context) } }
     Box(
         modifier = Modifier
-            .size(48.dp)
+            .size(size)
             .clip(CircleShape)
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
             .semantics { contentDescription = label }
@@ -152,6 +157,10 @@ private fun Mark(color: Color, large: Boolean = true, content: @Composable () ->
         contentAlignment = Alignment.Center,
     ) { content() }
 }
+
+private val MIN_GAP = 4.dp
+private val MIN_CIRCLE = 36.dp
+private val MAX_CIRCLE = 44.dp
 
 /** Every hue as vivid as the screen shows it, around the circle. */
 internal val HueWheel: Brush = Brush.sweepGradient(

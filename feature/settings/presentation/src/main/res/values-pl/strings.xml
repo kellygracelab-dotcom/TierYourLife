@@ -125,6 +125,7 @@
     <string name="colour_phone">Kolory telefonu</string>
     <string name="colour_custom">Własny</string>
     <string name="your_colour">Twój kolor</string>
+    <string name="your_colour_hint">Wybierz odcień. Jasność i kontrast ustawimy za Ciebie.</string>
     <string name="colour_hue">Odcień</string>
     <string name="colour_done">Gotowe</string>
     <string name="colour_cancel">Anuluj</string>

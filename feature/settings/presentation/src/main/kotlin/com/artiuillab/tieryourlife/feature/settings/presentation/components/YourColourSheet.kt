@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
@@ -46,6 +47,7 @@ import com.artiuillab.tieryourlife.core.theme.color.hueAppScheme
 import com.artiuillab.tieryourlife.core.theme.color.vividHue
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
+import com.artiuillab.tieryourlife.core.theme.ui.PlayArrowIcon
 import com.artiuillab.tieryourlife.feature.settings.presentation.R
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsTestTags
 import kotlin.math.roundToInt
@@ -71,6 +73,11 @@ internal fun YourColourSheet(startHue: Int, onDone: (hue: Int) -> Unit, onCancel
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.semantics { heading() },
+            )
+            Text(
+                text = stringResource(R.string.your_colour_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             ColourPreview(hue)
             HueSlider(hue, onHue = { hue = it })
@@ -118,25 +125,31 @@ private fun ColourPreview(hue: Int) {
             Spacer(Modifier.height(4.dp))
             Box(
                 Modifier.align(Alignment.End).width(96.dp).height(32.dp).clip(CircleShape).background(scheme.primary),
-            )
+                contentAlignment = Alignment.Center,
+            ) {
+                PlayArrowIcon(20.dp, scheme.onPrimary)
+            }
         }
     }
 }
 
+/** One bar, as on artboard 59: the track is the rainbow, the thumb a round dot of the hue picked. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HueSlider(hue: Int, onHue: (Int) -> Unit) {
     val label = stringResource(R.string.colour_hue)
-    val thumb = remember(hue) { vividHue(hue) }
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Box(Modifier.fillMaxWidth().height(12.dp).clip(CircleShape).background(HueStrip))
-        Slider(
-            value = hue.toFloat(),
-            onValueChange = { onHue(it.roundToInt().mod(ReadyColours.FULL_TURN)) },
-            valueRange = 0f..(ReadyColours.FULL_TURN - 1).toFloat(),
-            colors = SliderDefaults.colors(thumbColor = thumb, activeTrackColor = thumb.copy(alpha = 0.24f), inactiveTrackColor = thumb.copy(alpha = 0.24f)),
-            modifier = Modifier.fillMaxWidth().semantics { contentDescription = label }.testTag(SettingsTestTags.HUE_SLIDER),
-        )
-    }
+    val dot = remember(hue) { vividHue(hue) }
+    val ring = MaterialTheme.colorScheme.surface
+    Slider(
+        value = hue.toFloat(),
+        onValueChange = { onHue(it.roundToInt().mod(ReadyColours.FULL_TURN)) },
+        valueRange = 0f..(ReadyColours.FULL_TURN - 1).toFloat(),
+        modifier = Modifier.fillMaxWidth().semantics { contentDescription = label }.testTag(SettingsTestTags.HUE_SLIDER),
+        thumb = {
+            Box(Modifier.size(28.dp).shadow(2.dp, CircleShape).clip(CircleShape).background(ring).padding(3.dp).clip(CircleShape).background(dot))
+        },
+        track = { Box(Modifier.fillMaxWidth().height(12.dp).clip(CircleShape).background(HueStrip)) },
+    )
 }
 
 /** The rainbow under the slider: where each hue lies. */

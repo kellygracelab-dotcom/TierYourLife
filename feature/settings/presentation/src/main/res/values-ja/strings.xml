@@ -113,6 +113,7 @@
     <string name="colour_phone">スマホの色</string>
     <string name="colour_custom">カスタム</string>
     <string name="your_colour">あなたの色</string>
+    <string name="your_colour_hint">色相を選んでください。明るさとコントラストは自動で調整されます。</string>
     <string name="colour_hue">色相</string>
     <string name="colour_done">完了</string>
     <string name="colour_cancel">キャンセル</string>
