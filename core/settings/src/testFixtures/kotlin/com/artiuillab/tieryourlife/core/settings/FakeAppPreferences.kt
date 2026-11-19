@@ -201,4 +201,21 @@ class FakeAppPreferences(
     override fun setErasedAccountToLeave(uid: String?) {
         erasedToLeave = uid
     }
+
+    /** By account, as the real one. */
+    val ownFaces = mutableMapOf<String, String>()
+
+    override fun ownFace(account: String): String? = ownFaces[account]
+
+    override fun setOwnFace(account: String, url: String?) {
+        if (url == null) ownFaces.remove(account) else ownFaces[account] = url
+    }
+
+    val cardFaces = mutableMapOf<String, CardFace>()
+
+    override fun cardFace(account: String): CardFace? = cardFaces[account]
+
+    override fun setCardFace(account: String, cardFace: CardFace?) {
+        if (cardFace == null) cardFaces.remove(account) else cardFaces[account] = cardFace
+    }
 }

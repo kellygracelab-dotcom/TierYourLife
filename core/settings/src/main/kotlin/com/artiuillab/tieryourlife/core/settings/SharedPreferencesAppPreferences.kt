@@ -39,6 +39,8 @@ private const val KEY_POOL_DOCK_ROWS = "poolDockRows"
 private const val KEY_ONE_CARD_AT_A_TIME = "oneCardAtATime"
 private const val KEY_TIPS_SEEN = "tips_seen"
 private const val KEY_TIPS_OFF = "tips_off"
+private const val KEY_OWN_FACE = "own_face"
+private const val KEY_CARD_FACE = "card_face"
 private const val KEY_NAMES_ON_CARDS = "namesOnCards"
 private const val KEY_PUBLISHED_OWNERS = "published_owners"
 private const val KEY_LAST_PUBLISHING_ACCOUNT = "last_publishing_account"
@@ -178,6 +180,27 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setTipsSeen(tips: Set<String>) {
         prefs.edit { putStringSet(KEY_TIPS_SEEN, tips.toSet()) }
+    }
+
+    override fun ownFace(account: String): String? = prefs.getString("$KEY_OWN_FACE:$account", null)
+
+    override fun setOwnFace(account: String, url: String?) {
+        prefs.edit { if (url == null) remove("$KEY_OWN_FACE:$account") else putString("$KEY_OWN_FACE:$account", url) }
+    }
+
+    override fun cardFace(account: String): CardFace? {
+        val kept = prefs.getString("$KEY_CARD_FACE:$account", null)?.split(HELD_SEPARATOR) ?: return null
+        return if (kept.size == 2) CardFace(card = kept[0], face = kept[1]) else null
+    }
+
+    override fun setCardFace(account: String, cardFace: CardFace?) {
+        prefs.edit {
+            if (cardFace == null) {
+                remove("$KEY_CARD_FACE:$account")
+            } else {
+                putString("$KEY_CARD_FACE:$account", cardFace.card + HELD_SEPARATOR + cardFace.face)
+            }
+        }
     }
 
     override fun tipsOff(): Boolean = prefs.getBoolean(KEY_TIPS_OFF, false)

@@ -83,6 +83,7 @@ fun AccountScreen(
         onCancelPositioning = viewModel.face::cancelPositioning,
         onConfirmPosition = viewModel.face::confirmPosition,
         onPickPhoto = { pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+        onWearOwnPhoto = viewModel.face::wearOwnPhoto,
         onNoticeShown = viewModel::dismissNotice,
         onMoveGuestBoardsIn = { viewModel.moveGuestBoardsIn(fromThisPhone) },
         onKeepGuestBoardsHere = viewModel::keepGuestBoardsHere,
@@ -102,6 +103,7 @@ internal fun AccountScreenContent(
     onPickPhoto: () -> Unit = {},
     onCancelPositioning: () -> Unit = {},
     onConfirmPosition: (FaceCrop?) -> Unit = {},
+    onWearOwnPhoto: () -> Unit = {},
     onNoticeShown: () -> Unit = {},
     onMoveGuestBoardsIn: () -> Unit = {},
     onKeepGuestBoardsHere: () -> Unit = {},
@@ -200,7 +202,8 @@ internal fun AccountScreenContent(
 
         if (faceSheetVisible && signedIn != null) {
             FaceSheet(
-                current = state.shownFace,
+                current = state.faceInSheet,
+                ownPhoto = state.ownFace,
                 cardImages = state.faceChoices,
                 name = signedIn.displayName,
                 onDismiss = { faceSheetVisible = false },
@@ -210,6 +213,10 @@ internal fun AccountScreenContent(
                 },
                 onPickPhoto = {
                     onPickPhoto()
+                    faceSheetVisible = false
+                },
+                onWearOwnPhoto = {
+                    onWearOwnPhoto()
                     faceSheetVisible = false
                 },
             )
