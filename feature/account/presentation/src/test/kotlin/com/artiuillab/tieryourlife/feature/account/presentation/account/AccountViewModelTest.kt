@@ -730,6 +730,18 @@ class AccountViewModelTest {
         assertEquals(emptyList<String?>(), repository.photoUrls)
     }
 
+    // Danylo, 19.11: the face worn on the site is the one Your face shows.
+    @Test
+    fun openingTheAccount_showsTheFaceWornOnAnotherDevice() = runBlocking {
+        val repository = FakeAccountRepository(Account.SignedIn(email = "ann@example.com", photoUrl = "https://a/old.png", uid = "ann"))
+        repository.elsewhere = Account.SignedIn(email = "ann@example.com", photoUrl = "https://a/site.png", uid = "ann")
+
+        val viewModel = viewModel(repository)
+
+        viewModel.state.firstWithin { (it.account as? Account.SignedIn)?.photoUrl == "https://a/site.png" }
+        assertEquals(1, repository.profileReads)
+    }
+
     private fun viewModel(
         repository: AccountRepository = FakeAccountRepository(),
         credential: FakeGoogleCredential = FakeGoogleCredential(GoogleCredentialResult.Cancelled),

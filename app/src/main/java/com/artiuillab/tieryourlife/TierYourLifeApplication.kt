@@ -6,6 +6,7 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import com.artiuillab.tieryourlife.core.logging.CrashKeys
 import com.artiuillab.tieryourlife.core.logging.Logging
+import com.artiuillab.tieryourlife.feature.account.data.repository.ProfileOnReturn
 import com.artiuillab.tieryourlife.feature.account.data.settings.ColourSync
 import com.artiuillab.tieryourlife.feature.community.data.warmup.CommunityWarmUp
 import com.artiuillab.tieryourlife.feature.tier.data.sync.SyncOnReconnect
@@ -28,6 +29,9 @@ class TierYourLifeApplication : Application(), SingletonImageLoader.Factory {
 
     @Inject
     lateinit var colourSync: ColourSync
+
+    @Inject
+    lateinit var profileOnReturn: ProfileOnReturn
 
     override fun onCreate() {
         // Before super, which is where Hilt builds the singletons.

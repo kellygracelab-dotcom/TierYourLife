@@ -150,6 +150,24 @@ class FirebaseAccountRepository @Inject constructor(
         }
     }
 
+    /** The cached user keeps the face it signed in with until reloaded: one worn on the site meanwhile (19.11). */
+    override suspend fun refreshProfile() {
+        val user = auth.currentUser?.takeUnless { it.isAnonymous } ?: return
+        val before = user.toAccount()
+        try {
+            user.reload().await()
+            val reloaded = auth.currentUser ?: return
+            if (reloaded.toAccount() == before) return
+            // The published author comes off the ID token, which carries the new face only once minted again.
+            reloaded.getIdToken(true).await()
+            profileEdits.tryEmit(Unit)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Timber.i(e, "The profile is read again next time")
+        }
+    }
+
     override suspend fun signOut() {
         auth.signOut()
         runSuspendCatching { auth.signInAnonymously().await() }
