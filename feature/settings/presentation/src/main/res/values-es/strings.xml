@@ -121,6 +121,7 @@
     <string name="colour_phone">Colores del teléfono</string>
     <string name="colour_custom">El tuyo</string>
     <string name="your_colour">Tu color</string>
+    <string name="your_colour_hint">Elige un tono. La luminosidad y el contraste se ajustan solos.</string>
     <string name="colour_hue">Tono</string>
     <string name="colour_done">Listo</string>
     <string name="colour_cancel">Cancelar</string>

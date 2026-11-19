@@ -121,6 +121,7 @@
     <string name="colour_phone">Cores do celular</string>
     <string name="colour_custom">A sua</string>
     <string name="your_colour">Sua cor</string>
+    <string name="your_colour_hint">Escolha um tom. O brilho e o contraste são ajustados para você.</string>
     <string name="colour_hue">Tom</string>
     <string name="colour_done">Concluído</string>
     <string name="colour_cancel">Cancelar</string>

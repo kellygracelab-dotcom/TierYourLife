@@ -117,6 +117,7 @@
     <string name="colour_phone">Farben des Handys</string>
     <string name="colour_custom">Eigene</string>
     <string name="your_colour">Deine Farbe</string>
+    <string name="your_colour_hint">Wähle einen Farbton. Helligkeit und Kontrast werden für dich eingestellt.</string>
     <string name="colour_hue">Farbton</string>
     <string name="colour_done">Fertig</string>
     <string name="colour_cancel">Abbrechen</string>

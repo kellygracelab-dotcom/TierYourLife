@@ -133,6 +133,7 @@
     <string name="colour_phone">ألوان الهاتف</string>
     <string name="colour_custom">لونك</string>
     <string name="your_colour">لونك الخاص</string>
+    <string name="your_colour_hint">اختر درجة اللون. يُضبط السطوع والتباين تلقائيًا.</string>
     <string name="colour_hue">درجة اللون</string>
     <string name="colour_done">تم</string>
     <string name="colour_cancel">إلغاء</string>
