@@ -42,7 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.color.ReadyColours
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
-import com.artiuillab.tieryourlife.core.theme.color.hueColorScheme
+import com.artiuillab.tieryourlife.core.theme.color.hueAppScheme
 import com.artiuillab.tieryourlife.core.theme.color.vividHue
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
@@ -91,7 +91,7 @@ internal fun YourColourSheet(startHue: Int, onDone: (hue: Int) -> Unit, onCancel
 @Composable
 private fun ColourPreview(hue: Int) {
     val dark = TierYourLifeMedia.current.isDark
-    val scheme = remember(hue, dark) { hueColorScheme(hue, dark) }
+    val scheme = remember(hue, dark) { hueAppScheme(hue, dark) }
     val tiers = if (dark) DARK_TIERS else LIGHT_TIERS
     Surface(
         color = scheme.surface,

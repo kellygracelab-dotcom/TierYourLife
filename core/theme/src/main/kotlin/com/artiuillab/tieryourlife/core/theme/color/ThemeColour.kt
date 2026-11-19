@@ -77,6 +77,19 @@ fun hueColorScheme(hue: Int, dark: Boolean): ColorScheme {
     )
 }
 
+/**
+ * A built colour as the app and the site lay it out (19.11): in light the page is surfaceContainerHigh and the
+ * cards (surfaceContainerLow) lighter than it; in dark the page is surface and the cards surfaceContainer.
+ * Lavender keeps its own page.
+ */
+fun hueAppScheme(hue: Int, dark: Boolean): ColorScheme = hueColorScheme(hue, dark).let { scheme ->
+    if (dark) {
+        scheme.copy(surfaceContainerLow = scheme.surfaceContainer)
+    } else {
+        scheme.copy(surface = scheme.surfaceContainerHigh, background = scheme.surfaceContainerHigh)
+    }
+}
+
 /** The seed a hue makes, as its own colour: the swatch that stands for it. */
 fun hueSeed(hue: Int): Color = Color(Hct.from(hue.toDouble(), SEED_CHROMA, SEED_TONE).toInt())
 
@@ -88,7 +101,7 @@ fun swatchScheme(colour: ThemeColour, context: Context): ColorScheme = colorSche
 
 internal fun colorSchemeFor(colour: ThemeColour, dark: Boolean, context: Context): ColorScheme = when (colour) {
     ThemeColour.Lavender -> if (dark) DarkColorScheme else LightColorScheme
-    is ThemeColour.FromHue -> hueColorScheme(colour.hue, dark)
+    is ThemeColour.FromHue -> hueAppScheme(colour.hue, dark)
     ThemeColour.Phone -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     } else {
