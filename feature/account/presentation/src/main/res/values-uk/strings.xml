@@ -39,6 +39,9 @@
     <string name="account_face_gallery">Завантажити</string>
     <string name="account_face_note">Ваш аватар видно поруч з іменем на списках, які ви публікуєте. Вибрана картка чи фото перевіряються й зберігаються з вашим акаунтом.</string>
     <string name="account_face_your_photo">Ваше фото</string>
+    <string name="account_face_remove_photo">Прибрати ваше фото</string>
+    <string name="account_face_photo_removed">Фото прибрано</string>
+    <string name="account_face_undo">Скасувати</string>
     <string name="account_cd_change_face">Змінити аватар</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d генерація</item>

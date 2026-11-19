@@ -12,6 +12,7 @@ import com.artiuillab.tieryourlife.core.settings.ThePerson
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
+import com.artiuillab.tieryourlife.feature.account.domain.FakeFacePhotoSlot
 import com.artiuillab.tieryourlife.feature.account.domain.FakeFacePhotos
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.FaceCrop
@@ -742,7 +743,7 @@ class AccountViewModelTest {
         kept: Set<PersonalData> = emptySet(),
     ): AccountViewModel {
         picker = credential
-        return AccountViewModel(repository, credits, publishedLists, community, merge, erasure, facePhotos, ThePerson(preferences, kept), preferences)
+        return AccountViewModel(repository, credits, publishedLists, community, merge, erasure, facePhotos, FakeFacePhotoSlot(), ThePerson(preferences, kept), preferences)
     }
 }
 
@@ -765,11 +766,11 @@ internal fun Account.withFace(photoUrl: String): Account = (this as Account.Sign
 internal class FakeCommunityForAccount : FakeCommunityRepository()
 
 private class RefusingFaces : FakeCommunityRepository() {
-    override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(FaceRefused())
+    override suspend fun makeFace(pictureId: String, upload: Boolean): Result<String> = Result.failure(FaceRefused())
 }
 
 private class UnansweredFaces : FakeCommunityRepository() {
-    override suspend fun makeFace(pictureId: String): Result<String> = Result.failure(IOException("no answer"))
+    override suspend fun makeFace(pictureId: String, upload: Boolean): Result<String> = Result.failure(IOException("no answer"))
 }
 
 internal class FakeOwnLists(

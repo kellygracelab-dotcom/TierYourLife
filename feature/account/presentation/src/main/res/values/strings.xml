@@ -58,6 +58,9 @@
     <string name="account_face_gallery">Upload</string>
     <string name="account_face_note">People see your face next to your name on the lists you publish. A card or a photo you pick is checked and kept with your account.</string>
     <string name="account_face_your_photo">Your photo</string>
+    <string name="account_face_remove_photo">Remove your photo</string>
+    <string name="account_face_photo_removed">Photo removed</string>
+    <string name="account_face_undo">Undo</string>
     <string name="account_cd_change_face">Change your picture</string>
     <plurals name="account_credits">
         <item quantity="one">%1$d generation credit</item>
