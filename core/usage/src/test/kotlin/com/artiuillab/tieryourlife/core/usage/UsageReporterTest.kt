@@ -31,11 +31,14 @@ class UsageReporterTest {
     private val firstDay = today.toEpochDay()
     private var clock = 0L
 
-    private fun TestScope.reporter(first: Ledger = Ledger(firstDay = firstDay, stepsWaiting = setOf("first_launch"))) = UsageReporter(
+    private fun TestScope.reporter(
+        first: Ledger = Ledger(firstDay = firstDay, stepsWaiting = setOf("first_launch")),
+        fromPlay: Boolean = true,
+    ) = UsageReporter(
         store = LedgerStore(context.getSharedPreferences("usage-test", Context.MODE_PRIVATE), first = { first }),
         preferences = preferences,
         api = api,
-        install = UsageInstall("597"),
+        install = UsageInstall("597", fromPlay = fromPlay),
         today = { today },
         scope = this,
         now = { clock },
@@ -172,6 +175,20 @@ class UsageReporterTest {
         val batch = api.sent.single()
         assertTrue(batch.steps.isEmpty())
         assertEquals(mapOf("session" to 1), batch.features)
+    }
+
+    @Test
+    fun aBuildPlayDidNotShip_keepsAndSendsNothing() = runTest {
+        val usage = reporter(fromPlay = false)
+        usage.sessionStarted()
+        usage.step(UsageStep.FirstBoard)
+        usage.count(UsageFeature.BoardTier)
+        usage.crashed(IllegalStateException())
+
+        usage.sessionEnded()
+        advanceUntilIdle()
+
+        assertEquals(0, api.tries)
     }
 
     // Android learns of a crash at the next start: the session that fell is counted then.

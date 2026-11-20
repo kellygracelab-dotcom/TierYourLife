@@ -10,7 +10,8 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object UsageInstallModule {
 
-    /** The build number: every build is "1.0", and the number is what tells them apart. */
+    /** The build number: every build is "1.0", and the number is what tells them apart. Only Play's build counts, as only it reports crashes. */
     @Provides
-    fun provideUsageInstall(): UsageInstall = UsageInstall(version = BuildConfig.VERSION_CODE.toString())
+    fun provideUsageInstall(): UsageInstall =
+        UsageInstall(version = BuildConfig.VERSION_CODE.toString(), fromPlay = BuildConfig.BUILD_TYPE == "release")
 }
