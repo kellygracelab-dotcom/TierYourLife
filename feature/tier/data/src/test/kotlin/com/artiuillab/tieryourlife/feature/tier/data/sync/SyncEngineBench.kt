@@ -71,6 +71,7 @@ abstract class SyncEngineBench {
         vault: Pictures = NoPictures,
         connection: Connection = Metered,
         ownership: BoardOwnership = BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences),
+        lock: SyncLock = this.lock,
     ): BoardSyncEngine {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         return BoardSyncEngine(
