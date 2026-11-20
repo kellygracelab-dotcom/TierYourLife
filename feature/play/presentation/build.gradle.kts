@@ -20,6 +20,7 @@ dependencies {
     implementation(projects.core.logging)
     implementation(projects.core.settings)
     implementation(projects.core.theme)
+    implementation(projects.core.usage)
     implementation(projects.feature.play.domain)
     implementation(projects.feature.tier.domain)
     // Play is drawn over a board, with the board's own tiles and bands.
@@ -30,6 +31,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
+    testImplementation(testFixtures(projects.core.usage))
     testImplementation(testFixtures(projects.feature.play.domain))
     testImplementation(testFixtures(projects.feature.tier.domain))
     testImplementation(platform(libs.androidx.compose.bom))

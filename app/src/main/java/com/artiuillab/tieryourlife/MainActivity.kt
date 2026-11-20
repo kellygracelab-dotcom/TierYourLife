@@ -47,6 +47,12 @@ class MainActivity : AppCompatActivity() {
         val app = application as TierYourLifeApplication
         app.colourSync.backOnScreen()
         app.profileOnReturn.backOnScreen()
+        app.usage.sessionStarted()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (!isChangingConfigurations) (application as TierYourLifeApplication).usage.sessionEnded()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +73,7 @@ class MainActivity : AppCompatActivity() {
 
             AppRoot(
                 state = state,
+                usage = (application as TierYourLifeApplication).usage,
                 colour = colour,
                 boardLayoutMemory = boardLayoutMemory,
                 tipMemory = tipMemory,

@@ -31,6 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.usage.LocalUsage
+import com.artiuillab.tieryourlife.core.usage.UsageFeature
+import com.artiuillab.tieryourlife.core.usage.shared
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.board.share.publishedListLink
 import kotlinx.coroutines.launch
@@ -155,10 +158,12 @@ internal fun rememberCopyLink(publishedId: String, snackbars: SnackbarHostState)
     val clipboard = LocalClipboard.current
     val resources = LocalResources.current
     val scope = rememberCoroutineScope()
+    val usage = LocalUsage.current
     return {
         scope.launch {
             val link = listLink(publishedId)
             clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(link, link)))
+            usage.shared(UsageFeature.ShareLink)
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 snackbars.showSnackbar(resources.getString(R.string.community_link_copied))
             }

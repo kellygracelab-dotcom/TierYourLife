@@ -58,6 +58,8 @@
     <string name="settings_backup_stuck">Not backed up since %1$s. Check your connection.</string>
     <string name="settings_backup_sub">Tiers, cards and notes</string>
     <string name="settings_export">Export data</string>
+    <string name="settings_send_usage">Send usage statistics</string>
+    <string name="settings_send_usage_sub">Anonymous counts of what is used, without your account</string>
     <string name="settings_export_sub">Save a readable copy of every list</string>
     <string name="settings_group_appearance">Appearance</string>
     <string name="settings_group_data">Your data</string>

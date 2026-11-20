@@ -10,6 +10,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.usage.LocalUsage
+import com.artiuillab.tieryourlife.core.usage.UsageFeature
+import com.artiuillab.tieryourlife.core.usage.shared
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.launch
@@ -27,6 +30,7 @@ fun rememberShareBoard(ownName: String? = null): (TierList) -> Unit {
     val media = TierYourLifeMedia.current
     val colors = MaterialTheme.colorScheme
     val names = LocalBoardLayoutMemory.current.namesOnCards
+    val usage = LocalUsage.current
     val palette = BoardPalette(
         surface = colors.surface,
         onSurface = colors.onSurface,
@@ -46,7 +50,9 @@ fun rememberShareBoard(ownName: String? = null): (TierList) -> Unit {
                     ?.let { resources.getQuantityString(R.plurals.share_more_not_placed, it, it) },
                 footer = resources.getString(R.string.share_rank_yourself, (link ?: SHARE_LINK).removePrefix("https://")),
             )
-            if (!shareBoard(context, list, palette, caption, words, names)) {
+            if (shareBoard(context, list, palette, caption, words, names)) {
+                usage.shared(UsageFeature.ShareImage)
+            } else {
                 Toast.makeText(context, resources.getString(R.string.share_failed), Toast.LENGTH_SHORT).show()
             }
         }

@@ -102,6 +102,13 @@ class FakeAppPreferences(
 
     override fun setPicturesOnWifiOnly(wifiOnly: Boolean) = Unit
 
+    var usageOn = true
+    override fun sendUsage(): Boolean = usageOn
+
+    override fun setSendUsage(on: Boolean) {
+        usageOn = on
+    }
+
     override fun lastKnownStoredBytes(): Long = 0L
 
     override fun setLastKnownStoredBytes(bytes: Long) = Unit

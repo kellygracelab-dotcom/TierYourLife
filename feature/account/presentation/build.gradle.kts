@@ -19,6 +19,7 @@ dependencies {
     implementation(projects.core.logging)
     implementation(projects.core.settings)
     implementation(projects.core.theme)
+    implementation(projects.core.usage)
     implementation(projects.feature.account.domain)
     // The confirmation panel reports the balance the account restored, which is
     // the studio's port — a read across features at the domain layer, as with
@@ -38,6 +39,7 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.coil.compose)
     implementation(libs.androidx.activity.compose)
+    testImplementation(testFixtures(projects.core.usage))
     testImplementation(testFixtures(projects.core.settings))
     testImplementation(testFixtures(projects.feature.community.domain))
     testImplementation(testFixtures(projects.feature.account.domain))

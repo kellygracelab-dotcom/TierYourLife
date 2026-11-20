@@ -61,6 +61,7 @@ class SettingsViewModel @Inject constructor(
             // flow and the measured settings follow and correct it.
             account = accountRepository.current(),
             backupSettings = backup.settingsNow().takeIf { accountRepository.current() is Account.SignedIn },
+            sendUsage = preferences.sendUsage(),
         ),
     )
     val state: StateFlow<SettingsUiState> = _state.asStateFlow()
@@ -111,6 +112,12 @@ class SettingsViewModel @Inject constructor(
             if (!backup.stopAndDelete()) messages.send(UserMessage.ActionFailed)
             loadBackupSettings()
         }
+    }
+
+    /** Off sends nothing from now on, and what was waiting is not sent either. */
+    fun setSendUsage(on: Boolean) {
+        preferences.setSendUsage(on)
+        _state.update { it.copy(sendUsage = on) }
     }
 
     fun setPicturesOnWifiOnly(wifiOnly: Boolean) {

@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
+import com.artiuillab.tieryourlife.core.usage.Usage
+import com.artiuillab.tieryourlife.core.usage.boardMade
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedKeys
 import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
@@ -102,6 +104,7 @@ class SectionViewModel @Inject constructor(
     private val catalog: SectionCatalog,
     afterSignIn: FollowAfterSignIn,
     private val tiers: TierRepository,
+    private val usage: Usage = Usage.None,
 ) : ViewModel() {
 
     private val route = savedStateHandle.sectionRoute()
@@ -122,7 +125,10 @@ class SectionViewModel @Inject constructor(
         val filedUnder = sectionId.value
         viewModelScope.launch {
             runCatching { tiers.createTierList(title, emptyList()).also { tiers.setCategory(it, filedUnder) } }
-                .onSuccess { boards.send(it) }
+                .onSuccess {
+                    usage.boardMade(ranked = false)
+                    boards.send(it)
+                }
                 .onFailure {
                     Timber.w(it, "Making a list in a section failed")
                     notes.send(CommunityNotice.ActionFailed)

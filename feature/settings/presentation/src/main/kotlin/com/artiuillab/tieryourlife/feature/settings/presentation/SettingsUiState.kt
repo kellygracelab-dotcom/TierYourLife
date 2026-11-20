@@ -15,4 +15,5 @@ data class SettingsUiState(
     val pendingReports: Int? = null,
     /** Null until it has been read, and always null for a guest: there is nothing to say. */
     val backupSettings: BackupSettings? = null,
+    val sendUsage: Boolean = true,
 )

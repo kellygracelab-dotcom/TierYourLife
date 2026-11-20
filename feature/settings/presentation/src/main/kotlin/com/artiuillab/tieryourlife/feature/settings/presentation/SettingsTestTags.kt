@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.settings.presentation
 
 internal object SettingsTestTags {
     const val PRIVACY = "settings_privacy"
+    const val SEND_USAGE = "settings_send_usage"
     const val BACK = "settings_back"
     const val ACCOUNT = "settings_account_row"
     const val ACCOUNT_ACTION = "settings_account_action"

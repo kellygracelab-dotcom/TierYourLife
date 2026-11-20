@@ -8,6 +8,10 @@ import com.artiuillab.tieryourlife.core.settings.ReviewMoments
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
+import com.artiuillab.tieryourlife.core.usage.Usage
+import com.artiuillab.tieryourlife.core.usage.UsageStep
+import com.artiuillab.tieryourlife.core.usage.boardMade
+import com.artiuillab.tieryourlife.core.usage.listFinished
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.FollowState
@@ -32,6 +36,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -61,6 +66,7 @@ class CommunityListViewModel @Inject constructor(
     private val drafts: RankingDrafts = RankingDrafts.None,
     boardSync: BoardSync = BoardSync.None,
     private val reviewMoments: ReviewMoments = ReviewMoments.None,
+    private val usage: Usage = Usage.None,
 ) : ViewModel() {
 
     private val route = savedStateHandle.communityListRoute()
@@ -226,6 +232,7 @@ class CommunityListViewModel @Inject constructor(
                 if (givesWayToBoard(answer)) return
                 val loaded = present(answer, fromServer = true, followTapped = followTaps != tapsBefore)
                 rankings.peek()
+                if (!loaded.own && !quietly) usage.step(UsageStep.OpenList)
                 if (loaded.own) {
                     ownList.find()
                 } else if (!loaded.editorial && answer.summary.viewerFollowsAuthor == null) {
@@ -345,6 +352,7 @@ class CommunityListViewModel @Inject constructor(
             viewModelScope.launch {
                 delay(ReviewMoments.FINISHED_PAUSE_MS)
                 reviewMoments.listFinished(mine.cardCount())
+                usage.listFinished(mine.cardCount())
             }
         }
         progress.keep()
@@ -390,6 +398,7 @@ class CommunityListViewModel @Inject constructor(
                 current.copy(saving = false, savedId = newId.takeIf { saved })
             }
             if (saved) {
+                usage.boardMade(ranked = current.mine.displayMode == TierListDisplayMode.FLAT_RANKED)
                 // What the popular ordering counts. Its failure is not this
                 // person's problem: they have their copy either way.
                 community.noteTaken(publishedId)

@@ -130,6 +130,18 @@ class SettingsViewModelTest {
         assertEquals(UserMessage.ActionFailed, withTimeout(WAIT_MILLIS) { viewModel.userMessages.first() })
     }
 
+    @Test
+    fun usageStatistics_openAsSaved_andTurnOff() = runBlocking {
+        val preferences = FakeAppPreferences().apply { usageOn = false }
+        val viewModel = viewModel(preferences = preferences)
+        assertEquals(false, viewModel.state.value.sendUsage)
+
+        viewModel.setSendUsage(true)
+
+        assertEquals(true, viewModel.state.value.sendUsage)
+        assertEquals(true, preferences.sendUsage())
+    }
+
     private fun viewModel(
         preferences: FakeAppPreferences = FakeAppPreferences(),
         community: CommunityRepository = FakeCommunity(),

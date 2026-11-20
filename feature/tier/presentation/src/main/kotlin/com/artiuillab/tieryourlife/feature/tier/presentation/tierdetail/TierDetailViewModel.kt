@@ -9,6 +9,11 @@ import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
 import com.artiuillab.tieryourlife.core.theme.messages.guard
 import com.artiuillab.tieryourlife.core.theme.messages.picturesDroppedMessage
+import com.artiuillab.tieryourlife.core.usage.Usage
+import com.artiuillab.tieryourlife.core.usage.UsageFeature
+import com.artiuillab.tieryourlife.core.usage.UsageStep
+import com.artiuillab.tieryourlife.core.usage.boardMade
+import com.artiuillab.tieryourlife.core.usage.listFinished
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
@@ -62,6 +67,7 @@ class TierDetailViewModel @Inject constructor(
     private val boardSync: BoardSync = BoardSync.None,
     private val reviewMoments: ReviewMoments = ReviewMoments.None,
     private val uploads: UploadAllowance = UploadAllowance.None,
+    private val usage: Usage = Usage.None,
 ) : ViewModel() {
 
     private val tierListId = savedStateHandle.tierDetailRoute().tierListId
@@ -246,9 +252,15 @@ class TierDetailViewModel @Inject constructor(
         if (recorded) showPublished(published, waiting)
         // Just sent, so nothing is behind any more.
         publishedIsBehind = false
-        // Out: the sheet has done its work, and the snackbar says the rest.
-        if (recorded && published != null) sheet.close()
-        if (recorded && published != null) messages.send(publishedMessage(published, wasOut = list.publishedId != null || list.rankingOf != null))
+        if (recorded && published != null) announcePublished(list, published)
+    }
+
+    /** Out: the sheet has done its work, and the snackbar says the rest. */
+    private suspend fun announcePublished(list: TierList, published: Published) {
+        sheet.close()
+        val wasOut = list.publishedId != null || list.rankingOf != null
+        if (!wasOut) usage.step(UsageStep.Published)
+        messages.send(publishedMessage(published, wasOut = wasOut))
     }
 
     /** Held for a moderator says more than where the copy went, and has nothing to view yet. */
@@ -302,12 +314,14 @@ class TierDetailViewModel @Inject constructor(
     fun addItemToPool(title: String, imageUrl: String?) {
         mutate("Adding item to pool") {
             repository.addItemToPool(tierListId, title, imageUrl)
+            usage.step(UsageStep.FirstCard)
         }
     }
 
     fun addItemsToPool(items: List<PoolItemDraft>) {
         mutate("Adding items to pool") {
             repository.addItemsToPool(tierListId, items)
+            if (items.isNotEmpty()) usage.step(UsageStep.FirstCard)
         }
     }
 
@@ -320,8 +334,10 @@ class TierDetailViewModel @Inject constructor(
                 photoUris.forEach { photoUri ->
                     val newItemId = repository.addItemToPool(tierListId, itemTitle, imageUrl = null)
                     repository.attachImageToItem(newItemId, photoUri)
+                    usage.count(UsageFeature.PictureOwn)
                 }
             }
+            usage.step(UsageStep.FirstCard)
         }
         if (photoUris.isNotEmpty()) sayWhenTheyWait(photoUris.size)
     }
@@ -343,6 +359,7 @@ class TierDetailViewModel @Inject constructor(
                 viewModelScope.launch {
                     delay(ReviewMoments.FINISHED_PAUSE_MS)
                     reviewMoments.listFinished(moved.cardCount())
+                    usage.listFinished(moved.cardCount())
                 }
             }
         }
@@ -466,7 +483,10 @@ class TierDetailViewModel @Inject constructor(
     private fun keep(): Job? {
         if (!_screen.value.untouchedDraft) return keeping
         _screen.update { it.copy(untouchedDraft = false) }
-        return viewModelScope.launch { runSuspendCatching { repository.keepDraft(tierListId) } }.also { keeping = it }
+        val ranked = (board as? TierDetailUiState.Success)?.list?.displayMode == TierListDisplayMode.FLAT_RANKED
+        return viewModelScope.launch {
+            runSuspendCatching { repository.keepDraft(tierListId) }.onSuccess { usage.boardMade(ranked) }
+        }.also { keeping = it }
     }
 
     fun renameTierList(title: String) {

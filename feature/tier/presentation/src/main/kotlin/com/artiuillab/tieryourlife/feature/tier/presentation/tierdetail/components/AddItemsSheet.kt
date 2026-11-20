@@ -16,10 +16,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
 import com.artiuillab.tieryourlife.core.theme.layout.EndSideSheet
 import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
+import com.artiuillab.tieryourlife.core.usage.LocalUsage
+import com.artiuillab.tieryourlife.core.usage.UsageFeature
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureScope
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchScreenContent
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchUiState
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.CatalogueSearchViewModel
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.ScopeChoice
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.LinkChoice
@@ -55,6 +58,13 @@ internal fun AddItemsSheet(
     }
 
     var selectedItems by remember { mutableStateOf<Map<String, CatalogueItem>>(emptyMap()) }
+    // Where each was in the results when chosen: the statistics' place in the list.
+    var chosenAt by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
+    val usage = LocalUsage.current
+    fun countChosen() = selectedItems.values.forEach { item ->
+        usage.count(UsageFeature.pickedFrom(item.source))
+        chosenAt[item.id]?.let { usage.count(UsageFeature.pickedAt(it)) }
+    }
 
     val content: @Composable ColumnScope.() -> Unit = {
         CatalogueSearchScreenContent(
@@ -72,10 +82,15 @@ internal fun AddItemsSheet(
                 selectedItems = if (selectedItems.containsKey(item.id)) {
                     selectedItems - item.id
                 } else {
+                    val place = (searchState as? CatalogueSearchUiState.Success)?.items?.indexOfFirst { it.id == item.id } ?: -1
+                    if (place >= 0) chosenAt = chosenAt + (item.id to place)
                     selectedItems + (item.id to item)
                 }
             },
-            onConfirmSelection = { onItemsConfirmed(selectedItems.values.map { it.draft() }) },
+            onConfirmSelection = {
+                countChosen()
+                onItemsConfirmed(selectedItems.values.map { it.draft() })
+            },
             onLoadMore = searchViewModel::loadMore,
             scopes = ScopeChoice(first = PictureScope.forCategory(category), selected = scope, onSelect = searchViewModel::setScope),
             onSearchEverywhere = searchViewModel::searchEverywhere,
@@ -89,12 +104,15 @@ internal fun AddItemsSheet(
                     }
                 },
                 onAdd = { title, found, page ->
+                    countChosen()
+                    usage.count(UsageFeature.PictureLink)
                     onItemsConfirmed(
                         selectedItems.values.map { it.draft() } +
                             PoolItemDraft(title = title, imageUrl = found.imageUrl, credit = found.credit, attribution = found.attributionWith(page)),
                     )
                 },
                 onAddWithoutPicture = { title ->
+                    countChosen()
                     onItemsConfirmed(selectedItems.values.map { it.draft() } + PoolItemDraft(title = title, imageUrl = null))
                 },
                 onUpload = onUploadInstead,

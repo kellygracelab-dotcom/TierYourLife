@@ -6,6 +6,8 @@ import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.Features
 import com.artiuillab.tieryourlife.core.settings.ThePerson
+import com.artiuillab.tieryourlife.core.usage.Usage
+import com.artiuillab.tieryourlife.core.usage.UsageStep
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.model.SignInOutcome
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountErasure
@@ -44,6 +46,7 @@ class AccountViewModel @Inject constructor(
     facePhotoSlot: FacePhotoSlot,
     private val thePerson: ThePerson,
     preferences: AppPreferences,
+    private val usage: Usage = Usage.None,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -153,6 +156,7 @@ class AccountViewModel @Inject constructor(
         merge.hold()
         try {
             val outcome = repository.signInWithGoogle(idToken)
+            if (outcome == SignInOutcome.Success || outcome is SignInOutcome.SignedInToExistingAccount) usage.step(UsageStep.SignedIn)
             val notice = when (outcome) {
                 SignInOutcome.Success -> null
                 is SignInOutcome.SignedInToExistingAccount ->

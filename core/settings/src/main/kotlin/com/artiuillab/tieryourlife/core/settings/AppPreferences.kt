@@ -213,6 +213,11 @@ interface AppPreferences {
 
     fun setNamesOnCards(on: Boolean) = Unit
 
+    /** Anonymous usage counts for the Statistics screen; on until turned off, and off sends nothing. */
+    fun sendUsage(): Boolean = true
+
+    fun setSendUsage(on: Boolean) = Unit
+
     /**
      * The photo the account uploaded as its face, by account: one slot, kept whatever it wears now, so the
      * letter or a card can be worn and the photo put back with a tap. Here until the account can keep it.

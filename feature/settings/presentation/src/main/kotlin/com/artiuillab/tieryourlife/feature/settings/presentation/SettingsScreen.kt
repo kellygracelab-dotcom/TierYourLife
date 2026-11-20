@@ -85,6 +85,7 @@ import com.artiuillab.tieryourlife.feature.settings.presentation.components.Open
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.SettingsGroup
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.SettingsGroupDivider
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.StopBackingUpDialog
+import com.artiuillab.tieryourlife.feature.settings.presentation.components.SwitchRow
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.ThemeSection
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.YourColourSheet
 import com.artiuillab.tieryourlife.feature.settings.presentation.components.appVersion
@@ -118,6 +119,7 @@ fun SettingsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val colour by viewModel.colour.collectAsStateWithLifecycle()
     val trashCount = state.trashCount
+    val sendUsage = state.sendUsage
     val pendingReports = state.pendingReports
     val account = state.account
     val credits = state.credits
@@ -185,6 +187,8 @@ fun SettingsScreen(
             if (on) viewModel.startBackingUp() else stoppingBackup = true
         },
         onPicturesOnWifiOnlyChange = viewModel::setPicturesOnWifiOnly,
+        sendUsage = sendUsage,
+        onSendUsageChange = viewModel::setSendUsage,
         snackbarHostState = snackbarHostState,
         onRateClick = { rateTheApp(context) },
         onShareClick = { shareTheApp(context) },
@@ -311,6 +315,8 @@ fun SettingsScreenContent(
     backupSettings: BackupSettings? = null,
     onBackUpChange: (Boolean) -> Unit = {},
     onPicturesOnWifiOnlyChange: (Boolean) -> Unit = {},
+    sendUsage: Boolean = true,
+    onSendUsageChange: (Boolean) -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onRateClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
@@ -397,6 +403,14 @@ fun SettingsScreenContent(
                                 HiddenRow(onClick = onHiddenClick)
                                 SettingsGroupDivider()
                                 ExportRow(onClick = onExportClick)
+                                SettingsGroupDivider()
+                                SwitchRow(
+                                    label = stringResource(R.string.settings_send_usage),
+                                    supporting = stringResource(R.string.settings_send_usage_sub),
+                                    checked = sendUsage,
+                                    testTag = SettingsTestTags.SEND_USAGE,
+                                    onCheckedChange = onSendUsageChange,
+                                )
                                 if (pendingReports != null) {
                                     SettingsGroupDivider()
                                     ModerationRow(waiting = pendingReports, onClick = onModerationClick)
