@@ -38,7 +38,7 @@ class TierYourLifeApplication : Application(), SingletonImageLoader.Factory {
         MainThreadChecks.install()
         super.onCreate()
         AppCheckInstaller.install(this)
-        Logging.install(debug = BuildConfig.DEBUG)
+        Logging.install(debug = BuildConfig.DEBUG, report = BuildConfig.BUILD_TYPE == "release")
         watchIdentity()
         // Started here rather than from a screen: the case it exists for is
         // somebody deep inside a board when the signal comes back, with no

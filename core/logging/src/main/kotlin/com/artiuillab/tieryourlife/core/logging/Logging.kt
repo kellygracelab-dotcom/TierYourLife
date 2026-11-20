@@ -4,14 +4,16 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 
 /**
- * Only this module knows a crash reporter exists. Both builds report while
- * nothing is released -- the only runs are ours; at release the debug build
- * should stop. Debug also prints; release never does.
+ * Only this module knows a crash reporter exists. Only the build Play ships
+ * reports: debug, fast and every build from a worktree are ours, on emulators
+ * and test devices, and would drown the people who use the app. Debug also
+ * prints; release never does.
  */
 object Logging {
 
-    fun install(debug: Boolean) {
-        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
+    /** [report]: whether this is the build Play ships. The manifest keeps the others quiet before this runs. */
+    fun install(debug: Boolean, report: Boolean) {
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = report
         if (debug) {
             Timber.plant(Timber.DebugTree())
         }
