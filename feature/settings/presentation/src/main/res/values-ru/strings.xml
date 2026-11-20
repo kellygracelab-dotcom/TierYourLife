@@ -62,6 +62,8 @@
     <string name="settings_backup_stuck">Нет копии с %1$s. Проверьте подключение.</string>
     <string name="settings_backup_sub">Уровни, карточки и подписи</string>
     <string name="settings_export">Экспорт данных</string>
+    <string name="settings_send_usage">Отправлять статистику использования</string>
+    <string name="settings_send_usage_sub">Анонимные подсчёты того, чем пользуются, без вашего аккаунта</string>
     <string name="settings_export_sub">Сохранить читаемую копию каждого списка</string>
     <string name="settings_group_appearance">Оформление</string>
     <string name="settings_group_data">Ваши данные</string>

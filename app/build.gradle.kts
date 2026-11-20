@@ -138,6 +138,7 @@ dependencies {
     implementation(projects.core.logging)
     implementation(projects.core.settings)
     implementation(projects.core.theme)
+    implementation(projects.core.usage)
     implementation(projects.navigation)
     implementation(projects.feature.account.data)
     implementation(projects.feature.account.domain)

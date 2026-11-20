@@ -58,6 +58,8 @@
     <string name="settings_backup_stuck">Seit %1$s nicht gesichert. Prüfe deine Verbindung.</string>
     <string name="settings_backup_sub">Stufen, Karten und Beschriftungen</string>
     <string name="settings_export">Daten exportieren</string>
+    <string name="settings_send_usage">Nutzungsstatistik senden</string>
+    <string name="settings_send_usage_sub">Anonyme Zählungen der Nutzung, ohne dein Konto</string>
     <string name="settings_export_sub">Eine lesbare Kopie jeder Liste speichern</string>
     <string name="settings_group_appearance">Darstellung</string>
     <string name="settings_group_data">Deine Daten</string>

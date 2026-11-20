@@ -42,6 +42,7 @@ private const val KEY_TIPS_OFF = "tips_off"
 private const val KEY_OWN_FACE = "own_face"
 private const val KEY_CARD_FACE = "card_face"
 private const val KEY_NAMES_ON_CARDS = "namesOnCards"
+private const val KEY_SEND_USAGE = "sendUsage"
 private const val KEY_PUBLISHED_OWNERS = "published_owners"
 private const val KEY_LAST_PUBLISHING_ACCOUNT = "last_publishing_account"
 private const val KEY_ACCOUNT_ERASED_NOTICE = "account_erased_where"
@@ -214,6 +215,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun setNamesOnCards(on: Boolean) {
         prefs.edit { putBoolean(KEY_NAMES_ON_CARDS, on) }
+    }
+
+    override fun sendUsage(): Boolean = prefs.getBoolean(KEY_SEND_USAGE, true)
+
+    override fun setSendUsage(on: Boolean) {
+        prefs.edit { putBoolean(KEY_SEND_USAGE, on) }
     }
 
     // Rows by default: they say how many cards are ranked and how many wait,

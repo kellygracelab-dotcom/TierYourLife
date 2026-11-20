@@ -8,6 +8,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import java.util.Optional
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -34,7 +35,9 @@ object ProxyModule {
         appCheckInterceptor: AppCheckInterceptor,
         idTokenInterceptor: IdTokenInterceptor,
         erasedAccounts: ErasedAccounts,
+        headers: Optional<ProxyHeaders> = Optional.empty(),
     ): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(ProxyHeadersInterceptor(headers.orElse(null)))
         .addInterceptor(appCheckInterceptor)
         .addInterceptor(idTokenInterceptor)
         // After the token, so it sees whose token the refusal answered.

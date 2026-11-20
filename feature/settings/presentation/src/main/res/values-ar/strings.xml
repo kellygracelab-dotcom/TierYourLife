@@ -66,6 +66,8 @@
     <string name="settings_backup_stuck">لا توجد نسخة منذ %1$s. تحقق من اتصالك.</string>
     <string name="settings_backup_sub">المستويات والبطاقات والملاحظات</string>
     <string name="settings_export">تصدير البيانات</string>
+    <string name="settings_send_usage">إرسال إحصاءات الاستخدام</string>
+    <string name="settings_send_usage_sub">أعداد مجهولة الهوية لما يُستخدم، دون حسابك</string>
     <string name="settings_export_sub">حفظ نسخة قابلة للقراءة من كل قائمة</string>
     <string name="settings_group_appearance">المظهر</string>
     <string name="settings_group_data">بياناتك</string>

@@ -62,6 +62,8 @@
     <string name="settings_backup_stuck">Brak kopii od %1$s. Sprawdź połączenie.</string>
     <string name="settings_backup_sub">Poziomy, karty i podpisy</string>
     <string name="settings_export">Eksportuj dane</string>
+    <string name="settings_send_usage">Wysyłaj statystyki użycia</string>
+    <string name="settings_send_usage_sub">Anonimowe liczniki tego, z czego się korzysta, bez Twojego konta</string>
     <string name="settings_export_sub">Zapisz czytelną kopię każdej listy</string>
     <string name="settings_group_appearance">Wygląd</string>
     <string name="settings_group_data">Twoje dane</string>

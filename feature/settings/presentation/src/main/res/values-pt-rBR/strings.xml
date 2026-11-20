@@ -60,6 +60,8 @@
     <string name="settings_backup_stuck">Sem cópia desde %1$s. Verifique sua conexão.</string>
     <string name="settings_backup_sub">Níveis, cartões e legendas</string>
     <string name="settings_export">Exportar dados</string>
+    <string name="settings_send_usage">Enviar estatísticas de uso</string>
+    <string name="settings_send_usage_sub">Contagens anônimas do que é usado, sem a sua conta</string>
     <string name="settings_export_sub">Salvar uma cópia legível de cada lista</string>
     <string name="settings_group_appearance">Aparência</string>
     <string name="settings_group_data">Seus dados</string>

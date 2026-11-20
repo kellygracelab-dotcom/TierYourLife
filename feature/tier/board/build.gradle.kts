@@ -18,6 +18,7 @@ dependencies {
     implementation(projects.core.logging)
     implementation(projects.core.settings)
     implementation(projects.core.theme)
+    implementation(projects.core.usage)
     implementation(projects.feature.tier.domain)
     // A board's settings sheet publishes it, and says why it could not.
     implementation(projects.feature.community.domain)
@@ -25,6 +26,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
+    testImplementation(testFixtures(projects.core.usage))
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.robolectric)

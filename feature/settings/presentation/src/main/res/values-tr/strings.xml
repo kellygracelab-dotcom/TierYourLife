@@ -58,6 +58,8 @@
     <string name="settings_backup_stuck">%1$s tarihinden beri yedeklenmedi. Bağlantınızı kontrol edin.</string>
     <string name="settings_backup_sub">Seviyeler, kartlar ve notlar</string>
     <string name="settings_export">Verileri dışa aktar</string>
+    <string name="settings_send_usage">Kullanım istatistiklerini gönder</string>
+    <string name="settings_send_usage_sub">Neyin kullanıldığına dair anonim sayımlar, hesabınız olmadan</string>
     <string name="settings_export_sub">Her listenin okunabilir bir kopyasını kaydedin</string>
     <string name="settings_group_appearance">Görünüm</string>
     <string name="settings_group_data">Verileriniz</string>

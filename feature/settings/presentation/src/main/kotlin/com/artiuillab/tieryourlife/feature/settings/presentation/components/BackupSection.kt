@@ -117,7 +117,7 @@ internal fun StopBackingUpDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun SwitchRow(
+internal fun SwitchRow(
     label: String,
     supporting: String,
     checked: Boolean,

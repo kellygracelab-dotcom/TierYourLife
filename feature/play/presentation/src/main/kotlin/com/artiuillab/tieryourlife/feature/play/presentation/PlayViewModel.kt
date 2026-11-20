@@ -4,6 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.ReviewMoments
+import com.artiuillab.tieryourlife.core.usage.GameMode
+import com.artiuillab.tieryourlife.core.usage.Usage
+import com.artiuillab.tieryourlife.core.usage.UsageFeature
+import com.artiuillab.tieryourlife.core.usage.UsageStep
+import com.artiuillab.tieryourlife.core.usage.listFinished
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.domain.GameSpec
 import com.artiuillab.tieryourlife.feature.play.domain.MIN_PLAY_CARDS
@@ -46,6 +51,7 @@ class PlayViewModel @Inject constructor(
     private val boards: TierRepository,
     private val boardSync: BoardSync = BoardSync.None,
     private val reviewMoments: ReviewMoments = ReviewMoments.None,
+    private val usage: Usage = Usage.None,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PlayState())
@@ -250,7 +256,10 @@ class PlayViewModel @Inject constructor(
             close()
             if (!shown.intoMine) viewModelScope.launch { say(PlayNotice.BoardArranged(shown.duels)) }
             // Back on the board after "Your ranking is ready": the moment for Play's review card.
-            if (shown.board.allPlaced()) reviewMoments.listFinished(shown.board.cardCount())
+            if (shown.board.allPlaced()) {
+                reviewMoments.listFinished(shown.board.cardCount())
+                usage.listFinished(shown.board.cardCount())
+            }
         }
 
         /** Play again: the picker over the board as the game left it. */
@@ -349,6 +358,7 @@ class PlayViewModel @Inject constructor(
         arranged = null
         lastKind = kind
         show(Session(request.key, request.board, game, own = !request.intoMine))
+        usage.count(UsageFeature.game(kind.mode, done = false))
         viewModelScope.launch {
             games.rememberKind(kind)
             if (replaced != null) {
@@ -421,7 +431,11 @@ class PlayViewModel @Inject constructor(
         viewModelScope.launch {
             val ready = settle(current, shown, request)
             when {
-                ready != null -> stage = PlayStage.Ready(ready)
+                ready != null -> {
+                    stage = PlayStage.Ready(ready)
+                    usage.count(UsageFeature.game(current.game.spec.kind.mode, done = true))
+                    usage.step(UsageStep.FirstGame)
+                }
                 // Unless the picker was opened again meanwhile, to apply it once more.
                 stage == PlayStage.Closed -> close()
             }
@@ -533,3 +547,12 @@ internal fun smartTiers(kind: GameKind, board: TierList, keepTier: Boolean, coun
     keepTier -> count
     else -> board.tiers.count { !it.isPool }.coerceIn(1, maxOf(1, count))
 }
+
+/** As the picker names them: Swiss is Losers stay, Hill is King of the hill. */
+internal val GameKind.mode: GameMode
+    get() = when (this) {
+        GameKind.Hill -> GameMode.King
+        GameKind.Bracket -> GameMode.Bracket
+        GameKind.Swiss -> GameMode.Losers
+        GameKind.Smart -> GameMode.Smart
+    }
