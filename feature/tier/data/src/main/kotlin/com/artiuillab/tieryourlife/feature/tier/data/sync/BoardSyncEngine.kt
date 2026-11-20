@@ -549,10 +549,14 @@ class BoardSyncEngine @Inject constructor(
      */
     private suspend fun adopt(account: String, incoming: KeptBoardDto, asCopy: Boolean = false) {
         if (incoming.deleted) return
-        if (!asCopy && dao.boardByUid(incoming.uid) != null) return adoptBesideAnotherOwners(account, incoming)
         val uid = if (asCopy) UUID.randomUUID().toString() else incoming.uid
         val fresh = if (asCopy) incoming.freshUids() else null
+        var here: TierListEntity? = null
         dao.together {
+            // Asked in the same write as the insert: a board that took the uid
+            // since the plan is met here, not by a failed insert.
+            here = if (asCopy) null else dao.boardByUid(uid)
+            if (here != null) return@together
             val board = incoming.toEntity(id = 0, uid = uid, pathFor = images::pathFor)
             dao.addBoard(
                 board = board.copy(
@@ -571,6 +575,13 @@ class BoardSyncEngine @Inject constructor(
             val stored = dao.boardByUid(uid) ?: return@together
             remember(account, uid, incoming.revision, fingerprintOf(stored), incoming.fingerprint)
         }
+        val taken = here ?: return
+        if (taken.ownerUid == account && !taken.draft) {
+            // This account's own, come down meanwhile: the next run plans from what is here.
+            Timber.i("A board came down meanwhile and is not adopted twice")
+            return
+        }
+        adoptBesideAnotherOwners(account, incoming)
     }
 
     /**
@@ -579,7 +590,7 @@ class BoardSyncEngine @Inject constructor(
      * a new uid, and the record left for the old one makes the next run tell
      * the account it is gone from here; the new uid goes up in its place.
      */
-    private suspend fun adoptBesideAnotherOwners(account: String, incoming: KeptBoardDto) {
+    private suspend fun adoptBesideAnotherOwners(account: String, incoming: KeptBoardDto) = dao.together {
         val uid = standInFor(account, incoming.uid).takeIf { dao.boardByUid(it) == null } ?: UUID.randomUUID().toString()
         val fresh = incoming.freshUids()
         val board = incoming.toEntity(id = 0, uid = uid, pathFor = images::pathFor)
