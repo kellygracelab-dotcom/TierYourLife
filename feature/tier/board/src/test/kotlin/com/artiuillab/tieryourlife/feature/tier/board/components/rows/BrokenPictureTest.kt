@@ -1,10 +1,12 @@
 package com.artiuillab.tieryourlife.feature.tier.board.components.rows
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,5 +30,22 @@ class BrokenPictureTest {
         }
 
         composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("Spirited Away").fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    @Test
+    fun aPictureThatWillNotLoad_isReported_soACopyCanAskItsOriginal() {
+        val lost = mutableListOf<TierItem>()
+        val card = TierItem(2, "NES", "file:///gone/nes.jpg", sourceIndex = 0)
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CompositionLocalProvider(LocalPictureLost provides { lost += it }) {
+                    ItemTile(item = card, width = 72.dp, height = 96.dp)
+                }
+            }
+        }
+
+        composeRule.waitUntil(10_000) { lost.isNotEmpty() }
+        composeRule.waitForIdle()
+        assertEquals(listOf(card), lost)
     }
 }

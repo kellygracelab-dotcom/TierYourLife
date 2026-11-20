@@ -129,6 +129,12 @@ interface TierRepository {
     suspend fun setItemFocus(itemId: Long, focus: CoverFocus?) = Unit
 
     /**
+     * A copied card's picture as its original shows it now: [picture]'s address, credit, attribution
+     * and focus. Only while the card still shows [lost], so a picture chosen meanwhile stays.
+     */
+    suspend fun replaceLostPicture(itemId: Long, lost: String, picture: TierItem) = Unit
+
+    /**
      * A picture from the gallery copied into the app's own, where it outlives
      * the picker's permission and publishes as this person's photo. Answers
      * where it is kept.

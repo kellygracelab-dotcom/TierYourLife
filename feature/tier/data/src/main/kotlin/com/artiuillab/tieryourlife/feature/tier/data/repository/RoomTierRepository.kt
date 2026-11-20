@@ -245,6 +245,12 @@ class RoomTierRepository internal constructor(
         dao.setItemFocus(itemId, kept?.x, kept?.y, kept?.zoom)
     }
 
+    override suspend fun replaceLostPicture(itemId: Long, lost: String, picture: TierItem) {
+        val address = picture.imageUrl ?: return
+        val focus = picture.focus?.inRange()
+        dao.replaceLostPicture(itemId, lost, address, picture.credit, picture.attribution, focus?.x, focus?.y, focus?.zoom)
+    }
+
     override suspend fun moveItem(itemId: Long, toTierId: Long, toPosition: Int) {
         dao.moveItem(itemId, toTierId, toPosition)
     }

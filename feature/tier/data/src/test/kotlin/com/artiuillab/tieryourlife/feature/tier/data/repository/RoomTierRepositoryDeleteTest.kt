@@ -9,6 +9,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
 import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
+import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItemSource
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import kotlinx.coroutines.runBlocking
@@ -444,6 +445,18 @@ private class RecordingTierDao : TierDao {
 
     override suspend fun updateTierItemImage(id: Long, imageUrl: String?) =
         update(id) { it.copy(imageUrl = imageUrl, credit = null, attribution = null, focusX = null, focusY = null, focusZoom = null) }
+    override suspend fun replaceLostPicture(
+        id: Long,
+        lost: String,
+        imageUrl: String,
+        credit: String?,
+        attribution: PictureAttribution?,
+        x: Float?,
+        y: Float?,
+        zoom: Float?,
+    ) = update(id) {
+        if (it.imageUrl != lost) it else it.copy(imageUrl = imageUrl, credit = credit, attribution = attribution, focusX = x, focusY = y, focusZoom = zoom)
+    }
     override suspend fun getFocusedPictures(owner: String?): List<FocusedPictureRow> = emptyList()
     override suspend fun setItemFocus(id: Long, x: Float?, y: Float?, zoom: Float?) =
         update(id) { if (it.imageUrl == null) it else it.copy(focusX = x, focusY = y, focusZoom = zoom) }

@@ -23,6 +23,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.lists.finishedFrom
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PoolItemDraft
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RemovedTierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
@@ -32,6 +33,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.repository.fits
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDetailRoute
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardPublicationController
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CopiedPictures
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PublishSheetController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -132,6 +134,15 @@ class TierDetailViewModel @Inject constructor(
     fun dismissRankingOffer() = publication.dismissOffer()
     fun shareRankingOffer(onSignIn: () -> Unit) = publication.shareOffer(onSignIn)
     fun recheckOriginal() = publication.recheckOriginal()
+
+    private val copiedPictures = CopiedPictures(
+        repository, community, viewModelScope,
+        current = { (board as? TierDetailUiState.Success)?.list },
+        reload = ::reloadTierList,
+    )
+
+    /** A card whose picture would not load; on a copy, its original may show another by now. */
+    fun pictureLost(card: TierItem) = copiedPictures.lost(card)
 
     private val sheet = PublishSheetController(
         repository, community, viewModelScope,

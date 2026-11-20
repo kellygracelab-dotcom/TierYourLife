@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailActions
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalPictureLost
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.Publishing
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.ManualEntryDialog
 import com.artiuillab.tieryourlife.feature.tier.board.play.BoardPlay
@@ -86,60 +88,62 @@ fun TierDetailScreen(
     val loadedList = (state as? TierDetailUiState.Success)?.list
     val originalLink = originalLinkOf(loadedList, originalLinks, onOpenPublishedList)
 
-    TierDetailScreenContent(
-        state = state,
-        allLists = screen.allLists,
-        onOpenList = onOpenList,
-        onBoardsBesideWanted = viewModel::wantBoardsBeside,
-        addedItemIds = addedItemIds,
-        userMessages = viewModel.userMessages,
-        belowTopBar = originalLink,
-        actions = TierDetailActions(
-            onBack = back,
-            signedIn = screen.signedIn,
-            ownName = screen.ownName,
-            publishing = publish.publishing,
-            publishError = publish.error,
-            publicPending = publish.publicPending,
-            categoryWanted = publish.categoryWanted,
-            onSetPublic = viewModel::setPublic,
-            publishedIsBehind = publish.publishedIsBehind,
-            onUpdatePublished = viewModel::updatePublished,
-            onSeeInCommunity = onSeeInCommunity,
-            onOpenOriginal = loadedList?.original()?.let { id -> { onOpenPublishedList(id) } },
-            onSetCategory = viewModel::setCategory,
-            onCategoryNotChosen = viewModel::categoryNotChosen,
-            onProposeSection = onProposeSection?.let { propose -> { fileUnder -> propose(fileUnder, null) } },
-            onChooseCover = onChooseCover,
-            onAdjustCover = onAdjustCover,
-            onAdjustPicture = onAdjustPicture,
-            onChooseTopic = onChooseTopic,
-            onAddClick = { addSheetVisible = true },
-            onManualAddClick = { manualEntryVisible = true },
-            onMoveItem = viewModel::moveItem,
-            onReturnAllToPool = viewModel::returnAllToPool,
-            onDeleteItem = viewModel::deleteItem,
-            onRestoreItem = viewModel::restoreItem,
-            onForgetDeletedItem = viewModel::forgetDeletedItem,
-            onReorderTiers = viewModel::reorderTiers,
-            onDeleteTierToPool = viewModel::deleteTierToPool,
-            onRestoreTier = viewModel::restoreTier,
-            onAddTier = viewModel::addTier,
-            onEditTier = viewModel::editTier,
-            onSetDisplayMode = viewModel::setDisplayMode,
-            onRenameList = viewModel::renameTierList,
-            onOpenAiStudio = onOpenAiStudio,
-            onConsumeAddedItem = {
-                onAddedItemConsumed()
-                viewModel.loadTierList()
-            },
-            onUndoAddedItem = viewModel::removeAddedItems,
-            focusTierId = focusTierId,
-            onPlay = { playOpen = true },
-            playSaved = playRequest?.let { play.isSaved(it.key) } == true,
-            onPublish = barPublish(viewModel, screen.signedIn, onSignIn),
-        ),
-    )
+    CompositionLocalProvider(LocalPictureLost provides viewModel::pictureLost) {
+        TierDetailScreenContent(
+            state = state,
+            allLists = screen.allLists,
+            onOpenList = onOpenList,
+            onBoardsBesideWanted = viewModel::wantBoardsBeside,
+            addedItemIds = addedItemIds,
+            userMessages = viewModel.userMessages,
+            belowTopBar = originalLink,
+            actions = TierDetailActions(
+                onBack = back,
+                signedIn = screen.signedIn,
+                ownName = screen.ownName,
+                publishing = publish.publishing,
+                publishError = publish.error,
+                publicPending = publish.publicPending,
+                categoryWanted = publish.categoryWanted,
+                onSetPublic = viewModel::setPublic,
+                publishedIsBehind = publish.publishedIsBehind,
+                onUpdatePublished = viewModel::updatePublished,
+                onSeeInCommunity = onSeeInCommunity,
+                onOpenOriginal = loadedList?.original()?.let { id -> { onOpenPublishedList(id) } },
+                onSetCategory = viewModel::setCategory,
+                onCategoryNotChosen = viewModel::categoryNotChosen,
+                onProposeSection = onProposeSection?.let { propose -> { fileUnder -> propose(fileUnder, null) } },
+                onChooseCover = onChooseCover,
+                onAdjustCover = onAdjustCover,
+                onAdjustPicture = onAdjustPicture,
+                onChooseTopic = onChooseTopic,
+                onAddClick = { addSheetVisible = true },
+                onManualAddClick = { manualEntryVisible = true },
+                onMoveItem = viewModel::moveItem,
+                onReturnAllToPool = viewModel::returnAllToPool,
+                onDeleteItem = viewModel::deleteItem,
+                onRestoreItem = viewModel::restoreItem,
+                onForgetDeletedItem = viewModel::forgetDeletedItem,
+                onReorderTiers = viewModel::reorderTiers,
+                onDeleteTierToPool = viewModel::deleteTierToPool,
+                onRestoreTier = viewModel::restoreTier,
+                onAddTier = viewModel::addTier,
+                onEditTier = viewModel::editTier,
+                onSetDisplayMode = viewModel::setDisplayMode,
+                onRenameList = viewModel::renameTierList,
+                onOpenAiStudio = onOpenAiStudio,
+                onConsumeAddedItem = {
+                    onAddedItemConsumed()
+                    viewModel.loadTierList()
+                },
+                onUndoAddedItem = viewModel::removeAddedItems,
+                focusTierId = focusTierId,
+                onPlay = { playOpen = true },
+                playSaved = playRequest?.let { play.isSaved(it.key) } == true,
+                onPublish = barPublish(viewModel, screen.signedIn, onSignIn),
+            ),
+        )
+    }
 
     BoardPublicationDialogs(
         state = publication,

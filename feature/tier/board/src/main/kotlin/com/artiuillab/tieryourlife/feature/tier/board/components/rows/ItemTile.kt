@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,11 +39,15 @@ import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 
+/** Told of a card whose picture failed to load, so the board can look for the one its original shows now. */
+val LocalPictureLost = staticCompositionLocalOf<(TierItem) -> Unit> { {} }
+
 /** [named]: the picture's name on a strip along its foot, as the board shows it unless turned off. */
 @Composable
 fun ItemTile(item: TierItem, width: Dp, height: Dp, named: Boolean = LocalBoardLayoutMemory.current.namesOnCards) {
     // A picture its source took away (404/403) leaves the card's name, as on the website, not an empty tile.
     var broken by remember(item.imageUrl) { mutableStateOf(false) }
+    val lost = LocalPictureLost.current
     val picture = item.imageUrl.takeUnless { broken }
     if (picture == null && width >= TEXT_CARD_MIN_WIDTH) {
         TextCard(title = item.title, width = width, height = height, bordered = width == COMPACT_TILE_WIDTH || width == ROOMY_TILE_WIDTH)
@@ -65,7 +70,10 @@ fun ItemTile(item: TierItem, width: Dp, height: Dp, named: Boolean = LocalBoardL
                 contentDescription = item.title,
                 modifier = Modifier.fillMaxSize(),
                 crossfadeMillis = POSTER_FADE_MILLIS,
-                onError = { broken = true },
+                onError = {
+                    broken = true
+                    lost(item)
+                },
             )
             if (named) NameStrip(item.title, width, small = width < ROOMY_TILE_WIDTH)
         } else {
