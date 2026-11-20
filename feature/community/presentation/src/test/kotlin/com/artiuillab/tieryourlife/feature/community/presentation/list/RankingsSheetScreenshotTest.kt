@@ -31,17 +31,25 @@ class RankingsSheetScreenshotTest {
         Ranking("r2", "Marta", null, emptyList(), emptyList(), updatedAtMillis = day),
     )
 
+    private val olenas = CommunityListUiState.Success(
+        list = TierList(id = 0, title = "Films", tiers = emptyList()),
+        authorName = "Olena M.",
+        rankings = rankings,
+        rankingCount = rankings.size,
+    )
+    private val house = CommunityListUiState.Success(
+        list = TierList(id = 0, title = "Pizza styles", tiers = emptyList()),
+        authorName = "",
+        authorUid = "85RRieyLyUPCEqHjdYCdxVlWxHx2",
+        editorial = true,
+    )
+
     @OptIn(ExperimentalRoborazziApi::class)
-    private fun capture(name: String, dark: Boolean) {
+    private fun capture(name: String, dark: Boolean, state: CommunityListUiState.Success = olenas) {
         composeRule.setContent {
             TierYourLifeTheme(darkTheme = dark) {
                 RankingsSheet(
-                    state = CommunityListUiState.Success(
-                        list = TierList(id = 0, title = "Films", tiers = emptyList()),
-                        authorName = "Olena M.",
-                        rankings = rankings,
-                        rankingCount = rankings.size,
-                    ),
+                    state = state,
                     onDismiss = {},
                     onChoose = {},
                     onLoadMore = {},
@@ -58,6 +66,13 @@ class RankingsSheetScreenshotTest {
 
     @Test
     fun dark() = capture("rankings_sheet_likes_dark", dark = true)
+
+    // Designer, 20.11: the house's own placing under its own name and face, never "Someone".
+    @Test
+    fun theHouse() = capture("rankings_sheet_house_dark", dark = true, state = house.copy(rankings = rankings.take(1), rankingCount = 1))
+
+    @Test
+    fun nobodyYet() = capture("rankings_sheet_empty_dark", dark = true, state = house.copy(knowsTheirs = false))
 
     private companion object {
         val OPTIONS = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.01F))

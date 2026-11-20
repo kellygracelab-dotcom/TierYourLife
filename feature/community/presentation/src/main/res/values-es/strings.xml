@@ -146,6 +146,7 @@
     <string name="community_rankings_title">Clasificaciones</string>
     <string name="community_rankings_body">Las mismas tarjetas, colocadas a la manera de alguien. Elige de quién mostrar las filas.</string>
     <string name="community_ranking_author">Autor</string>
+    <string name="community_rankings_empty">Aún no hay rankings. Guarda el tuyo y será el primero aquí.</string>
     <string name="community_ranking_you">Tú</string>
     <string name="community_ranking_withdraw">Retirar</string>
     <string name="community_action_rankings">Clasificaciones · %1$d</string>

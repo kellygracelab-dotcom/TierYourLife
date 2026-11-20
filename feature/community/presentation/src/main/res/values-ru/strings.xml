@@ -148,6 +148,7 @@
     <string name="community_rankings_title">Рейтинги</string>
     <string name="community_rankings_body">Те же карточки, расставленные по-своему. Выберите, чьи ряды показать.</string>
     <string name="community_ranking_author">Автор</string>
+    <string name="community_rankings_empty">Рейтингов пока нет. Сохраните свой — он будет здесь первым.</string>
     <string name="community_ranking_you">Вы</string>
     <string name="community_ranking_withdraw">Снять</string>
     <string name="community_action_rankings">Рейтинги · %1$d</string>

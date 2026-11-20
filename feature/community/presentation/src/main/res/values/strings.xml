@@ -144,6 +144,7 @@
     <string name="community_rankings_title">Rankings</string>
     <string name="community_rankings_body">The same cards, placed somebody’s way. Choose whose rows to show.</string>
     <string name="community_ranking_author">Author</string>
+    <string name="community_rankings_empty">No rankings yet. Save yours and it’ll be the first one here.</string>
     <string name="community_ranking_you">You</string>
     <string name="community_ranking_withdraw">Withdraw</string>
     <string name="community_action_rankings">Rankings · %1$d</string>
