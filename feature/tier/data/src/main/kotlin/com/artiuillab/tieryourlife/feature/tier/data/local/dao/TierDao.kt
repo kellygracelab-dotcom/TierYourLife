@@ -593,6 +593,21 @@ interface TierDao {
     @Query("UPDATE tier_items SET focusX = :x, focusY = :y, focusZoom = :zoom WHERE id = :id AND imageUrl IS NOT NULL")
     suspend fun setItemFocus(id: Long, x: Float?, y: Float?, zoom: Float?)
 
+    @Query(
+        "UPDATE tier_items SET imageUrl = :imageUrl, credit = :credit, attribution = :attribution, " +
+            "focusX = :x, focusY = :y, focusZoom = :zoom WHERE id = :id AND imageUrl = :lost",
+    )
+    suspend fun replaceLostPicture(
+        id: Long,
+        lost: String,
+        imageUrl: String,
+        credit: String?,
+        attribution: PictureAttribution?,
+        x: Float?,
+        y: Float?,
+        zoom: Float?,
+    )
+
     @Query("SELECT imageUrl FROM tier_items WHERE id = :id")
     suspend fun getTierItemImageById(id: Long): String?
 
