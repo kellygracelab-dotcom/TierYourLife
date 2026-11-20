@@ -8,7 +8,7 @@ class UsageHeadersTest {
 
     @Test
     fun onByDefault_theVersionAndTheLocaleGoWithEveryCall() {
-        val headers = UsageHeaders(FakeAppPreferences(), UsageInstall("597")) { "uk-UA" }
+        val headers = UsageHeaders(FakeAppPreferences(), UsageInstall("597", fromPlay = true)) { "uk-UA" }
 
         assertEquals(mapOf("X-TYL-Client" to "android/597", "X-TYL-Locale" to "uk-UA"), headers.headers())
     }
@@ -17,6 +17,11 @@ class UsageHeadersTest {
     fun statisticsOff_sendsNeither() {
         val preferences = FakeAppPreferences().apply { usageOn = false }
 
-        assertEquals(emptyMap<String, String>(), UsageHeaders(preferences, UsageInstall("597")) { "uk-UA" }.headers())
+        assertEquals(emptyMap<String, String>(), UsageHeaders(preferences, UsageInstall("597", fromPlay = true)) { "uk-UA" }.headers())
+    }
+
+    @Test
+    fun aBuildPlayDidNotShip_sendsNeither() {
+        assertEquals(emptyMap<String, String>(), UsageHeaders(FakeAppPreferences(), UsageInstall("597", fromPlay = false)) { "uk-UA" }.headers())
     }
 }

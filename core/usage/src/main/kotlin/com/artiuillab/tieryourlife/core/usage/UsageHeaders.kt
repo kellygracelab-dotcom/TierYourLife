@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 /**
  * The version, language and region on every call to the proxy, which counts
- * what it answers by them. Statistics off, none of the three is sent.
+ * what it answers by them. Statistics off, or a build Play did not ship, none of the three is sent.
  */
 class UsageHeaders internal constructor(
     private val preferences: AppPreferences,
@@ -18,7 +18,7 @@ class UsageHeaders internal constructor(
     constructor(preferences: AppPreferences, install: UsageInstall) : this(preferences, install, { localeTagOf(preferences) })
 
     override fun headers(): Map<String, String> {
-        if (!preferences.sendUsage()) return emptyMap()
+        if (!install.fromPlay || !preferences.sendUsage()) return emptyMap()
         return buildMap {
             put(CLIENT, "android/${install.version}")
             locale()?.let { put(LOCALE, it) }

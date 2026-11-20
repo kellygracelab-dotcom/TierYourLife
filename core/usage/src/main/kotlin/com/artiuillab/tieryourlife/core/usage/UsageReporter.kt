@@ -18,8 +18,11 @@ import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** The app's version as the statistics name it: the build number, the one Crashlytics and Play show. */
-data class UsageInstall(val version: String)
+/**
+ * The app's version as the statistics name it: the build number, the one Crashlytics and Play show.
+ * [fromPlay]: only the build Play ships counts. Debug, fast and test runs are ours and would count us.
+ */
+data class UsageInstall(val version: String, val fromPlay: Boolean)
 
 /**
  * Keeps the counts on the phone and sends them in one batch a session, when
@@ -43,7 +46,7 @@ class UsageReporter internal constructor(
         api: UsageApi,
         install: UsageInstall,
     ) : this(
-        store = LedgerStore(context.getSharedPreferences(LedgerStore.FILE, Context.MODE_PRIVATE), firstOf(context, preferences)),
+        store = LedgerStore(context.getSharedPreferences(LedgerStore.FILE, Context.MODE_PRIVATE), firstOf(context) { install.fromPlay && preferences.sendUsage() }),
         preferences = preferences,
         api = api,
         install = install,
@@ -55,13 +58,15 @@ class UsageReporter internal constructor(
     private var inSession = false
     private var endedAt: Long? = null
 
+    private fun on() = install.fromPlay && preferences.sendUsage()
+
     override fun step(step: UsageStep) {
-        val on = preferences.sendUsage()
+        val on = on()
         store.update { it.stepped(step, on) }
     }
 
     override fun count(feature: UsageFeature) {
-        if (preferences.sendUsage()) store.update { it.counted(feature.wire) }
+        if (on()) store.update { it.counted(feature.wire) }
     }
 
     /** At the app's start: counts a crash from now on, and sends what the last session left. */
@@ -83,7 +88,7 @@ class UsageReporter internal constructor(
         if (inSession) return
         inSession = true
         val back = endedAt?.let { now() - it < SESSION_GAP_MS } == true
-        if (back || !preferences.sendUsage()) return
+        if (back || !on()) return
         store.update { it.counted(UsageFeature.Session.wire).copy(sessions = it.sessions + 1) }
     }
 
@@ -94,7 +99,7 @@ class UsageReporter internal constructor(
     }
 
     internal fun crashed(error: Throwable) {
-        if (!preferences.sendUsage()) return
+        if (!on()) return
         val crash = crashOf(error)
         // One that fell before any screen showed is a session too, and the shortest.
         val opened = !inSession
@@ -109,7 +114,7 @@ class UsageReporter internal constructor(
     internal fun send() = scope.launch { sending.withLock { sendNow() } }
 
     internal suspend fun sendNow() {
-        if (!preferences.sendUsage()) return store.update { it.dropped() }
+        if (!on()) return store.update { it.dropped() }
         val day = today()
         if (store.quietOn() == day.toEpochDay()) return
         val batch = batchOf(store.read(), day, install.version, localeTagOf(preferences)) ?: return
@@ -136,14 +141,14 @@ class UsageReporter internal constructor(
          * The first launch is the install's: an install from before the
          * statistics already took its first steps, so none is sent for it.
          */
-        fun firstOf(context: Context, preferences: AppPreferences): () -> Ledger = {
+        fun firstOf(context: Context, on: () -> Boolean): () -> Ledger = {
             val info = runCatching { context.packageManager.getPackageInfo(context.packageName, 0) }.getOrNull()
             val installedAt = info?.firstInstallTime ?: System.currentTimeMillis()
             val fresh = info == null || info.firstInstallTime == info.lastUpdateTime
             val firstDay = Instant.ofEpochMilli(installedAt).atZone(ZoneId.systemDefault()).toLocalDate().toEpochDay()
             when {
                 !fresh -> Ledger(firstDay = firstDay, stepsDone = UsageStep.entries.mapTo(mutableSetOf()) { it.wire })
-                else -> Ledger(firstDay = firstDay).stepped(UsageStep.FirstLaunch, preferences.sendUsage())
+                else -> Ledger(firstDay = firstDay).stepped(UsageStep.FirstLaunch, on())
             }
         }
     }
