@@ -152,6 +152,7 @@
     <string name="community_rankings_title">التصنيفات</string>
     <string name="community_rankings_body">البطاقات نفسها مرتبة على طريقة شخص آخر. اختر صفوف من تريد عرضها.</string>
     <string name="community_ranking_author">المؤلف</string>
+    <string name="community_rankings_empty">لا توجد ترتيبات بعد. احفظ ترتيبك وسيكون الأول هنا.</string>
     <string name="community_ranking_you">أنت</string>
     <string name="community_ranking_withdraw">سحب</string>
     <string name="community_action_rankings">التصنيفات · %1$d</string>

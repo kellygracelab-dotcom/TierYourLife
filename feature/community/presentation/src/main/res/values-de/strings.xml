@@ -144,6 +144,7 @@
     <string name="community_rankings_title">Ranglisten</string>
     <string name="community_rankings_body">Dieselben Karten, von jemandem anders gesetzt. Wähle, wessen Reihen gezeigt werden.</string>
     <string name="community_ranking_author">Autor</string>
+    <string name="community_rankings_empty">Noch keine Ranglisten. Speichere deine, dann steht sie hier als erste.</string>
     <string name="community_ranking_you">Du</string>
     <string name="community_ranking_withdraw">Zurückziehen</string>
     <string name="community_action_rankings">Ranglisten · %1$d</string>

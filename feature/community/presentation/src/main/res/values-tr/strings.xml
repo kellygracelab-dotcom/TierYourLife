@@ -144,6 +144,7 @@
     <string name="community_rankings_title">Sıralamalar</string>
     <string name="community_rankings_body">Aynı kartlar, birinin kendi usulünce dizilmiş. Kimin sıralarının gösterileceğini seçin.</string>
     <string name="community_ranking_author">Yazar</string>
+    <string name="community_rankings_empty">Henüz sıralama yok. Sizinkini kaydedin, burada ilk o olsun.</string>
     <string name="community_ranking_you">Siz</string>
     <string name="community_ranking_withdraw">Geri çek</string>
     <string name="community_action_rankings">Sıralamalar · %1$d</string>

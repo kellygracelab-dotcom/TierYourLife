@@ -148,6 +148,7 @@
     <string name="community_rankings_title">Rankingi</string>
     <string name="community_rankings_body">Te same karty ułożone po czyjemuś. Wybierz, czyje rzędy pokazać.</string>
     <string name="community_ranking_author">Autor</string>
+    <string name="community_rankings_empty">Nie ma jeszcze rankingów. Zapisz swój, a będzie tu pierwszy.</string>
     <string name="community_ranking_you">Ty</string>
     <string name="community_ranking_withdraw">Wycofaj</string>
     <string name="community_action_rankings">Rankingi · %1$d</string>

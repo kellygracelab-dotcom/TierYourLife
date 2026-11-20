@@ -31,6 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
+import com.artiuillab.tieryourlife.core.theme.ui.AppMark
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ThumbUpIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
@@ -43,6 +44,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 private const val LOAD_MORE_ROWS_AHEAD = 3
 
@@ -52,7 +54,8 @@ private const val LOAD_MORE_ROWS_AHEAD = 3
  * A thumb up on anyone else's; how many liked it is never shown. Choosing one
  * fills the left half of the switch with their placing. The check is on the
  * placing the board shows: the author's, a chosen one, or on Mine the reader's
- * own row when it is among them.
+ * own row when it is among them. An author who placed nothing has no row: their
+ * half is empty (Designer, 20.11), and with nobody else's either, the sheet says so.
  */
 @Composable
 internal fun RankingsSheet(
@@ -66,17 +69,7 @@ internal fun RankingsSheet(
     snackbars: SnackbarHostState? = null,
 ) {
     AdaptiveSheet(onDismiss = onDismiss, modifier = Modifier.testTag(CommunityListTestTags.RANKINGS_SHEET)) {
-        Text(
-            text = stringResource(R.string.community_rankings_title),
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.titleMedium,
-        )
-        Text(
-            text = stringResource(R.string.community_rankings_body),
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        RankingsHeading(nobodyYet = state.nobodyRankedYet)
 
         val listState = rememberLazyListState()
         val shown = state.rankings.size
@@ -86,17 +79,12 @@ internal fun RankingsSheet(
                 .collect { lastVisible -> if (lastVisible >= shown - LOAD_MORE_ROWS_AHEAD) onLoadMore() }
         }
         LazyColumn(state = listState, modifier = Modifier.weight(1f, fill = false)) {
-            item(key = "author") {
-                RankingRow(
-                    name = shownName(state.authorName),
-                    photoUrl = state.authorPhotoUrl,
-                    note = stringResource(R.string.community_ranking_author),
-                    selected = onBoard(state, ranking = null),
-                    onClick = { onChoose(null) },
-                    modifier = Modifier.testTag(CommunityListTestTags.RANKING_AUTHOR),
-                )
-                // The readers' rankings below, as many as the count says.
-                if (state.rankings.isNotEmpty()) HorizontalDivider(Modifier.padding(horizontal = 20.dp))
+            if (state.knowsTheirs) {
+                item(key = "author") {
+                    AuthorRankingRow(state, onChoose = { onChoose(null) })
+                    // The readers' rankings below, as many as the count says.
+                    if (state.rankings.isNotEmpty()) HorizontalDivider(Modifier.padding(horizontal = 20.dp))
+                }
             }
             items(state.rankings, key = { it.uid }) { ranking ->
                 RankingRow(
@@ -145,6 +133,49 @@ private fun LikeButton(liked: Boolean, onToggle: () -> Unit, tag: String) {
     }
 }
 
+/** Nobody's placing to show: the author placed nothing, and no reader has yet. */
+private val CommunityListUiState.Success.nobodyRankedYet: Boolean
+    get() = !knowsTheirs && rankingCount == 0 && rankings.isEmpty() && !rankingsLoading
+
+@Composable
+private fun RankingsHeading(nobodyYet: Boolean) {
+    Text(
+        text = stringResource(R.string.community_rankings_title),
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+        style = MaterialTheme.typography.titleMedium,
+    )
+    Text(
+        text = stringResource(if (nobodyYet) R.string.community_rankings_empty else R.string.community_rankings_body),
+        modifier = Modifier
+            .padding(start = 20.dp, end = 20.dp, bottom = if (nobodyYet) 24.dp else 8.dp)
+            .then(if (nobodyYet) Modifier.testTag(CommunityListTestTags.RANKINGS_EMPTY) else Modifier),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+@Composable
+private fun AuthorRankingRow(state: CommunityListUiState.Success, onChoose: () -> Unit) {
+    val appsOwn = state.editorial && !state.byNobody
+    RankingRow(
+        name = authorRowName(state),
+        photoUrl = state.authorPhotoUrl,
+        note = stringResource(R.string.community_ranking_author),
+        selected = onBoard(state, ranking = null),
+        onClick = onChoose,
+        modifier = Modifier.testTag(CommunityListTestTags.RANKING_AUTHOR),
+        face = if (appsOwn) ({ AppMark(size = 36.dp) }) else null,
+    )
+}
+
+/** The author's row by name: the app's own lists are the app's, never "Someone"; somebody's anonymous one stays so. */
+@Composable
+private fun authorRowName(state: CommunityListUiState.Success): String = when {
+    state.byNobody -> stringResource(R.string.community_anonymous)
+    state.editorial -> stringResource(ThemeR.string.app_name_display)
+    else -> shownName(state.authorName)
+}
+
 /** Whether [ranking] (the author's when null) is the placing on the board now. */
 private fun onBoard(state: CommunityListUiState.Success, ranking: Ranking?): Boolean = when {
     state.showing == Showing.Mine -> ranking?.mine == true
@@ -161,6 +192,7 @@ private fun RankingRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     trailing: (@Composable () -> Unit)? = null,
+    face: (@Composable () -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
@@ -171,7 +203,7 @@ private fun RankingRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        AuthorFace(photoUrl = photoUrl, name = name, size = 36.dp)
+        if (face != null) face() else AuthorFace(photoUrl = photoUrl, name = name, size = 36.dp)
         Column(Modifier.weight(1f)) {
             Text(
                 text = name,
