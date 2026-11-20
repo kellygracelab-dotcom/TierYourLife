@@ -48,11 +48,13 @@ android {
 
     buildTypes {
         debug {
+            manifestPlaceholders["crashlyticsCollection"] = "false"
             configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
                 mappingFileUploadEnabled = false
             }
         }
         release {
+            manifestPlaceholders["crashlyticsCollection"] = "true"
             signingConfig = signingConfigs.findByName("upload")
             isMinifyEnabled = true
             isShrinkResources = true
@@ -68,6 +70,7 @@ android {
             initWith(getByName("release"))
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += "release"
+            manifestPlaceholders["crashlyticsCollection"] = "false"
         }
     }
     compileOptions {

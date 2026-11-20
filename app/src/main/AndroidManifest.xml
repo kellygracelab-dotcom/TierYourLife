@@ -63,6 +63,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/share_paths" />
         </provider>
+        <!-- On only in the build Play ships, so a debug or fast build that crashes on start reports nothing. -->
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="${crashlyticsCollection}" />
     </application>
 
 </manifest>

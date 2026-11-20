@@ -121,10 +121,17 @@ jobs:
 
       # The build that reaches people is shrunk by R8, which the debug build
       # never is: a class R8 strips or a rule it rejects would otherwise first
-      # show up as a crash on a tester's phone. Unsigned, and the mapping file
-      # stays here: uploading it is the release's job, not every PR's.
+      # show up as a crash on a tester's phone. Unsigned. The bundle main
+      # builds is the one Play Internal ships, so main sends Crashlytics its
+      # mapping file from this same build (the id inside the bundle must match);
+      # a PR's bundle goes nowhere and keeps it.
       - name: Release bundle
-        run: ./gradlew :app:bundleRelease -PPROXY_BASE_URL=https://europe-west1-tieryourlife.cloudfunctions.net/ -x :app:uploadCrashlyticsMappingFileRelease
+        env:
+          SHIPPED: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          keep_mapping="-x :app:uploadCrashlyticsMappingFileRelease"
+          if [ "$SHIPPED" = "true" ]; then keep_mapping=""; fi
+          ./gradlew :app:bundleRelease -PPROXY_BASE_URL=https://europe-west1-tieryourlife.cloudfunctions.net/ $keep_mapping
 
       - name: Record unsigned release provenance
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
