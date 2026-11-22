@@ -4,7 +4,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
 import java.time.LocalDate
+import java.time.OffsetDateTime
 
 /** The batch as proxy CONTRACT.md, Usage statistics, reads it. */
 class UsageBatchTest {
@@ -116,6 +118,14 @@ class UsageBatchTest {
     fun theWeekOfANewYear_isTheIsoOne() {
         assertEquals("2026-W53", isoWeekOf(LocalDate.of(2027, 1, 1)))
         assertEquals("2026-W01", isoWeekOf(LocalDate.of(2025, 12, 29)))
+    }
+
+    @Test
+    fun aDay_isTheUtcDay_whateverTheLocalClockSays() {
+        // 00:30 on the 21st in Kyiv is still the 20th in UTC; 23:30 UTC is the 20th even where it is the 21st.
+        assertEquals(LocalDate.of(2026, 11, 20), utcDay(OffsetDateTime.parse("2026-11-21T00:30:00+02:00").toInstant().toEpochMilli()))
+        assertEquals(LocalDate.of(2026, 11, 20), utcDay(Instant.parse("2026-11-20T23:30:00Z").toEpochMilli()))
+        assertEquals(LocalDate.of(2026, 11, 21), utcDay(Instant.parse("2026-11-21T00:00:00Z").toEpochMilli()))
     }
 
     @Test

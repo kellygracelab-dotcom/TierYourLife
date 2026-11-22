@@ -12,9 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
-import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -50,7 +48,7 @@ class UsageReporter internal constructor(
         preferences = preferences,
         api = api,
         install = install,
-        today = { LocalDate.now() },
+        today = { utcDay(System.currentTimeMillis()) },
         scope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
     )
 
@@ -145,7 +143,7 @@ class UsageReporter internal constructor(
             val info = runCatching { context.packageManager.getPackageInfo(context.packageName, 0) }.getOrNull()
             val installedAt = info?.firstInstallTime ?: System.currentTimeMillis()
             val fresh = info == null || info.firstInstallTime == info.lastUpdateTime
-            val firstDay = Instant.ofEpochMilli(installedAt).atZone(ZoneId.systemDefault()).toLocalDate().toEpochDay()
+            val firstDay = utcDay(installedAt).toEpochDay()
             when {
                 !fresh -> Ledger(firstDay = firstDay, stepsDone = UsageStep.entries.mapTo(mutableSetOf()) { it.wire })
                 else -> Ledger(firstDay = firstDay).stepped(UsageStep.FirstLaunch, on())
@@ -153,6 +151,11 @@ class UsageReporter internal constructor(
         }
     }
 }
+
+/** The server counts a day once per UTC day, so the phone's days are UTC days too, wherever it is. */
+internal fun utcDay(epochMillis: Long): LocalDate = LocalDate.ofEpochDay(Math.floorDiv(epochMillis, MILLIS_PER_DAY))
+
+private const val MILLIS_PER_DAY = 86_400_000L
 
 /** The language the app is read in and the region set on the phone; never from the address. */
 internal fun localeTagOf(preferences: AppPreferences): String? {
