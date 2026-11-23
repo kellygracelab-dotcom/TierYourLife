@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.data.sync
 
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
+
 /** The ids to drop from the boards, and whose each remaining one is. */
 internal data class PublishedReconciliation(
     val forget: Set<String>,
@@ -39,6 +41,26 @@ internal fun cardsDifferFromPublished(
     publishedCounts: List<Int>,
     publishedTotal: Int,
 ): Boolean = if (publishedCounts.isEmpty()) boardCounts.sum() != publishedTotal else boardCounts != publishedCounts
+
+/** A card as its published list holds it: its tier among the ranked ones, null in the pool; its name; its picture. */
+internal data class ListedCard(val tier: Int?, val title: String, val picture: String?)
+
+/**
+ * Whether the published list still shows the board: the title, the tiers, and
+ * every card in its place with its name and picture. What cannot be told for
+ * sure, a list from before cards' places were kept, says no.
+ */
+internal fun sameAsPublished(title: String, tiers: List<String>, cards: List<ListedCard>, list: PublishedList): Boolean {
+    if (list.arrangement.size != list.items.size || cards.size != list.items.size) return false
+    val listed = list.items.mapIndexed { index, item -> ListedCard(list.arrangement[index], item.title, item.imageUrl) }
+    return title == list.summary.title &&
+        tiers == list.tiers.map { it.label } &&
+        cards.zip(listed).all { (here, there) -> here.tier == there.tier && here.title == there.title && samePicture(here.picture, there.picture) }
+}
+
+/** An address as it is; this phone's own picture by its name, which the list's copy of it keeps in its address. */
+private fun samePicture(here: String?, there: String?): Boolean =
+    here == there || (here != null && there != null && !here.startsWith("https://") && here in there.substringBefore('?'))
 
 /**
  * Boards that lost track of their list, by board uid, and the list each gets

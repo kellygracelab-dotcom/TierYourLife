@@ -114,14 +114,15 @@ interface BoardSyncDao {
 
     /**
      * A board that came from the account knows its list's id but not what was
-     * sent: once its cards no longer match the list's, it shows as behind until
-     * the next Update. Leaves editedAt alone, as [relinkPublished] does.
+     * sent. Once compared with the list: its own fingerprint when the two
+     * match, [PublishFingerprint.UNKNOWN] when not, which reads as behind
+     * until the next Update. Leaves editedAt alone, as [relinkPublished] does.
      */
     @Query(
-        "UPDATE tier_lists SET publishedFingerprint = '${PublishFingerprint.UNKNOWN}' " +
+        "UPDATE tier_lists SET publishedFingerprint = :fingerprint " +
             "WHERE uid = :uid AND ownerUid = :owner AND publishedId = :publishedId AND publishedFingerprint IS NULL",
     )
-    suspend fun markPublishedBehind(owner: String, uid: String, publishedId: String)
+    suspend fun settlePublishedFingerprint(owner: String, uid: String, publishedId: String, fingerprint: String)
 
     @Query("UPDATE tier_lists SET title = :title WHERE uid = :uid")
     suspend fun renameBoard(uid: String, title: String)

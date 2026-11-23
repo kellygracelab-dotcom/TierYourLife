@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.FakeAccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.FakeCommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.IncomingTier
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
@@ -11,40 +12,64 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierRepository
+import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
+import java.io.IOException
 
 /**
  * A board taken from the account knows its list but not what was sent. On
  * the website such a board had 176 cards against 149 in its list and never
- * offered Update; here its cards are counted against the list's.
+ * offered Update; here its cards are counted against the list's, and with the
+ * counts equal, compared with the list card by card.
  */
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [35])
 class AccountBoardBehindTest : SyncEngineBench() {
 
-    private class Published(private val tierCounts: List<Int>, private val itemCount: Int) : FakeCommunityRepository() {
-        override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(
-            listOf(
-                PublishedListSummary(
-                    id = "pub-1",
-                    title = "Games",
-                    authorUid = "",
-                    authorName = "",
-                    category = "games",
-                    itemCount = itemCount,
-                    updatedAtMillis = 0,
-                    tierCounts = tierCounts,
-                ),
-            ),
+    private class Published(
+        tierCounts: List<Int> = listOf(2, 1),
+        itemCount: Int = 3,
+        private val cards: List<Pair<String, String?>> = listOf("Hades" to null, "Celeste" to null, "Inside" to null),
+        private val arrangement: List<Int?> = listOf(0, 0, null),
+        private val shown: Boolean = true,
+    ) : FakeCommunityRepository() {
+        var opened = 0
+
+        private val summary = PublishedListSummary(
+            id = "pub-1",
+            title = "Games",
+            authorUid = "",
+            authorName = "",
+            category = "games",
+            itemCount = itemCount,
+            updatedAtMillis = 0,
+            tierCounts = tierCounts,
         )
+
+        override suspend fun myPublished(): Result<List<PublishedListSummary>> = Result.success(listOf(summary))
+
+        override suspend fun open(id: String): Result<PublishedList> {
+            opened++
+            if (!shown) return Result.failure(IOException("offline"))
+            return Result.success(
+                PublishedList(
+                    summary = summary,
+                    tiers = listOf(Tier(id = 0, label = "S", colorLight = "#111111", colorDark = "#EEEEEE", items = emptyList())),
+                    items = cards.mapIndexed { index, (title, picture) -> TierItem(id = index.toLong(), title = title, imageUrl = picture) },
+                    arrangement = arrangement,
+                ),
+            )
+        }
     }
 
     /** S holds two cards, the pool one: [2, 1]. */
@@ -69,8 +94,9 @@ class AccountBoardBehindTest : SyncEngineBench() {
         return board
     }
 
-    private suspend fun syncAgainst(community: FakeCommunityRepository): TierListEntity {
+    private suspend fun syncAgainst(community: FakeCommunityRepository, change: suspend (TierListEntity) -> Unit = {}): TierListEntity {
         val board = boardFromTheAccount()
+        change(dao.boardByUid(board.uid)!!)
         val accounts = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
         engine(preferences = FakeAppPreferences(), accounts = accounts, community = community).sync()
         return dao.boardByUid(board.uid)!!
@@ -82,17 +108,81 @@ class AccountBoardBehindTest : SyncEngineBench() {
 
         assertEquals("pub-1", here.publishedId)
         assertEquals(PublishFingerprint.UNKNOWN, here.publishedFingerprint)
-        val preferences = FakeAppPreferences()
-        val accounts = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
-        val repository = RoomTierRepository(database.tierDao(), images, BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), preferences))
-        assertTrue(repository.isKnownBehind(repository.getTierListById(here.id)!!))
+        assertTrue(behind(here))
     }
 
     @Test
-    fun theSameCountsAsItsList_sayNothing() = runBlocking {
-        val here = syncAgainst(Published(tierCounts = listOf(2, 1), itemCount = 3))
+    fun theSameBoardAsItsList_isNotBehind_untilItChanges() = runBlocking {
+        val here = syncAgainst(Published())
+
+        assertNotNull(here.publishedFingerprint)
+        assertFalse(behind(here))
+        dao.renameBoard(here.uid, "Games I finished")
+        assertTrue(behind(dao.boardByUid(here.uid)!!))
+    }
+
+    @Test
+    fun twoCardsSwappedBetweenTiers_withTheSameCounts_showAsBehind() = runBlocking {
+        val here = syncAgainst(Published(cards = listOf("Hades" to null, "Inside" to null, "Celeste" to null)))
+
+        assertEquals(PublishFingerprint.UNKNOWN, here.publishedFingerprint)
+    }
+
+    @Test
+    fun aCardMovedWithinItsTier_showsAsBehind() = runBlocking {
+        val here = syncAgainst(Published(cards = listOf("Celeste" to null, "Hades" to null, "Inside" to null)))
+
+        assertEquals(PublishFingerprint.UNKNOWN, here.publishedFingerprint)
+    }
+
+    @Test
+    fun aRenamedCard_showsAsBehind() = runBlocking {
+        val here = syncAgainst(Published(cards = listOf("Hades II" to null, "Celeste" to null, "Inside" to null)))
+
+        assertEquals(PublishFingerprint.UNKNOWN, here.publishedFingerprint)
+    }
+
+    @Test
+    fun aCardWithAnotherPicture_showsAsBehind() = runBlocking {
+        val here = syncAgainst(Published(cards = listOf("Hades" to "https://i/hades.jpg", "Celeste" to null, "Inside" to null)))
+
+        assertEquals(PublishFingerprint.UNKNOWN, here.publishedFingerprint)
+    }
+
+    // The list's copy of an own photo keeps its name in the address.
+    @Test
+    fun anOwnPicture_matchesTheListsCopyOfIt() = runBlocking {
+        val copy = "https://storage/feed/pub-1/p-hades.jpg?alt=media"
+        val here = syncAgainst(Published(cards = listOf("Hades" to copy, "Celeste" to null, "Inside" to null))) { board ->
+            val hades = dao.itemsOf(board.id).first { it.title == "Hades" }
+            dao.updateItem(hades.copy(imageUrl = images.pathFor("p-hades.jpg")))
+        }
+
+        assertFalse(behind(here))
+    }
+
+    // Published before cards' places were kept: nobody can say, so Update is offered.
+    @Test
+    fun aListThatNeverSaidWhereCardsWent_showsAsBehind() = runBlocking {
+        val here = syncAgainst(Published(arrangement = emptyList()))
+
+        assertEquals(PublishFingerprint.UNKNOWN, here.publishedFingerprint)
+    }
+
+    @Test
+    fun aListThatWouldNotOpen_isTriedAgainNextRun() = runBlocking {
+        val community = Published(shown = false)
+        val here = syncAgainst(community)
 
         assertNull(here.publishedFingerprint)
+        assertEquals(1, community.opened)
+    }
+
+    private suspend fun behind(board: TierListEntity): Boolean {
+        val accounts = FakeAccountRepository(initial = FakeAccountRepository.signedIn)
+        val ownership = BoardOwnership(accounts, database.ownerDao(), database.guestBoardsDao(), FakeAppPreferences())
+        val repository = RoomTierRepository(database.tierDao(), images, ownership)
+        return repository.isKnownBehind(repository.getTierListById(board.id)!!)
     }
 
     @Test

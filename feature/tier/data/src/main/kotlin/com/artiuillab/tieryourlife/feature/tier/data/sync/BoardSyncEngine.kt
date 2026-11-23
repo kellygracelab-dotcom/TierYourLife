@@ -13,9 +13,12 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierItemEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 import com.artiuillab.tieryourlife.feature.tier.data.local.image.TierImageStore
+import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierListWithTiers
+import com.artiuillab.tieryourlife.feature.tier.data.local.relation.TierWithItems
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.coverFocus
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.focus
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toCoverImageUrls
+import com.artiuillab.tieryourlife.feature.tier.data.mapper.toDomain
 import com.artiuillab.tieryourlife.feature.tier.data.mapper.toStoredCoverImageUrls
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardRemoval
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.BoardsApi
@@ -36,6 +39,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BackupRefusal
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.BoardSync
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.LocalBoard
+import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.RemoteBoard
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncReport
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.SyncStep
@@ -256,7 +260,10 @@ class BoardSyncEngine @Inject constructor(
     /**
      * A board taken from the account never saw what was sent, so nothing said
      * it had moved on: 176 cards on the board against 149 in the list, and no
-     * Update. Its cards counted against the list's own count say so.
+     * Update. Its cards are counted against the list's, and when the counts
+     * agree the list itself is read once: a card moved, renamed or given
+     * another picture is as behind as one added. From then on the fingerprint
+     * tells, as on a board published here.
      */
     private suspend fun markWhatIsBehind(account: String, boards: List<TierListEntity>, published: List<PublishedListSummary>) {
         val lists = published.associateBy { it.id }
@@ -264,14 +271,36 @@ class BoardSyncEngine @Inject constructor(
             .filter { it.publishedFingerprint == null && it.deletedAt == null }
             .forEach { board ->
                 val list = board.publishedId?.let(lists::get) ?: return@forEach
-                val tiers = dao.tiersOf(board.id)
-                val items = dao.itemsOf(board.id).groupingBy { it.tierId }.eachCount()
-                val counts = tiers.filterNot { it.isPool }.map { items[it.id] ?: 0 } + tiers.filter { it.isPool }.sumOf { items[it.id] ?: 0 }
-                if (cardsDifferFromPublished(counts, list.tierCounts, list.itemCount)) {
-                    Timber.i("A board from the account has moved on from its list")
-                    dao.markPublishedBehind(account, board.uid, list.id)
-                }
+                runSuspendCatching { comparePublished(account, board, list) }
+                    .onFailure { failure -> Timber.w(failure, "Could not compare a board with its list") }
             }
+    }
+
+    private suspend fun comparePublished(account: String, board: TierListEntity, list: PublishedListSummary) {
+        val tiers = dao.tiersOf(board.id)
+        val items = dao.itemsOf(board.id).filter { it.deletedAt == null }
+        val ranked = tiers.filterNot { it.isPool }
+        val inTier = items.groupBy { it.tierId }
+        val counts = ranked.map { inTier[it.id].orEmpty().size } + tiers.filter { it.isPool }.sumOf { inTier[it.id].orEmpty().size }
+        val countsDiffer = cardsDifferFromPublished(counts, list.tierCounts, list.itemCount)
+        val behind = countsDiffer || !sameAsPublished(board.title, ranked.map { it.label }, cardsOf(tiers, inTier), community.open(list.id).getOrElse { return })
+        val fingerprint = if (behind) {
+            Timber.i("A board from the account has moved on from its list")
+            PublishFingerprint.UNKNOWN
+        } else {
+            val domain = TierListWithTiers(board, tiers.map { tier -> TierWithItems(tier, inTier[tier.id].orEmpty()) }).toDomain()
+            PublishFingerprint.of(domain, images::pictureIdOf)
+        }
+        dao.settlePublishedFingerprint(account, board.uid, list.id, fingerprint)
+    }
+
+    /** In the order publishing sends them: tier by tier, the pool where it sits. */
+    private fun cardsOf(tiers: List<TierEntity>, inTier: Map<Long, List<TierItemEntity>>): List<ListedCard> {
+        val ranked = tiers.filterNot { it.isPool }
+        return tiers.flatMap { tier ->
+            val where = ranked.indexOfFirst { it.id == tier.id }.takeIf { it >= 0 }
+            inTier[tier.id].orEmpty().map { ListedCard(where, it.title, images.pictureIdOf(it.imageUrl) ?: it.imageUrl) }
+        }
     }
 
     private suspend fun signedInAs(): String? = (accounts.account.first() as? Account.SignedIn)?.recordKey
