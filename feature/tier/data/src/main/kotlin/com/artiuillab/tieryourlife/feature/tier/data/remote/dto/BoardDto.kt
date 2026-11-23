@@ -40,6 +40,9 @@ data class KeptBoardDto(
     val anonymous: Boolean = false,
     /** The saved Play game; absent when there is none. Kept as it came, never read here. */
     val play: JsonElement? = null,
+    /** The star and when it last changed; absent on a board no device has sent one for. */
+    val favouritedAt: Long? = null,
+    val favouriteChangedAt: Long? = null,
     val tiers: List<KeptTierDto> = emptyList(),
     val items: List<KeptItemDto> = emptyList(),
 )
@@ -93,6 +96,8 @@ data class KeptBoardSummaryDto(
     val itemCount: Int = 0,
     val removal: String? = null,
     val updatedAt: Long = 0,
+    val favouritedAt: Long? = null,
+    val favouriteChangedAt: Long? = null,
 )
 
 @Serializable
@@ -151,6 +156,12 @@ data class KeepBoardRequestDto(
     val anonymous: Boolean? = null,
     /** The full game, or JsonNull to explicitly finish it. Nullable default is for legacy request compatibility. */
     val play: JsonElement? = null,
+    /**
+     * The star, or `JsonNull` for none, with [favouriteChangedAt]: the later
+     * change wins in the account. Both left out, the account keeps its star.
+     */
+    val favouritedAt: JsonElement? = null,
+    val favouriteChangedAt: Long? = null,
     val tiers: List<KeptTierDto>,
     val items: List<KeptItemDto>,
 )

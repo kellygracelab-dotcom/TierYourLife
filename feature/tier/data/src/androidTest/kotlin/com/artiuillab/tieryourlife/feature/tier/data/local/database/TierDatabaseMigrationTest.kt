@@ -88,6 +88,29 @@ class TierDatabaseMigrationTest {
         }
     }
 
+    // A star from before keeps its place and goes up once: no change of it was timed yet, here or as heard.
+    @Test
+    fun migration23To24_keepsEveryStar_untimed() {
+        helper.createDatabase(TEST_DB, 23).apply {
+            execSQL("INSERT INTO tier_lists (id, title, uid, ownerUid, favouritedAt) VALUES (1, 'Films', 'board-1', 'alice', 1793146000000)")
+            execSQL("INSERT INTO board_sync (account, listUid, revision, fingerprint, syncedAt) VALUES ('alice', 'board-1', 4, 'local', 123)")
+            close()
+        }
+
+        val migrated = helper.runMigrationsAndValidate(TEST_DB, 24, true, MIGRATION_23_24)
+
+        migrated.query("SELECT favouritedAt, favouriteChangedAt FROM tier_lists").use {
+            check(it.moveToFirst())
+            assertEquals(1_793_146_000_000, it.getLong(0))
+            assertTrue(it.isNull(1))
+        }
+        migrated.query("SELECT revision, favouriteChangedAt FROM board_sync").use {
+            check(it.moveToFirst())
+            assertEquals(4, it.getInt(0))
+            assertTrue(it.isNull(1))
+        }
+    }
+
     @Test
     fun migration20To21_keepsEveryCover_centred() {
         helper.createDatabase(TEST_DB, 20).apply {
