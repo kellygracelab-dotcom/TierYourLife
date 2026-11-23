@@ -75,6 +75,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
+import com.artiuillab.tieryourlife.core.theme.ui.OpenInNewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ReturnToPoolDialog
 import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
@@ -126,6 +127,8 @@ fun TierListSettingsScreenContent(
     onChooseTopic: () -> Unit = {},
     onAddCards: () -> Unit = {},
     onShare: () -> Unit = {},
+    /** The published list's link to send, as the bar's share does; null while it is not out. */
+    onShareLink: (() -> Unit)? = null,
     /** The published list's own page, where readers' rankings and its link are; null while it is not out. */
     onSeeInCommunity: (() -> Unit)? = null,
     /** The Community list a copy was made from; there whether or not the link under the title was hidden. */
@@ -176,7 +179,9 @@ fun TierListSettingsScreenContent(
                         onPublish = onPublish ?: { kind -> if (kind == Publishing.Update) onUpdatePublished() else onSetPublic(true) },
                         onTakeDown = { onSetPublic(false) },
                         onAddCards = onAddCards,
-                        onView = (if (list.rankingOf != null) onOpenOriginal else onSeeInCommunity).takeIf { publicPending != false },
+                        // A ranking's original has its own row just under: no second button for it here.
+                        onOpenInCommunity = onSeeInCommunity.takeIf { list.rankingOf == null && publicPending != false },
+                        onShareLink = onShareLink.takeIf { publicPending != false },
                     )
                     if (onOpenOriginal != null) OpenOriginalRow(onClick = onOpenOriginal)
 
@@ -554,7 +559,8 @@ private fun PublishSection(
     onPublish: (Publishing) -> Unit,
     onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
-    onView: (() -> Unit)?,
+    onOpenInCommunity: (() -> Unit)?,
+    onShareLink: (() -> Unit)?,
 ) = PublishSection(
     published = published,
     asRankingOf = if (list.rankingOf != null) list.authorName.orEmpty() else null,
@@ -567,7 +573,8 @@ private fun PublishSection(
     onTakeDown = onTakeDown,
     onAddCards = onAddCards,
     behind = behind,
-    onView = onView,
+    onOpenInCommunity = onOpenInCommunity,
+    onShareLink = onShareLink,
 )
 
 @Composable
@@ -584,7 +591,8 @@ private fun PublishSection(
     onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
     behind: Boolean,
-    onView: (() -> Unit)? = null,
+    onOpenInCommunity: (() -> Unit)? = null,
+    onShareLink: (() -> Unit)? = null,
 ) {
     Column(
         Modifier
@@ -600,7 +608,11 @@ private fun PublishSection(
         Spacer(Modifier.height(6.dp))
         if (published) {
             PublishedStatus(asRankingOf = asRankingOf, behind = behind)
-            PublishedActions(behind = behind, busy = busy, onUpdate = { onPublish(Publishing.Update) }, onView = onView, onTakeDown = onTakeDown)
+            PublishedActions(
+                behind = behind,
+                busy = busy,
+                calls = PublishedCalls(onUpdate = { onPublish(Publishing.Update) }, onShareLink, onOpenInCommunity, onTakeDown),
+            )
         } else {
             PublishLine(
                 when {
@@ -656,9 +668,18 @@ private fun PublishedStatus(asRankingOf: String?, behind: Boolean) {
     }
 }
 
+private class PublishedCalls(
+    val onUpdate: () -> Unit,
+    val onShareLink: (() -> Unit)?,
+    val onOpenInCommunity: (() -> Unit)?,
+    val onTakeDown: () -> Unit,
+)
+
+/** Update (filled only when there is something to send) · Share · Open in Community · Take it down. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun PublishedActions(behind: Boolean, busy: Boolean, onUpdate: () -> Unit, onView: (() -> Unit)?, onTakeDown: () -> Unit) {
+private fun PublishedActions(behind: Boolean, busy: Boolean, calls: PublishedCalls) {
+    val onUpdate = calls.onUpdate
     Spacer(Modifier.height(10.dp))
     FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), itemVerticalAlignment = Alignment.CenterVertically) {
         val update = Modifier.testTag(TierDetailTestTags.UPDATE_PUBLISHED)
@@ -673,12 +694,21 @@ private fun PublishedActions(behind: Boolean, busy: Boolean, onUpdate: () -> Uni
         } else {
             FilledTonalButton(onClick = onUpdate, enabled = !busy, modifier = update, contentPadding = padding, content = content)
         }
-        if (onView != null) {
-            TextButton(onClick = onView, modifier = Modifier.testTag(TierDetailTestTags.SETTINGS_VIEW_PUBLISHED)) {
-                Text(stringResource(R.string.board_published_view))
+        calls.onShareLink?.let { share ->
+            TextButton(onClick = share, modifier = Modifier.testTag(TierDetailTestTags.SETTINGS_SHARE_LINK)) {
+                ShareIcon(18.dp, LocalContentColor.current)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.share_button))
             }
         }
-        TextButton(onClick = onTakeDown, enabled = !busy, modifier = Modifier.testTag(TierDetailTestTags.SETTINGS_TAKE_DOWN)) {
+        calls.onOpenInCommunity?.let { open ->
+            TextButton(onClick = open, modifier = Modifier.testTag(TierDetailTestTags.SETTINGS_OPEN_IN_COMMUNITY)) {
+                OpenInNewIcon(18.dp, LocalContentColor.current)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.list_live_open))
+            }
+        }
+        TextButton(onClick = calls.onTakeDown, enabled = !busy, modifier = Modifier.testTag(TierDetailTestTags.SETTINGS_TAKE_DOWN)) {
             Text(stringResource(R.string.list_settings_take_down))
         }
     }
