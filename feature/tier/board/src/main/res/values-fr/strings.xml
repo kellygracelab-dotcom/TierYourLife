@@ -63,12 +63,18 @@
     <string name="share_caption">%1$s — classé dans TierYourLife\n%2$s</string>
     <string name="share_rank_yourself">Classez-la vous-même · %1$s</string>
     <string name="share_by_author">de %1$s</string>
-    <plurals name="share_more_not_placed">
-        <item quantity="one">Encore %d carte à classer</item>
-        <item quantity="many">Encore %d cartes à classer</item>
-        <item quantity="other">Encore %d cartes à classer</item>
-    </plurals>
     <string name="share_failed">Impossible de partager l’image</string>
+    <string name="share_image">Partager l’image</string>
+    <string name="share_drawing">Dessin de l’image… %1$d sur %2$d</string>
+    <string name="share_nothing_yet">rien pour l’instant</string>
+    <plurals name="share_cards_ranked">
+        <item quantity="one">%d carte classée</item>
+        <item quantity="other">%d cartes classées</item>
+    </plurals>
+    <plurals name="share_see_all">
+        <item quantity="one">Ouvrez la liste pour voir les %d</item>
+        <item quantity="other">Ouvrez la liste pour voir les %d</item>
+    </plurals>
     <string name="share_hook_tier">Mon rang %1$s : %2$s. Et le tien ?</string>
     <string name="share_hook_top">Mon top : %1$s. Et le tien ?</string>
     <string name="share_link">Partager le lien</string>

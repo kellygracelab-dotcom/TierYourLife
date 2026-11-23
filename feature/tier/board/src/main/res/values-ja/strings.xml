@@ -59,10 +59,16 @@
     <string name="share_caption">%1$s — TierYourLife でランク付け\n%2$s</string>
     <string name="share_rank_yourself">自分でランク付け · %1$s</string>
     <string name="share_by_author">%1$s さん</string>
-    <plurals name="share_more_not_placed">
-        <item quantity="other">あと %d 枚が未配置</item>
-    </plurals>
     <string name="share_failed">画像を共有できませんでした</string>
+    <string name="share_image">画像を共有</string>
+    <string name="share_drawing">画像を作成中… %1$d / %2$d</string>
+    <string name="share_nothing_yet">まだ何もありません</string>
+    <plurals name="share_cards_ranked">
+        <item quantity="other">%d枚をランク付け</item>
+    </plurals>
+    <plurals name="share_see_all">
+        <item quantity="other">リストを開くと%d枚すべて見られます</item>
+    </plurals>
     <string name="share_hook_tier">私の%1$sティア：%2$s。あなたは？</string>
     <string name="share_hook_top">私のトップ：%1$s。あなたは？</string>
     <string name="share_link">リンクを共有</string>

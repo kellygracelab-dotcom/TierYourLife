@@ -61,11 +61,18 @@
     <string name="share_caption">%1$s — TierYourLife’ta sıralandı\n%2$s</string>
     <string name="share_rank_yourself">Kendiniz sıralayın · %1$s</string>
     <string name="share_by_author">%1$s tarafından</string>
-    <plurals name="share_more_not_placed">
-        <item quantity="one">%d kart daha henüz yerleştirilmedi</item>
-        <item quantity="other">%d kart daha henüz yerleştirilmedi</item>
-    </plurals>
     <string name="share_failed">Resim paylaşılamadı</string>
+    <string name="share_image">Resmi paylaş</string>
+    <string name="share_drawing">Resim çiziliyor… %1$d / %2$d</string>
+    <string name="share_nothing_yet">henüz boş</string>
+    <plurals name="share_cards_ranked">
+        <item quantity="one">%d kart sıralandı</item>
+        <item quantity="other">%d kart sıralandı</item>
+    </plurals>
+    <plurals name="share_see_all">
+        <item quantity="one">%d kartın hepsi için listeyi açın</item>
+        <item quantity="other">%d kartın hepsi için listeyi açın</item>
+    </plurals>
     <string name="share_hook_tier">%1$s seviyem: %2$s. Seninki ne?</string>
     <string name="share_hook_top">En iyilerim: %1$s. Seninkiler ne?</string>
     <string name="share_link">Bağlantıyı paylaş</string>

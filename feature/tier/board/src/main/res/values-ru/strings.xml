@@ -65,13 +65,22 @@
     <string name="share_caption">%1$s — расставлено в TierYourLife\n%2$s</string>
     <string name="share_rank_yourself">Разложите сами · %1$s</string>
     <string name="share_by_author">от %1$s</string>
-    <plurals name="share_more_not_placed">
-        <item quantity="one">Ещё %d карточка не разложена</item>
-        <item quantity="few">Ещё %d карточки не разложены</item>
-        <item quantity="many">Ещё %d карточек не разложено</item>
-        <item quantity="other">Ещё %d карточки не разложено</item>
-    </plurals>
     <string name="share_failed">Не удалось поделиться картинкой</string>
+    <string name="share_image">Поделиться картинкой</string>
+    <string name="share_drawing">Рисую картинку… %1$d из %2$d</string>
+    <string name="share_nothing_yet">пока пусто</string>
+    <plurals name="share_cards_ranked">
+        <item quantity="one">%d карточка в рейтинге</item>
+        <item quantity="few">%d карточки в рейтинге</item>
+        <item quantity="many">%d карточек в рейтинге</item>
+        <item quantity="other">%d карточки в рейтинге</item>
+    </plurals>
+    <plurals name="share_see_all">
+        <item quantity="one">Откройте список, чтобы увидеть все %d</item>
+        <item quantity="few">Откройте список, чтобы увидеть все %d</item>
+        <item quantity="many">Откройте список, чтобы увидеть все %d</item>
+        <item quantity="other">Откройте список, чтобы увидеть все %d</item>
+    </plurals>
     <string name="share_hook_tier">Мой %1$s-тир: %2$s. А у тебя?</string>
     <string name="share_hook_top">Мой топ: %1$s. А у тебя?</string>
     <string name="share_link">Поделиться ссылкой</string>

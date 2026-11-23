@@ -61,11 +61,18 @@
     <string name="share_caption">%1$s — ranked in TierYourLife\n%2$s</string>
     <string name="share_rank_yourself">Rank it yourself · %1$s</string>
     <string name="share_by_author">by %1$s</string>
-    <plurals name="share_more_not_placed">
-        <item quantity="one">%d more card not placed yet</item>
-        <item quantity="other">%d more cards not placed yet</item>
-    </plurals>
     <string name="share_failed">Could not share the picture</string>
+    <string name="share_image">Share image</string>
+    <string name="share_drawing">Drawing the picture… %1$d of %2$d</string>
+    <string name="share_nothing_yet">nothing here yet</string>
+    <plurals name="share_cards_ranked">
+        <item quantity="one">%d card ranked</item>
+        <item quantity="other">%d cards ranked</item>
+    </plurals>
+    <plurals name="share_see_all">
+        <item quantity="one">Open the list to see all %d</item>
+        <item quantity="other">Open the list to see all %d</item>
+    </plurals>
     <string name="share_hook_tier">My %1$s tier: %2$s. What’s yours?</string>
     <string name="share_hook_top">My top picks: %1$s. What’s yours?</string>
     <string name="share_link">Share link</string>

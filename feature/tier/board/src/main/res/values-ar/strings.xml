@@ -69,15 +69,26 @@
     <string name="share_caption">%1$s — مرتّبة في TierYourLife\n%2$s</string>
     <string name="share_rank_yourself">رتّبها بنفسك · %1$s</string>
     <string name="share_by_author">من %1$s</string>
-    <plurals name="share_more_not_placed">
-        <item quantity="zero">لا بطاقات أخرى</item>
-        <item quantity="one">بطاقة أخرى لم تُرتَّب بعد</item>
-        <item quantity="two">بطاقتان أخريان لم تُرتَّبا بعد</item>
-        <item quantity="few">%d بطاقات أخرى لم تُرتَّب بعد</item>
-        <item quantity="many">%d بطاقة أخرى لم تُرتَّب بعد</item>
-        <item quantity="other">%d بطاقة أخرى لم تُرتَّب بعد</item>
-    </plurals>
     <string name="share_failed">تعذّرت مشاركة الصورة</string>
+    <string name="share_image">مشاركة الصورة</string>
+    <string name="share_drawing">جارٍ رسم الصورة… %1$d من %2$d</string>
+    <string name="share_nothing_yet">لا شيء هنا بعد</string>
+    <plurals name="share_cards_ranked">
+        <item quantity="zero">لا بطاقات مرتبة</item>
+        <item quantity="one">بطاقة واحدة مرتبة</item>
+        <item quantity="two">بطاقتان مرتبتان</item>
+        <item quantity="few">%d بطاقات مرتبة</item>
+        <item quantity="many">%d بطاقة مرتبة</item>
+        <item quantity="other">%d بطاقة مرتبة</item>
+    </plurals>
+    <plurals name="share_see_all">
+        <item quantity="zero">افتح القائمة لرؤية الكل</item>
+        <item quantity="one">افتح القائمة لرؤيتها</item>
+        <item quantity="two">افتح القائمة لرؤية البطاقتين</item>
+        <item quantity="few">افتح القائمة لرؤية الـ %d كلها</item>
+        <item quantity="many">افتح القائمة لرؤية الـ %d كلها</item>
+        <item quantity="other">افتح القائمة لرؤية الـ %d كلها</item>
+    </plurals>
     <string name="share_hook_tier">مستوى %1$s عندي: %2$s. وأنت؟</string>
     <string name="share_hook_top">أفضل اختياراتي: %1$s. وأنت؟</string>
     <string name="share_link">مشاركة الرابط</string>
