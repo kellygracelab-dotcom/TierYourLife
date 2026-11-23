@@ -260,6 +260,18 @@ fun DrawScope.drawSparkle(
     drawPath(path, color)
 }
 
+/** open_in_new: a box with an arrow leaving it by the top corner. */
+@Composable
+fun OpenInNewIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize, autoMirror = true) { scale ->
+    val stroke = 1.8f * scale
+    fun at(x: Float, y: Float) = Offset(x * scale, y * scale)
+    val box = listOf(at(11f, 5f), at(5f, 5f), at(5f, 19f), at(19f, 19f), at(19f, 13f))
+    box.zipWithNext { a, b -> drawLine(color, a, b, stroke, StrokeCap.Round) }
+    drawLine(color, at(11f, 13f), at(19f, 5f), stroke, StrokeCap.Round)
+    drawLine(color, at(14f, 5f), at(19f, 5f), stroke, StrokeCap.Round)
+    drawLine(color, at(19f, 5f), at(19f, 10f), stroke, StrokeCap.Round)
+}
+
 @Composable
 fun ShareIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
     val stroke = 1.8f * scale

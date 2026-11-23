@@ -187,7 +187,6 @@
     <string name="board_published_short">公開しました</string>
     <string name="board_updated_short">更新しました</string>
     <string name="board_ranked_short">ランキングに表示中</string>
-    <string name="board_published_view">見る</string>
     <string name="board_publishing">公開中…</string>
     <string name="board_updating">更新中…</string>
     <string name="pool_tap_a_tier">ティアをタップ</string>
