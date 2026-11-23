@@ -46,6 +46,8 @@ data class PublishedListSummary(
     val names: Map<String, String> = emptyMap(),
     /** On the author's own list: the board it was published from, when the server kept that. */
     val boardUid: String? = null,
+    /** [previewImages] as one picture the website drew, to load at once; the mosaic stays for when it does not come. */
+    val collageUrl: String? = null,
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)
