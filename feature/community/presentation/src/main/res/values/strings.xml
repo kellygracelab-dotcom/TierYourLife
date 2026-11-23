@@ -52,7 +52,7 @@
     <string name="feed_sort_popular">Popular</string>
     <string name="feed_sort_recent">Newest</string>
     <string name="feed_chip_new">New</string>
-    <string name="explore_fresh_title">New from the community</string>
+    <string name="feed_badge_new">New</string>
     <string name="feed_source_everyone">All</string>
     <string name="feed_source_following">Following</string>
     <string name="home_community_empty">Nothing published yet</string>

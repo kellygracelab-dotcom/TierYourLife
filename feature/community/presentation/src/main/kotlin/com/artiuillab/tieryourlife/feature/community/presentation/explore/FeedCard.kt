@@ -73,6 +73,7 @@ internal fun FeedCard(
     modifier: Modifier = Modifier,
     coverHeight: Dp = CoverHeights.Phone,
     reason: String? = null,
+    badge: String? = null,
 ) {
     Column(
         modifier
@@ -81,17 +82,20 @@ internal fun FeedCard(
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .testTag(ExploreTestTags.card(summary.id)),
     ) {
-        ListArt(
-            coverImageUrl = summary.coverImageUrl,
-            coverFocus = summary.coverFocus,
-            previewImages = summary.previewImages,
-            pictureFocus = summary.previewFocus,
-            collageUrl = summary.collageUrl,
-            tierColors = summary.tierColors,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(coverHeight),
-        )
+        Box {
+            ListArt(
+                coverImageUrl = summary.coverImageUrl,
+                coverFocus = summary.coverFocus,
+                previewImages = summary.previewImages,
+                pictureFocus = summary.previewFocus,
+                collageUrl = summary.collageUrl,
+                tierColors = summary.tierColors,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(coverHeight),
+            )
+            if (badge != null) CardBadge(badge, Modifier.padding(8.dp).testTag(ExploreTestTags.newBadge(summary.id)))
+        }
         Column(Modifier.padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 12.dp)) {
             if (reason != null) {
                 Text(
@@ -118,6 +122,21 @@ internal fun FeedCard(
             CardFooter(summary)
         }
     }
+}
+
+/** A word over the cover's corner: New on a fresh list at the top of Popular. */
+@Composable
+private fun CardBadge(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        modifier = modifier
+            .clip(RoundedCornerShape(50))
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onPrimary,
+        maxLines = 1,
+    )
 }
 
 /**

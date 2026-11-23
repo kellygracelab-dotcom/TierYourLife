@@ -54,7 +54,7 @@
     <string name="feed_sort_popular">Popularne</string>
     <string name="feed_sort_recent">Najnowsze</string>
     <string name="feed_chip_new">Nowe</string>
-    <string name="explore_fresh_title">Nowe od społeczności</string>
+    <string name="feed_badge_new">Nowość</string>
     <string name="feed_source_everyone">Wszystkie</string>
     <string name="feed_source_following">Obserwowani</string>
     <string name="home_community_empty">Nic jeszcze nie opublikowano</string>

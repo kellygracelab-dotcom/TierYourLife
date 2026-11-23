@@ -52,7 +52,7 @@
     <string name="feed_sort_popular">Popüler</string>
     <string name="feed_sort_recent">En yeni</string>
     <string name="feed_chip_new">Yeni</string>
-    <string name="explore_fresh_title">Topluluktan yeni</string>
+    <string name="feed_badge_new">Yeni</string>
     <string name="feed_source_everyone">Tümü</string>
     <string name="feed_source_following">Takip</string>
     <string name="home_community_empty">Henüz hiçbir şey yayımlanmadı</string>
