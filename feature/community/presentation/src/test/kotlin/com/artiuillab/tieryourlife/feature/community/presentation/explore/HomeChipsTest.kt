@@ -128,9 +128,9 @@ class HomeChipsTest {
     fun peoplesFreshLists_leadPopular_eachWithANewBadge_andTheirAuthor() {
         show(feeds.copy(fresh = listOf(card("x1", "Fresh one"))), followed)
 
-        compose.onNodeWithTag(ExploreTestTags.newBadge("x1")).assertExists()
-        compose.onNodeWithTag(ExploreTestTags.cardAuthor("x1")).assertExists()
-        compose.onNodeWithTag(ExploreTestTags.newBadge("p1")).assertDoesNotExist()
+        compose.onNodeWithTag(ExploreTestTags.newBadge("x1"), useUnmergedTree = true).assertExists()
+        compose.onNodeWithTag(ExploreTestTags.cardAuthor("x1"), useUnmergedTree = true).assertExists()
+        compose.onNodeWithTag(ExploreTestTags.newBadge("p1"), useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithText("NEW FROM THE COMMUNITY").assertDoesNotExist()
         val fresh = compose.onNodeWithTag(ExploreTestTags.card("x1")).fetchSemanticsNode().boundsInRoot
         val popular = compose.onNodeWithTag(ExploreTestTags.card("p1")).fetchSemanticsNode().boundsInRoot
@@ -151,7 +151,7 @@ class HomeChipsTest {
     fun noFreshLists_noBadge() {
         show(feeds, followed)
 
-        compose.onNodeWithTag(ExploreTestTags.newBadge("p1")).assertDoesNotExist()
+        compose.onNodeWithTag(ExploreTestTags.newBadge("p1"), useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
