@@ -69,6 +69,17 @@
         <item quantity="other">Mais %d cartões ainda sem lugar</item>
     </plurals>
     <string name="share_failed">Não foi possível compartilhar a imagem</string>
+    <string name="share_hook_tier">Meu tier %1$s: %2$s. E o seu?</string>
+    <string name="share_hook_top">Meus favoritos: %1$s. E os seus?</string>
+    <string name="share_link">Compartilhar link</string>
+    <string name="share_link_copied">Link copiado</string>
+    <string name="list_live_title">Sua lista está publicada</string>
+    <string name="list_live_body">Qualquer pessoa com o link pode vê-la. Ela também está em Comunidade → %1$s.</string>
+    <string name="list_live_copy">Copiar link</string>
+    <string name="share_button">Compartilhar</string>
+    <string name="list_live_image">Como imagem</string>
+    <string name="list_live_open">Abrir na Comunidade</string>
+    <string name="list_live_done">Concluído</string>
     <string name="tier_detail_add">Adicionar</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d cartão</item>

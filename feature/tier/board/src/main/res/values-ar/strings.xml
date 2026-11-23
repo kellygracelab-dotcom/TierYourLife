@@ -78,6 +78,17 @@
         <item quantity="other">%d بطاقة أخرى لم تُرتَّب بعد</item>
     </plurals>
     <string name="share_failed">تعذّرت مشاركة الصورة</string>
+    <string name="share_hook_tier">مستوى %1$s عندي: %2$s. وأنت؟</string>
+    <string name="share_hook_top">أفضل اختياراتي: %1$s. وأنت؟</string>
+    <string name="share_link">مشاركة الرابط</string>
+    <string name="share_link_copied">تم نسخ الرابط</string>
+    <string name="list_live_title">قائمتك منشورة الآن</string>
+    <string name="list_live_body">يمكن لأي شخص لديه الرابط رؤيتها. وهي أيضًا في المجتمع ← %1$s.</string>
+    <string name="list_live_copy">نسخ الرابط</string>
+    <string name="share_button">مشاركة</string>
+    <string name="list_live_image">كصورة</string>
+    <string name="list_live_open">فتح في المجتمع</string>
+    <string name="list_live_done">تم</string>
     <string name="tier_detail_add">إضافة</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="zero">لا بطاقات</item>

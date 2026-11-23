@@ -299,8 +299,6 @@
     <string name="community_own_list_line">Esto es lo que ven los visitantes. La cambias en Tus listas.</string>
     <string name="community_restore_from_trash">Restaurar de la papelera</string>
     <string name="community_get_back_as_board">Recuperarla en Tus listas</string>
-    <string name="community_copy_link">Copiar enlace</string>
-    <string name="community_link_copied">Enlace copiado</string>
     <string name="community_drop_to_start_yours">Suéltala para empezar tu versión · Mío empieza con la clasificación de %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Suéltala para empezar tu versión · Mío empieza con esta clasificación</string>
     <string name="community_started_from_theirs">Tu versión parte de la clasificación de %1$s</string>

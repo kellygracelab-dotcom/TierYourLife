@@ -50,7 +50,7 @@ internal fun RowScope.ReaderBarControls(
     onOpenSaved: (Long) -> Unit,
     onOpenAuthor: () -> Unit,
     onOwnBoard: () -> Unit = {},
-    onCopyLink: () -> Unit = {},
+    onShareLink: () -> Unit = {},
 ) {
     val compact = mode == BoardBar.Compact
     if (compact && state.own) {
@@ -77,7 +77,7 @@ internal fun RowScope.ReaderBarControls(
     }
     if (state.own) {
         val height = if (mode == BoardBar.Docked) TABLET_CONTROL_HEIGHT else BAR_BUTTON_HEIGHT
-        CopyLinkButton(onClick = onCopyLink, height = height)
+        ShareLinkButton(onClick = onShareLink, height = height)
         Spacer(Modifier.width(8.dp))
         OwnBoardButton(state = state, onClick = onOwnBoard, height = height, maxLines = 1)
     } else if (!state.nothingToSaveYet) {
