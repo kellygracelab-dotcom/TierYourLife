@@ -147,7 +147,8 @@ fun CoverPickerScreenContent(
     onLoadMore: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
-    Box(Modifier.fillMaxSize().testTag(CoverPickerTestTags.SCREEN)) {
+    // Solid: during the push nothing behind it shows through.
+    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface).testTag(CoverPickerTestTags.SCREEN)) {
         Column(
             Modifier
                 .fillMaxSize()
