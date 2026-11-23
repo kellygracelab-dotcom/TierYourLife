@@ -61,6 +61,10 @@ interface CommunityApi {
         @Query("topic") topic: String? = null,
     ): PublishedFeedDto
 
+    /** The server ignores every other parameter beside this one. */
+    @GET("lists")
+    suspend fun fresh(@Query("fresh") fresh: String = "1"): PublishedFeedDto
+
     @GET("lists/follow/{authorUid}")
     suspend fun followState(@Path("authorUid") authorUid: String): FollowStateDto
 

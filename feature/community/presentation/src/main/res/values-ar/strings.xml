@@ -56,6 +56,7 @@
     <string name="feed_sort_popular">الأكثر رواجًا</string>
     <string name="feed_sort_recent">الأحدث</string>
     <string name="feed_chip_new">الجديدة</string>
+    <string name="explore_fresh_title">جديد من المجتمع</string>
     <string name="feed_source_everyone">الكل</string>
     <string name="feed_source_following">المتابَعون</string>
     <string name="home_community_empty">لا شيء منشور بعد</string>
