@@ -18,10 +18,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -140,10 +142,17 @@ private fun HueSlider(hue: Int, onHue: (Int) -> Unit) {
     val label = stringResource(R.string.colour_hue)
     val dot = remember(hue) { vividHue(hue) }
     val ring = MaterialTheme.colorScheme.surface
+    // Its own thumb and track take the state form of the slider.
+    val state = remember { SliderState(hue.toFloat(), 0, 0f..(ReadyColours.FULL_TURN - 1).toFloat()) }
+    LaunchedEffect(hue) {
+        if (state.value.roundToInt() != hue) state.value = hue.toFloat()
+    }
     Slider(
-        value = hue.toFloat(),
-        onValueChange = { onHue(it.roundToInt().mod(ReadyColours.FULL_TURN)) },
-        valueRange = 0f..(ReadyColours.FULL_TURN - 1).toFloat(),
+        state = state,
+        onValueChange = {
+            state.value = it
+            onHue(it.roundToInt().mod(ReadyColours.FULL_TURN))
+        },
         modifier = Modifier.fillMaxWidth().semantics { contentDescription = label }.testTag(SettingsTestTags.HUE_SLIDER),
         thumb = {
             Box(Modifier.size(28.dp).shadow(2.dp, CircleShape).clip(CircleShape).background(ring).padding(3.dp).clip(CircleShape).background(dot))

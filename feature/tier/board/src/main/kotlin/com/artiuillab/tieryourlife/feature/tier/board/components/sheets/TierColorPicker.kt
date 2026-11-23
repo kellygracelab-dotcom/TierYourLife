@@ -20,9 +20,11 @@ import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -433,10 +435,18 @@ private fun GradientSlider(
     testTag: String,
     label: String,
 ) {
+    // Its own thumb and track take the state form of the slider.
+    val state = remember { SliderState(fraction) }
+    LaunchedEffect(fraction) {
+        if (state.value != fraction) state.value = fraction
+    }
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
         Slider(
-            value = fraction,
-            onValueChange = onFractionChange,
+            state = state,
+            onValueChange = {
+                state.value = it
+                onFractionChange(it)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .semantics { contentDescription = label }
