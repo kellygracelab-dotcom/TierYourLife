@@ -180,7 +180,6 @@
     <string name="topic_picker_hint">Chercher ou nommer un thème</string>
     <string name="topic_picker_none">Sans thème</string>
     <string name="topic_picker_none_sub">La liste reste seule dans sa rubrique.</string>
-    <string name="topic_picker_create">Créer le thème « %1$s »</string>
     <string name="topic_picker_create_note">Attend un modérateur. Jusque-là la liste reste dans Autres avec cette étiquette.</string>
     <plurals name="topic_picker_pending_count">
         <item quantity="one">%1$d sur %2$d en attente.</item>
@@ -193,7 +192,8 @@
     <string name="topic_picker_rejected">Refusé</string>
     <string name="topic_picker_merged">Fusionné dans un autre thème</string>
     <string name="topic_picker_suggestion">Ressemble à « %1$s »</string>
-    <string name="topic_picker_new_waits">%1$s · attendra l’approbation</string>
+    <string name="topic_picker_choose_section">Choisissez d’abord une section</string>
+    <string name="topic_picker_marked_new">%1$s · %2$s</string>
     <string name="cover_picker_status_automatic">Rien de choisi : jusqu’à six images de la liste elle-même</string>
     <string name="cover_picker_status_one">Une image, toute la couverture</string>
     <plurals name="cover_picker_status_collage">

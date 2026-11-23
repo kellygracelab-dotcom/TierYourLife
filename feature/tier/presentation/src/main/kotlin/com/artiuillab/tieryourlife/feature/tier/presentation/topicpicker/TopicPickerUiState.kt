@@ -14,8 +14,12 @@ sealed interface TopicChoice {
 
 data class TopicPickerUiState(
     val title: String = "",
+    /** The board's section; topics are only ever its own. Null until the board is read, or when it has none. */
+    val section: String? = null,
+    /** The board has been read: a null [section] then means none is chosen yet. */
+    val loaded: Boolean = false,
     val query: String = "",
-    /** Approved topics for the query, or the biggest ones while nothing is typed. */
+    /** The section's approved topics for the query, or its biggest ones while nothing is typed. */
     val results: List<Topic> = emptyList(),
     val searching: Boolean = false,
     /** Everything this person proposed, the waiting ones first. */
@@ -23,20 +27,20 @@ data class TopicPickerUiState(
     /** An approved topic the board's title looks like; a hint, never a block. */
     val suggestion: Topic? = null,
     val chosen: TopicChoice = TopicChoice.None,
+    /** The name field Propose a topic opens in place; null while it is closed. */
+    val proposal: String? = null,
     val saving: Boolean = false,
     val saved: Boolean = false,
 ) {
     val pendingCount: Int get() = mine.count { it.pending }
 
-    val canCreate: Boolean get() = pendingCount < MAX_PENDING_TOPICS
+    /** No section yet: no topics to offer, only the way to choose one. */
+    val needsSection: Boolean get() = loaded && section == null
 
-    /** What "create" would name, or null when the field holds nothing fit, or a name that already exists. */
-    val createName: String?
-        get() {
-            val name = cleanTopicName(query) ?: return null
-            val known = results + mine + listOfNotNull(suggestion)
-            return name.takeUnless { known.any { topic -> topic.name.equals(it, ignoreCase = true) } }
-        }
+    /** This person's own topics that belong here: the section's, and the waiting ones not filed anywhere yet. */
+    val mineHere: List<Topic> get() = mine.filter { it.section == null || it.section == section }
+
+    val canCreate: Boolean get() = pendingCount < MAX_PENDING_TOPICS
 
     val pendingLimit: Int get() = MAX_PENDING_TOPICS
 }
