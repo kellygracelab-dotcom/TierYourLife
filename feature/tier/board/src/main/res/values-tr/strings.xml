@@ -217,4 +217,6 @@
         <item quantity="other">%1$d kartı elle yerleştirmek istemiyor musun? &lt;b&gt;Oyna&lt;/b&gt;: ikisinden iyisini seç, seviyeler dolsun.</item>
     </plurals>
     <string name="tip_add">Bir ad yaz, resmi kendiliğinden gelsin.</string>
+    <!-- Spoken for a card that shows only its picture; never drawn on it. -->
+    <string name="card_unnamed">Kart</string>
 </resources>

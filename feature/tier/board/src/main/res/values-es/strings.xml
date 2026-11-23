@@ -232,4 +232,6 @@
         <item quantity="other">¿Prefieres no colocar %1$d cartas a mano? &lt;b&gt;Jugar&lt;/b&gt;: elige la mejor de dos y los niveles se llenan.</item>
     </plurals>
     <string name="tip_add">Escribe un nombre y la imagen llega sola.</string>
+    <!-- Spoken for a card that shows only its picture; never drawn on it. -->
+    <string name="card_unnamed">Tarjeta</string>
 </resources>

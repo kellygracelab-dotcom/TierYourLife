@@ -132,7 +132,7 @@
     <string name="play_individual_cards">بطاقات منفردة</string>
     <string name="play_select_candidates">اختيار جميع البطاقات المتاحة</string>
     <string name="play_clear_selection">إلغاء الاختيار</string>
-    <string name="play_card_unnamed">بطاقة بلا عنوان</string>
+    <string name="play_card_unnamed">بطاقة</string>
     <plurals name="play_placed_warning">
         <item quantity="zero">وضعت %1$d بطاقة. ستعيد اللعبة ترتيبها، و«تراجع» يعيدها.</item>
         <item quantity="one">وضعت بطاقة واحدة. ستعيد اللعبة ترتيبها، و«تراجع» يعيدها.</item>

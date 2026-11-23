@@ -57,6 +57,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.ItemTile
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalCardPicking
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.LocalTextCardRoom
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PickedOutline
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.spokenName
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import kotlin.math.roundToInt
 
@@ -106,12 +107,13 @@ fun DraggableTile(
         onDispose { handle?.release() }
     }
 
+    val spoken = item.spokenName()
     CompositionLocalProvider(LocalViewConfiguration provides dragViewConfiguration) {
         Box(
             modifier = modifier
                 .testTag(TierDetailTestTags.tile(item.id))
                 .semantics(mergeDescendants = true) {
-                    contentDescription = item.title
+                    contentDescription = spoken
                     role = Role.Button
                     onClick(label = detailsLabel) {
                         onDoubleTap(item.id)

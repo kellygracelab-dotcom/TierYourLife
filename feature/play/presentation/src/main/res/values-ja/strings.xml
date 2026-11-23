@@ -82,7 +82,7 @@
     <string name="play_individual_cards">カードを個別に選択</string>
     <string name="play_select_candidates">候補をすべて選択</string>
     <string name="play_clear_selection">選択を解除</string>
-    <string name="play_card_unnamed">無題のカード</string>
+    <string name="play_card_unnamed">カード</string>
     <plurals name="play_placed_warning">
         <item quantity="other">%1$d枚のカードを配置済みです。ゲームで並べ替わりますが、「元に戻す」で戻せます。</item>
     </plurals>

@@ -72,6 +72,7 @@ internal fun pictureNow(card: TierItem, original: PublishedList): TierItem? {
     val names = original.translations.byLocale.values
     fun TierItem.named(title: String) = this.title == title || names.any { it.textOf(this.title) == title }
     val byPlace = card.sourceIndex?.let(original.items::getOrNull)?.takeIf { it.named(card.title) }
-    val match = byPlace ?: original.items.singleOrNull { it.named(card.title) }
+    // A card that is only its picture has no name to find it by.
+    val match = byPlace ?: card.title.takeIf { it.isNotBlank() }?.let { title -> original.items.singleOrNull { it.named(title) } }
     return match?.takeIf { it.imageUrl != null && it.imageUrl != card.imageUrl }
 }
