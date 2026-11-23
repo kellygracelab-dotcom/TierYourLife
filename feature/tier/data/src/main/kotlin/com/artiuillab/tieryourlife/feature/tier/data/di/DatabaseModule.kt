@@ -20,6 +20,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_1_
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_20_21
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_21_22
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_22_23
+import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_23_24
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_2_3
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_3_4
 import com.artiuillab.tieryourlife.feature.tier.data.local.database.MIGRATION_4_5
@@ -56,6 +57,7 @@ object DatabaseModule {
             MIGRATION_20_21,
             MIGRATION_21_22,
             MIGRATION_22_23,
+            MIGRATION_23_24,
         )
         .addCallback(FORGET_GALLERY_COVERS)
         // No destructive fallback of any kind. Opening a newer database with an

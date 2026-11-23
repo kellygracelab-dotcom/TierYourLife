@@ -191,8 +191,9 @@ interface TierDao {
 
     // A time, not a flag: several starred boards need an order among
     // themselves, and null already means "not starred".
-    @Query("UPDATE tier_lists SET favouritedAt = :at WHERE id = :id")
-    suspend fun setFavouritedAt(id: Long, at: Long?)
+    // With when it changed, so the account can tell this change from an older one elsewhere.
+    @Query("UPDATE tier_lists SET favouritedAt = :at, favouriteChangedAt = :changedAt WHERE id = :id")
+    suspend fun setFavouritedAt(id: Long, at: Long?, changedAt: Long)
 
     // Both columns in one statement: the edited-at trigger watches coverImageUrl,
     // so a new collage stamps the board even while the single cover stays null.

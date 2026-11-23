@@ -5,6 +5,14 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.artiuillab.tieryourlife.feature.tier.data.local.entity.TierListEntity
 
+/** The star follows the account; nobody has timed a change of it yet. */
+val MIGRATION_23_24 = object : Migration(23, 24) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tier_lists ADD COLUMN favouriteChangedAt INTEGER")
+        db.execSQL("ALTER TABLE board_sync ADD COLUMN favouriteChangedAt INTEGER")
+    }
+}
+
 /** No board is a draft: every one made before was kept as it was made. */
 val MIGRATION_22_23 = object : Migration(22, 23) {
     override fun migrate(db: SupportSQLiteDatabase) {

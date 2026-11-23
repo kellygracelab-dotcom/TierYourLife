@@ -23,6 +23,8 @@ data class BoardSyncEntity(
     val syncedAt: Long,
     /** A server fingerprint is acknowledged only after the complete board was read. */
     val remoteFingerprint: String? = null,
+    /** When the star the account holds last changed, as last heard or sent; the star is in no fingerprint. */
+    val favouriteChangedAt: Long? = null,
 ) {
     companion object {
         const val UNCLAIMED = ""
