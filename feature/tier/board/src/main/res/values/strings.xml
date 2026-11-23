@@ -218,4 +218,6 @@
         <item quantity="other">Rather not place %1$d by hand? &lt;b&gt;Play&lt;/b&gt;: pick the better of two and the tiers fill in.</item>
     </plurals>
     <string name="tip_add">Type a name — the picture comes with it.</string>
+    <!-- Spoken for a card that shows only its picture; never drawn on it. -->
+    <string name="card_unnamed">Card</string>
 </resources>

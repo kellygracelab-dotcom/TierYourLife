@@ -278,7 +278,7 @@ object BoardPicture {
                 val rounded = android.graphics.Path().apply { addRoundRect(frame, TILE_RADIUS, TILE_RADIUS, android.graphics.Path.Direction.CW) }
                 canvas.withClip(rounded) {
                     drawBitmap(picture, cover(picture, frame), frame, null)
-                    if (names) drawNameStrip(this, item.title, frame)
+                    if (names && item.title.isNotBlank()) drawNameStrip(this, item.title, frame)
                 }
             } else {
                 canvas.drawRoundRect(frame, TILE_RADIUS, TILE_RADIUS, placeholder)

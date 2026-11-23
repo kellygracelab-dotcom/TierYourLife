@@ -217,4 +217,6 @@
         <item quantity="other">Keine Lust, %1$d Karten von Hand einzuordnen? &lt;b&gt;Spielen&lt;/b&gt;: Wähl die bessere von zwei, die Stufen füllen sich.</item>
     </plurals>
     <string name="tip_add">Gib einen Namen ein – das Bild kommt von selbst.</string>
+    <!-- Spoken for a card that shows only its picture; never drawn on it. -->
+    <string name="card_unnamed">Karte</string>
 </resources>

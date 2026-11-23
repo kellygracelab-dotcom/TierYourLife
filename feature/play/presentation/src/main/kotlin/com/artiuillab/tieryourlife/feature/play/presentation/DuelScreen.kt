@@ -438,7 +438,7 @@ private fun DuelSlot(card: TierItem, metrics: DuelMetrics, chosen: Boolean?, sti
 @Composable
 private fun DuelCard(card: TierItem, metrics: DuelMetrics, chosen: Boolean?, still: Boolean, tag: String, onPick: () -> Unit) {
     val shape = RoundedCornerShape(16.dp)
-    val description = stringResource(R.string.play_pick, card.title)
+    val description = stringResource(R.string.play_pick, card.title.ifBlank { stringResource(R.string.play_card_unnamed) })
     val scale by animateFloatAsState(if (chosen == true && !still) CHOSEN_SCALE else 1f, tween(CHOSEN_MILLIS), label = "chosen scale")
     val fade by animateFloatAsState(if (chosen == false) PASSED_ALPHA else 1f, tween(CHOSEN_MILLIS), label = "passed fade")
     var broken by remember(card.imageUrl) { mutableStateOf(false) }

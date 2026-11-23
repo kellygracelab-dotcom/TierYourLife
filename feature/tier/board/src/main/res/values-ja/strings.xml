@@ -202,4 +202,6 @@
         <item quantity="other">%1$d枚を手で並べるのは大変？&lt;b&gt;プレイ&lt;/b&gt;：2枚から良い方を選ぶだけでティアが埋まります。</item>
     </plurals>
     <string name="tip_add">名前を入力すると、画像は自動で付きます。</string>
+    <!-- Spoken for a card that shows only its picture; never drawn on it. -->
+    <string name="card_unnamed">カード</string>
 </resources>

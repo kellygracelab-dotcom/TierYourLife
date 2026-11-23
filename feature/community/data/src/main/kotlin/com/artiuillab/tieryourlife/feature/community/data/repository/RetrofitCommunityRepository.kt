@@ -80,6 +80,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.model.cardTitleAsRead
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.OwnPictures
 import com.artiuillab.tieryourlife.feature.tier.domain.sync.PublishFingerprint
 import com.google.firebase.auth.FirebaseAuth
@@ -584,7 +585,7 @@ internal fun PublishedListDto.toDomain(me: String? = null) = PublishedList(
     },
     items = items.mapIndexed { index, item ->
         TierItem(
-            id = index.toLong(), title = item.title, imageUrl = item.imageUrl, credit = item.credit,
+            id = index.toLong(), title = cardTitleAsRead(item.title, item.imageUrl != null), imageUrl = item.imageUrl, credit = item.credit,
             attribution = item.attribution?.toDomain(), sourceIndex = index,
             focus = item.pictureFocus.toFocus()?.takeIf { item.imageUrl != null },
         )
@@ -631,7 +632,7 @@ private fun RankingDto.toDomain() = Ranking(
 
 /** A reader's own cards as the board draws them; the ids are placeholders the arrangement replaces. */
 private fun List<PublishedItemDto>.toAddedCards(): List<TierItem> = mapIndexed { index, item ->
-    TierItem(id = index.toLong(), title = item.title, imageUrl = item.imageUrl, credit = item.credit, attribution = item.attribution?.toDomain())
+    TierItem(id = index.toLong(), title = cardTitleAsRead(item.title, item.imageUrl != null), imageUrl = item.imageUrl, credit = item.credit, attribution = item.attribution?.toDomain())
 }
 
 /** Any id the server sends is a section now; a list it filed nowhere is Other's. */

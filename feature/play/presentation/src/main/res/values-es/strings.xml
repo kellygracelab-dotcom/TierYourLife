@@ -102,7 +102,7 @@
     <string name="play_individual_cards">Tarjetas individuales</string>
     <string name="play_select_candidates">Seleccionar todas las disponibles</string>
     <string name="play_clear_selection">Borrar selección</string>
-    <string name="play_card_unnamed">Tarjeta sin título</string>
+    <string name="play_card_unnamed">Tarjeta</string>
     <plurals name="play_placed_warning">
         <item quantity="one">Has colocado %1$d carta. El juego la reordena; «Deshacer» la devuelve.</item>
         <item quantity="many">Has colocado %1$d cartas. El juego las reordena; «Deshacer» las devuelve.</item>

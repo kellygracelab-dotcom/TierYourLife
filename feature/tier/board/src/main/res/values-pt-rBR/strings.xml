@@ -232,4 +232,6 @@
         <item quantity="other">Prefere não posicionar %1$d cards à mão? &lt;b&gt;Jogar&lt;/b&gt;: escolha o melhor de dois e os níveis se preenchem.</item>
     </plurals>
     <string name="tip_add">Digite um nome e a imagem vem junto.</string>
+    <!-- Spoken for a card that shows only its picture; never drawn on it. -->
+    <string name="card_unnamed">Cartão</string>
 </resources>

@@ -247,4 +247,6 @@
         <item quantity="other">Nie chcesz układać %1$d karty ręcznie? &lt;b&gt;Graj&lt;/b&gt;: wybieraj lepszą z dwóch, a poziomy same się wypełnią.</item>
     </plurals>
     <string name="tip_add">Wpisz nazwę — obrazek dobierze się sam.</string>
+    <!-- Spoken for a card that shows only its picture; never drawn on it. -->
+    <string name="card_unnamed">Karta</string>
 </resources>

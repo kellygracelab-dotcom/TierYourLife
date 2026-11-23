@@ -112,7 +112,7 @@
     <string name="play_individual_cards">Отдельные карточки</string>
     <string name="play_select_candidates">Выбрать всех кандидатов</string>
     <string name="play_clear_selection">Снять выбор</string>
-    <string name="play_card_unnamed">Карточка без названия</string>
+    <string name="play_card_unnamed">Карточка</string>
     <plurals name="play_placed_warning">
         <item quantity="one">Вы разложили %1$d карточку. Игра её переставит; «Отменить» вернёт.</item>
         <item quantity="few">Вы разложили %1$d карточки. Игра их переставит; «Отменить» вернёт.</item>

@@ -484,10 +484,11 @@ private val DIGITS = listOf(Key.One, Key.Two, Key.Three, Key.Four, Key.Five, Key
 @Composable
 private fun BigCard(card: TierItem, picked: Boolean, width: Dp = BIG_CARD_WIDTH, height: Dp = BIG_CARD_HEIGHT) {
     AnimatedContent(targetState = card, transitionSpec = { fadeIn() togetherWith fadeOut() }, contentKey = { it.id }, label = "current card") { shown ->
+        val spoken = shown.spokenName()
         Box(
             Modifier
                 .testTag(TierDetailTestTags.ONE_BY_ONE_CARD)
-                .semantics { contentDescription = shown.title },
+                .semantics { contentDescription = spoken },
         ) {
             ProvideTextCardRoom(listOf(shown), width, height, 0.dp) {
                 ItemTile(item = shown, width = width, height = height, named = false)
