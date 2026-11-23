@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -20,11 +22,16 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 
 /** Sampling changes the explicit cohort, leaving the tier/pool filter intact. */
 @Composable
@@ -67,7 +74,19 @@ internal fun ColumnScope.IndividualCardsPage(picker: Picker, actions: PickerActi
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(checked, onCheckedChange = null)
-                Text(option.item.title.ifBlank { stringResource(R.string.play_card_unnamed) }, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                // A card may be only its picture: the row shows it, and says "card" to a screen reader.
+                val picture = option.item.imageUrl
+                if (picture != null) {
+                    AsyncImage(
+                        model = picture,
+                        contentDescription = null,
+                        modifier = Modifier.padding(horizontal = 8.dp).size(width = 32.dp, height = 44.dp).clip(RoundedCornerShape(4.dp)),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+                val name = option.item.title
+                val spoken = name.ifBlank { stringResource(R.string.play_card_unnamed) }
+                Text(name, Modifier.weight(1f).semantics { contentDescription = spoken }, style = MaterialTheme.typography.bodyLarge)
                 val group = picker.groups.firstOrNull { it.tierId == option.tierId }
                 Text(if (group?.isPool == true) stringResource(R.string.play_pool) else group?.label.orEmpty(), style = MaterialTheme.typography.labelMedium)
             }

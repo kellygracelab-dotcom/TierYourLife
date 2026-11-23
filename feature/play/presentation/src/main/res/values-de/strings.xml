@@ -92,7 +92,7 @@
     <string name="play_individual_cards">Einzelne Karten</string>
     <string name="play_select_candidates">Alle verfügbaren auswählen</string>
     <string name="play_clear_selection">Auswahl aufheben</string>
-    <string name="play_card_unnamed">Karte ohne Titel</string>
+    <string name="play_card_unnamed">Karte</string>
     <plurals name="play_placed_warning">
         <item quantity="one">Du hast %1$d Karte platziert. Das Spiel ordnet sie neu; „Rückgängig“ holt sie zurück.</item>
         <item quantity="other">Du hast %1$d Karten platziert. Das Spiel ordnet sie neu; „Rückgängig“ holt sie zurück.</item>

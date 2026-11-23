@@ -272,12 +272,13 @@ fun RankedPoolSection(
 
 @Composable
 private fun PoolItemRow(item: TierItem, onSelect: (itemId: Long) -> Unit) {
+    val spoken = item.spokenName()
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 64.dp)
             .clickable { onSelect(item.id) }
-            .semantics(mergeDescendants = true) { contentDescription = item.title }
+            .semantics(mergeDescendants = true) { contentDescription = spoken }
             .testTag(TierDetailTestTags.rankedPoolItem(item.id))
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),

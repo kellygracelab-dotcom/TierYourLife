@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.ui.CardLabel
+import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.components.FocusedImage
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -67,7 +69,7 @@ fun ItemTile(item: TierItem, width: Dp, height: Dp, named: Boolean = LocalBoardL
             FocusedImage(
                 model = picture,
                 focus = item.focus,
-                contentDescription = item.title,
+                contentDescription = item.spokenName(),
                 modifier = Modifier.fillMaxSize(),
                 crossfadeMillis = POSTER_FADE_MILLIS,
                 onError = {
@@ -75,7 +77,7 @@ fun ItemTile(item: TierItem, width: Dp, height: Dp, named: Boolean = LocalBoardL
                     lost(item)
                 },
             )
-            if (named) NameStrip(item.title, width, small = width < ROOMY_TILE_WIDTH)
+            if (named && item.title.isNotBlank()) NameStrip(item.title, width, small = width < ROOMY_TILE_WIDTH)
         } else {
             CardLabel(
                 text = item.title,
@@ -87,6 +89,10 @@ fun ItemTile(item: TierItem, width: Dp, height: Dp, named: Boolean = LocalBoardL
         }
     }
 }
+
+/** What a screen reader says for a card: its name, or the word for a card that shows only its picture. */
+@Composable
+internal fun TierItem.spokenName(): String = title.ifBlank { stringResource(R.string.card_unnamed) }
 
 /**
  * White on a shade that darkens toward the foot, so a light poster still

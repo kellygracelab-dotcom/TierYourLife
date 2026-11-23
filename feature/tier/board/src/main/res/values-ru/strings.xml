@@ -247,4 +247,6 @@
         <item quantity="other">Не хочется раскладывать %1$d карточки вручную? &lt;b&gt;Играть&lt;/b&gt;: выбирайте лучшую из двух, и уровни заполнятся.</item>
     </plurals>
     <string name="tip_add">Введите название — картинка подберётся сама.</string>
+    <!-- Spoken for a card that shows only its picture; never drawn on it. -->
+    <string name="card_unnamed">Карточка</string>
 </resources>
