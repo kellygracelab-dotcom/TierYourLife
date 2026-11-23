@@ -110,10 +110,7 @@
         <item quantity="one">%d kart kaldı</item>
         <item quantity="other">%d kart kaldı</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d yerleştirildi · en iyiden en kötüye</item>
-        <item quantity="other">%1$d yerleştirildi · en iyiden en kötüye</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">En iyiden en kötüye</string>
     <string name="tier_detail_ranked_header_empty">Henüz yerleştirilen yok</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">%1$d kart kaldı. Genişletin.</item>

@@ -110,10 +110,7 @@
         <item quantity="one">Noch %d Karte</item>
         <item quantity="other">Noch %d Karten</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d platziert · vom besten zum schlechtesten</item>
-        <item quantity="other">%1$d platziert · vom besten zum schlechtesten</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">Vom besten zum schlechtesten</string>
     <string name="tier_detail_ranked_header_empty">Noch nichts platziert</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">Noch %1$d Karte. Ausklappen.</item>
