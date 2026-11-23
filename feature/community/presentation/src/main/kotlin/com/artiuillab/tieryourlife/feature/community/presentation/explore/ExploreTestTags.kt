@@ -22,7 +22,6 @@ internal object ExploreTestTags {
     const val COVER_HOME = "explore_cover_home"
     const val ALL_SECTIONS_TILE = "explore_all_sections"
     const val FOLLOW_PICKED = "following_follow_picked"
-    const val FRESH_ROW = "explore_fresh_row"
 
     /** explore_chip_popular, explore_chip_new, explore_chip_following. */
     fun chip(chip: HomeChip) = "explore_chip_${chip.name.lowercase()}"
@@ -35,6 +34,7 @@ internal object ExploreTestTags {
 
     fun cardAuthor(id: String) = "explore_card_author_$id"
     fun reason(id: String) = "explore_reason_$id"
+    fun newBadge(id: String) = "explore_new_badge_$id"
     fun stripItem(key: String) = "following_strip_$key"
     const val TOPIC_SQUARE = "topic_square"
     const val TOPIC_PICTURE = "topic_picture"

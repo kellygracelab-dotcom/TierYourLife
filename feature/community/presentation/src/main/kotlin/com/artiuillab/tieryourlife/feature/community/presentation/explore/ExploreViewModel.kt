@@ -41,7 +41,7 @@ data class ExploreUiState(
     val feed: FeedPane = FeedPane(),
     /** Everything published, newest first: the New chip. */
     val newest: FeedPane = FeedPane(),
-    /** New from the community, over Popular: empty unless there are at least [FRESH_ROW_MIN], as on the website. */
+    /** People's fresh lists, first in Popular with a New badge: up to [FRESH_ON_TOP], as on the website; [feed] leaves them out. */
     val fresh: List<PublishedListSummary> = emptyList(),
     /** Non-null while the search bar is up. */
     val query: String? = null,
@@ -91,11 +91,12 @@ class ExploreViewModel @Inject constructor(
         search.results,
         search.popularTopics,
     ) { directory, (pane, newestPane, freshLists), q, found, topics ->
+        val onTop = freshOnTop(freshLists)
         ExploreUiState(
             sections = directory.shown,
-            feed = pane,
+            feed = pane.without(onTop),
             newest = newestPane,
-            fresh = freshRowOf(freshLists),
+            fresh = onTop,
             query = q,
             results = found,
             popularTopics = topics,
@@ -206,10 +207,20 @@ class ExploreViewModel @Inject constructor(
 }
 
 /** Fewer than this and the row stays away: a single card is not a row. */
-internal const val FRESH_ROW_MIN = 2
+internal const val FRESH_ON_TOP = 4
 
-internal fun freshRowOf(lists: List<PublishedListSummary>): List<PublishedListSummary> =
-    lists.takeIf { it.size >= FRESH_ROW_MIN }.orEmpty()
+internal fun freshOnTop(lists: List<PublishedListSummary>): List<PublishedListSummary> = lists.take(FRESH_ON_TOP)
+
+/**
+ * Popular under the fresh lists, those taken out of every page so none shows
+ * twice. Only what is shown: the loader's pages and cursor stay the server's,
+ * so Show more goes on where the server's last page ended.
+ */
+internal fun FeedPane.without(onTop: List<PublishedListSummary>): FeedPane {
+    if (onTop.isEmpty()) return this
+    val ids = onTop.mapTo(HashSet()) { it.id }
+    return copy(lists = lists.filterNot { it.id in ids })
+}
 
 internal fun FeedNotice.toCommunityNotice(): CommunityNotice = when (this) {
     is FeedNotice.RefreshFailed -> CommunityNotice.RefreshFailed(showingFromMillis)

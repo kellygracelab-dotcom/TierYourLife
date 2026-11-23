@@ -51,7 +51,7 @@
     <string name="feed_sort_popular">人気</string>
     <string name="feed_sort_recent">新着</string>
     <string name="feed_chip_new">新着</string>
-    <string name="explore_fresh_title">コミュニティの新着</string>
+    <string name="feed_badge_new">新着</string>
     <string name="feed_source_everyone">すべて</string>
     <string name="feed_source_following">フォロー中</string>
     <string name="home_community_empty">まだ何も公開されていません</string>

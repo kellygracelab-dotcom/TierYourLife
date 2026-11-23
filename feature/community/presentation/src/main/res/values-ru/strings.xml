@@ -54,7 +54,7 @@
     <string name="feed_sort_popular">Популярные</string>
     <string name="feed_sort_recent">Новые</string>
     <string name="feed_chip_new">Новые</string>
-    <string name="explore_fresh_title">Новое от сообщества</string>
+    <string name="feed_badge_new">Новое</string>
     <string name="feed_source_everyone">Все</string>
     <string name="feed_source_following">Подписки</string>
     <string name="home_community_empty">Пока ничего не опубликовано</string>

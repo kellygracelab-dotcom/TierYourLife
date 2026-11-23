@@ -54,7 +54,7 @@
     <string name="feed_sort_popular">Популярні</string>
     <string name="feed_sort_recent">Нові</string>
     <string name="feed_chip_new">Нові</string>
-    <string name="explore_fresh_title">Нове від спільноти</string>
+    <string name="feed_badge_new">Нове</string>
     <string name="feed_source_everyone">Усі</string>
     <string name="feed_source_following">Підписки</string>
     <string name="home_community_empty">Поки нічого не опубліковано</string>

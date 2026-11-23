@@ -131,36 +131,47 @@ class ExploreViewModelTest {
     }
 
     @Test
-    fun peoplesFreshLists_comeOverPopular() = runBlocking {
-        val fresh = listOf(summary("f1"), summary("f2"), summary("f3"))
+    fun peoplesFreshLists_comeFirst_andPopularLeavesThemOut() = runBlocking {
+        val fresh = listOf(summary("b"), summary("f2"))
         val viewModel = viewModel(Community(freshLists = Result.success(fresh)))
 
         viewModel.open()
-        val state = viewModel.state.firstWithin { it.fresh.isNotEmpty() }
+        val state = viewModel.state.firstWithin { it.fresh.isNotEmpty() && it.feed.phase == FeedPhase.Ready }
 
-        assertEquals(listOf("f1", "f2", "f3"), state.fresh.map { it.id })
-        assertEquals(listOf("a", "b"), viewModel.state.firstWithin { it.feed.phase == FeedPhase.Ready }.feed.lists.map { it.id })
+        assertEquals(listOf("b", "f2"), state.fresh.map { it.id })
+        assertEquals(listOf("a"), state.feed.lists.map { it.id })
     }
 
     @Test
-    fun aHiddenFreshList_leavesTheRow_andTheRowGoesBelowTwo() = runBlocking {
-        val fresh = listOf(summary("f1"), summary("f2"), summary("f3"))
+    fun aHiddenFreshList_leavesTheTop_evenTheLastOne() = runBlocking {
+        val fresh = listOf(summary("f1"), summary("f2"))
         val viewModel = viewModel(Community(freshLists = Result.success(fresh)))
         viewModel.open()
-        viewModel.state.firstWithin { it.fresh.size == 3 }
+        viewModel.state.firstWithin { it.fresh.size == 2 }
 
         withContext(Dispatchers.Main) { viewModel.hideList(fresh[0]) }
-        assertEquals(listOf("f2", "f3"), viewModel.state.firstWithin { it.fresh.size == 2 }.fresh.map { it.id })
+        assertEquals(listOf("f2"), viewModel.state.firstWithin { it.fresh.size == 1 }.fresh.map { it.id })
 
         withContext(Dispatchers.Main) { viewModel.hideList(fresh[1]) }
         assertTrue(viewModel.state.firstWithin { it.fresh.isEmpty() }.fresh.isEmpty())
     }
 
     @Test
-    fun theRow_needsTwoLists() {
-        assertEquals(emptyList<PublishedListSummary>(), freshRowOf(emptyList()))
-        assertEquals(emptyList<PublishedListSummary>(), freshRowOf(listOf(summary("f1"))))
-        assertEquals(listOf("f1", "f2"), freshRowOf(listOf(summary("f1"), summary("f2"))).map { it.id })
+    fun theTop_takesOneToFour_inTheServersOrder() {
+        assertEquals(emptyList<PublishedListSummary>(), freshOnTop(emptyList()))
+        assertEquals(listOf("f1"), freshOnTop(listOf(summary("f1"))).map { it.id })
+        assertEquals(listOf("f1", "f2", "f3", "f4"), freshOnTop((1..6).map { summary("f$it") }).map { it.id })
+    }
+
+    @Test
+    fun everyPopularPage_dropsWhatIsOnTop_butKeepsItsCursor() {
+        val pane = FeedPane(lists = listOf(summary("a"), summary("f1"), summary("c")), phase = FeedPhase.Ready, canLoadMore = true)
+
+        val shown = pane.without(listOf(summary("f1")))
+
+        assertEquals(listOf("a", "c"), shown.lists.map { it.id })
+        assertTrue(shown.canLoadMore)
+        assertEquals(pane, pane.without(emptyList()))
     }
 
     @Test

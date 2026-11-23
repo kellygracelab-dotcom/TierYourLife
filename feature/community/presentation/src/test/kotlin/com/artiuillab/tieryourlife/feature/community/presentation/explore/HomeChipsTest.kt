@@ -4,9 +4,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTouchHeightIsEqualTo
-import androidx.compose.ui.test.hasAnyAncestor
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -24,6 +21,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.community.presentation.followfeed.FollowingFeedUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -127,32 +125,33 @@ class HomeChipsTest {
     }
 
     @Test
-    fun peoplesFreshLists_rideOverPopular_underTheirOwnHeading() {
-        val fresh = listOf(card("x1", "Fresh one"), card("x2", "Fresh two"))
-        show(feeds.copy(fresh = fresh), followed)
+    fun peoplesFreshLists_leadPopular_eachWithANewBadge_andTheirAuthor() {
+        show(feeds.copy(fresh = listOf(card("x1", "Fresh one"))), followed)
 
-        compose.onNodeWithTag(ExploreTestTags.FRESH_ROW).assertExists()
-        compose.onNodeWithText("NEW FROM THE COMMUNITY").assertExists()
-        compose.onNode(hasText("Fresh one") and hasAnyAncestor(hasTestTag(ExploreTestTags.FRESH_ROW))).assertExists()
-        compose.onNode(hasText("Popular list") and hasAnyAncestor(hasTestTag(ExploreTestTags.FRESH_ROW))).assertDoesNotExist()
-        compose.onNodeWithTag(ExploreTestTags.card("p1")).assertExists()
+        compose.onNodeWithTag(ExploreTestTags.newBadge("x1")).assertExists()
+        compose.onNodeWithTag(ExploreTestTags.cardAuthor("x1")).assertExists()
+        compose.onNodeWithTag(ExploreTestTags.newBadge("p1")).assertDoesNotExist()
+        compose.onNodeWithText("NEW FROM THE COMMUNITY").assertDoesNotExist()
+        val fresh = compose.onNodeWithTag(ExploreTestTags.card("x1")).fetchSemanticsNode().boundsInRoot
+        val popular = compose.onNodeWithTag(ExploreTestTags.card("p1")).fetchSemanticsNode().boundsInRoot
+        assertTrue(fresh.top < popular.top || (fresh.top == popular.top && fresh.left < popular.left))
     }
 
     @Test
-    fun theNewChip_hasNoFreshRow() {
+    fun theNewChip_hasNoFreshLists() {
         show(feeds.copy(fresh = listOf(card("x1", "Fresh one"), card("x2", "Fresh two"))), followed)
 
         compose.onNodeWithTag(ExploreTestTags.chip(HomeChip.New)).performClick()
 
-        compose.onNodeWithTag(ExploreTestTags.FRESH_ROW).assertDoesNotExist()
+        compose.onNodeWithTag(ExploreTestTags.card("x1")).assertDoesNotExist()
         compose.onNodeWithTag(ExploreTestTags.card("n1")).assertExists()
     }
 
     @Test
-    fun noFreshLists_noRow() {
+    fun noFreshLists_noBadge() {
         show(feeds, followed)
 
-        compose.onNodeWithTag(ExploreTestTags.FRESH_ROW).assertDoesNotExist()
+        compose.onNodeWithTag(ExploreTestTags.newBadge("p1")).assertDoesNotExist()
     }
 
     @Test
