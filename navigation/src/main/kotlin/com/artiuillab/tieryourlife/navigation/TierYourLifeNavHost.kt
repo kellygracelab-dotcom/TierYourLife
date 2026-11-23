@@ -167,6 +167,16 @@ internal fun railDestinationFor(route: String?, onCommunity: Boolean): RailDesti
         else -> null
     }
 
+/**
+ * Opened from a board's List settings. The usual push fades the new screen in
+ * over the old, and the settings showed through for the length of it; here
+ * the new screen is solid from its first frame and the settings fade at once.
+ */
+internal fun takesOverListSettings(route: String?): Boolean =
+    route?.substringBefore('?')?.substringBefore('/')?.substringAfterLast('.') in LIST_SETTINGS_TARGETS
+
+private val LIST_SETTINGS_TARGETS = setOf("CoverPicker", "TopicPicker", "AdjustCover")
+
 /** Destinations that are one task from end to end and want every pixel of a short window for it. */
 internal fun railHiddenOn(route: String?): Boolean =
     route?.substringBefore('?')?.substringBefore('/')?.substringAfterLast('.') == "AiStudioRoute"
@@ -223,6 +233,7 @@ private const val PUSH_FADE_MILLIS = 200
 private const val POP_MILLIS = 250
 private const val POP_FADE_MILLIS = 150
 private const val TOP_LEVEL_FADE_MILLIS = 150
+private const val HANDOVER_FADE_MILLIS = 90
 private const val GESTURE_SCALE = 0.92f
 private val AXIS_SHIFT = 30.dp
 
@@ -241,6 +252,13 @@ private fun pushIn(shift: Int): EnterTransition =
 
 private fun pushAside(shift: Int): ExitTransition =
     slideOutHorizontally(tween(PUSH_MILLIS, easing = Emphasized)) { -shift }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.fromListSettings(): Boolean =
+    initialState.destination.hasRoute<Route.TierDetail>() && takesOverListSettings(targetState.destination.route)
+
+private fun takeOver(shift: Int): EnterTransition = slideInHorizontally(tween(PUSH_MILLIS, easing = EmphasizedDecelerate)) { shift }
+
+private fun giveWay(shift: Int): ExitTransition = pushAside(shift) + fadeOut(tween(HANDOVER_FADE_MILLIS, easing = LinearEasing))
 
 private fun comeBack(shift: Int): EnterTransition =
     slideInHorizontally(tween(POP_MILLIS, easing = EmphasizedDecelerate)) { -shift }
@@ -284,8 +302,20 @@ private fun NavContent(
     NavHost(
         navController = navController,
         startDestination = Route.TierLists(community = startOnCommunity),
-        enterTransition = { if (betweenTopLevels()) topLevelIn() else pushIn(shift) },
-        exitTransition = { if (betweenTopLevels()) holdBeneath(TOP_LEVEL_FADE_MILLIS) else pushAside(shift) },
+        enterTransition = {
+            when {
+                betweenTopLevels() -> topLevelIn()
+                fromListSettings() -> takeOver(shift)
+                else -> pushIn(shift)
+            }
+        },
+        exitTransition = {
+            when {
+                betweenTopLevels() -> holdBeneath(TOP_LEVEL_FADE_MILLIS)
+                fromListSettings() -> giveWay(shift)
+                else -> pushAside(shift)
+            }
+        },
         popEnterTransition = { if (betweenTopLevels()) topLevelIn() else comeBack(shift) },
         popExitTransition = { if (betweenTopLevels()) holdBeneath(TOP_LEVEL_FADE_MILLIS) else popOut(shift) },
         predictivePopEnterTransition = { if (betweenTopLevels()) topLevelIn() else comeBack(shift) },
