@@ -110,10 +110,7 @@
         <item quantity="one">%d card left</item>
         <item quantity="other">%d cards left</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d placed · best to worst</item>
-        <item quantity="other">%1$d placed · best to worst</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">Best to worst</string>
     <string name="tier_detail_ranked_header_empty">Nothing placed yet</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">%1$d card left. Expand.</item>

@@ -117,11 +117,7 @@
         <item quantity="many">%d cartões restantes</item>
         <item quantity="other">%d cartões restantes</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d posicionado · do melhor ao pior</item>
-        <item quantity="many">%1$d posicionados · do melhor ao pior</item>
-        <item quantity="other">%1$d posicionados · do melhor ao pior</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">Do melhor ao pior</string>
     <string name="tier_detail_ranked_header_empty">Nada posicionado ainda</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">%1$d cartão restante. Expandir.</item>
