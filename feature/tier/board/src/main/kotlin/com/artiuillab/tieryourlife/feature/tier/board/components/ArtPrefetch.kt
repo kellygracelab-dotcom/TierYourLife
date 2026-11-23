@@ -22,6 +22,7 @@ data class ArtPictures(
     val previewImages: List<String>,
     val coverFocus: CoverFocus? = null,
     val pictureFocus: Map<String, CoverFocus> = emptyMap(),
+    val collageUrl: String? = null,
 )
 
 /** One picture as [ListArt] asks Coil for it in a tile of [width] by [height] pixels. */
@@ -36,6 +37,7 @@ fun artRequests(art: ArtPictures, width: Int, height: Int): List<ArtRequest> {
             val zoom = art.coverFocus?.zoom ?: CoverFocus.MIN_ZOOM
             listOf(ArtRequest(art.coverImageUrl, ceil(width * zoom).toInt(), ceil(height * zoom).toInt()))
         }
+        art.collageUrl != null -> listOf(ArtRequest(art.collageUrl, width, height))
         images.isEmpty() -> emptyList()
         else -> {
             val rows = mosaicRows(images.size)

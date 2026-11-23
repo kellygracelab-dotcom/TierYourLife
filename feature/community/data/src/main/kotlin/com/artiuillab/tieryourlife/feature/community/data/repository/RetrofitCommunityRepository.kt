@@ -548,6 +548,7 @@ internal fun PublishedListSummaryDto.toSummary(me: String? = null) = PublishedLi
     viewerFollowsAuthor = viewerFollowsAuthor,
     names = names,
     boardUid = boardUid?.takeIf { it.isNotBlank() },
+    collageUrl = collageUrl.webPictureOrNull(),
 )
 
 /** Old lists stored the word "null" as a cover; only a web address is a picture. */
@@ -669,6 +670,7 @@ internal fun PublishedListSummary.toDto() = PublishedListSummaryDto(
     viewerFollowsAuthor = viewerFollowsAuthor,
     names = names,
     boardUid = boardUid,
+    collageUrl = collageUrl,
 )
 
 /** An opened list back as the server sent it, so a kept one is read by the same mapping. */
