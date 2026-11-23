@@ -38,6 +38,16 @@ class PulledBoardTest {
     }
 
     @Test
+    fun `a pulled star wins only when it changed later`() {
+        val later = pulled.copy(favouritedAt = null, favouriteChangedAt = 1_793_146_000_001).keepingLocalFieldsOf(here)
+        val earlier = pulled.copy(favouritedAt = 5, favouriteChangedAt = 1_793_145_999_999).keepingLocalFieldsOf(here)
+
+        assertEquals(null, later.favouritedAt)
+        assertEquals(1_793_146_000_001, later.favouriteChangedAt)
+        assertEquals(1_793_146_000_000, earlier.favouritedAt)
+    }
+
+    @Test
     fun `what the account carries comes from the account`() {
         val kept = pulled.keepingLocalFieldsOf(here)
 

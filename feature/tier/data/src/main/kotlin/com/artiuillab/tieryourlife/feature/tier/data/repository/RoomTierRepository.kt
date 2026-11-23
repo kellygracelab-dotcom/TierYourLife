@@ -165,7 +165,7 @@ class RoomTierRepository internal constructor(
     }
 
     override suspend fun setFavouritedAt(id: Long, at: Long?) {
-        dao.setFavouritedAt(id, at)
+        dao.setFavouritedAt(id, at, changedAt = at ?: System.currentTimeMillis())
     }
 
     override suspend fun setCategory(id: Long, category: String?) {

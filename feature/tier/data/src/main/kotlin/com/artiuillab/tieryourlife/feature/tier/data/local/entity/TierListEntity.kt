@@ -56,6 +56,12 @@ data class TierListEntity(
      * watched by the edited-at trigger: starring is not editing.
      */
     val favouritedAt: Long? = null,
+    /**
+     * When the star was last put on or taken off, here or on another device:
+     * the later change wins when the account's copy and this one disagree.
+     * Null on a board starred before the star followed the account.
+     */
+    val favouriteChangedAt: Long? = null,
     /** Published with no name or face. A column of its own, so it syncs and survives a change of phone. */
     @ColumnInfo(defaultValue = "0")
     val anonymous: Boolean = false,

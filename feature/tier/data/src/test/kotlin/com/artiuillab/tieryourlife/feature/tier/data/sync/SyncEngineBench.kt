@@ -29,6 +29,8 @@ import com.artiuillab.tieryourlife.feature.tier.data.remote.dto.KeptTierDto
 import com.artiuillab.tieryourlife.feature.tier.data.repository.BoardOwnership
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.longOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
@@ -164,7 +166,12 @@ abstract class SyncEngineBench {
 
         override suspend fun index(after: String?): KeptBoardIndexDto {
             onIndex()
-            val all = server.values.map { KeptBoardSummaryDto(it.uid, it.revision, it.deleted, it.fingerprint, title = it.title, removal = it.removal) }
+            val all = server.values.map {
+                KeptBoardSummaryDto(
+                    it.uid, it.revision, it.deleted, it.fingerprint, title = it.title, removal = it.removal,
+                    favouritedAt = it.favouritedAt, favouriteChangedAt = it.favouriteChangedAt,
+                )
+            }
             val from = after?.let { last -> all.indexOfFirst { it.uid == last } + 1 } ?: 0
             val page = all.drop(from).take(pageSize)
             return KeptBoardIndexDto(page, next = page.lastOrNull()?.uid?.takeIf { from + page.size < all.size })
@@ -191,7 +198,17 @@ abstract class SyncEngineBench {
             kept += uid to request
             onKeep()
             val revision = (server[uid]?.revision ?: 0) + 1
-            server[uid] = KeptBoardDto(uid = uid, revision = revision, fingerprint = request.fingerprint, title = request.title)
+            // As the proxy: the later change of the star wins, the incoming one on a tie; none sent keeps the stored one.
+            val stored = server[uid]
+            val sent = request.favouriteChangedAt?.takeIf { at -> stored?.favouriteChangedAt.let { it == null || at >= it } }
+            server[uid] = KeptBoardDto(
+                uid = uid,
+                revision = revision,
+                fingerprint = request.fingerprint,
+                title = request.title,
+                favouritedAt = if (sent != null) (request.favouritedAt as? JsonPrimitive)?.longOrNull else stored?.favouritedAt,
+                favouriteChangedAt = sent ?: stored?.favouriteChangedAt,
+            )
             val shown = request.items.mapNotNull { it.imageUrl } + listOfNotNull(request.coverImageUrl) + request.coverImageUrls
             return Response.success(KeptBoardRevisionDto(uid, revision, copies.filterKeys { it in shown }))
         }
