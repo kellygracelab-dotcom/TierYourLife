@@ -67,7 +67,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
-private const val CARD_ART_ASPECT = 1f
+private const val CARD_ART_ASPECT = 16f / 10f
 
 /**
  * Two cards on a phone, counted rather than measured: an Adaptive grid finds a

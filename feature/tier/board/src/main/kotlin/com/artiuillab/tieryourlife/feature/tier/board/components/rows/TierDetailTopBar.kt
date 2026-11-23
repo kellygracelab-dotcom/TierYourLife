@@ -666,12 +666,13 @@ private fun FoldingStorey(state: TopAppBarState, content: @Composable () -> Unit
     }
 }
 
-/** "12 cards · 5 placed", or "1 card · nothing placed yet". */
+/** "12 cards" when every card is placed, "12 cards · 5 placed" when some are, "1 card · nothing placed yet" when none. */
 @Composable
 fun boardCounts(list: TierList): String {
     val cards = list.tiers.sumOf { it.items.size }
     val placed = list.tiers.filterNot { it.isPool }.sumOf { it.items.size }
     val all = pluralStringResource(R.plurals.board_cards_count, cards, cards)
+    if (cards > 0 && placed == cards) return all
     val done = if (placed == 0) stringResource(R.string.board_nothing_placed) else pluralStringResource(R.plurals.board_cards_placed, placed, placed)
     return stringResource(R.string.board_header_counts, all, done)
 }

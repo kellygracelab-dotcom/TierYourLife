@@ -27,7 +27,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.Commun
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedCallbacks
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedListMenus
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.HomeLayout
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.followingSentence
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.sentenceFor
@@ -148,7 +147,7 @@ fun SectionScreenContent(
         nowMillis = state.nowMillis,
         callbacks = feed,
         onOpenList = onOpenList,
-        items = { layout, alpha -> sectionBody(state, layout, alpha, feed, calls, cards, topicCalls) },
+        items = { _, alpha -> sectionBody(state, alpha, feed, calls, cards, topicCalls) },
     )
     ListsPage(head, body, onBack, snackbar, SectionTestTags.SCREEN, search, cards)
     FeedListMenus(menuFor, { menuFor = null }, feed, onOpenAuthor)
@@ -210,7 +209,6 @@ private fun SectionNotices(
  */
 private fun LazyGridScope.sectionBody(
     state: SectionUiState,
-    layout: HomeLayout,
     alpha: () -> Float,
     feed: FeedCallbacks,
     calls: SectionCallbacks,
@@ -224,7 +222,7 @@ private fun LazyGridScope.sectionBody(
     item(key = "topics", span = { GridItemSpan(maxLineSpan) }) {
         TopicTiles(state.section, state.topics, state.waiting, calls.onOpenTopic, topicCalls.onOpenWaiting, topicCalls.onSuggest)
     }
-    listsBlock(state.feed, layout, alpha, cards, feed.onRetry) {
+    listsBlock(state.feed, alpha, cards, feed.onRetry) {
         SortRow(sort = state.sort, onSort = calls.onSelectSort, count = state.stats?.listCount?.takeIf { it > 0 })
     }
 }

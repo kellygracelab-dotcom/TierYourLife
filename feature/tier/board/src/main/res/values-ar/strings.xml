@@ -138,14 +138,7 @@
         <item quantity="many">%d بطاقة متبقية</item>
         <item quantity="other">%d بطاقة متبقية</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="zero">لا شيء موضوع · من الأفضل إلى الأسوأ</item>
-        <item quantity="one">واحدة موضوعة · من الأفضل إلى الأسوأ</item>
-        <item quantity="two">اثنتان موضوعتان · من الأفضل إلى الأسوأ</item>
-        <item quantity="few">%1$d موضوعة · من الأفضل إلى الأسوأ</item>
-        <item quantity="many">%1$d موضوعة · من الأفضل إلى الأسوأ</item>
-        <item quantity="other">%1$d موضوعة · من الأفضل إلى الأسوأ</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">من الأفضل إلى الأسوأ</string>
     <string name="tier_detail_ranked_header_empty">لم يوضع أي شيء بعد</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="zero">لا بطاقات متبقية. توسيع.</item>

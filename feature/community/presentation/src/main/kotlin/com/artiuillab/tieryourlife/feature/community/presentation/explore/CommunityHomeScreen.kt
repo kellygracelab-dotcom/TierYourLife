@@ -45,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -259,7 +258,7 @@ fun CommunityHomeContent(
             } else {
                 HomeBody(explore, following, layout, feeds, exploreCalls, destinations, tabs, startOnFollowing)
                 if (picturesOnWifiOnly != null) {
-                    PrefetchCovers(explore.feed, following.feed, layout, constraints.maxWidth / layout.feedColumns, picturesOnWifiOnly)
+                    PrefetchCovers(explore.feed, following.feed, constraints.maxWidth / layout.feedColumns, picturesOnWifiOnly)
                 }
             }
             SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
@@ -273,8 +272,8 @@ fun CommunityHomeContent(
  * Coil reuses a picture decoded larger.
  */
 @Composable
-private fun PrefetchCovers(explore: FeedPane, following: FeedPane, layout: HomeLayout, cardWidth: Int, picturesOnWifiOnly: () -> Boolean) {
-    val coverHeight = with(LocalDensity.current) { layout.coverHeight.roundToPx() }
+private fun PrefetchCovers(explore: FeedPane, following: FeedPane, cardWidth: Int, picturesOnWifiOnly: () -> Boolean) {
+    val coverHeight = (cardWidth / LIST_ART_ASPECT).toInt()
     val arts = remember(explore, following) {
         (explore.kept() + following.kept()).map { ArtPictures(it.coverImageUrl, it.previewImages, it.coverFocus, it.previewFocus, it.collageUrl) }
     }
@@ -590,7 +589,7 @@ internal fun SearchResultsGrid(
         // The sections are the phone's own, so they show while the server is still asked.
         foundSectionItems(found, onOpenSection)
         when {
-            results.loading -> items(4) { SkeletonCard(alpha, coverHeight = layout.coverHeight) }
+            results.loading -> items(4) { SkeletonCard(alpha) }
             results.failed -> item(span = full) {
                 FeedFailedBlock(retrying = false, onRetry = onRetry)
             }
@@ -611,10 +610,9 @@ internal fun SearchResultsGrid(
                         summary = summary,
                         onClick = { cards.onOpen(summary) },
                         onLongClick = { cards.onLongPress(summary) },
-                        coverHeight = layout.coverHeight,
                     )
                 }
-                if (results.loadingMore) items(2) { SkeletonCard(alpha, coverHeight = layout.coverHeight) }
+                if (results.loadingMore) items(2) { SkeletonCard(alpha) }
             }
         }
     }

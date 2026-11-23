@@ -97,17 +97,21 @@ fun sendPicture(context: Context, uri: Uri, caption: String): Boolean {
         .isSuccess
 }
 
+/** A picture made: the file that goes out, and the picture itself for the sheet to show again. */
+internal class KeptPicture(val uri: Uri, val picture: Bitmap)
+
 /**
  * The last picture made, kept until the board changes: sharing the same
- * board again is instant. Keyed by everything drawn, the board included.
+ * board again is instant, its preview included. Keyed by everything drawn,
+ * the board included.
  */
 internal object SharedPictures {
-    private var last: Pair<Any, Uri>? = null
+    private var last: Pair<Any, KeptPicture>? = null
 
-    fun get(key: Any): Uri? = last?.takeIf { it.first == key }?.second
+    fun get(key: Any): KeptPicture? = last?.takeIf { it.first == key }?.second
 
-    fun keep(key: Any, uri: Uri) {
-        last = key to uri
+    fun keep(key: Any, kept: KeptPicture) {
+        last = key to kept
     }
 
     fun forget() {
