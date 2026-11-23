@@ -6,7 +6,10 @@ object TopicPickerTestTags {
     const val DONE = "topic_picker_done"
     const val QUERY = "topic_picker_query"
     const val NONE = "topic_picker_none"
-    const val CREATE = "topic_picker_create"
+    const val PROPOSE = "topic_picker_propose"
+    const val PROPOSAL = "topic_picker_proposal"
+    const val PROPOSAL_SEND = "topic_picker_proposal_send"
+    const val CHOOSE_SECTION = "topic_picker_choose_section"
     const val SUGGESTION = "topic_picker_suggestion"
     const val CURRENT = "topic_picker_current"
 

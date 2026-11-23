@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.topicpicker
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +36,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +49,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.ui.ActionFailedSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
 import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
@@ -64,6 +70,8 @@ private val ROW_CORNER = 12.dp
 fun TopicPickerScreen(
     onBack: () -> Unit,
     onSaved: () -> Unit,
+    /** Back to the list's settings with its Section sheet open: a topic lives inside a section. */
+    onChooseSection: () -> Unit = onBack,
     viewModel: TopicPickerViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -79,10 +87,24 @@ fun TopicPickerScreen(
         onQueryChange = viewModel::onQueryChange,
         onChoose = viewModel::choose,
         onChooseNone = viewModel::chooseNone,
-        onCreate = viewModel::createNew,
+        proposing = ProposingCalls(
+            onStart = viewModel::startProposing,
+            onChange = viewModel::onProposalChange,
+            onSend = viewModel::propose,
+            onClose = viewModel::stopProposing,
+        ),
+        onChooseSection = onChooseSection,
         userMessages = viewModel.userMessages,
     )
 }
+
+/** What the in-place name field of Propose a topic does. */
+class ProposingCalls(
+    val onStart: () -> Unit = {},
+    val onChange: (String) -> Unit = {},
+    val onSend: () -> Unit = {},
+    val onClose: () -> Unit = {},
+)
 
 @Composable
 fun TopicPickerScreenContent(
@@ -92,7 +114,8 @@ fun TopicPickerScreenContent(
     onQueryChange: (String) -> Unit = {},
     onChoose: (Topic) -> Unit = {},
     onChooseNone: () -> Unit = {},
-    onCreate: () -> Unit = {},
+    proposing: ProposingCalls = ProposingCalls(),
+    onChooseSection: () -> Unit = {},
     userMessages: Flow<UserMessage> = emptyFlow(),
 ) {
     Box(
@@ -104,17 +127,18 @@ fun TopicPickerScreenContent(
         Column(Modifier.fillMaxSize()) {
             TopBar(onBack = onBack, onDone = onDone, enabled = !state.saving)
             CenteredContent(ContentWidth.Reading, modifier = Modifier.fillMaxSize()) {
-                CurrentChoice(state.chosen)
-                OutlinedTextField(
-                    value = state.query,
-                    onValueChange = onQueryChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .testTag(TopicPickerTestTags.QUERY),
-                    placeholder = { Text(stringResource(R.string.topic_picker_hint)) },
-                    singleLine = true,
-                )
+                if (!state.needsSection) {
+                    OutlinedTextField(
+                        value = state.query,
+                        onValueChange = onQueryChange,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .testTag(TopicPickerTestTags.QUERY),
+                        placeholder = { Text(stringResource(R.string.topic_picker_hint)) },
+                        singleLine = true,
+                    )
+                }
                 if (state.searching) {
                     LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
                 }
@@ -124,6 +148,11 @@ fun TopicPickerScreenContent(
                         .imePadding(),
                     contentPadding = systemBarsContentPadding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp),
                 ) {
+                    if (state.needsSection) {
+                        item(key = "section") { ChooseSectionRow(onChooseSection) }
+                        return@LazyColumn
+                    }
+                    currentTopic(state.chosen)
                     val suggestion = state.suggestion
                     if (suggestion != null && !state.chosen.names(suggestion)) {
                         item(key = "suggestion") {
@@ -136,36 +165,10 @@ fun TopicPickerScreenContent(
                             )
                         }
                     }
-                    item(key = "none") {
-                        ChoiceRow(
-                            title = stringResource(R.string.topic_picker_none),
-                            subtitle = stringResource(R.string.topic_picker_none_sub),
-                            selected = state.chosen == TopicChoice.None,
-                            onClick = onChooseNone,
-                            testTag = TopicPickerTestTags.NONE,
-                        )
-                    }
-                    val createName = state.createName
-                    if (createName != null) {
-                        item(key = "create") {
-                            ChoiceRow(
-                                title = stringResource(R.string.topic_picker_create, createName),
-                                subtitle = if (state.canCreate) {
-                                    stringResource(R.string.topic_picker_create_note) + " " +
-                                        pluralStringResource(R.plurals.topic_picker_pending_count, state.pendingCount, state.pendingCount, state.pendingLimit)
-                                } else {
-                                    stringResource(R.string.topic_picker_limit)
-                                },
-                                selected = (state.chosen as? TopicChoice.New)?.name == createName,
-                                onClick = onCreate,
-                                enabled = state.canCreate,
-                                testTag = TopicPickerTestTags.CREATE,
-                            )
-                        }
-                    }
-                    if (state.mine.isNotEmpty()) {
+                    val mine = state.mineHere.filterNot { state.chosen.names(it) }
+                    if (mine.isNotEmpty()) {
                         item(key = "mine-header") { SectionHeader(stringResource(R.string.topic_picker_yours)) }
-                        items(state.mine, key = { "mine-" + it.id }) { topic ->
+                        items(mine, key = { "mine-" + it.id }) { topic ->
                             ChoiceRow(
                                 title = topic.name,
                                 subtitle = topic.standing(),
@@ -177,16 +180,26 @@ fun TopicPickerScreenContent(
                             )
                         }
                     }
-                    val others = state.results.filterNot { found -> state.mine.any { it.id == found.id } }
+                    val others = state.results.filterNot { found -> state.chosen.names(found) || state.mine.any { it.id == found.id } }
                     items(others, key = { "found-" + it.id }) { topic ->
                         ChoiceRow(
                             title = topic.name,
-                            subtitle = topic.sectionLine(),
-                            selected = state.chosen.names(topic),
+                            subtitle = null,
+                            selected = false,
                             onClick = { onChoose(topic) },
                             testTag = TopicPickerTestTags.topic(topic.id),
                         )
                     }
+                    item(key = "none") {
+                        ChoiceRow(
+                            title = stringResource(R.string.topic_picker_none),
+                            subtitle = stringResource(R.string.topic_picker_none_sub),
+                            selected = state.chosen == TopicChoice.None,
+                            onClick = onChooseNone,
+                            testTag = TopicPickerTestTags.NONE,
+                        )
+                    }
+                    item(key = "propose") { ProposeTopic(state, proposing) }
                 }
             }
         }
@@ -195,6 +208,86 @@ fun TopicPickerScreenContent(
 }
 
 private fun TopicChoice.names(topic: Topic): Boolean = this is TopicChoice.Known && this.topic.id == topic.id
+
+/** The board's own topic leads, a proposed one marked new, so it is never lost among the section's. */
+private fun LazyListScope.currentTopic(chosen: TopicChoice) {
+    val name = when (chosen) {
+        TopicChoice.None -> return
+        is TopicChoice.Known -> chosen.topic.name
+        is TopicChoice.New -> chosen.name
+    }
+    val waiting = chosen is TopicChoice.New || (chosen as? TopicChoice.Known)?.topic?.pending == true
+    item(key = "current") {
+        ChoiceRow(
+            title = if (waiting) stringResource(R.string.topic_picker_marked_new, name, stringResource(R.string.publish_sheet_new)) else name,
+            subtitle = if (waiting) stringResource(R.string.topic_picker_waiting) else null,
+            selected = true,
+            onClick = {},
+            testTag = TopicPickerTestTags.CURRENT,
+        )
+    }
+}
+
+/** As Propose a section closes the Section sheet: a line, last, that opens the name field in place. */
+@Composable
+private fun ProposeTopic(state: TopicPickerUiState, calls: ProposingCalls) {
+    val proposal = state.proposal
+    if (proposal == null) {
+        TextButton(
+            onClick = calls.onStart,
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .testTag(TopicPickerTestTags.PROPOSE),
+        ) {
+            PlusIcon(18.dp, MaterialTheme.colorScheme.primary)
+            Text(stringResource(R.string.publish_sheet_propose_topic), modifier = Modifier.padding(start = 8.dp))
+        }
+        return
+    }
+    Column(Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        OutlinedTextField(
+            value = proposal,
+            onValueChange = calls.onChange,
+            modifier = Modifier.fillMaxWidth().testTag(TopicPickerTestTags.PROPOSAL),
+            placeholder = { Text(stringResource(R.string.publish_sheet_topic_name)) },
+            singleLine = true,
+            enabled = state.canCreate,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { calls.onSend() }),
+        )
+        Text(
+            text = if (state.canCreate) {
+                stringResource(R.string.topic_picker_create_note) + " " +
+                    pluralStringResource(R.plurals.topic_picker_pending_count, state.pendingCount, state.pendingCount, state.pendingLimit)
+            } else {
+                stringResource(R.string.topic_picker_limit)
+            },
+            modifier = Modifier.padding(top = 6.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            TextButton(onClick = calls.onClose) { Text(stringResource(ThemeR.string.action_cancel)) }
+            TextButton(
+                onClick = calls.onSend,
+                enabled = state.canCreate && cleanTopicName(proposal) != null,
+                modifier = Modifier.testTag(TopicPickerTestTags.PROPOSAL_SEND),
+            ) { Text(stringResource(R.string.publish_sheet_propose_topic)) }
+        }
+    }
+}
+
+/** No section yet: there are no topics to show, only the way to the Section sheet. */
+@Composable
+private fun ChooseSectionRow(onClick: () -> Unit) {
+    ChoiceRow(
+        title = stringResource(R.string.topic_picker_choose_section),
+        subtitle = null,
+        selected = false,
+        onClick = onClick,
+        testTag = TopicPickerTestTags.CHOOSE_SECTION,
+    )
+}
 
 @Composable
 private fun Topic.sectionLine(): String? = section?.let { sectionLabel(it) }
@@ -205,25 +298,6 @@ private fun Topic.standing(): String? = when (status) {
     TopicStatus.Approved -> sectionLine()
     TopicStatus.Rejected -> stringResource(R.string.topic_picker_rejected)
     TopicStatus.Merged -> stringResource(R.string.topic_picker_merged)
-}
-
-@Composable
-private fun CurrentChoice(chosen: TopicChoice) {
-    val text = when (chosen) {
-        TopicChoice.None -> stringResource(R.string.topic_picker_none)
-        is TopicChoice.Known -> chosen.topic.name
-        is TopicChoice.New -> stringResource(R.string.topic_picker_new_waits, chosen.name)
-    }
-    Text(
-        text = text,
-        modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .testTag(TopicPickerTestTags.CURRENT),
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurface,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-    )
 }
 
 @Composable

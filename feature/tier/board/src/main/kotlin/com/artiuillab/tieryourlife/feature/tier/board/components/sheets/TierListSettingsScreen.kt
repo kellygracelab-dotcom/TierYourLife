@@ -188,7 +188,12 @@ fun TierListSettingsScreenContent(
                     // A category exists only for the feed; a cover is also the card's
                     // own art, so it stays available to a guest.
                     CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
-                    TopicRow(topicName = list.topicName, newTopicName = list.newTopicName, onClick = onChooseTopic)
+                    // A topic lives inside a section: with none yet, the Section sheet comes first.
+                    TopicRow(
+                        topicName = list.topicName,
+                        newTopicName = list.newTopicName,
+                        onClick = { if (list.category == null) categorySheetVisible = true else onChooseTopic() },
+                    )
                     CoverRows(list, onChooseCover = onChooseCover, onAdjustCover = onAdjustCover)
                     // Beside the cover: sharing is not publishing and needs no account.
                     ShareRow(onClick = onShare)
