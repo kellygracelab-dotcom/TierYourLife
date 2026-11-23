@@ -305,8 +305,6 @@
     <string name="community_own_list_line">Так его видят посетители. Изменить его можно в «Ваших списках».</string>
     <string name="community_restore_from_trash">Вернуть из корзины</string>
     <string name="community_get_back_as_board">Вернуть в «Ваши списки»</string>
-    <string name="community_copy_link">Копировать ссылку</string>
-    <string name="community_link_copied">Ссылка скопирована</string>
     <string name="community_drop_to_start_yours">Отпустите, чтобы начать свою версию · Моя начнётся с рейтинга: %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Отпустите, чтобы начать свою версию · Моя начнётся с этого рейтинга</string>
     <string name="community_started_from_theirs">Ваша версия начата с рейтинга: %1$s</string>

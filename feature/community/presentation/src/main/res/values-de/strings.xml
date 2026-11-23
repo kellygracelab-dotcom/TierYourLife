@@ -291,8 +291,6 @@
     <string name="community_own_list_line">So sehen Besucher sie. Ändern kannst du sie in „Deine Listen“.</string>
     <string name="community_restore_from_trash">Aus dem Papierkorb holen</string>
     <string name="community_get_back_as_board">Zurück in „Deine Listen“ holen</string>
-    <string name="community_copy_link">Link kopieren</string>
-    <string name="community_link_copied">Link kopiert</string>
     <string name="community_drop_to_start_yours">Loslassen für deine Version · Meine beginnt mit dem Ranking von %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Loslassen für deine Version · Meine beginnt mit diesem Ranking</string>
     <string name="community_started_from_theirs">Deine Version beginnt mit dem Ranking von %1$s</string>

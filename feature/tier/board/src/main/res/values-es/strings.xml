@@ -69,6 +69,17 @@
         <item quantity="other">%d cartas más sin colocar</item>
     </plurals>
     <string name="share_failed">No se pudo compartir la imagen</string>
+    <string name="share_hook_tier">Mi nivel %1$s: %2$s. ¿Y el tuyo?</string>
+    <string name="share_hook_top">Mis favoritos: %1$s. ¿Y los tuyos?</string>
+    <string name="share_link">Compartir enlace</string>
+    <string name="share_link_copied">Enlace copiado</string>
+    <string name="list_live_title">Tu lista ya está publicada</string>
+    <string name="list_live_body">Cualquiera con el enlace puede verla. También está en Comunidad → %1$s.</string>
+    <string name="list_live_copy">Copiar enlace</string>
+    <string name="share_button">Compartir</string>
+    <string name="list_live_image">Como imagen</string>
+    <string name="list_live_open">Abrir en Comunidad</string>
+    <string name="list_live_done">Listo</string>
     <string name="tier_detail_add">Añadir</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d tarjeta</item>

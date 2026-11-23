@@ -291,8 +291,6 @@
     <string name="community_own_list_line">Ziyaretçiler bunu görür. Değişiklikleri Listeleriniz’de yaparsınız.</string>
     <string name="community_restore_from_trash">Çöp kutusundan geri al</string>
     <string name="community_get_back_as_board">Listeleriniz’e geri al</string>
-    <string name="community_copy_link">Bağlantıyı kopyala</string>
-    <string name="community_link_copied">Bağlantı kopyalandı</string>
     <string name="community_drop_to_start_yours">Kendi sürümünüzü başlatmak için bırakın · Benimki %1$s sıralamasıyla başlar</string>
     <string name="community_drop_to_start_yours_unnamed">Kendi sürümünüzü başlatmak için bırakın · Benimki bu sıralamayla başlar</string>
     <string name="community_started_from_theirs">Sürümünüz %1$s sıralamasından başlıyor</string>

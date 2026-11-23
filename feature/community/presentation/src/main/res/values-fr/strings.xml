@@ -298,8 +298,6 @@
     <string name="community_own_list_line">Voici ce que voient les visiteurs. Vous la modifiez dans Vos listes.</string>
     <string name="community_restore_from_trash">Restaurer depuis la corbeille</string>
     <string name="community_get_back_as_board">La récupérer dans Vos listes</string>
-    <string name="community_copy_link">Copier le lien</string>
-    <string name="community_link_copied">Lien copié</string>
     <string name="community_drop_to_start_yours">Lâchez pour commencer votre version · Le mien part du classement de %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Lâchez pour commencer votre version · Le mien part de ce classement</string>
     <string name="community_started_from_theirs">Votre version part du classement de %1$s</string>

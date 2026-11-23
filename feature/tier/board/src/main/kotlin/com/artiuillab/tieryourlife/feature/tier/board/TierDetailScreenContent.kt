@@ -80,6 +80,7 @@ import com.artiuillab.tieryourlife.core.theme.preview.TierYourLifeDevicePreviews
 import com.artiuillab.tieryourlife.core.theme.ui.DeletedItemSnackbarHost
 import com.artiuillab.tieryourlife.core.theme.ui.ReplacingSnackbar
 import com.artiuillab.tieryourlife.core.theme.ui.text
+import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 import com.artiuillab.tieryourlife.feature.tier.board.components.BoardIndex
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.FloatingDragTile
 import com.artiuillab.tieryourlife.feature.tier.board.components.drag.TierDragController
@@ -99,6 +100,7 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PublishButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
+import com.artiuillab.tieryourlife.feature.tier.board.components.rows.SHARE_LINK_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.SubtitleLink
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
@@ -114,7 +116,12 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEdit
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierEditorSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.fixedInSettings
+import com.artiuillab.tieryourlife.feature.tier.board.share.LiveSheet
+import com.artiuillab.tieryourlife.feature.tier.board.share.LiveSheetCalls
+import com.artiuillab.tieryourlife.feature.tier.board.share.publishedListLink
+import com.artiuillab.tieryourlife.feature.tier.board.share.rememberCopyListLink
 import com.artiuillab.tieryourlife.feature.tier.board.share.rememberShareBoard
+import com.artiuillab.tieryourlife.feature.tier.board.share.rememberShareLink
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
@@ -289,6 +296,10 @@ private fun TierDetailPane(
     }
 }
 
+/** A list out for the first time, whole: the link is worth more than a passing word. */
+private val UserMessage.Published.opensLiveSheet: Boolean
+    get() = !updated && !ranking && droppedPictures == 0
+
 /** "Published", "Updated" or "In Rankings"; with pictures left out, the sentence that says so, which begins the same. */
 private fun UserMessage.Published.text(resources: Resources): String = when {
     droppedPictures > 0 -> UserMessage.PicturesDropped(droppedPictures).text(resources)
@@ -339,6 +350,10 @@ private fun TierScreenBody(
     LaunchedEffect(actions.publishError) { if (actions.publishError?.fixedInSettings() == true) listSettingsVisible = true }
 
     val share = rememberShareBoard(actions.ownName)
+    val shareLink = rememberShareLink()
+    val copyLink = rememberCopyListLink()
+    // Right after a first publish: the moment a list is most worth sending.
+    var liveSheet by rememberSaveable { mutableStateOf(false) }
 
     if (listSettingsVisible) {
         TierListSettingsScreenContent(
@@ -408,6 +423,10 @@ private fun TierScreenBody(
 
     LaunchedEffect(Unit) {
         userMessages.collect { message ->
+            if (message is UserMessage.Published && message.opensLiveSheet) {
+                liveSheet = true
+                return@collect
+            }
             if (message is UserMessage.Published) {
                 // The new id may reach the board a frame after the message: the tap reads it, not this.
                 val canView = viewPublished != null || actions.onSeeInCommunity != null
@@ -567,6 +586,9 @@ private fun TierScreenBody(
             PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
         }
         val ownView = ViewButton(list.displayMode, onSetDisplayMode).takeIf { actions.onPublish != null && !glanceable && !readOnly }
+        // One's own board once it is out: its link, one tap away.
+        val ownShare = list.publishedId?.takeIf { actions.onPublish != null && !glanceable && !readOnly }?.let { { shareLink(list) } }
+        val shareRoom = if (ownShare != null) SHARE_LINK_WIDTH else 0.dp
         val bar: @Composable () -> Unit = if (ownTwoStorey) {
             {
                 val reader = onReaderMoreClick
@@ -580,10 +602,11 @@ private fun TierScreenBody(
                     onMoreClick = reader ?: { listSettingsVisible = true },
                     onRenameList = onRenameList.takeIf { reader == null },
                     play = playButton,
-                    publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - OWN_BAR_BESIDE_PUBLISH)
+                    publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - OWN_BAR_BESIDE_PUBLISH - shareRoom)
                         ?.takeUnless { reader != null && readOnly },
                     view = ownView,
                     moreTag = TierDetailTestTags.MORE.takeIf { reader != null },
+                    shareLink = ownShare.takeIf { reader == null },
                 )
             }
         } else {
@@ -610,9 +633,10 @@ private fun TierScreenBody(
                 },
                 subline = readerSubline,
                 play = playButton,
-                publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - BAR_BESIDE_PUBLISH)?.takeUnless { glanceable || readOnly },
+                publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - BAR_BESIDE_PUBLISH - shareRoom)?.takeUnless { glanceable || readOnly },
                 // One's own board only: a reader's page keeps the author's choice.
                 view = ownView,
+                shareLink = ownShare.takeIf { onReaderMoreClick == null },
             )
             }
         }
@@ -840,6 +864,26 @@ private fun TierScreenBody(
                 .align(Alignment.BottomCenter)
                 .then(if (poolTop == null) Modifier.navigationBarsPadding() else Modifier)
                 .padding(start = 16.dp, end = 16.dp, bottom = bottomGap),
+        )
+    }
+
+    if (liveSheet) {
+        val publishedId = list.publishedId
+        LiveSheet(
+            section = list.category?.let { sectionLabel(it) }.orEmpty(),
+            link = publishedId?.let(::publishedListLink),
+            calls = LiveSheetCalls(
+                onShare = { shareLink(list) },
+                onCopy = { publishedId?.let(copyLink) },
+                onImage = { share(list) },
+                onOpen = viewPublished?.let { open ->
+                    {
+                        liveSheet = false
+                        open()
+                    }
+                },
+                onDone = { liveSheet = false },
+            ),
         )
     }
 

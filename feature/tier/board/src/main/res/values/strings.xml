@@ -66,6 +66,17 @@
         <item quantity="other">%d more cards not placed yet</item>
     </plurals>
     <string name="share_failed">Could not share the picture</string>
+    <string name="share_hook_tier">My %1$s tier: %2$s. What’s yours?</string>
+    <string name="share_hook_top">My top picks: %1$s. What’s yours?</string>
+    <string name="share_link">Share link</string>
+    <string name="share_link_copied">Link copied</string>
+    <string name="list_live_title">Your list is live</string>
+    <string name="list_live_body">Anyone with the link can see it. It is also in Community → %1$s.</string>
+    <string name="list_live_copy">Copy link</string>
+    <string name="share_button">Share</string>
+    <string name="list_live_image">As image</string>
+    <string name="list_live_open">Open in Community</string>
+    <string name="list_live_done">Done</string>
     <string name="tier_detail_add">Add</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d card</item>

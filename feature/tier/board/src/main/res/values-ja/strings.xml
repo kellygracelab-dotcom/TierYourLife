@@ -63,6 +63,17 @@
         <item quantity="other">あと %d 枚が未配置</item>
     </plurals>
     <string name="share_failed">画像を共有できませんでした</string>
+    <string name="share_hook_tier">私の%1$sティア：%2$s。あなたは？</string>
+    <string name="share_hook_top">私のトップ：%1$s。あなたは？</string>
+    <string name="share_link">リンクを共有</string>
+    <string name="share_link_copied">リンクをコピーしました</string>
+    <string name="list_live_title">リストを公開しました</string>
+    <string name="list_live_body">リンクを知っている人は誰でも見られます。コミュニティ → %1$s にも載っています。</string>
+    <string name="list_live_copy">リンクをコピー</string>
+    <string name="share_button">共有</string>
+    <string name="list_live_image">画像で</string>
+    <string name="list_live_open">コミュニティで開く</string>
+    <string name="list_live_done">完了</string>
     <string name="tier_detail_add">追加</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="other">カード %1$d 枚</item>

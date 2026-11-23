@@ -92,6 +92,7 @@ import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
 import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlayArrowIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PublishIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
@@ -136,6 +137,8 @@ fun TierScreenTopBar(
     publish: PublishButton? = null,
     /** How the tiers are shown, first of the actions; it gives way on a narrow bar where Publish needs the room. */
     view: ViewButton? = null,
+    /** The published list's link, one tap from the board; null while it is not out. */
+    shareLink: (() -> Unit)? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
@@ -181,7 +184,7 @@ fun TierScreenTopBar(
                 ReadTitle(title, titleStyle, subline, subtitle.takeIf { roomy && subline == null }?.let { withLink(it, subtitleLink) })
             }
             trailing?.invoke(this)
-            BarActions(publish, play, view, playWorded = roomy)
+            BarActions(publish, shareLink, play, view, playWorded = roomy)
             if (onReaderMoreClick != null) {
                 // Moving cards in Mine does not make the reader the list's editor.
                 IconButton(
@@ -439,12 +442,26 @@ fun publishingOf(list: TierList, publishedIsBehind: Boolean): Publishing? = when
 fun everyCardPlaced(list: TierList): Boolean =
     list.tiers.any { it.items.isNotEmpty() } && list.tiers.filter { it.isPool }.all { it.items.isEmpty() }
 
-/** The bar's actions after the title: publishing, then Play. */
+/** The bar's actions after the title: publishing, the link, then Play. */
 @Composable
-private fun BarActions(publish: PublishButton?, play: PlayButton?, view: ViewButton?, playWorded: Boolean) {
+private fun BarActions(publish: PublishButton?, shareLink: (() -> Unit)?, play: PlayButton?, view: ViewButton?, playWorded: Boolean) {
     if (view != null && publish?.narrow != true) ViewAction(view)
     publish?.let { PublishAction(it) }
+    shareLink?.let { ShareLinkAction(it) }
     play?.let { PlayAction(it, worded = playWorded) }
+}
+
+/** The share sheet with the list's link, in the accent: once a board is out, this is what it is for. */
+@Composable
+private fun ShareLinkAction(onClick: () -> Unit) {
+    val description = stringResource(R.string.share_link)
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(48.dp)
+            .semantics { contentDescription = description }
+            .testTag(TierDetailTestTags.SHARE_LINK),
+    ) { ShareIcon(24.dp, MaterialTheme.colorScheme.primary) }
 }
 
 @Composable
@@ -498,12 +515,15 @@ fun PublishingIcon(kind: Publishing, tint: Color) = when (kind) {
 /** The publish button's room in the two-storey bar: back, Play's triangle, the overflow and their margins. */
 val OWN_BAR_BESIDE_PUBLISH: Dp = 48.dp * 3 + 16.dp
 
+/** What the link's button takes from the publish button's room. */
+val SHARE_LINK_WIDTH: Dp = 48.dp
+
 /**
  * Play says its word only while Publish keeps its own on one line beside it;
  * on a narrow phone in a long language the triangle gives way, as the view button does.
  */
 @Composable
-private fun playKeepsItsWord(publish: PublishButton?, view: ViewButton?, width: Dp): Boolean {
+private fun playKeepsItsWord(publish: PublishButton?, view: ViewButton?, width: Dp, shareLink: Boolean): Boolean {
     if (publish == null) return true
     val measurer = rememberTextMeasurer()
     val style = MaterialTheme.typography.labelLarge
@@ -512,7 +532,8 @@ private fun playKeepsItsWord(publish: PublishButton?, view: ViewButton?, width: 
     val publishText = wide(stringResource(if (publish.busy) sendingLabel(publish.kind) else publishLabel(publish.kind)))
     val publishWidth = 8.dp + (if (publish.narrow) 22.dp + 6.dp else 28.dp + 8.dp) + 18.dp + publishText
     val playWidth = 8.dp + 28.dp + 18.dp + 6.dp + wide(stringResource(R.string.tier_detail_content_description_play))
-    val icons = 8.dp + 48.dp * 2 + (if (publish.narrow) 0.dp else 48.dp) + (if (view != null && !publish.narrow) 48.dp else 0.dp)
+    val icons = 8.dp + 48.dp * 2 + (if (publish.narrow) 0.dp else 48.dp) + (if (view != null && !publish.narrow) 48.dp else 0.dp) +
+        (if (shareLink) 48.dp else 0.dp)
     return icons + publishWidth + playWidth <= width
 }
 
@@ -541,6 +562,8 @@ fun OwnBoardTopBar(
     moreTag: String? = null,
     /** Tapped at the end of [counts]: someone else's list's rankings. */
     countsLink: SubtitleLink? = null,
+    /** The published list's link, one tap from the board; null while it is not out. */
+    shareLink: (() -> Unit)? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     val moreDescription = stringResource(ThemeR.string.tier_detail_content_description_more)
@@ -580,7 +603,7 @@ fun OwnBoardTopBar(
                     )
                 }
             }
-            BarActions(publish, play, view, playWorded = playKeepsItsWord(publish, view, barWidth))
+            BarActions(publish, shareLink, play, view, playWorded = playKeepsItsWord(publish, view, barWidth, shareLink != null))
             if (onManualAdd != null && publish?.narrow != true) {
                 ManualAddAction(onManualAdd, stringResource(R.string.tier_detail_content_description_manual_add))
             }
