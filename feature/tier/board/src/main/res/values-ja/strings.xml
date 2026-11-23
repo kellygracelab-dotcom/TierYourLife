@@ -103,9 +103,7 @@
     <plurals name="tier_detail_pool_unranked_count">
         <item quantity="other">残りのカード %d 枚</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="other">%1$d枚配置済み · 最高から最低</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">最高から最低</string>
     <string name="tier_detail_ranked_header_empty">まだ何も配置されていません</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="other">残りのカード %1$d 枚。展開。</item>

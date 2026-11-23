@@ -124,12 +124,7 @@
         <item quantity="many">Zostało %d kart</item>
         <item quantity="other">Zostało %d karty</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d umieszczona · od najlepszego do najgorszego</item>
-        <item quantity="few">%1$d umieszczone · od najlepszego do najgorszego</item>
-        <item quantity="many">%1$d umieszczonych · od najlepszego do najgorszego</item>
-        <item quantity="other">%1$d umieszczonej · od najlepszego do najgorszego</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">Od najlepszego do najgorszego</string>
     <string name="tier_detail_ranked_header_empty">Nic jeszcze nie umieszczono</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">Została %1$d karta. Rozwiń.</item>
