@@ -78,6 +78,22 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
+      # Robolectric fetches its Android jars from Maven Central the first time
+      # a test runs, and that download has failed whole runs. They are kept per
+      # Robolectric version and per SDK level the tests ask for; a miss
+      # downloads them as before.
+      - name: Robolectric version and SDK levels
+        id: robolectric
+        run: |
+          echo "version=$(sed -n 's/^robolectric = "\(.*\)"/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
+          echo "sdks=$(grep -rhoE 'sdk = \[[0-9, ]+\]' --include='*.kt' . | grep -oE '[0-9]+' | sort -un | paste -sd- -)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Robolectric's Android jars
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.m2/repository/org/robolectric
+          key: robolectric-${{ runner.os }}-${{ steps.robolectric.outputs.version }}-sdk-${{ steps.robolectric.outputs.sdks }}
+
       - name: Unit tests, screenshots, coverage
         run: ./gradlew test verifyRoborazziDebug koverXmlReport koverHtmlReport koverVerify
 
@@ -288,6 +304,22 @@ jobs:
         with:
           path: ~/.cache/firebase/emulators
           key: firebase-emulators-${{ runner.os }}-15.34.2
+
+      # Robolectric fetches its Android jars from Maven Central the first time
+      # a test runs, and that download has failed whole runs. They are kept per
+      # Robolectric version and per SDK level the tests ask for; a miss
+      # downloads them as before.
+      - name: Robolectric version and SDK levels
+        id: robolectric
+        run: |
+          echo "version=$(sed -n 's/^robolectric = "\(.*\)"/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
+          echo "sdks=$(grep -rhoE 'sdk = \[[0-9, ]+\]' --include='*.kt' . | grep -oE '[0-9]+' | sort -un | paste -sd- -)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Robolectric's Android jars
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.m2/repository/org/robolectric
+          key: robolectric-${{ runner.os }}-${{ steps.robolectric.outputs.version }}-sdk-${{ steps.robolectric.outputs.sdks }}
 
       # Built first, so the emulators are up only while the tests run.
       - name: Build the tests

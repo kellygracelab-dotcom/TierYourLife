@@ -75,7 +75,7 @@ class AnonymousAuthorTest {
 
     @Test
     fun theAppsOwnList_staysWithoutAnAuthorRow() {
-        show { FeedCard(card(authorUid = "85RRieyLyUPCEqHjdYCdxVlWxHx2", authorName = "TierYourLife", anonymous = false), onClick = {}, onLongClick = {}) }
+        show { FeedCard(card(authorUid = "tyl-editorial", authorName = "TierYourLife", anonymous = false), onClick = {}, onLongClick = {}) }
 
         composeRule.onNodeWithText("Anonymous").assertDoesNotExist()
         composeRule.onNodeWithText("TierYourLife").assertDoesNotExist()
