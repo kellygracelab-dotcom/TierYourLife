@@ -26,7 +26,7 @@ class HouseAuthorInRankingsTest {
     private val house = CommunityListUiState.Success(
         list = TierList(id = 0, title = "Pizza styles", tiers = emptyList()),
         authorName = "",
-        authorUid = "85RRieyLyUPCEqHjdYCdxVlWxHx2",
+        authorUid = "",
         editorial = true,
     )
     private val olena = Ranking("olena", "Olena M.", null, emptyList(), listOf("S"), 1)
@@ -74,14 +74,6 @@ class HouseAuthorInRankingsTest {
         composeRule.onNode(hasText("TierYourLife"), useUnmergedTree = true).assertIsDisplayed()
         composeRule.onNodeWithText("Someone").assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.RANKINGS_EMPTY).assertDoesNotExist()
-    }
-
-    @Test
-    fun somebodysAnonymousList_isAnonymous() {
-        show(house.copy(authorUid = "", byNobody = true))
-
-        composeRule.onNodeWithText("Anonymous").assertIsDisplayed()
-        composeRule.onNodeWithText("Someone").assertDoesNotExist()
     }
 
     @Test

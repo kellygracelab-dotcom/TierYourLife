@@ -22,6 +22,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.follow.GuestFo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -40,6 +41,8 @@ data class ExploreUiState(
     val feed: FeedPane = FeedPane(),
     /** Everything published, newest first: the New chip. */
     val newest: FeedPane = FeedPane(),
+    /** New from the community, over Popular: empty unless there are at least [FRESH_ROW_MIN], as on the website. */
+    val fresh: List<PublishedListSummary> = emptyList(),
     /** Non-null while the search bar is up. */
     val query: String? = null,
     val results: SearchResults = SearchResults(),
@@ -71,6 +74,10 @@ class ExploreViewModel @Inject constructor(
         community.feed(sort = FeedSort.Recent, after = after)
     }
 
+    /** As the server sent it; [freshShown] is the part not hidden. */
+    private var freshAnswer: List<PublishedListSummary> = emptyList()
+    private val freshShown = MutableStateFlow<List<PublishedListSummary>>(emptyList())
+
     val picturesOnWifiOnly: () -> Boolean = preferences::picturesOnWifiOnly
 
     val search = ExploreSearch(community, viewModelScope, menu::isVisible) { typed ->
@@ -79,15 +86,16 @@ class ExploreViewModel @Inject constructor(
 
     val state: StateFlow<ExploreUiState> = combine(
         catalog.directory,
-        combine(feed.pane, newest.pane, ::Pair),
+        combine(feed.pane, newest.pane, freshShown, ::Triple),
         search.query,
         search.results,
         search.popularTopics,
-    ) { directory, (pane, newestPane), q, found, topics ->
+    ) { directory, (pane, newestPane, freshLists), q, found, topics ->
         ExploreUiState(
             sections = directory.shown,
             feed = pane,
             newest = newestPane,
+            fresh = freshRowOf(freshLists),
             query = q,
             results = found,
             popularTopics = topics,
@@ -111,6 +119,7 @@ class ExploreViewModel @Inject constructor(
             network.available.collect {
                 feed.onNetworkBack()
                 newest.onNetworkBack()
+                if (freshAnswer.isEmpty()) loadFresh()
                 if (!catalog.directory.value.counted) loadSections()
             }
         }
@@ -119,7 +128,28 @@ class ExploreViewModel @Inject constructor(
     /** Every arrival: the kept feed first, then the server, every time. */
     fun open() {
         feed.open()
+        loadFresh()
         loadSections()
+    }
+
+    /** Popular pulled down: its feed and the row over it. */
+    fun refreshPopular() {
+        feed.pullToRefresh()
+        loadFresh()
+    }
+
+    /** A failure keeps what was there: the row is a bonus, never a reason for an error. */
+    private fun loadFresh() {
+        viewModelScope.launch {
+            community.fresh().onSuccess {
+                freshAnswer = it
+                refilterFresh()
+            }
+        }
+    }
+
+    private fun refilterFresh() {
+        freshShown.value = freshAnswer.filter(menu::isVisible)
     }
 
     /** The New chip, each time it is chosen: the kept feed first, then the server. */
@@ -151,13 +181,18 @@ class ExploreViewModel @Inject constructor(
     fun hideList(summary: PublishedListSummary, fromNewest: Boolean = false) {
         menu.hideList(loaderOf(fromNewest), summary)
         loaderOf(!fromNewest).refilter()
+        refilterFresh()
     }
 
-    fun hideAuthor(authorUid: String, name: String) = menu.hideAuthor(listOf(feed, newest), authorUid, name)
+    fun hideAuthor(authorUid: String, name: String) {
+        menu.hideAuthor(listOf(feed, newest), authorUid, name)
+        refilterFresh()
+    }
 
     fun report(summary: PublishedListSummary, reason: ReportReason, note: String?, fromNewest: Boolean = false) {
         menu.report(loaderOf(fromNewest), summary, reason, note)
         loaderOf(!fromNewest).refilter()
+        refilterFresh()
     }
 
     private fun loaderOf(newestFeed: Boolean) = if (newestFeed) newest else feed
@@ -166,8 +201,15 @@ class ExploreViewModel @Inject constructor(
     fun refreshHidden() {
         feed.refilter()
         newest.refilter()
+        refilterFresh()
     }
 }
+
+/** Fewer than this and the row stays away: a single card is not a row. */
+internal const val FRESH_ROW_MIN = 2
+
+internal fun freshRowOf(lists: List<PublishedListSummary>): List<PublishedListSummary> =
+    lists.takeIf { it.size >= FRESH_ROW_MIN }.orEmpty()
 
 internal fun FeedNotice.toCommunityNotice(): CommunityNotice = when (this) {
     is FeedNotice.RefreshFailed -> CommunityNotice.RefreshFailed(showingFromMillis)

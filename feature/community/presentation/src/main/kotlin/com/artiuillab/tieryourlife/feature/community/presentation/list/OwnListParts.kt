@@ -62,7 +62,7 @@ internal fun YourListChip(modifier: Modifier = Modifier) {
 /** Out under their name, or out without it, which only they can tell. */
 @Composable
 internal fun ownMeta(state: CommunityListUiState.Success): String = stringResource(
-    if (state.anonymous || state.byNobody) R.string.community_own_anonymous else R.string.community_own_published,
+    if (state.anonymous) R.string.community_own_anonymous else R.string.community_own_published,
 )
 
 /** The chip and the meta line, in the line the author's name takes on somebody else's list. */

@@ -52,6 +52,7 @@
     <string name="feed_sort_popular">Beliebt</string>
     <string name="feed_sort_recent">Neueste</string>
     <string name="feed_chip_new">Neu</string>
+    <string name="explore_fresh_title">Neu aus der Community</string>
     <string name="feed_source_everyone">Alle</string>
     <string name="feed_source_following">Abos</string>
     <string name="home_community_empty">Noch nichts veröffentlicht</string>

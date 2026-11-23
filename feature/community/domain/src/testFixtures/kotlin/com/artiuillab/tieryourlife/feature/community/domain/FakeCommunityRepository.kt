@@ -46,6 +46,8 @@ open class FakeCommunityRepository : CommunityRepository {
         topic: String?,
     ): Result<CommunityPage> = Result.success(CommunityPage(emptyList()))
 
+    override suspend fun fresh(): Result<List<PublishedListSummary>> = Result.success(emptyList())
+
     override suspend fun follow(authorUid: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun unfollow(authorUid: String): Result<Unit> = Result.success(Unit)

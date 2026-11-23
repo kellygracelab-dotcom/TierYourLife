@@ -53,6 +53,7 @@
     <string name="feed_sort_popular">Populares</string>
     <string name="feed_sort_recent">Recentes</string>
     <string name="feed_chip_new">Novas</string>
+    <string name="explore_fresh_title">Novidades da comunidade</string>
     <string name="feed_source_everyone">Todas</string>
     <string name="feed_source_following">Seguindo</string>
     <string name="home_community_empty">Nada publicado ainda</string>

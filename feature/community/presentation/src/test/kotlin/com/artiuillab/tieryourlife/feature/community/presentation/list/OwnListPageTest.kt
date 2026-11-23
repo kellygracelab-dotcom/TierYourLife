@@ -42,7 +42,7 @@ class OwnListPageTest {
 
     private val theirs = CommunityListUiState.Success(list = board, authorName = "Olena M.", authorUid = "olena")
     private val mineNamed = theirs.copy(authorName = "Danylo", authorUid = "me", own = true, ownBoardId = 12)
-    private val mineAnonymous = theirs.copy(authorName = "", authorUid = "", editorial = true, byNobody = true, own = true)
+    private val mineAnonymous = theirs.copy(authorName = "", authorUid = "", editorial = true, anonymous = true, own = true)
 
     private fun show(
         state: CommunityListUiState.Success,
