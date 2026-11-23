@@ -32,6 +32,17 @@ class ListPicturesTest {
     }
 
     @Test
+    fun `the collage comes as its web address, and goes back the same way`() {
+        val collage = "https://tieryourlife.com/img/collage/a.webp?v=7"
+        val summary = PublishedListSummaryDto(id = "a", title = "Films", authorName = "A", itemCount = 2, collageUrl = collage).toSummary()
+        val none = PublishedListSummaryDto(id = "b", title = "Films", authorName = "A", itemCount = 2, collageUrl = "null").toSummary()
+
+        assertEquals(collage, summary.collageUrl)
+        assertEquals(collage, summary.toDto().collageUrl)
+        assertNull(none.collageUrl)
+    }
+
+    @Test
     fun `an opened list with the word null for a cover has none`() {
         val list = PublishedListDto(id = "a", title = "Films", authorName = "A", coverImageUrl = "null").toDomain()
 

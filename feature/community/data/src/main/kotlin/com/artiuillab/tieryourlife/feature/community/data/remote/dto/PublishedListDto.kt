@@ -38,6 +38,8 @@ data class PublishedListSummaryDto(
     val names: Map<String, String> = emptyMap(),
     /** From `GET lists/mine`: the uid of the board it was published from, on lists published since the server kept it. */
     val boardUid: String? = null,
+    /** The mosaic drawn once as one picture, by the website; only on a list with no cover and two pictures or more. */
+    val collageUrl: String? = null,
 )
 
 @Serializable
