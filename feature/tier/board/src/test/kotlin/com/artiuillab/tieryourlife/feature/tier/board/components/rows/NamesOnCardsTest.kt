@@ -26,8 +26,8 @@ import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
-import com.artiuillab.tieryourlife.feature.tier.board.share.BoardPalette
 import com.artiuillab.tieryourlife.feature.tier.board.share.BoardPicture
+import com.artiuillab.tieryourlife.feature.tier.board.share.PictureWords
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -117,9 +117,9 @@ class NamesOnCardsTest {
     fun sharedAsAPicture_theNamesGoWithIt_whenTheBoardShowsThem() {
         val board = TierList(id = 1, title = "Films", tiers = listOf(Tier(1, "S", "#B03A32", "#F1948C", cards.take(2))))
         val white = createBitmap(10, 10).apply { eraseColor(android.graphics.Color.WHITE) }
-        val palette = BoardPalette(Color.White, Color.Black, Color.DarkGray, Color.LightGray, Color.White, Color.Gray, isDark = false)
-        val plain = BoardPicture.render(board, palette, mapOf(1L to white, 2L to white), "footer")
-        val named = BoardPicture.render(board, palette, mapOf(1L to white, 2L to white), "footer", names = true)
+        val words = PictureWords("2 cards ranked", null, "footer", "footer", "nothing here yet", { "$it cards" }, { "all $it" })
+        val plain = BoardPicture.render(board, words, mapOf(1L to white, 2L to white))
+        val named = BoardPicture.render(board, words, mapOf(1L to white, 2L to white), names = true)
 
         assertEquals(plain.height, named.height)
         assertFalse(plain.sameAs(named))

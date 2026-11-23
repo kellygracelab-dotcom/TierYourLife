@@ -128,8 +128,9 @@ internal fun PlayLayer(
                 ),
             )
         }
+        // Outside the Ready sheet: Share closes it, and the picture's own sheet stays.
+        val share = rememberShareBoard()
         if (stage is PlayStage.Ready) {
-            val share = rememberShareBoard()
             ReadySheet(
                 ready = stage.ready,
                 rankings = rankings.takeIf { stage.ready.intoMine },
