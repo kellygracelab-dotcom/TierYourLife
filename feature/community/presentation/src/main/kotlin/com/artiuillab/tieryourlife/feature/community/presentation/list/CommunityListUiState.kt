@@ -39,8 +39,6 @@ sealed interface CommunityListUiState {
         val authorPhotoUrl: String? = null,
         /** A list that stands without an author: no byline, no profile, nothing to follow. */
         val editorial: Boolean = false,
-        /** Somebody's list out without their name: the author line says "Anonymous" and leads nowhere. */
-        val byNobody: Boolean = false,
         /** True once the reader has edited their private draft; showing it publicly is a separate action. */
         val arranged: Boolean = false,
         /** Null until the server answers whether this author is followed. */
@@ -114,7 +112,7 @@ sealed interface CommunityListUiState {
          * starts the reader's own version.
          */
         val readOnly: Boolean get() = own || showing == Showing.Theirs
-        val namedAuthor: String? get() = authorName.takeUnless { editorial || byNobody || it.isBlank() }
+        val namedAuthor: String? get() = authorName.takeUnless { editorial || it.isBlank() }
 
         /** Their own list with no board here: the way to get it back. A board that is here opens instead of this page. */
         val ownBoardAction: OwnBoardAction? get() = when {

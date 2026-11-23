@@ -60,7 +60,7 @@ private const val ROWS_WHEN_UNKNOWN = 3
  */
 @Composable
 internal fun ListSkeleton(preview: ListPreview, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    val authorName = preview.authorName?.takeIf { it.isNotBlank() && !preview.byNobody }
+    val authorName = preview.authorName?.takeIf { it.isNotBlank() }
     BoxWithConstraints(modifier.fillMaxSize()) {
         // The board's own rule, so the skeleton is laid out as the board that replaces it.
         val short = WindowShape.isShort(maxHeight)
