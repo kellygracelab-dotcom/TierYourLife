@@ -124,12 +124,7 @@
         <item quantity="many">Залишилося %d карток</item>
         <item quantity="other">Залишилося %d картки</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d розкладено · від кращого до гіршого</item>
-        <item quantity="few">%1$d розкладено · від кращого до гіршого</item>
-        <item quantity="many">%1$d розкладено · від кращого до гіршого</item>
-        <item quantity="other">%1$d розкладено · від кращого до гіршого</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">Від кращого до гіршого</string>
     <string name="tier_detail_ranked_header_empty">Ще нічого не розкладено</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">Залишилася %1$d картка. Розгорнути.</item>

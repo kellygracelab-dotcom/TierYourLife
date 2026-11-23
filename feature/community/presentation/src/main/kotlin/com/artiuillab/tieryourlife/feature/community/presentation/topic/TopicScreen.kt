@@ -37,7 +37,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.CardAc
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedCallbacks
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPane
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.HomeLayout
 import com.artiuillab.tieryourlife.feature.community.presentation.feed.CommunityFeed
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.FollowRefusal
 import com.artiuillab.tieryourlife.feature.community.presentation.follow.SignInToFollow
@@ -174,8 +173,8 @@ fun TopicScreenContent(
         nowMillis = 0L,
         callbacks = FeedCallbacks(onRefresh = actions.onRetry, onRetry = actions.onRetry, onLoadMore = actions.onLoadMore),
         onOpenList = open,
-        items = { layout, alpha ->
-            topicBody(feed, layout, alpha, cards, actions.onRetry) {
+        items = { _, alpha ->
+            topicBody(feed, alpha, cards, actions.onRetry) {
                 SortRow(sort = state.sort, onSort = actions.onSelectSort, count = topic?.listCount)
             }
         },
@@ -238,7 +237,6 @@ fun TopicScreenContent(
 /** The section's page below its topics: the same wait, then the lists under their heading. */
 private fun LazyGridScope.topicBody(
     feed: FeedPane,
-    layout: HomeLayout,
     alpha: () -> Float,
     cards: CardActions,
     onRetry: () -> Unit,
@@ -248,7 +246,7 @@ private fun LazyGridScope.topicBody(
         item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { SectionLoading() }
         return
     }
-    listsBlock(feed, layout, alpha, cards, onRetry, sortRow)
+    listsBlock(feed, alpha, cards, onRetry, sortRow)
 }
 
 /**
