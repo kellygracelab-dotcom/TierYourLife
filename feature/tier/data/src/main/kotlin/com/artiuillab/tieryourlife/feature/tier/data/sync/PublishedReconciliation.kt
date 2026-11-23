@@ -30,6 +30,17 @@ internal fun reconcilePublished(
 }
 
 /**
+ * Whether a board's cards are no longer laid out as its published list's:
+ * cards per tier with the pool last, as the server counts them, or the total
+ * when the server did not say. Equal counts prove nothing, so they say no.
+ */
+internal fun cardsDifferFromPublished(
+    boardCounts: List<Int>,
+    publishedCounts: List<Int>,
+    publishedTotal: Int,
+): Boolean = if (publishedCounts.isEmpty()) boardCounts.sum() != publishedTotal else boardCounts != publishedCounts
+
+/**
  * Boards that lost track of their list, by board uid, and the list each gets
  * back: a publish the server finished but whose answer never arrived. Only a
  * list no board here claims, and only one per board.

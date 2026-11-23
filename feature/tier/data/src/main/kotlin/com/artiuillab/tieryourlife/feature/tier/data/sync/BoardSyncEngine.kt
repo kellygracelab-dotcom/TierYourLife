@@ -4,6 +4,7 @@ import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
 import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
+import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.BoardSyncDao
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.IncomingTier
@@ -225,11 +226,12 @@ class BoardSyncEngine @Inject constructor(
         val unlinked = boards
             .filter { it.publishedId == null && it.rankingOf == null && it.deletedAt == null && it.category != null }
             .mapTo(mutableSetOf()) { it.uid }
-        val mine = if (claimed.isEmpty() && unlinked.isEmpty()) {
-            emptyMap()
+        val published = if (claimed.isEmpty() && unlinked.isEmpty()) {
+            emptyList()
         } else {
-            community.myPublished().getOrElse { return }.associate { it.id to it.boardUid }
+            community.myPublished().getOrElse { return }
         }
+        val mine = published.associate { it.id to it.boardUid }
         val theirs = mine.keys
         relinkPublished(unlinked, mine, claimed).forEach { (uid, publishedId) ->
             Timber.i("A board that lost its published list has it back")
@@ -248,6 +250,28 @@ class BoardSyncEngine @Inject constructor(
         }
         preferences.setPublishedOwners(reconciled.owners)
         preferences.setLastPublishingAccount(account)
+        markWhatIsBehind(account, boards, published)
+    }
+
+    /**
+     * A board taken from the account never saw what was sent, so nothing said
+     * it had moved on: 176 cards on the board against 149 in the list, and no
+     * Update. Its cards counted against the list's own count say so.
+     */
+    private suspend fun markWhatIsBehind(account: String, boards: List<TierListEntity>, published: List<PublishedListSummary>) {
+        val lists = published.associateBy { it.id }
+        boards
+            .filter { it.publishedFingerprint == null && it.deletedAt == null }
+            .forEach { board ->
+                val list = board.publishedId?.let(lists::get) ?: return@forEach
+                val tiers = dao.tiersOf(board.id)
+                val items = dao.itemsOf(board.id).groupingBy { it.tierId }.eachCount()
+                val counts = tiers.filterNot { it.isPool }.map { items[it.id] ?: 0 } + tiers.filter { it.isPool }.sumOf { items[it.id] ?: 0 }
+                if (cardsDifferFromPublished(counts, list.tierCounts, list.itemCount)) {
+                    Timber.i("A board from the account has moved on from its list")
+                    dao.markPublishedBehind(account, board.uid, list.id)
+                }
+            }
     }
 
     private suspend fun signedInAs(): String? = (accounts.account.first() as? Account.SignedIn)?.recordKey
