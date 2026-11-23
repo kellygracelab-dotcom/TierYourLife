@@ -12,7 +12,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -49,28 +49,54 @@ class TopicPickerViewModelTest {
         assertEquals("Osc", community.queries.last())
     }
 
+    // Danylo, 23.11: a list in Movies was offered every topic of every section.
     @Test
-    fun aNewName_isOffered_untilItMatchesAKnownTopic() = runBlocking {
-        val viewModel = pickerFor(board(), TopicsFake(found = listOf(oscars)))
-        viewModel.state.firstWithin { it.title == "Films" && it.results.isNotEmpty() }
+    fun onlyTheListsSectionsTopics_areAskedFor() = runBlocking {
+        val community = TopicsFake(found = listOf(oscars, snubs))
+        val viewModel = pickerFor(board(title = "Oscar snubs of the decade"), community)
+        viewModel.state.firstWithin { it.results.isNotEmpty() && it.suggestion != null }
 
-        viewModel.onQueryChange("Oscars 2025")
-        assertEquals("Oscars 2025", viewModel.state.firstWithin { it.query == "Oscars 2025" }.createName)
+        viewModel.onQueryChange("Osc")
+        viewModel.state.firstWithin { it.query == "Osc" && !it.searching }
 
-        viewModel.onQueryChange("oscars")
-        assertNull(viewModel.state.firstWithin { it.query == "oscars" }.createName)
+        assertTrue(community.sections.isNotEmpty())
+        assertTrue(community.sections.all { it == ListCategory.FilmTv.id })
     }
 
     @Test
-    fun creating_namesTheTopic_whileFewerThanThreeWait() = runBlocking {
-        val viewModel = pickerFor(board(), TopicsFake(mine = listOf(pending(1), pending(2))))
-        viewModel.state.firstWithin { it.title == "Films" && it.mine.size == 2 }
+    fun noSectionYet_noTopics_onlyTheWayToChooseOne() = runBlocking {
+        val community = TopicsFake(found = listOf(oscars))
+        val viewModel = pickerFor(board().copy(category = null), community)
 
+        val state = viewModel.state.firstWithin { it.loaded }
+
+        assertTrue(state.needsSection)
+        assertTrue(state.results.isEmpty())
+        assertTrue(community.queries.isEmpty())
+    }
+
+    @Test
+    fun proposeATopic_opensTheFieldWithWhatWasSearched() = runBlocking {
+        val viewModel = pickerFor(board(), TopicsFake())
+        viewModel.state.firstWithin { it.loaded }
         viewModel.onQueryChange("Kharkiv restaurants")
-        viewModel.state.firstWithin { it.query.isNotEmpty() }
-        viewModel.createNew()
 
-        assertEquals(TopicChoice.New("Kharkiv restaurants"), viewModel.state.value.chosen)
+        viewModel.startProposing()
+
+        assertEquals("Kharkiv restaurants", viewModel.state.value.proposal)
+    }
+
+    @Test
+    fun proposing_namesTheTopic_whileFewerThanThreeWait() = runBlocking {
+        val viewModel = pickerFor(board(), TopicsFake(mine = listOf(pending(1), pending(2))))
+        viewModel.state.firstWithin { it.loaded && it.mine.size == 2 }
+
+        viewModel.startProposing()
+        viewModel.onProposalChange("Kharkiv restaurants")
+        viewModel.propose()
+
+        val state = viewModel.state.firstWithin { it.proposal == null }
+        assertEquals(TopicChoice.New("Kharkiv restaurants"), state.chosen)
     }
 
     @Test
@@ -79,24 +105,26 @@ class TopicPickerViewModelTest {
         val state = viewModel.state.firstWithin { it.title == "Films" && it.mine.size == 3 }
         assertFalse(state.canCreate)
 
-        viewModel.onQueryChange("One more")
-        viewModel.state.firstWithin { it.query.isNotEmpty() }
-        viewModel.createNew()
+        viewModel.startProposing()
+        viewModel.onProposalChange("One more")
+        viewModel.propose()
 
         assertEquals(TopicChoice.None, viewModel.state.value.chosen)
     }
 
-    // A name the server already knows is that topic, not a twin of it.
+    // A name the section already has is that topic, not a twin of it, even when it is not on screen.
     @Test
-    fun creatingAKnownName_choosesTheKnownTopicInstead() = runBlocking {
-        val viewModel = pickerFor(board(), TopicsFake(found = listOf(oscars)))
-        viewModel.state.firstWithin { it.title == "Films" && it.results.isNotEmpty() }
+    fun proposingAKnownName_choosesTheKnownTopicInstead() = runBlocking {
+        val viewModel = pickerFor(board(), TopicsFake(found = listOf(oscars, pixar)))
+        viewModel.state.firstWithin { it.loaded && it.results.isNotEmpty() }
+        viewModel.onQueryChange("Pix")
+        viewModel.state.firstWithin { it.query == "Pix" && it.results.size == 1 }
 
-        viewModel.onQueryChange("  oscars ")
-        viewModel.state.firstWithin { it.query.isNotEmpty() }
-        viewModel.createNew()
+        viewModel.startProposing()
+        viewModel.onProposalChange("  oscars ")
+        viewModel.propose()
 
-        assertEquals(TopicChoice.Known(oscars), viewModel.state.value.chosen)
+        assertEquals(TopicChoice.Known(oscars), viewModel.state.firstWithin { it.proposal == null }.chosen)
     }
 
     @Test
@@ -125,10 +153,11 @@ class TopicPickerViewModelTest {
     fun aNewName_isStoredAsADraft() = runBlocking {
         val repository = RecordingTierRepository(boards = listOf(board()))
         val viewModel = pickerFor(repository, TopicsFake())
-        viewModel.state.firstWithin { it.title == "Films" }
-        viewModel.onQueryChange("Oscars 2025")
-        viewModel.state.firstWithin { it.query.isNotEmpty() }
-        viewModel.createNew()
+        viewModel.state.firstWithin { it.loaded }
+        viewModel.startProposing()
+        viewModel.onProposalChange("Oscars 2025")
+        viewModel.propose()
+        viewModel.state.firstWithin { it.proposal == null }
 
         viewModel.save()
         viewModel.state.firstWithin { it.saved }
@@ -190,9 +219,11 @@ private class TopicsFake(
     private val mine: List<Topic> = emptyList(),
 ) : FakeCommunityRepository() {
     val queries = mutableListOf<String?>()
+    val sections = mutableListOf<String?>()
 
     override suspend fun topics(query: String?, section: String?): Result<List<Topic>> {
         queries += query
+        sections += section
         val wanted = query?.lowercase()
         return Result.success(if (wanted == null) found else found.filter { it.name.lowercase().startsWith(wanted) })
     }
