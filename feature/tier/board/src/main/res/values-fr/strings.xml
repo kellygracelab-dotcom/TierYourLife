@@ -209,7 +209,6 @@
     <string name="board_published_short">Publiée</string>
     <string name="board_updated_short">Mise à jour</string>
     <string name="board_ranked_short">Dans les classements</string>
-    <string name="board_published_view">Voir</string>
     <string name="board_publishing">Publication…</string>
     <string name="board_updating">Mise à jour…</string>
     <string name="pool_tap_a_tier">Touchez un niveau</string>

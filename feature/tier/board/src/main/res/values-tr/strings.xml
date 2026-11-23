@@ -198,7 +198,6 @@
     <string name="board_published_short">Yayımlandı</string>
     <string name="board_updated_short">Güncellendi</string>
     <string name="board_ranked_short">Sıralamalarda</string>
-    <string name="board_published_view">Gör</string>
     <string name="board_publishing">Yayımlanıyor…</string>
     <string name="board_updating">Güncelleniyor…</string>
     <string name="pool_tap_a_tier">Bir seviyeye dokunun</string>
