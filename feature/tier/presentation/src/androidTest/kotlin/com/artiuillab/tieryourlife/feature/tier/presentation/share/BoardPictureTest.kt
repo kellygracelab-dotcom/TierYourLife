@@ -5,8 +5,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.artiuillab.tieryourlife.feature.tier.board.share.BoardPalette
 import com.artiuillab.tieryourlife.feature.tier.board.share.BoardPicture
+import com.artiuillab.tieryourlife.feature.tier.board.share.PictureWords
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -24,52 +24,39 @@ import java.io.File
 @RunWith(AndroidJUnit4::class)
 class BoardPictureTest {
 
-    private val palette = BoardPalette(
-        surface = Color(0xFFFBF8FF),
-        onSurface = Color(0xFF1B1B21),
-        onSurfaceVariant = Color(0xFF46464F),
-        outlineVariant = Color(0xFFE4E1E9),
-        onBand = Color.White,
-        unrankedBand = Color(0xFFDAD7E0),
-        isDark = false,
+    private val words = PictureWords(
+        byLine = "by Ann · 1 card ranked",
+        author = "Ann",
+        footer = "tieryourlife.com/l/abc",
+        shortFooter = "tieryourlife.com",
+        nothingYet = "nothing here yet",
+        cards = { "$it cards" },
+        seeAll = { "Open the list to see all $it" },
     )
 
     @Test
-    fun theBoard_isDrawnAtOneWidth_withEachTierInItsOwnColour() {
-        val bitmap = BoardPicture.render(board(), palette, pictures = emptyMap(), footer = "Made in TierYourLife")
-        save("board-light", bitmap)
+    fun theBoard_isDrawnAtFourByFive_withEachTierInItsDarkColour() {
+        val bitmap = BoardPicture.render(board(), words, pictures = emptyMap())
+        save("board", bitmap)
 
         assertEquals(BoardPicture.WIDTH, bitmap.width)
-        assertTrue("taller than its header alone", bitmap.height > 400)
-        // Just inside the first row's band, away from the letter.
-        assertEquals(Color(0xFFB03A32).toArgb(), bitmap.getPixel(60, 260))
-        // The corner, where nothing is drawn but the surface.
-        assertEquals(palette.surface.toArgb(), bitmap.getPixel(4, 4))
+        assertEquals(BoardPicture.HEIGHT, bitmap.height)
+        // Just inside the first row's band, away from the letter: the picture is dark, so the dark colour.
+        assertEquals(Color(0xFFF1948C).toArgb(), bitmap.getPixel(90, 230))
+        // The bottom corner, where nothing is drawn but the background.
+        assertEquals(Color(0xFF12151C).toArgb(), bitmap.getPixel(4, bitmap.height - 4))
     }
 
-    // A dark board picks the tier's dark colour, so a picture shared at night
-    // is the board the person was looking at.
+    // A card's picture lands inside its cell; a card without one does not stop the board being drawn.
     @Test
-    fun aDarkPalette_drawsTheDarkBand() {
-        val dark = palette.copy(surface = Color(0xFF121318), isDark = true)
-        val bitmap = BoardPicture.render(board(), dark, pictures = emptyMap(), footer = "Made in TierYourLife")
-
-        assertEquals(Color(0xFFF1948C).toArgb(), bitmap.getPixel(60, 260))
-    }
-
-    // A card's picture lands inside its tile; a card without one does not
-    // stop the board being drawn.
-    @Test
-    fun aCardsPicture_isDrawnIntoItsTile() {
+    fun aCardsPicture_isDrawnIntoItsCell() {
         val red = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888).apply { eraseColor(Color.Red.toArgb()) }
-        val bitmap = BoardPicture.render(board(), palette, pictures = mapOf(1L to red), footer = "Made in TierYourLife")
+        val bitmap = BoardPicture.render(board(), words, pictures = mapOf(1L to red))
+        save("board-cover", bitmap)
 
-        // Somewhere along the middle of the first row of tiles there is a
-        // tile's width of red. Where exactly depends on the band, which is as
-        // wide as the longest caption, so the test does not pretend to know.
-        val tileMiddleY = 48 + 56 + 12 + 34 + 48 + 24 + 192 / 2
-        val reds = (0 until bitmap.width).count { x -> bitmap.getPixel(x, tileMiddleY) == Color.Red.toArgb() }
-        assertTrue("a tile's width of red, found $reds px", reds in 100..140)
+        // The middle of the first row of a short list's small cells.
+        val reds = (0 until bitmap.width).count { x -> bitmap.getPixel(x, 296) == Color.Red.toArgb() }
+        assertTrue("a cell's width of red, found $reds px", reds in 90..110)
     }
 
     // Written out beside the test results so the picture can be looked at,

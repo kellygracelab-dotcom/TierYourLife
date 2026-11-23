@@ -2,15 +2,9 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>CyclomaticComplexMethod:BoardPicture.kt:BoardPicture$private fun drawRow</ID>
     <ID>CyclomaticComplexMethod:TierDetailScreenContent.kt:@Composable private fun TierScreenBody</ID>
     <ID>CyclomaticComplexMethod:TierRow.kt:@Composable fun TierRow</ID>
     <ID>CyclomaticComplexMethod:TrashTarget.kt:@Composable fun TrashTarget</ID>
-    <ID>LongMethod:BoardPicture.kt:BoardPicture$private fun drawRow</ID>
-    <ID>MagicNumber:BoardPicture.kt:BoardPicture$10f</ID>
-    <ID>MagicNumber:BoardPicture.kt:BoardPicture$12f</ID>
-    <ID>MagicNumber:BoardPicture.kt:BoardPicture$3</ID>
-    <ID>MagicNumber:BoardPicture.kt:BoardPicture$6f</ID>
     <ID>MagicNumber:ColorMath.kt:0.03928</ID>
     <ID>MagicNumber:ColorMath.kt:0.05</ID>
     <ID>MagicNumber:ColorMath.kt:0.055</ID>
