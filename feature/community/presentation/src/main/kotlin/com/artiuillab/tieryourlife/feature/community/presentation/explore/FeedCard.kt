@@ -86,6 +86,7 @@ internal fun FeedCard(
             coverFocus = summary.coverFocus,
             previewImages = summary.previewImages,
             pictureFocus = summary.previewFocus,
+            collageUrl = summary.collageUrl,
             tierColors = summary.tierColors,
             modifier = Modifier
                 .fillMaxWidth()
