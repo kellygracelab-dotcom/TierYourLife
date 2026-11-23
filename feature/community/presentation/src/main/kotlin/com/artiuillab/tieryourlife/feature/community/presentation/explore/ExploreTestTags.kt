@@ -22,6 +22,7 @@ internal object ExploreTestTags {
     const val COVER_HOME = "explore_cover_home"
     const val ALL_SECTIONS_TILE = "explore_all_sections"
     const val FOLLOW_PICKED = "following_follow_picked"
+    const val FRESH_ROW = "explore_fresh_row"
 
     /** explore_chip_popular, explore_chip_new, explore_chip_following. */
     fun chip(chip: HomeChip) = "explore_chip_${chip.name.lowercase()}"
