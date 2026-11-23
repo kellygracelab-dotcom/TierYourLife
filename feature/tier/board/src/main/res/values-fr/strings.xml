@@ -69,6 +69,17 @@
         <item quantity="other">Encore %d cartes à classer</item>
     </plurals>
     <string name="share_failed">Impossible de partager l’image</string>
+    <string name="share_hook_tier">Mon rang %1$s : %2$s. Et le tien ?</string>
+    <string name="share_hook_top">Mon top : %1$s. Et le tien ?</string>
+    <string name="share_link">Partager le lien</string>
+    <string name="share_link_copied">Lien copié</string>
+    <string name="list_live_title">Votre liste est en ligne</string>
+    <string name="list_live_body">Toute personne ayant le lien peut la voir. Elle est aussi dans Communauté → %1$s.</string>
+    <string name="list_live_copy">Copier le lien</string>
+    <string name="share_button">Partager</string>
+    <string name="list_live_image">En image</string>
+    <string name="list_live_open">Ouvrir dans Communauté</string>
+    <string name="list_live_done">OK</string>
     <string name="tier_detail_add">Ajouter</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d carte</item>

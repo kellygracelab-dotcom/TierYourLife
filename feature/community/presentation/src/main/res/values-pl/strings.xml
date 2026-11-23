@@ -306,8 +306,6 @@
     <string name="community_own_list_line">Tak widzą ją odwiedzający. Zmieniasz ją w „Twoich listach”.</string>
     <string name="community_restore_from_trash">Przywróć z kosza</string>
     <string name="community_get_back_as_board">Przywróć do „Twoich list”</string>
-    <string name="community_copy_link">Kopiuj link</string>
-    <string name="community_link_copied">Skopiowano link</string>
     <string name="community_drop_to_start_yours">Upuść, by zacząć swoją wersję · Mój zaczyna się od rankingu: %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Upuść, by zacząć swoją wersję · Mój zaczyna się od tego rankingu</string>
     <string name="community_started_from_theirs">Twoja wersja zaczyna się od rankingu: %1$s</string>

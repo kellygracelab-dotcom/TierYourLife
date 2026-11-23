@@ -1,42 +1,35 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
-import android.content.ClipData
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ClipEntry
-import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.core.usage.LocalUsage
-import com.artiuillab.tieryourlife.core.usage.UsageFeature
-import com.artiuillab.tieryourlife.core.usage.shared
+import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
-import com.artiuillab.tieryourlife.feature.tier.board.share.publishedListLink
-import kotlinx.coroutines.launch
+import com.artiuillab.tieryourlife.feature.tier.board.share.rememberShareLink
+import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
 /** What the page of their own list can do while its board is not on this phone, and from its menu. */
 data class OwnListCallbacks(
@@ -129,44 +122,32 @@ internal fun OwnBoardButton(
     }
 }
 
+/** The author's own list: the system's share sheet with the hook line and the link, as the board's bar gives it. */
 @Composable
-internal fun CopyLinkButton(
+internal fun ShareLinkButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     height: Dp? = null,
-    contentPadding: PaddingValues = PaddingValues(horizontal = 14.dp),
+    contentPadding: PaddingValues = PaddingValues(start = 12.dp, end = 16.dp),
 ) {
     OutlinedButton(
         onClick = onClick,
         contentPadding = contentPadding,
         modifier = modifier
             .then(if (height != null) Modifier.height(height) else Modifier)
-            .testTag(CommunityListTestTags.COPY_LINK),
+            .testTag(CommunityListTestTags.SHARE_LINK),
     ) {
-        Text(text = stringResource(R.string.community_copy_link), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        ShareIcon(18.dp, MaterialTheme.colorScheme.primary)
+        Spacer(Modifier.width(8.dp))
+        Text(text = stringResource(BoardR.string.share_button), maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
+}
+
+/** The author's arrangement with the list's id: the board's own share, from its page. */
+@Composable
+internal fun rememberShareOwnList(state: CommunityListUiState.Success?): () -> Unit {
+    val share = rememberShareLink()
+    return { state?.let { share(it.list.copy(publishedId = it.listId)) } }
 }
 
 private val OWN_BUTTON_MAX_WIDTH = 180.dp
-
-/** The list's address on the web, the one the site itself copies. */
-internal fun listLink(publishedId: String): String = publishedListLink(publishedId)
-
-/** Puts the link on the clipboard; Android 13 and later say so themselves, earlier ones get the snackbar. */
-@Composable
-internal fun rememberCopyLink(publishedId: String, snackbars: SnackbarHostState): () -> Unit {
-    val clipboard = LocalClipboard.current
-    val resources = LocalResources.current
-    val scope = rememberCoroutineScope()
-    val usage = LocalUsage.current
-    return {
-        scope.launch {
-            val link = listLink(publishedId)
-            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(link, link)))
-            usage.shared(UsageFeature.ShareLink)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                snackbars.showSnackbar(resources.getString(R.string.community_link_copied))
-            }
-        }
-    }
-}

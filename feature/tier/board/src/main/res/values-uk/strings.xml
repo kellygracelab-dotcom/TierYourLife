@@ -72,6 +72,17 @@
         <item quantity="other">Ще %d картки не розкладено</item>
     </plurals>
     <string name="share_failed">Не вдалося поділитися картинкою</string>
+    <string name="share_hook_tier">Мій %1$s-тір: %2$s. А в тебе?</string>
+    <string name="share_hook_top">Мій топ: %1$s. А в тебе?</string>
+    <string name="share_link">Поділитися посиланням</string>
+    <string name="share_link_copied">Посилання скопійовано</string>
+    <string name="list_live_title">Ваш список опубліковано</string>
+    <string name="list_live_body">Його бачить кожен, хто має посилання. Він також у Спільноті → %1$s.</string>
+    <string name="list_live_copy">Копіювати посилання</string>
+    <string name="share_button">Поділитися</string>
+    <string name="list_live_image">Як картинку</string>
+    <string name="list_live_open">Відкрити у Спільноті</string>
+    <string name="list_live_done">Готово</string>
     <string name="tier_detail_add">Додати</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d картка</item>

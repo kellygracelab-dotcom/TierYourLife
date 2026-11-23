@@ -234,7 +234,7 @@ fun CommunityListScreenContent(
     val snackbars = remember { SnackbarHostState() }
     val sheetSnackbars = remember { SnackbarHostState() }
     val loadedNow = state as? CommunityListUiState.Success
-    val copyLink = rememberCopyLink(loadedNow?.listId.orEmpty(), snackbars)
+    val shareOwn = rememberShareOwnList(loadedNow)
     val onOwnBoard: () -> Unit = {
         when (loadedNow?.ownBoardAction) {
             OwnBoardAction.Restore -> own.onRestore()
@@ -337,7 +337,7 @@ fun CommunityListScreenContent(
                                     onSaveClick = onSaveClick,
                                     onOpenSaved = onOpenSaved,
                                     onOwnBoard = onOwnBoard,
-                                    onCopyLink = copyLink,
+                                    onShareLink = shareOwn,
                                     onTurnGame = onTurnGame,
                                 )
                             },
@@ -353,7 +353,7 @@ fun CommunityListScreenContent(
                                     onOpenSaved = onOpenSaved,
                                     onOpenAuthor = { onAuthorClick(loaded.authorUid, loaded.authorName, loaded.authorPhotoUrl) },
                                     onOwnBoard = onOwnBoard,
-                                    onCopyLink = copyLink,
+                                    onShareLink = shareOwn,
                                 )
                             },
                             // On a tablet held upright the bar grows and says who and where under the title.
@@ -726,7 +726,7 @@ private fun ReaderStrip(
     onSaveClick: () -> Unit,
     onOpenSaved: (Long) -> Unit,
     onOwnBoard: () -> Unit,
-    onCopyLink: () -> Unit,
+    onShareLink: () -> Unit,
     onTurnGame: () -> Unit,
 ) {
     Column(
@@ -750,7 +750,7 @@ private fun ReaderStrip(
             Spacer(Modifier.weight(1f))
             val savedId = state.savedId
             if (state.own) {
-                CopyLinkButton(onClick = onCopyLink)
+                ShareLinkButton(onClick = onShareLink)
                 OwnBoardButton(state = state, onClick = onOwnBoard)
             } else if (state.nothingToSaveYet) {
                 Unit
