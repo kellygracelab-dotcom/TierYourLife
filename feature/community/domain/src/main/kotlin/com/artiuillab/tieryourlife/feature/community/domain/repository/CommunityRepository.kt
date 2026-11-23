@@ -43,6 +43,12 @@ interface CommunityRepository {
         topic: String? = null,
     ): Result<CommunityPage>
 
+    /**
+     * New from the community: people's lists out lately that the server found
+     * worth a place at the top, a dozen at most, newest first. One answer, no pages.
+     */
+    suspend fun fresh(): Result<List<PublishedListSummary>>
+
     /** Fails for a guest: guests are swept away later, and a following list on one would be a promise we delete. */
     suspend fun follow(authorUid: String): Result<Unit>
 

@@ -168,7 +168,7 @@ fun CommunityHomeScreen(
             following = followingState,
             exploreFeed = FeedCallbacks(
                 onOpen = explore::open,
-                onRefresh = explore.feed::pullToRefresh,
+                onRefresh = explore::refreshPopular,
                 onRetry = explore.feed::retry,
                 onLoadMore = explore.feed::loadMore,
                 onScrolledDown = explore.feed::onScrolledDown,

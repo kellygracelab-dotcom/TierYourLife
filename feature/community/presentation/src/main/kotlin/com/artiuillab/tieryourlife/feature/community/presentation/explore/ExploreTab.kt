@@ -2,6 +2,7 @@ package com.artiuillab.tieryourlife.feature.community.presentation.explore
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -33,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
+import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Section
 import com.artiuillab.tieryourlife.feature.community.presentation.R
@@ -188,6 +191,11 @@ internal fun HomeFeedGrid(
                 item(key = "chips", span = { GridItemSpan(maxLineSpan) }) {
                     HomeChips(chip, onChip, Modifier.padding(top = if (layout == HomeLayout.CompactHeight) 0.dp else 2.dp))
                 }
+                if (chip == HomeChip.Popular && explore.fresh.isNotEmpty()) {
+                    item(key = "fresh", span = { GridItemSpan(maxLineSpan) }) {
+                        FreshRow(explore.fresh, layout, feed.cards)
+                    }
+                }
                 when (chip) {
                     HomeChip.Popular, HomeChip.New -> feedItems(pane, layout, skeletonAlpha, feed.cards, feed.calls.onRetry, reasonFor = { null })
                     HomeChip.Following -> followingItems(following, layout, skeletonAlpha, followingActions, feed.cards, feed.calls.onRetry)
@@ -196,6 +204,39 @@ internal fun HomeFeedGrid(
             if (picking) {
                 PickBar(following.picked.size, following.followingPicked, followingActions.onFollowPicked, Modifier.align(Alignment.BottomCenter))
             }
+        }
+    }
+}
+
+/**
+ * New from the community: people's fresh lists in a row of their own over
+ * Popular, the cards as wide as the grid's so the next one peeks in, and
+ * Popular's own heading under it so the two do not read as one feed.
+ */
+@Composable
+private fun FreshRow(lists: List<PublishedListSummary>, layout: HomeLayout, cards: CardActions) {
+    val side = gridSide(layout)
+    val gap = feedSpacing(layout)
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val cardWidth = (maxWidth - gap * (layout.feedColumns - 1)) / layout.feedColumns
+        Column(Modifier.testTag(ExploreTestTags.FRESH_ROW), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            SectionLabel(stringResource(R.string.explore_fresh_title), Modifier.padding(top = 4.dp))
+            LazyRow(
+                modifier = Modifier.fillMaxWidth().edgeToEdge(side),
+                contentPadding = PaddingValues(horizontal = side),
+                horizontalArrangement = Arrangement.spacedBy(gap),
+            ) {
+                items(lists, key = { it.id }) { summary ->
+                    FeedCard(
+                        summary = summary,
+                        onClick = { cards.onOpen(summary) },
+                        onLongClick = { cards.onLongPress(summary) },
+                        modifier = Modifier.width(cardWidth),
+                        coverHeight = layout.coverHeight,
+                    )
+                }
+            }
+            SectionLabel(stringResource(R.string.feed_sort_popular), Modifier.padding(top = 10.dp))
         }
     }
 }

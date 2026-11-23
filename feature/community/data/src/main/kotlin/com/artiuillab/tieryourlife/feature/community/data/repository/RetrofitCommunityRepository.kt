@@ -127,6 +127,10 @@ class RetrofitCommunityRepository @Inject constructor(
         )
     }
 
+    override suspend fun fresh(): Result<List<PublishedListSummary>> = attempt("Reading what is new from the community") {
+        api.fresh().lists.map { it.toSummary(me) }
+    }
+
     override suspend fun follow(authorUid: String): Result<Unit> = attempt("Following an author") {
         refusedOverTheLimit { api.follow(authorUid) }
     }

@@ -4,9 +4,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTouchHeightIsEqualTo
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
@@ -120,6 +124,35 @@ class HomeChipsTest {
 
         compose.onNodeWithTag(ExploreTestTags.FOLLOWING_EMPTY).assertExists()
         compose.onNodeWithTag(ExploreTestTags.FOLLOW_PICKED).assertExists()
+    }
+
+    @Test
+    fun peoplesFreshLists_rideOverPopular_underTheirOwnHeading() {
+        val fresh = listOf(card("x1", "Fresh one"), card("x2", "Fresh two"))
+        show(feeds.copy(fresh = fresh), followed)
+
+        compose.onNodeWithTag(ExploreTestTags.FRESH_ROW).assertExists()
+        compose.onNodeWithText("NEW FROM THE COMMUNITY").assertExists()
+        compose.onNode(hasText("Fresh one") and hasAnyAncestor(hasTestTag(ExploreTestTags.FRESH_ROW))).assertExists()
+        compose.onNode(hasText("Popular list") and hasAnyAncestor(hasTestTag(ExploreTestTags.FRESH_ROW))).assertDoesNotExist()
+        compose.onNodeWithTag(ExploreTestTags.card("p1")).assertExists()
+    }
+
+    @Test
+    fun theNewChip_hasNoFreshRow() {
+        show(feeds.copy(fresh = listOf(card("x1", "Fresh one"), card("x2", "Fresh two"))), followed)
+
+        compose.onNodeWithTag(ExploreTestTags.chip(HomeChip.New)).performClick()
+
+        compose.onNodeWithTag(ExploreTestTags.FRESH_ROW).assertDoesNotExist()
+        compose.onNodeWithTag(ExploreTestTags.card("n1")).assertExists()
+    }
+
+    @Test
+    fun noFreshLists_noRow() {
+        show(feeds, followed)
+
+        compose.onNodeWithTag(ExploreTestTags.FRESH_ROW).assertDoesNotExist()
     }
 
     @Test
