@@ -40,7 +40,7 @@ class RankingsSheetScreenshotTest {
     private val house = CommunityListUiState.Success(
         list = TierList(id = 0, title = "Pizza styles", tiers = emptyList()),
         authorName = "",
-        authorUid = "85RRieyLyUPCEqHjdYCdxVlWxHx2",
+        authorUid = "",
         editorial = true,
     )
 

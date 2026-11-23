@@ -26,7 +26,7 @@ class EditorialCardTest {
                     feed = CommunityFeed.Ready(
                         listOf(
                             summary(id = "people", authorUid = "author-1"),
-                            summary(id = "editorial", authorUid = "85RRieyLyUPCEqHjdYCdxVlWxHx2"),
+                            summary(id = "editorial", authorUid = "tyl-editorial"),
                             summary(id = "flagged", authorUid = "author-2", anonymous = true),
                             summary(id = "blank", authorUid = ""),
                         ),

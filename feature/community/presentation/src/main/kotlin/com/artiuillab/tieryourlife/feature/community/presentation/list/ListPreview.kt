@@ -13,7 +13,6 @@ data class ListPreview(
     val tierCounts: List<Int> = emptyList(),
     val authorUid: String = "",
     val authorPhotoUrl: String? = null,
-    val byNobody: Boolean = false,
     val mine: Boolean = false,
     val anonymous: Boolean = false,
     val section: String? = null,

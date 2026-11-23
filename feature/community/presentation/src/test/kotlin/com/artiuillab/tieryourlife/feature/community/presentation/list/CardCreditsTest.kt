@@ -22,7 +22,7 @@ import org.robolectric.annotation.Config
 class CardCreditsTest {
     @get:Rule val compose = createComposeRule()
 
-    private fun show(credit: String?, author: String = "Olena", editorial: Boolean = false, byNobody: Boolean = false) {
+    private fun show(credit: String?, author: String = "Olena", editorial: Boolean = false) {
         val tier = Tier(1, "S", "B03A32", "F1948C", items = listOf(TierItem(10, "Red fox", "https://example.org/fox.jpg", credit = credit)))
         val pool = Tier(2, "Pool", "DAD7E0", "46464F", items = emptyList(), isPool = true)
         compose.setContent {
@@ -30,7 +30,7 @@ class CardCreditsTest {
                 CommunityListScreenContent(
                     state = CommunityListUiState.Success(
                         list = TierList(1, "Wildlife", listOf(tier, pool)),
-                        authorName = author, authorUid = "olena", signedIn = false, editorial = editorial, byNobody = byNobody,
+                        authorName = author, authorUid = "olena", signedIn = false, editorial = editorial,
                     ),
                     onBack = {}, onMoveItem = { _, _, _ -> }, onSave = {}, onRetry = {},
                 )
@@ -67,7 +67,7 @@ class CardCreditsTest {
 
     @Test
     fun anAnonymousList_hasNoEmptyAuthorLine() {
-        show(null, author = "", editorial = true, byNobody = true)
+        show(null, author = "", editorial = true)
         compose.onNodeWithText("Anonymous").assertDoesNotExist()
         compose.onNodeWithTag(CommunityListTestTags.ANONYMOUS_AUTHOR).assertDoesNotExist()
     }
