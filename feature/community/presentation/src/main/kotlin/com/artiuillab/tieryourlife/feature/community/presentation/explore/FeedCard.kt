@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,7 +36,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.ui.VisibilityIcon
@@ -53,12 +53,8 @@ internal val CaptionStyle = TextStyle(fontSize = 11.sp, lineHeight = 15.sp)
 internal val Body13Style = TextStyle(fontSize = 13.sp, lineHeight = 18.sp)
 internal val TileNameStyle = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
 
-/** The cover heights per window (§1.4, §6.1, §7.1). */
-internal object CoverHeights {
-    val Phone = 132.dp
-    val Landscape = 96.dp
-    val Tablet = 140.dp
-}
+/** A list's picture has one shape everywhere, the website's 16:10, so the server's collage is never cut. */
+internal const val LIST_ART_ASPECT = 16f / 10f
 
 /**
  * A published list in a feed (§1.4): the cover, then under it the title, the
@@ -71,7 +67,6 @@ internal fun FeedCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
-    coverHeight: Dp = CoverHeights.Phone,
     reason: String? = null,
     badge: String? = null,
 ) {
@@ -92,7 +87,7 @@ internal fun FeedCard(
                 tierColors = summary.tierColors,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(coverHeight),
+                    .aspectRatio(LIST_ART_ASPECT),
             )
             if (badge != null) CardBadge(badge, Modifier.padding(8.dp).testTag(ExploreTestTags.newBadge(summary.id)))
         }
@@ -263,7 +258,7 @@ private val Still: () -> Float = { 1f }
 
 /** A card not arrived yet (§1.5): its real size, in blocks, no shimmer and no spinner. */
 @Composable
-internal fun SkeletonCard(alpha: () -> Float, modifier: Modifier = Modifier, coverHeight: Dp = CoverHeights.Phone) {
+internal fun SkeletonCard(alpha: () -> Float, modifier: Modifier = Modifier) {
     val block = MaterialTheme.colorScheme.surfaceContainerHighest
     Column(
         modifier
@@ -278,7 +273,7 @@ internal fun SkeletonCard(alpha: () -> Float, modifier: Modifier = Modifier, cov
         Box(
             Modifier
                 .fillMaxWidth()
-                .height(coverHeight)
+                .aspectRatio(LIST_ART_ASPECT)
                 .background(block),
         )
         Column(Modifier.padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 12.dp)) {

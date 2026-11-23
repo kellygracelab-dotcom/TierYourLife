@@ -117,11 +117,7 @@
         <item quantity="many">%d cartes restantes</item>
         <item quantity="other">%d cartes restantes</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d placée · du meilleur au pire</item>
-        <item quantity="many">%1$d placées · du meilleur au pire</item>
-        <item quantity="other">%1$d placées · du meilleur au pire</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">Du meilleur au pire</string>
     <string name="tier_detail_ranked_header_empty">Rien de placé pour l’instant</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">%1$d carte restante. Déplier.</item>

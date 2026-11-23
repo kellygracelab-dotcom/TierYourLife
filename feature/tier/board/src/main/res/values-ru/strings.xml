@@ -124,12 +124,7 @@
         <item quantity="many">Осталось %d карточек</item>
         <item quantity="other">Осталось %d карточки</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d разложена · от лучшего к худшему</item>
-        <item quantity="few">%1$d разложены · от лучшего к худшему</item>
-        <item quantity="many">%1$d разложено · от лучшего к худшему</item>
-        <item quantity="other">%1$d разложено · от лучшего к худшему</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">От лучшего к худшему</string>
     <string name="tier_detail_ranked_header_empty">Пока ничего не разложено</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">Осталась %1$d карточка. Развернуть.</item>

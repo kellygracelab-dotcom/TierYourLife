@@ -52,7 +52,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.explore.CardAc
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.DashedSquare
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ExploreTestTags
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.FeedPhase
-import com.artiuillab.tieryourlife.feature.community.presentation.explore.HomeLayout
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.ScheduleIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.SectionTile
 import com.artiuillab.tieryourlife.feature.community.presentation.explore.TileRows
@@ -96,7 +95,6 @@ internal class FollowingActions(
  */
 internal fun LazyGridScope.followingItems(
     state: FollowingFeedUiState,
-    layout: HomeLayout,
     skeletonAlpha: () -> Float,
     actions: FollowingActions,
     cards: CardActions,
@@ -124,7 +122,7 @@ internal fun LazyGridScope.followingItems(
             NothingPublished(actions.onGoToExplore)
         }
     } else {
-        feedItems(state.feed, layout, skeletonAlpha, cards, onRetry) { summary ->
+        feedItems(state.feed, skeletonAlpha, cards, onRetry) { summary ->
             following?.let { reasonFor(summary, it) }?.let { reasonText(it) }
         }
     }

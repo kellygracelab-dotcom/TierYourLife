@@ -103,7 +103,7 @@ private fun CoverRow(summary: PublishedListSummary, onClick: () -> Unit) {
             collageUrl = summary.collageUrl,
             tierColors = summary.tierColors,
             modifier = Modifier
-                .size(width = 36.dp, height = 48.dp)
+                .size(width = 64.dp, height = 40.dp)
                 .clip(RoundedCornerShape(6.dp)),
         )
         Column(Modifier.weight(1f)) {
@@ -125,7 +125,7 @@ private fun CoverSkeletonRow(alpha: () -> Float) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Box(Modifier.size(width = 36.dp, height = 48.dp).clip(RoundedCornerShape(6.dp)).background(tone))
+        Box(Modifier.size(width = 64.dp, height = 40.dp).clip(RoundedCornerShape(6.dp)).background(tone))
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Box(Modifier.width(150.dp).height(11.dp).clip(RoundedCornerShape(4.dp)).background(tone))
             Box(Modifier.width(96.dp).height(9.dp).clip(RoundedCornerShape(4.dp)).background(tone))
