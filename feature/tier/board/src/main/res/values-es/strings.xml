@@ -217,7 +217,6 @@
     <string name="board_published_short">Publicada</string>
     <string name="board_updated_short">Actualizada</string>
     <string name="board_ranked_short">En clasificaciones</string>
-    <string name="board_published_view">Ver</string>
     <string name="board_publishing">Publicando…</string>
     <string name="board_updating">Actualizando…</string>
     <string name="pool_tap_a_tier">Toca un nivel</string>

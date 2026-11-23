@@ -206,7 +206,6 @@
     <string name="board_published_short">Published</string>
     <string name="board_updated_short">Updated</string>
     <string name="board_ranked_short">In Rankings</string>
-    <string name="board_published_view">View</string>
     <string name="board_publishing">Publishing…</string>
     <string name="board_updating">Updating…</string>
     <string name="pool_tap_a_tier">Tap a tier</string>

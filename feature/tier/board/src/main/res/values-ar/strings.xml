@@ -253,7 +253,6 @@
     <string name="board_published_short">تم النشر</string>
     <string name="board_updated_short">تم التحديث</string>
     <string name="board_ranked_short">في الترتيبات</string>
-    <string name="board_published_view">عرض</string>
     <string name="board_publishing">جارٍ النشر…</string>
     <string name="board_updating">جارٍ التحديث…</string>
     <string name="pool_tap_a_tier">اضغط على مستوى</string>

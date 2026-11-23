@@ -23,7 +23,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** One Publication row: the bar's button before, then the status with Update, View and Take it down (Danylo, 16.11.2026). */
+/** One Publication row: the bar's button before, then the status with Update, Share, Open in Community and Take it down (Danylo, 16.11.2026; 23.11). */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = RobolectricDeviceQualifiers.Pixel7)
@@ -35,6 +35,7 @@ class SettingsPublishTest {
     private val published = mutableListOf<Publishing>()
     private val setPublic = mutableListOf<Boolean>()
     private var viewed = 0
+    private var shared = 0
 
     @Test
     fun ownUnpublished_theButtonPublishesAtOnce() {
@@ -65,20 +66,29 @@ class SettingsPublishTest {
     }
 
     @Test
-    fun published_viewOpensItAsOthersSeeIt() {
+    fun published_opensInCommunity_underThatName() {
         show(previewTierList.copy(publishedId = "p"))
-        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_VIEW_PUBLISHED).performClick()
+        composeRule.onNodeWithText("View").assertDoesNotExist()
+        composeRule.onNodeWithText("Open in Community").performClick()
         assertEquals(1, viewed)
     }
 
     @Test
-    fun beingTakenDown_offersNoView() {
-        show(previewTierList.copy(publishedId = "p"), publicPending = false)
-        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_VIEW_PUBLISHED).assertDoesNotExist()
+    fun published_sharesItsLink_asTheBarDoes() {
+        show(previewTierList.copy(publishedId = "p"))
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_SHARE_LINK).performClick()
+        assertEquals(1, shared)
     }
 
     @Test
-    fun aRanking_viewOpensTheListItAnswers() {
+    fun beingTakenDown_offersNeitherOpenNorShare() {
+        show(previewTierList.copy(publishedId = "p"), publicPending = false)
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_OPEN_IN_COMMUNITY).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_SHARE_LINK).assertDoesNotExist()
+    }
+
+    @Test
+    fun aRanking_opensTheListItAnswers_fromItsOwnRow_once() {
         var original = 0
         composeRule.setContent {
             TierYourLifeTheme {
@@ -93,7 +103,8 @@ class SettingsPublishTest {
                 )
             }
         }
-        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_VIEW_PUBLISHED).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_OPEN_IN_COMMUNITY).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.OPEN_ORIGINAL_ROW).performClick()
         assertEquals(1, original)
         assertEquals(0, viewed)
     }
@@ -130,6 +141,7 @@ class SettingsPublishTest {
                     onSetPublic = { setPublic += it },
                     onPublish = { published += it },
                     onSeeInCommunity = { viewed++ },
+                    onShareLink = { shared++ },
                 )
                 }
             }

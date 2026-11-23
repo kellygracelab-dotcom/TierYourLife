@@ -381,6 +381,7 @@ private fun TierScreenBody(
                 actions.onAddClick?.invoke()
             },
             onShare = { share(list) },
+            onShareLink = list.publishedId?.takeIf { actions.onPublish != null }?.let { { shareLink(list) } },
             onReturnAllToPool = actions.onReturnAllToPool,
             onSeeInCommunity = actions.onSeeInCommunity?.let { open -> list.publishedId?.let { id -> { open(id) } } },
             onOpenOriginal = actions.onOpenOriginal,
@@ -415,7 +416,8 @@ private fun TierScreenBody(
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val underReviewMessage = stringResource(ThemeR.string.snack_published_under_review)
-    val viewLabel = stringResource(R.string.board_published_view)
+    // What the action after an update or a ranking says: where it goes, not "View" of the board already in sight.
+    val openLabel by rememberUpdatedState(stringResource(if (list.rankingOf != null) R.string.list_settings_original else R.string.list_live_open))
     // What others see: the list in Community, or the Rankings of the list this one answers.
     val viewPublished by rememberUpdatedState(
         if (list.rankingOf != null) actions.onOpenOriginal else actions.onSeeInCommunity?.let { open -> list.publishedId?.let { id -> { open(id) } } },
@@ -430,7 +432,7 @@ private fun TierScreenBody(
             if (message is UserMessage.Published) {
                 // The new id may reach the board a frame after the message: the tap reads it, not this.
                 val canView = viewPublished != null || actions.onSeeInCommunity != null
-                snackbar.show(message.text(resources), viewLabel.takeIf { canView }) {
+                snackbar.show(message.text(resources), openLabel.takeIf { canView }) {
                     if (it == SnackbarResult.ActionPerformed) viewPublished?.invoke()
                 }
                 return@collect
