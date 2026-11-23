@@ -94,7 +94,8 @@ private fun ShareImageSheet(list: TierList, ownName: String?, onDone: () -> Unit
     LaunchedEffect(list, names, words) {
         val key = PictureKey(list, names, words.byLine, words.footer)
         SharedPictures.get(key)?.let { kept ->
-            state.ready = kept
+            state.preview = kept.picture
+            state.ready = kept.uri
             return@LaunchedEffect
         }
         val covers = BoardPicture.drawnItems(list).filter { it.imageUrl != null }
@@ -122,7 +123,7 @@ private fun ShareImageSheet(list: TierList, ownName: String?, onDone: () -> Unit
         if (uri == null) {
             state.failed = true
         } else {
-            SharedPictures.keep(key, uri)
+            SharedPictures.keep(key, KeptPicture(uri, finished))
             state.ready = uri
         }
     }

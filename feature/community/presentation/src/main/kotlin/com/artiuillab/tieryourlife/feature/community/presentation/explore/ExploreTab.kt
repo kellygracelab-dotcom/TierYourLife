@@ -188,10 +188,10 @@ internal fun HomeFeedGrid(
                 item(key = "chips", span = { GridItemSpan(maxLineSpan) }) {
                     HomeChips(chip, onChip, Modifier.padding(top = if (layout == HomeLayout.CompactHeight) 0.dp else 2.dp))
                 }
-                if (chip == HomeChip.Popular && pane.phase == FeedPhase.Ready) freshItems(explore.fresh, layout, feed.cards)
+                if (chip == HomeChip.Popular && pane.phase == FeedPhase.Ready) freshItems(explore.fresh, feed.cards)
                 when (chip) {
-                    HomeChip.Popular, HomeChip.New -> feedItems(pane, layout, skeletonAlpha, feed.cards, feed.calls.onRetry, reasonFor = { null })
-                    HomeChip.Following -> followingItems(following, layout, skeletonAlpha, followingActions, feed.cards, feed.calls.onRetry)
+                    HomeChip.Popular, HomeChip.New -> feedItems(pane, skeletonAlpha, feed.cards, feed.calls.onRetry, reasonFor = { null })
+                    HomeChip.Following -> followingItems(following, skeletonAlpha, followingActions, feed.cards, feed.calls.onRetry)
                 }
             }
             if (picking) {
@@ -202,14 +202,13 @@ internal fun HomeFeedGrid(
 }
 
 /** People's fresh lists, first in Popular and in its own grid, each with a New badge. */
-private fun LazyGridScope.freshItems(lists: List<PublishedListSummary>, layout: HomeLayout, cards: CardActions) {
+private fun LazyGridScope.freshItems(lists: List<PublishedListSummary>, cards: CardActions) {
     lists.forEach { summary ->
         item(key = "fresh-${summary.id}", contentType = FeedContent.Card) {
             FeedCard(
                 summary = summary,
                 onClick = { cards.onOpen(summary) },
                 onLongClick = { cards.onLongPress(summary) },
-                coverHeight = layout.coverHeight,
                 badge = stringResource(R.string.feed_badge_new),
             )
         }
@@ -245,7 +244,6 @@ private fun feedSpacing(layout: HomeLayout) = if (layout == HomeLayout.Wide) 16.
 /** The feed part of a grid: skeletons, cards (or the note where one was hidden), or the block that says why there are none. */
 internal fun LazyGridScope.feedItems(
     pane: FeedPane,
-    layout: HomeLayout,
     skeletonAlpha: () -> Float,
     cards: CardActions,
     onRetry: () -> Unit,
@@ -253,7 +251,7 @@ internal fun LazyGridScope.feedItems(
 ) {
     when (pane.phase) {
         FeedPhase.Loading -> items(count = SKELETONS, key = { "skeleton-$it" }, contentType = { FeedContent.Skeleton }) {
-            SkeletonCard(skeletonAlpha, coverHeight = layout.coverHeight)
+            SkeletonCard(skeletonAlpha)
         }
 
         FeedPhase.Failed -> item(key = "failed", span = { GridItemSpan(maxLineSpan) }) {
@@ -272,7 +270,6 @@ internal fun LazyGridScope.feedItems(
                             summary = summary,
                             onClick = { cards.onOpen(summary) },
                             onLongClick = { cards.onLongPress(summary) },
-                            coverHeight = layout.coverHeight,
                             reason = reasonFor(summary),
                         )
                     }

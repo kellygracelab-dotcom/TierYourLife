@@ -1,17 +1,23 @@
 package com.artiuillab.tieryourlife.feature.tier.board.share
 
 import android.content.Context
+import android.graphics.Bitmap
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeDown
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.intercept.Interceptor
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -134,9 +140,9 @@ class SharedPictureTest {
     @Test
     fun theSamePicture_isKeptUntilTheBoardChanges() {
         val uri = "content://test/board.png".toUri()
-        SharedPictures.keep(PictureKey(games, false, "by", "foot"), uri)
+        SharedPictures.keep(PictureKey(games, false, "by", "foot"), KeptPicture(uri, Bitmap.createBitmap(4, 5, Bitmap.Config.ARGB_8888)))
 
-        assertEquals(uri, SharedPictures.get(PictureKey(games, false, "by", "foot")))
+        assertEquals(uri, SharedPictures.get(PictureKey(games, false, "by", "foot"))?.uri)
         assertNull(SharedPictures.get(PictureKey(games.copy(title = "Changed"), false, "by", "foot")))
         SharedPictures.forget()
     }
@@ -155,6 +161,45 @@ class SharedPictureTest {
         composeRule.onNodeWithTag(ShareTestTags.SHARE_IMAGE).assertIsNotEnabled()
         composeRule.onNodeWithTag(ShareTestTags.CANCEL).performClick()
         composeRule.waitUntil(SHEET_GONE_MS) { composeRule.onAllNodes(hasTestTag(ShareTestTags.SHEET)).fetchSemanticsNodes().isEmpty() }
+        SingletonImageLoader.reset()
+    }
+
+    @Test
+    fun closedAndOpenedAgain_thePictureIsThereEachTime() {
+        lateinit var share: (TierList) -> Unit
+        composeRule.setContent { TierYourLifeTheme { share = rememberShareBoard("Danylo") } }
+
+        repeat(3) {
+            composeRule.runOnIdle { share(series) }
+            composeRule.waitUntil(SHEET_GONE_MS) { composeRule.onAllNodes(hasTestTag(ShareTestTags.PREVIEW)).fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onNodeWithTag(ShareTestTags.SHEET).performTouchInput { swipeDown() }
+            composeRule.waitUntil(SHEET_GONE_MS) { composeRule.onAllNodes(hasTestTag(ShareTestTags.SHEET)).fetchSemanticsNodes().isEmpty() }
+        }
+    }
+
+    @Test
+    fun aPictureAlreadyMade_opensShownAndReadyToSend_withoutDrawingAgain() {
+        // Covers that never come: only the kept picture can fill the sheet.
+        SingletonImageLoader.setUnsafe(ImageLoader.Builder(context).components { add(Interceptor { awaitCancellation() }) }.build())
+        lateinit var share: (TierList) -> Unit
+        composeRule.setContent {
+            TierYourLifeTheme {
+                val names = LocalBoardLayoutMemory.current.namesOnCards
+                val words = pictureWords(resources, games, "Danylo")
+                SharedPictures.keep(
+                    PictureKey(games, names, words.byLine, words.footer),
+                    KeptPicture("content://test/board.png".toUri(), Bitmap.createBitmap(BoardPicture.WIDTH, BoardPicture.HEIGHT, Bitmap.Config.ARGB_8888)),
+                )
+                share = rememberShareBoard("Danylo")
+            }
+        }
+
+        composeRule.runOnIdle { share(games) }
+
+        composeRule.onNodeWithTag(ShareTestTags.PREVIEW).assertExists()
+        composeRule.onNodeWithTag(ShareTestTags.SHARE_IMAGE).assertIsEnabled()
+        composeRule.onAllNodes(hasTestTag(ShareTestTags.PROGRESS)).assertCountEquals(0)
+        SharedPictures.forget()
         SingletonImageLoader.reset()
     }
 

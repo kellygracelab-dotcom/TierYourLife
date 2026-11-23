@@ -315,7 +315,6 @@ private fun CompactBar(head: PageHead, onBack: () -> Unit) {
  */
 internal fun LazyGridScope.listsBlock(
     feed: FeedPane,
-    layout: HomeLayout,
     alpha: () -> Float,
     cards: CardActions,
     onRetry: () -> Unit,
@@ -325,7 +324,7 @@ internal fun LazyGridScope.listsBlock(
     if (feed.phase == FeedPhase.Ready && feed.lists.isEmpty()) {
         item(key = "empty", span = { GridItemSpan(maxLineSpan) }) { SectionEmpty() }
     } else {
-        feedItems(feed, layout, alpha, cards, onRetry, reasonFor = { null })
+        feedItems(feed, alpha, cards, onRetry, reasonFor = { null })
     }
 }
 
