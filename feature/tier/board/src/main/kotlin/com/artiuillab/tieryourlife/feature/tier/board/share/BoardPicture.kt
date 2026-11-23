@@ -154,13 +154,12 @@ object BoardPicture {
         }
         val rows = tiers.map<Tier, Row> { Row.Thin(it) }.toMutableList()
         var budget = COVER_BUDGET
-        for ((index, tier) in tiers.withIndex()) {
-            if (budget == 0 || tier.items.isEmpty()) continue
-            val cells = cellsPerLine(BIG_W, BIG_GAP)
+        val cells = cellsPerLine(BIG_W, BIG_GAP)
+        for ((index, tier) in tiers.withIndex().filter { it.value.items.isNotEmpty() }) {
             val shown = if (tier.items.size <= minOf(cells, budget)) tier.items.size else minOf(cells - 1, budget)
             val candidate = Row.Covers(tier, tier.items.take(shown), more = tier.items.size - shown, small = false)
             val tried = rows.toMutableList().also { it[index] = candidate }
-            if (heightOf(tried) > room) break
+            if (budget == 0 || heightOf(tried) > room) break
             rows[index] = candidate
             budget -= shown
         }

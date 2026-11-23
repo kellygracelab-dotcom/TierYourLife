@@ -69,10 +69,12 @@
     <string name="share_nothing_yet">rien pour l’instant</string>
     <plurals name="share_cards_ranked">
         <item quantity="one">%d carte classée</item>
+        <item quantity="many">%d cartes classées</item>
         <item quantity="other">%d cartes classées</item>
     </plurals>
     <plurals name="share_see_all">
         <item quantity="one">Ouvrez la liste pour voir les %d</item>
+        <item quantity="many">Ouvrez la liste pour voir les %d</item>
         <item quantity="other">Ouvrez la liste pour voir les %d</item>
     </plurals>
     <string name="share_hook_tier">Mon rang %1$s : %2$s. Et le tien ?</string>
