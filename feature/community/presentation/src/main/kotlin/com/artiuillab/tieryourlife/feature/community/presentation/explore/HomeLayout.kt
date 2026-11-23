@@ -23,12 +23,12 @@ import kotlin.math.roundToInt
  * the device (§14): a cover, a short window, a phone held upright, and the two
  * widths that bring the rail.
  */
-internal enum class HomeLayout(val feedColumns: Int, val coverHeight: Dp) {
-    Cover(feedColumns = 1, coverHeight = 64.dp),
-    CompactHeight(feedColumns = 4, coverHeight = CoverHeights.Landscape),
-    Portrait(feedColumns = 2, coverHeight = CoverHeights.Phone),
-    Medium(feedColumns = 3, coverHeight = CoverHeights.Phone),
-    Wide(feedColumns = 4, coverHeight = CoverHeights.Tablet),
+internal enum class HomeLayout(val feedColumns: Int) {
+    Cover(feedColumns = 1),
+    CompactHeight(feedColumns = 4),
+    Portrait(feedColumns = 2),
+    Medium(feedColumns = 3),
+    Wide(feedColumns = 4),
 }
 
 /** Below this height only one bar may stand above the content, and it scrolls away. */

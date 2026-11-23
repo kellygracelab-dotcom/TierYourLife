@@ -71,8 +71,11 @@ class TopicPickerViewModel @Inject constructor(
                 newName != null -> TopicChoice.New(newName)
                 else -> TopicChoice.None
             }
-            _state.update { it.copy(title = list.title, chosen = chosen) }
-            suggestFor(list.title)
+            _state.update { it.copy(title = list.title, section = list.category, loaded = true, chosen = chosen) }
+            list.category?.let { section ->
+                search(_state.value.query)
+                suggestFor(list.title, section)
+            }
             if (topicId != null) settle(list, mine.await().getOrNull())
         }
         viewModelScope.launch {
@@ -80,7 +83,6 @@ class TopicPickerViewModel @Inject constructor(
                 .onFailure { Timber.w(it, "Reading this person's topics failed") }
                 .onSuccess { known -> _state.update { it.copy(mine = known) } }
         }
-        search("")
     }
 
     /**
@@ -104,9 +106,9 @@ class TopicPickerViewModel @Inject constructor(
     }
 
     /** The one an existing topic would be looked up by, and only when the title plainly contains it. */
-    private suspend fun suggestFor(title: String) {
+    private suspend fun suggestFor(title: String, section: String) {
         val word = topicLookupWord(title) ?: return
-        val match = community.topics(query = word)
+        val match = community.topics(query = word, section = section)
             .onFailure { Timber.i(it, "Looking for a topic the title names failed") }
             .getOrDefault(emptyList())
             .firstOrNull { title.contains(it.name, ignoreCase = true) }
@@ -119,12 +121,14 @@ class TopicPickerViewModel @Inject constructor(
         search(typed, settle = true)
     }
 
+    /** Only ever the board's section: a list about films is never filed under a game's topic. */
     private fun search(query: String, settle: Boolean = false) {
+        val section = _state.value.section ?: return
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             if (settle) delay(SEARCH_DELAY_MILLIS)
             _state.update { it.copy(searching = true) }
-            val found = community.topics(query = query.takeIf { it.isNotBlank() })
+            val found = community.topics(query = query.takeIf { it.isNotBlank() }, section = section)
                 .onFailure { Timber.w(it, "Searching topics failed") }
                 .getOrDefault(emptyList())
             _state.update { it.copy(results = found, searching = false) }
@@ -139,14 +143,38 @@ class TopicPickerViewModel @Inject constructor(
         _state.update { it.copy(chosen = TopicChoice.None) }
     }
 
-    /** A name the server already knows is that topic, not a twin of it. */
-    fun createNew() {
+    /** Opens the name field in place, starting from whatever was being searched for. */
+    fun startProposing() {
+        _state.update { it.copy(proposal = it.query.trim()) }
+    }
+
+    fun onProposalChange(typed: String) {
+        _state.update { it.copy(proposal = typed) }
+    }
+
+    fun stopProposing() {
+        _state.update { it.copy(proposal = null) }
+    }
+
+    /**
+     * A name the section already has is that topic, not a twin of it: the
+     * server is asked, not just what happens to be on screen. Otherwise the
+     * name waits for a moderator, three at most.
+     */
+    fun propose() {
         val shown = _state.value
-        val name = cleanTopicName(shown.query) ?: return
-        val existing = (shown.results + shown.mine).firstOrNull { it.name.equals(name, ignoreCase = true) }
-        when {
-            existing != null -> choose(existing)
-            shown.canCreate -> _state.update { it.copy(chosen = TopicChoice.New(name)) }
+        val name = cleanTopicName(shown.proposal.orEmpty()) ?: return
+        val section = shown.section ?: return
+        viewModelScope.launch {
+            val asked = community.topics(query = name, section = section)
+                .onFailure { Timber.i(it, "Checking a proposed topic's name failed") }
+                .getOrDefault(emptyList())
+            val now = _state.value
+            val existing = (asked + now.results + now.mineHere).firstOrNull { it.name.equals(name, ignoreCase = true) }
+            when {
+                existing != null -> _state.update { it.copy(chosen = TopicChoice.Known(existing), proposal = null) }
+                now.canCreate -> _state.update { it.copy(chosen = TopicChoice.New(name), proposal = null) }
+            }
         }
     }
 

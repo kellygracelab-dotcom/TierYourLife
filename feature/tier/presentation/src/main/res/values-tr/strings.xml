@@ -171,7 +171,6 @@
     <string name="topic_picker_hint">Konu ara veya adlandır</string>
     <string name="topic_picker_none">Konu yok</string>
     <string name="topic_picker_none_sub">Liste kendi bölümünde tek başına durur.</string>
-    <string name="topic_picker_create">“%1$s” konusunu oluştur</string>
     <string name="topic_picker_create_note">Bir moderatörü bekler. O zamana kadar liste bu etiketle Diğer bölümünde durur.</string>
     <plurals name="topic_picker_pending_count">
         <item quantity="one">%2$d konudan %1$d tanesi bekliyor.</item>
@@ -183,7 +182,8 @@
     <string name="topic_picker_rejected">Reddedildi</string>
     <string name="topic_picker_merged">Başka bir konuyla birleştirildi</string>
     <string name="topic_picker_suggestion">“%1$s” konusuna benziyor</string>
-    <string name="topic_picker_new_waits">%1$s · onay bekleyecek</string>
+    <string name="topic_picker_choose_section">Önce bir bölüm seçin</string>
+    <string name="topic_picker_marked_new">%1$s · %2$s</string>
     <string name="cover_picker_status_automatic">Hiçbir şey seçilmedi: listenin kendi görsellerinden en fazla altı</string>
     <string name="cover_picker_status_one">Tek görsel, kapağın tamamı</string>
     <plurals name="cover_picker_status_collage">

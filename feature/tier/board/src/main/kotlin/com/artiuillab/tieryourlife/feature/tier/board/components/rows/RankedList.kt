@@ -73,7 +73,7 @@ fun RankedList(
         val headerText = if (entries.isEmpty()) {
             stringResource(R.string.tier_detail_ranked_header_empty)
         } else {
-            pluralStringResource(R.plurals.tier_detail_ranked_header, entries.size, entries.size)
+            stringResource(R.string.tier_detail_ranked_header)
         }
         Text(
             text = headerText,

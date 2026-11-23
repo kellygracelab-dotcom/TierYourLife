@@ -117,11 +117,7 @@
         <item quantity="many">%d tarjetas por colocar</item>
         <item quantity="other">%d tarjetas por colocar</item>
     </plurals>
-    <plurals name="tier_detail_ranked_header">
-        <item quantity="one">%1$d colocada · de mejor a peor</item>
-        <item quantity="many">%1$d colocadas · de mejor a peor</item>
-        <item quantity="other">%1$d colocadas · de mejor a peor</item>
-    </plurals>
+    <string name="tier_detail_ranked_header">De mejor a peor</string>
     <string name="tier_detail_ranked_header_empty">Nada colocado todavía</string>
     <plurals name="tier_detail_ranked_pool_collapsed_description">
         <item quantity="one">%1$d tarjeta por colocar. Expandir.</item>

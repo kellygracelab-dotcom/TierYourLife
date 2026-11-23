@@ -189,7 +189,6 @@
     <string name="topic_picker_hint">Знайти або назвати тему</string>
     <string name="topic_picker_none">Без теми</string>
     <string name="topic_picker_none_sub">Список лежить у своєму розділі сам по собі.</string>
-    <string name="topic_picker_create">Створити тему «%1$s»</string>
     <string name="topic_picker_create_note">Чекатиме на модератора. До того список лежить у розділі «Інше» з цим ярликом.</string>
     <plurals name="topic_picker_pending_count">
         <item quantity="one">Чекає %1$d із %2$d.</item>
@@ -203,7 +202,8 @@
     <string name="topic_picker_rejected">Відхилена</string>
     <string name="topic_picker_merged">Злита з іншою темою</string>
     <string name="topic_picker_suggestion">Схоже на «%1$s»</string>
-    <string name="topic_picker_new_waits">%1$s · чекатиме на схвалення</string>
+    <string name="topic_picker_choose_section">Спершу виберіть розділ</string>
+    <string name="topic_picker_marked_new">%1$s · %2$s</string>
     <string name="cover_picker_status_automatic">Нічого не вибрано: до шести зображень самого списку</string>
     <string name="cover_picker_status_one">Одне зображення, вся обкладинка</string>
     <plurals name="cover_picker_status_collage">
