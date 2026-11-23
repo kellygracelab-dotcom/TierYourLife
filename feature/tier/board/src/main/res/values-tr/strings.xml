@@ -66,6 +66,17 @@
         <item quantity="other">%d kart daha henüz yerleştirilmedi</item>
     </plurals>
     <string name="share_failed">Resim paylaşılamadı</string>
+    <string name="share_hook_tier">%1$s seviyem: %2$s. Seninki ne?</string>
+    <string name="share_hook_top">En iyilerim: %1$s. Seninkiler ne?</string>
+    <string name="share_link">Bağlantıyı paylaş</string>
+    <string name="share_link_copied">Bağlantı kopyalandı</string>
+    <string name="list_live_title">Listen yayında</string>
+    <string name="list_live_body">Bağlantıya sahip herkes görebilir. Ayrıca Topluluk → %1$s içinde.</string>
+    <string name="list_live_copy">Bağlantıyı kopyala</string>
+    <string name="share_button">Paylaş</string>
+    <string name="list_live_image">Görsel olarak</string>
+    <string name="list_live_open">Toplulukta aç</string>
+    <string name="list_live_done">Tamam</string>
     <string name="tier_detail_add">Ekle</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d kart</item>

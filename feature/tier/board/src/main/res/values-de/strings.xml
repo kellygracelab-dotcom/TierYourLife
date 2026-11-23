@@ -66,6 +66,17 @@
         <item quantity="other">%d weitere Karten noch nicht eingeordnet</item>
     </plurals>
     <string name="share_failed">Das Bild konnte nicht geteilt werden</string>
+    <string name="share_hook_tier">Meine %1$s-Stufe: %2$s. Und deine?</string>
+    <string name="share_hook_top">Meine Favoriten: %1$s. Und deine?</string>
+    <string name="share_link">Link teilen</string>
+    <string name="share_link_copied">Link kopiert</string>
+    <string name="list_live_title">Deine Liste ist online</string>
+    <string name="list_live_body">Jeder mit dem Link kann sie sehen. Sie ist auch in der Community → %1$s.</string>
+    <string name="list_live_copy">Link kopieren</string>
+    <string name="share_button">Teilen</string>
+    <string name="list_live_image">Als Bild</string>
+    <string name="list_live_open">In der Community öffnen</string>
+    <string name="list_live_done">Fertig</string>
     <string name="tier_detail_add">Hinzufügen</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d Karte</item>

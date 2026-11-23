@@ -292,8 +292,6 @@
     <string name="community_own_list_line">This is what visitors see. You change it in Your lists.</string>
     <string name="community_restore_from_trash">Restore from trash</string>
     <string name="community_get_back_as_board">Get it back in Your lists</string>
-    <string name="community_copy_link">Copy link</string>
-    <string name="community_link_copied">Link copied</string>
     <string name="community_drop_to_start_yours">Drop it to start your version · Mine begins as %1$s’s</string>
     <string name="community_drop_to_start_yours_unnamed">Drop it to start your version · Mine begins as this ranking</string>
     <string name="community_started_from_theirs">Your version starts from %1$s’s ranking</string>

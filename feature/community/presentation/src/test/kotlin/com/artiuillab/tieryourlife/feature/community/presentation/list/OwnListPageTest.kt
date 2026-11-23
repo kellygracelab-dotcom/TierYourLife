@@ -76,7 +76,7 @@ class OwnListPageTest {
         composeRule.onNodeWithTag(CommunityListTestTags.YOUR_LIST).assertExists()
         composeRule.onNodeWithText("Published").assertExists()
         composeRule.onNodeWithText("This is what visitors see. You change it in Your lists.").assertExists()
-        composeRule.onNodeWithTag(CommunityListTestTags.COPY_LINK).assertExists()
+        composeRule.onNodeWithTag(CommunityListTestTags.SHARE_LINK).assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.RESTORE_BOARD).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).assertDoesNotExist()
     }
@@ -155,7 +155,7 @@ class OwnListPageTest {
 
         composeRule.onNodeWithTag(CommunityListTestTags.RESTORE_BOARD).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).assertDoesNotExist()
-        composeRule.onNodeWithTag(CommunityListTestTags.COPY_LINK).assertExists()
+        composeRule.onNodeWithTag(CommunityListTestTags.SHARE_LINK).assertExists()
     }
 
     // A phone on its side: one short bar carries all of it.
@@ -166,7 +166,7 @@ class OwnListPageTest {
 
         composeRule.onNodeWithTag(CommunityListTestTags.YOUR_LIST).assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.BAR_AUTHOR).assertDoesNotExist()
-        composeRule.onNodeWithTag(CommunityListTestTags.COPY_LINK).assertExists()
+        composeRule.onNodeWithTag(CommunityListTestTags.SHARE_LINK).assertExists()
         composeRule.onNodeWithTag(CommunityListTestTags.GET_BACK_BOARD).assertExists()
     }
 

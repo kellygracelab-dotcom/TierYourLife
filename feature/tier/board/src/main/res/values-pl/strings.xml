@@ -72,6 +72,17 @@
         <item quantity="other">Jeszcze %d karty czeka na miejsce</item>
     </plurals>
     <string name="share_failed">Nie udało się udostępnić obrazu</string>
+    <string name="share_hook_tier">Mój poziom %1$s: %2$s. A twój?</string>
+    <string name="share_hook_top">Mój top: %1$s. A twój?</string>
+    <string name="share_link">Udostępnij link</string>
+    <string name="share_link_copied">Skopiowano link</string>
+    <string name="list_live_title">Twoja lista jest opublikowana</string>
+    <string name="list_live_body">Każdy, kto ma link, może ją zobaczyć. Jest też w Społeczności → %1$s.</string>
+    <string name="list_live_copy">Kopiuj link</string>
+    <string name="share_button">Udostępnij</string>
+    <string name="list_live_image">Jako obraz</string>
+    <string name="list_live_open">Otwórz w Społeczności</string>
+    <string name="list_live_done">Gotowe</string>
     <string name="tier_detail_add">Dodaj</string>
     <plurals name="tier_detail_collapsed_item_count">
         <item quantity="one">%1$d karta</item>
