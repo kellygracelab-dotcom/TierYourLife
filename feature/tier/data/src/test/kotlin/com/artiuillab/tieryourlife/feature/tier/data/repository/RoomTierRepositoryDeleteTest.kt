@@ -304,7 +304,7 @@ private class RecordingTierDao : TierDao {
     val items = mutableListOf<TierItemEntity>()
     private var nextItemId = 1_000L
 
-    override suspend fun setFavouritedAt(id: Long, at: Long?) = Unit
+    override suspend fun setFavouritedAt(id: Long, at: Long?, changedAt: Long) = Unit
 
     override suspend fun setCategory(id: Long, category: String?) = Unit
 

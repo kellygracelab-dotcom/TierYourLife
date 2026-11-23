@@ -41,6 +41,13 @@ interface BoardSyncDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun remember(record: BoardSyncEntity)
 
+    @Query("SELECT * FROM board_sync WHERE account = :account AND listUid = :listUid")
+    suspend fun syncRecordOf(account: String, listUid: String): BoardSyncEntity?
+
+    // Not a column the edited trigger watches: the star is not an edit.
+    @Query("UPDATE tier_lists SET favouritedAt = :at, favouriteChangedAt = :changedAt WHERE id = :id")
+    suspend fun setStar(id: Long, at: Long?, changedAt: Long?)
+
     @Query("DELETE FROM board_sync WHERE account = :account AND listUid = :listUid")
     suspend fun forget(account: String, listUid: String)
 

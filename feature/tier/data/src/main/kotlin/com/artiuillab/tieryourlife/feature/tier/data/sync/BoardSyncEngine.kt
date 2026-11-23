@@ -100,14 +100,19 @@ class BoardSyncEngine @Inject constructor(
     override suspend fun unsent(): Set<String> {
         val account = ownership.current()
         if (account.isNullOrBlank() || ownership.holding || !preferences.backUpBoards(account)) return emptySet()
-        val agreed = dao.syncRecordsOf(account).associate { it.listUid to it.fingerprint }
+        val records = dao.syncRecordsOf(account).associateBy { it.listUid }
+        val agreed = records.mapValues { it.value.fingerprint }
         val boards = dao.boardsOf(account)
         val changed = boards.mapNotNull { board ->
             val now = fingerprintOf(board)
             "${board.uid}:$now".takeIf { agreed[board.uid] != now }
         }
+        val starred = boards.mapNotNull { board ->
+            val record = records[board.uid] ?: return@mapNotNull null
+            "${board.uid}:star:${board.star.changedAt}".takeIf { board.star.isNewerThan(record.favouriteChangedAt) }
+        }
         val here = boards.mapTo(mutableSetOf()) { it.uid }
-        return (changed + agreed.keys.filterNot { it in here }.map { "$it:gone" }).toSet()
+        return (changed + starred + agreed.keys.filterNot { it in here }.map { "$it:gone" }).toSet()
     }
 
     /**
@@ -125,7 +130,7 @@ class BoardSyncEngine @Inject constructor(
         ownership.reclaim(account)
         var local = dao.boardsOf(account)
         var fingerprints = fingerprintsOf(local)
-        val remote = readIndex()
+        val (remote, stars) = readIndex()
         claimUnclaimed(account, fingerprints, remote)
         if (!preferences.coverIdsLearned(account)) {
             runSuspendCatching { learnCoverIds(account, remote, fingerprints) }
@@ -144,7 +149,8 @@ class BoardSyncEngine @Inject constructor(
         runSuspendCatching { pictures.push(account, stopped = { lock.stopAsked }) }
             .onFailure { failure -> Timber.w(failure, "Pictures did not go up") }
 
-        val (carried, refused, refusedBoard) = carryAll(steps, fingerprints, account)
+        val (carried, refusedBoards, refusedBoard) = carryAll(steps, fingerprints, account)
+        val refused = refusedBoards + if (lock.stopAsked) 0 else settleStars(account, stars)
         // A run that failed only on the connection says nothing about a board refused before.
         when {
             refusedBoard != null -> preferences.setBoardRefusal(account, refusedBoard.encoded())
@@ -363,8 +369,11 @@ class BoardSyncEngine @Inject constructor(
     private suspend fun wantedCovers(account: String): Set<String> =
         dao.coverUrlsOf(account).mapNotNullTo(mutableSetOf(), images::pictureIdOf)
 
-    private suspend fun readIndex(): Map<String, RemoteBoard> {
+    private data class Index(val boards: Map<String, RemoteBoard>, val stars: Map<String, BoardStar>)
+
+    private suspend fun readIndex(): Index {
         val found = mutableMapOf<String, RemoteBoard>()
+        val stars = mutableMapOf<String, BoardStar>()
         var after: String? = null
         do {
             val page = api.index(after)
@@ -376,10 +385,44 @@ class BoardSyncEngine @Inject constructor(
                     fingerprint = summary.fingerprint,
                     forever = summary.deleted && summary.removal == BoardRemoval.FOREVER,
                 )
+                if (!summary.deleted) stars[summary.uid] = summary.star
             }
             after = page.next
         } while (after != null)
-        return found
+        return Index(found, stars)
+    }
+
+    /**
+     * The star is in no fingerprint, so no step above carries a change of it
+     * alone, and starring is never an edit to publish. Each side takes the
+     * later change; one made here goes up with the board as agreed, which the
+     * account takes for the star alone.
+     */
+    private suspend fun settleStars(account: String, stars: Map<String, BoardStar>): Int {
+        val records = dao.syncRecordsOf(account).associateBy { it.listUid }
+        var refused = 0
+        val starred = dao.boardsOf(account).filter { it.uid in records && it.uid in stars }
+        for (board in starred) {
+            if (lock.stopAsked || signedInAs() != account) break
+            runSuspendCatching { settleStar(account, board, records.getValue(board.uid), stars.getValue(board.uid)) }.onFailure { failure ->
+                refused++
+                Timber.w(failure, "Board sync: the star on %s did not go through", board.uid)
+            }
+        }
+        return refused
+    }
+
+    private suspend fun settleStar(account: String, board: TierListEntity, record: BoardSyncEntity, there: BoardStar) {
+        val here = board.star
+        val star = laterStar(here, there)
+        if (star != here) dao.setStar(board.id, star.at, star.changedAt)
+        val known = listOfNotNull(record.favouriteChangedAt, there.changedAt).maxOrNull()
+        when {
+            // An edit since goes up with its own step next run, the star with it.
+            star.isNewerThan(known) && fingerprintOf(board) == record.fingerprint ->
+                send(account, board.uid, basedOn = record.revision, starOnly = true)
+            known != record.favouriteChangedAt -> dao.remember(record.copy(favouriteChangedAt = known))
+        }
     }
 
     private suspend fun carry(step: SyncStep, fingerprints: Map<String, String>, account: String) {
@@ -440,7 +483,7 @@ class BoardSyncEngine @Inject constructor(
         if (theirs.deleted) return
         dao.together {
             adopt(account, theirs, asCopy = true)
-            remember(account, theirs.uid, theirs.revision, theirs.fingerprint.orEmpty(), theirs.fingerprint)
+            remember(account, theirs.uid, theirs.revision, theirs.fingerprint.orEmpty(), theirs.fingerprint, theirs.favouriteChangedAt)
         }
     }
 
@@ -450,7 +493,7 @@ class BoardSyncEngine @Inject constructor(
      * fingerprint is of what goes up, not of what the run started with: an
      * edit in between, recorded under the older one, went up again next run.
      */
-    private suspend fun send(account: String, uid: String, basedOn: Int?) {
+    private suspend fun send(account: String, uid: String, basedOn: Int?, starOnly: Boolean = false) {
         val board = dao.boardByUid(uid)?.let { read ->
             settleText(read)
             dao.boardByUid(uid)
@@ -463,7 +506,7 @@ class BoardSyncEngine @Inject constructor(
 
         if (answer.isSuccessful) {
             val kept = answer.body() ?: error("The account kept $uid but named no revision")
-            remember(account, uid, kept.revision, fingerprint)
+            remember(account, uid, kept.revision, fingerprint, accountStar = board.star.changedAt)
             return sendCopies(account, kept, fingerprint, learned)
         }
         // Thrown rather than logged and returned: the run counts it as refused,
@@ -474,9 +517,13 @@ class BoardSyncEngine @Inject constructor(
         // Our own board coming back: the last write's answer never arrived.
         // Same content, so take the missed number and stop -- otherwise a
         // kill at the wrong moment leaves a copy of your own board every time.
+        // Or the same board with only the star moved on elsewhere.
         if (!theirs.deleted && theirs.fingerprint != null && theirs.fingerprint == fingerprint) {
-            return remember(account, uid, theirs.revision, fingerprint)
+            val again = request(board, tiers, items, fingerprint, basedOn = theirs.revision).coverAsLearned(learned)
+            return keepTheLaterStar(account, board, theirs, fingerprint, again)
         }
+        // Edited elsewhere since: the next run takes that first, and a star is no reason for a second board.
+        if (starOnly) return
 
         // Thrown away elsewhere meanwhile: ours was being sent because it
         // changed here, and that outweighs the delete.
@@ -484,9 +531,26 @@ class BoardSyncEngine @Inject constructor(
         val second = api.keep(uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision).coverAsLearned(learned))
         if (!second.isSuccessful) throw refused(second, refusalOf(second), board.title, tiers.size)
         second.body()?.let { kept ->
-            remember(account, uid, kept.revision, fingerprint)
+            remember(account, uid, kept.revision, fingerprint, accountStar = board.star.changedAt)
             sendCopies(account, kept, fingerprint, learned)
         }
+    }
+
+    /** [board] and [theirs] agree but for the star: each takes the later one, and a later one here goes up again. */
+    private suspend fun keepTheLaterStar(account: String, board: TierListEntity, theirs: KeptBoardDto, fingerprint: String, again: KeepBoardRequestDto) {
+        val here = board.star
+        val star = laterStar(here, theirs.star)
+        if (star != here) {
+            dao.setStar(board.id, star.at, star.changedAt)
+            return remember(account, board.uid, theirs.revision, fingerprint, accountStar = theirs.favouriteChangedAt)
+        }
+        if (!here.isNewerThan(theirs.favouriteChangedAt)) {
+            return remember(account, board.uid, theirs.revision, fingerprint, accountStar = theirs.favouriteChangedAt)
+        }
+        val answer = api.keep(board.uid, again)
+        if (!answer.isSuccessful) throw refused(answer, refusalOf(answer), board.title, again.tiers.size)
+        val kept = answer.body() ?: error("The account kept ${board.uid} but named no revision")
+        remember(account, board.uid, kept.revision, fingerprint, accountStar = here.changedAt)
     }
 
     /**
@@ -513,7 +577,7 @@ class BoardSyncEngine @Inject constructor(
         val answer = api.keep(kept.uid, request(board, tiers, items, fingerprint, basedOn = kept.revision).coverAsLearned(learned))
         if (!answer.isSuccessful) throw refused(answer, refusalOf(answer), board.title, tiers.size)
         val next = answer.body() ?: error("The account kept ${kept.uid} but named no revision")
-        remember(account, next.uid, next.revision, fingerprint)
+        remember(account, next.uid, next.revision, fingerprint, accountStar = board.star.changedAt)
         return next to fingerprint
     }
 
@@ -591,7 +655,7 @@ class BoardSyncEngine @Inject constructor(
             }
             dao.replaceContents(incoming.toEntity(existing.id, existing.uid, images::pathFor).keepingLocalFieldsOf(now), incoming.tiers(images::pathFor))
             val stored = dao.boardByUid(incoming.uid) ?: return@together
-            remember(account, incoming.uid, incoming.revision, fingerprintOf(stored), incoming.fingerprint)
+            remember(account, incoming.uid, incoming.revision, fingerprintOf(stored), incoming.fingerprint, incoming.favouriteChangedAt)
         }
     }
 
@@ -626,7 +690,7 @@ class BoardSyncEngine @Inject constructor(
             )
             if (asCopy) return@together
             val stored = dao.boardByUid(uid) ?: return@together
-            remember(account, uid, incoming.revision, fingerprintOf(stored), incoming.fingerprint)
+            remember(account, uid, incoming.revision, fingerprintOf(stored), incoming.fingerprint, incoming.favouriteChangedAt)
         }
         val taken = here ?: return
         if (taken.ownerUid == account && !taken.draft) {
@@ -657,11 +721,20 @@ class BoardSyncEngine @Inject constructor(
                 fingerprint = incoming.fingerprint.orEmpty(),
                 remoteFingerprint = incoming.fingerprint,
                 syncedAt = System.currentTimeMillis(),
+                favouriteChangedAt = incoming.favouriteChangedAt,
             ),
         )
     }
 
-    private suspend fun remember(account: String, uid: String, revision: Int, fingerprint: String, remoteFingerprint: String? = fingerprint) {
+    /** [accountStar]: when the account's star last changed, if this write or read tells; otherwise the one heard before stays. */
+    private suspend fun remember(
+        account: String,
+        uid: String,
+        revision: Int,
+        fingerprint: String,
+        remoteFingerprint: String? = fingerprint,
+        accountStar: Long? = UNHEARD,
+    ) {
         dao.remember(
             BoardSyncEntity(
                 account = account,
@@ -670,6 +743,7 @@ class BoardSyncEngine @Inject constructor(
                 fingerprint = fingerprint,
                 remoteFingerprint = remoteFingerprint,
                 syncedAt = System.currentTimeMillis(),
+                favouriteChangedAt = if (accountStar == UNHEARD) dao.syncRecordOf(account, uid)?.favouriteChangedAt else accountStar,
             ),
         )
     }
@@ -686,6 +760,7 @@ class BoardSyncEngine @Inject constructor(
     ): KeepBoardRequestDto {
         val uidByTierId = tiers.associate { it.id to it.uid }
         val coverPictureId = images.pictureIdOf(board.coverImageUrl)
+        val star = board.star
         return KeepBoardRequestDto(
             basedOn = basedOn,
             deviceName = deviceName.current(),
@@ -705,6 +780,8 @@ class BoardSyncEngine @Inject constructor(
             deletedAt = board.deletedAt,
             anonymous = true.takeIf { board.anonymous },
             play = keptPlay(board.play, json) ?: JsonNull,
+            favouritedAt = star.changedAt?.let { star.at?.let(::JsonPrimitive) ?: JsonNull },
+            favouriteChangedAt = star.changedAt,
             tiers = tiers.map { tier ->
                 KeptTierDto(
                     uid = tier.uid,
@@ -746,6 +823,9 @@ class BoardSyncEngine @Inject constructor(
         const val TOO_MANY_BOARDS = "TOO_MANY_BOARDS"
         const val COVER_READS_AT_ONCE = 4
 
+        /** For [remember]: this write tells nothing of the account's star. */
+        const val UNHEARD = Long.MIN_VALUE
+
         /** The account copies up to 40 new pictures a write; the rest come with later writes or its daily upkeep. */
         const val COPY_ROUNDS = 3
 
@@ -777,11 +857,16 @@ internal fun keptPlay(stored: String?, json: Json): JsonElement? = stored?.let {
 }
 
 /**
- * What the account never holds stays as this phone had it: the star, the topic,
- * where a copy came from, what was last published. Without this every pulled
- * change wiped them.
+ * What the account never holds stays as this phone had it: the topic, where a
+ * copy came from, what was last published. Without this every pulled change
+ * wiped them. The star the account does hold, and the later change of it wins.
  */
-internal fun TierListEntity.keepingLocalFieldsOf(here: TierListEntity) = copy(
+internal fun TierListEntity.keepingLocalFieldsOf(here: TierListEntity): TierListEntity {
+    val star = laterStar(here.star, BoardStar(favouritedAt, favouriteChangedAt))
+    return keepingLocalOnlyFieldsOf(here).copy(favouritedAt = star.at, favouriteChangedAt = star.changedAt)
+}
+
+private fun TierListEntity.keepingLocalOnlyFieldsOf(here: TierListEntity) = copy(
     publishedFingerprint = here.publishedFingerprint,
     topicId = here.topicId,
     topicName = here.topicName,
@@ -791,7 +876,6 @@ internal fun TierListEntity.keepingLocalFieldsOf(here: TierListEntity) = copy(
     rankingChoice = rankingChoice ?: here.rankingChoice,
     rankingOf = here.rankingOf,
     arrivedFrom = here.arrivedFrom,
-    favouritedAt = here.favouritedAt,
     ownerUid = here.ownerUid,
 )
 
@@ -819,6 +903,8 @@ internal fun KeptBoardDto.toEntity(id: Long, uid: String, pathFor: (String) -> S
     takenFrom = origin?.listId ?: takenFrom,
     originVersion = origin?.version?.takeIf { it >= 0 },
     rankingChoice = RankingChoice.fromWire(rankingChoice)?.wireName,
+    favouritedAt = favouritedAt,
+    favouriteChangedAt = favouriteChangedAt,
 )
 
 /** Before every kept cover was read, a null could clear one this phone never saw; left out, the account keeps it. */
