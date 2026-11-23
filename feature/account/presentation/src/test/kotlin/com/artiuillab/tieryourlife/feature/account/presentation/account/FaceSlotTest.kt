@@ -56,8 +56,8 @@ class FaceSlotTest {
         val viewModel = viewModel(facePhotos = FakeFacePhotos(), community = server)
         viewModel.face.position("content://photos/1", fromGallery = true)
         viewModel.face.confirmPosition(null)
-        viewModel.state.firstWithin { !it.makingFace && repository.photoUrls.isNotEmpty() }
-        assertTrue(viewModel.state.value.let { sameFace(it.faceInSheet, it.ownFace) })
+        // The account takes the photo a moment before the screen does: wait for the screen, not the account.
+        viewModel.state.firstWithin { !it.makingFace && repository.photoUrls.isNotEmpty() && sameFace(it.faceInSheet, it.ownFace) }
 
         viewModel.face.load()
         val reopened = viewModel.state.firstWithin { it.ownFace == kept }
