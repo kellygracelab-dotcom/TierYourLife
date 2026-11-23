@@ -49,9 +49,6 @@ data class PublishedListSummary(
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)
-
-    /** Somebody's list out without their name, rather than one of the app's own: its author reads "Anonymous". */
-    val byNobody: Boolean get() = editorial && !EditorialAuthors.isTheAppsOwn(authorUid)
 }
 
 /**

@@ -278,7 +278,6 @@ private fun handleOf(route: CommunityRoute.CommunityList) = SavedStateHandle(
         "tierCounts" to route.tierCounts,
         "authorUid" to route.authorUid,
         "authorPhotoUrl" to route.authorPhotoUrl,
-        "byNobody" to route.byNobody,
         "mine" to route.mine,
         "anonymous" to route.anonymous,
         "section" to route.section,

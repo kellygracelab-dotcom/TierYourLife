@@ -304,7 +304,6 @@ class CommunityListViewModel @Inject constructor(
             authorUid = answer.summary.authorUid,
             authorPhotoUrl = answer.summary.authorPhotoUrl,
             editorial = answer.summary.editorial,
-            byNobody = answer.summary.byNobody,
             // A tap made while this answer was on its way is newer than it.
             follow = before?.follow.takeIf { followTapped }
                 ?: answer.summary.viewerFollowsAuthor

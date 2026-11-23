@@ -486,7 +486,7 @@ class ExploreViewModelTest {
     }
 }
 
-private const val EDITORIAL_UID = "85RRieyLyUPCEqHjdYCdxVlWxHx2"
+private const val EDITORIAL_UID = "tyl-editorial"
 
 private const val ANSWERED = 3
 

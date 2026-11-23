@@ -4,20 +4,16 @@ package com.artiuillab.tieryourlife.feature.community.domain.model
  * Lists that stand without an author, the way a catalogue's templates do: no
  * name, no face, no way to a profile, nothing to follow or hide wholesale.
  *
- * Kept here by uid because the server does not say so yet. Once it does, it
- * sends [PublishedListSummary.anonymous] and an empty author uid, and both
- * already count. The site follows the same rule.
+ * The server says which: a house list comes out [PublishedListSummary.anonymous]
+ * with no author uid, and its account is [HOUSE]. Nobody else publishes without
+ * a name since 16.11, so such a list is always the app's own. The site follows
+ * the same rule. A person's lists, Danylo's included, keep their name.
  */
 object EditorialAuthors {
 
-    private val uids = setOf(
-        // The app's own account: the lists it publishes seed the feed.
-        "85RRieyLyUPCEqHjdYCdxVlWxHx2",
-    )
+    /** The account the server keeps house lists under. */
+    const val HOUSE = "tyl-editorial"
 
     fun isEditorial(authorUid: String, anonymous: Boolean = false): Boolean =
-        anonymous || authorUid.isBlank() || isTheAppsOwn(authorUid)
-
-    /** The app's own lists show no author row at all; anybody else's anonymous list says "Anonymous". */
-    fun isTheAppsOwn(authorUid: String): Boolean = authorUid in uids
+        anonymous || authorUid.isBlank() || authorUid == HOUSE
 }

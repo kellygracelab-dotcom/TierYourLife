@@ -8,8 +8,15 @@ import org.junit.Test
 class EditorialAuthorsTest {
 
     @Test
-    fun theEditorialAccount_standsWithoutAnAuthor() {
-        assertTrue(EditorialAuthors.isEditorial("85RRieyLyUPCEqHjdYCdxVlWxHx2"))
+    fun theHouseAccount_standsWithoutAnAuthor() {
+        assertTrue(EditorialAuthors.isEditorial(EditorialAuthors.HOUSE))
+    }
+
+    // A person who once published the house lists under their own account is a
+    // person again: their lists carry their name, as on the website.
+    @Test
+    fun aPersonsAccount_isNeverTheHouse() {
+        assertFalse(EditorialAuthors.isEditorial("a-person-who-once-published-them"))
     }
 
     @Test
@@ -32,7 +39,7 @@ class EditorialAuthorsTest {
 
     @Test
     fun aSummary_answersFromItsOwnFields() {
-        val editorial = summary(authorUid = "85RRieyLyUPCEqHjdYCdxVlWxHx2")
+        val editorial = summary(authorUid = EditorialAuthors.HOUSE)
         val flagged = summary(authorUid = "some-other-uid", anonymous = true)
         val ordinary = summary(authorUid = "some-other-uid")
 

@@ -50,7 +50,6 @@ class RouteFromHandleTest {
             tierCounts = "5,4,3",
             authorUid = "u-olena",
             authorPhotoUrl = "https://example.test/o.jpg",
-            byNobody = true,
             mine = true,
             anonymous = true,
             section = "film_tv",

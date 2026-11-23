@@ -156,7 +156,6 @@ private fun RankingsHeading(nobodyYet: Boolean) {
 
 @Composable
 private fun AuthorRankingRow(state: CommunityListUiState.Success, onChoose: () -> Unit) {
-    val appsOwn = state.editorial && !state.byNobody
     RankingRow(
         name = authorRowName(state),
         photoUrl = state.authorPhotoUrl,
@@ -164,14 +163,13 @@ private fun AuthorRankingRow(state: CommunityListUiState.Success, onChoose: () -
         selected = onBoard(state, ranking = null),
         onClick = onChoose,
         modifier = Modifier.testTag(CommunityListTestTags.RANKING_AUTHOR),
-        face = if (appsOwn) ({ AppMark(size = 36.dp) }) else null,
+        face = if (state.editorial) ({ AppMark(size = 36.dp) }) else null,
     )
 }
 
 /** The author's row by name: the app's own lists are the app's, never "Someone"; somebody's anonymous one stays so. */
 @Composable
 private fun authorRowName(state: CommunityListUiState.Success): String = when {
-    state.byNobody -> stringResource(R.string.community_anonymous)
     state.editorial -> stringResource(ThemeR.string.app_name_display)
     else -> shownName(state.authorName)
 }
