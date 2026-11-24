@@ -45,6 +45,11 @@ import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 private val COVER_THUMBNAIL = 56.dp
 
+/** Six pictures in 56dp are ~18dp each and read as noise: the first four, 2×2, the same that lead the grid's tile. */
+private const val ROW_PICTURES = 4
+
+internal fun TierListSummary.rowArt() = art().let { it.copy(previewImages = it.previewImages.distinct().take(ROW_PICTURES)) }
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun editedLine(arrivedFrom: String?, editedAt: Long): String {
@@ -98,7 +103,7 @@ internal fun TierListCard(
             // leading edge is where a name starts, and a column of stars there
             // would push every title across for the sake of two boards.
             // The same art as the list's tile, its automatic collage included.
-            val art = list.art()
+            val art = list.rowArt()
             if (art.coverImageUrl != null || art.previewImages.isNotEmpty()) {
                 // Own lists are known by their name; the cover is a reminder,
                 // not the whole card.
@@ -107,6 +112,7 @@ internal fun TierListCard(
                     coverFocus = art.coverFocus,
                     pictureFocus = art.pictureFocus,
                     previewImages = art.previewImages,
+                    boardId = list.id.toString(),
                     tierColors = emptyList(),
                     modifier = Modifier
                         .size(COVER_THUMBNAIL)
