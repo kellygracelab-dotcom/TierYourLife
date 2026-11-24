@@ -150,7 +150,7 @@ fun PoolSheet(
     val phoneLines = phoneLines(docked, pullsIntoLines, oneByOneOn = oneByOnePanel != null && memory.oneCardAtATime)
     val lines = sheetLines(docked, phoneLines, memory)
     val walks = expanded && (docked || phoneLines)
-    val atMostHalf = halfWindowWhen(phoneLines && lines > 1 && expanded)
+    val halfWindow = halfWindowHeight()
     val description = pluralStringResource(
         if (expanded) {
             R.plurals.tier_detail_ranked_pool_expanded_description
@@ -173,7 +173,7 @@ fun PoolSheet(
             .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
             .onGloballyPositioned { coordinates -> dragController.registerRowBounds(pool.id, coordinates.boundsInRoot()) }
             .testTag(TierDetailTestTags.POOL_PANEL)
-            .then(atMostHalf)
+            .atMostWhen(phoneLines && lines > 1 && expanded, halfWindow)
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .then(
                 if (isHovered) {
@@ -263,13 +263,11 @@ private fun sheetLines(docked: Boolean, phoneLines: Boolean, memory: BoardLayout
     return if (docked || phoneLines && memory.poolDockRowsChosen) chosen else 1
 }
 
-/** No taller than half the window while [holdingLines]: it holds lines of cards on a phone, so the rows above stay in sight. */
 @Composable
-private fun halfWindowWhen(holdingLines: Boolean): Modifier {
-    if (!holdingLines) return Modifier
-    val half = with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.height / 2).toDp() }
-    return Modifier.heightIn(max = half)
-}
+private fun halfWindowHeight(): Dp = with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.height / 2).toDp() }
+
+/** No taller than [max] while [holdingLines]: lines of cards on a phone take half the window at most, so the rows above stay in sight. */
+private fun Modifier.atMostWhen(holdingLines: Boolean, max: Dp): Modifier = if (holdingLines) heightIn(max = max) else this
 
 /** On a phone's open tray the one-at-a-time panel stands in for the cards. */
 private fun panelInTray(docked: Boolean, offered: Boolean, oneCardAtATime: Boolean, expanded: Boolean, count: Int): Boolean =
