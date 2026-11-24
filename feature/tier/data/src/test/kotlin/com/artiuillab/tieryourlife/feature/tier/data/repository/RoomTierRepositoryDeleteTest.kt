@@ -380,6 +380,7 @@ private class RecordingTierDao : TierDao {
     override suspend fun getTierListById(id: Long): TierListEntity? = lists[id]?.takeIf { it.deletedAt == null }
     override suspend fun getAllTierLists(owner: String?): List<TierListEntity> = emptyList()
     override suspend fun getAllTierListsWithTiers(owner: String?): List<TierListWithTiers> = emptyList()
+    override suspend fun getCopiesWithTiers(publishedId: String, owner: String?): List<TierListWithTiers> = emptyList()
     override suspend fun getTierListWithTiers(id: Long, owner: String?): TierListWithTiers? = null
     override suspend fun getPublishedTierListsWithTiers(owner: String?): List<TierListWithTiers> = emptyList()
     override suspend fun getTierListWithTiersPublishedAs(publishedId: String, owner: String?): TierListWithTiers? = null

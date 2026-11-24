@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Dispatcher
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -24,6 +25,12 @@ annotation class ProxyOkHttp
 
 private const val JSON_MEDIA_TYPE = "application/json"
 
+/**
+ * OkHttp's five at a time to one host was the whole app: every call is to
+ * the proxy, and a list opened behind sync and pictures waited its turn.
+ */
+internal const val PROXY_CALLS_AT_ONCE = 16
+
 @Module
 @InstallIn(SingletonComponent::class)
 object ProxyModule {
@@ -37,6 +44,7 @@ object ProxyModule {
         erasedAccounts: ErasedAccounts,
         headers: Optional<ProxyHeaders> = Optional.empty(),
     ): OkHttpClient = OkHttpClient.Builder()
+        .dispatcher(Dispatcher().apply { maxRequestsPerHost = PROXY_CALLS_AT_ONCE })
         .addInterceptor(ProxyHeadersInterceptor(headers.orElse(null)))
         .addInterceptor(appCheckInterceptor)
         .addInterceptor(idTokenInterceptor)

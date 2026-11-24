@@ -83,6 +83,20 @@ class RankingOriginPersistenceTest {
         assertTrue(updated.tiers.flatMap { it.items }.all { it.sourceIndex == null })
     }
 
+    @Test fun copiesOfAListAreOnlyThisAccountsBoardsTakenFromIt() = runBlocking {
+        val first = repository.createRankingCopy(source(), "original", 123, RankingChoice.Private)
+        repository.createRankingCopy(source(), "another", 5, RankingChoice.Private)
+        repository.createTierList("Own", listOf("S"))
+        owner = "bob"
+        repository.createRankingCopy(source(), "original", 123, RankingChoice.Private)
+        owner = "alice"
+
+        val copies = repository.getCopiesOf("original")
+
+        assertEquals(listOf(first), copies.map { it.id })
+        assertEquals(repository.getAllTierLists().filter { it.takenFrom == "original" }, copies)
+    }
+
     @Test fun aFailedCopyRollsBackTheBoardAndAllEarlierCards() = runBlocking {
         database.openHelper.writableDatabase.execSQL("CREATE TRIGGER fail_copy BEFORE INSERT ON tier_items WHEN NEW.title = 'Abort' BEGIN SELECT RAISE(ABORT, 'injected'); END")
         val source = source().let { it.copy(tiers = it.tiers + Tier(2, "A", "#333333", "#CCCCCC", listOf(TierItem(2, "Abort", null)))) }

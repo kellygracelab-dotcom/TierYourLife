@@ -92,6 +92,11 @@ class RoomTierRepository internal constructor(
         return withContext(Dispatchers.Default) { rows.map { it.toDomain() } }
     }
 
+    override suspend fun getCopiesOf(publishedId: String): List<TierList> {
+        val rows = dao.getCopiesWithTiers(publishedId, owner())
+        return withContext(Dispatchers.Default) { rows.map { it.toDomain() } }
+    }
+
     override suspend fun getTierListSummaries(): List<TierListSummary> {
         val rows = dao.getSummaryRows(owner(), TierListSummary.PREVIEW_IMAGES)
         return withContext(Dispatchers.Default) { rows.toSummaries() }

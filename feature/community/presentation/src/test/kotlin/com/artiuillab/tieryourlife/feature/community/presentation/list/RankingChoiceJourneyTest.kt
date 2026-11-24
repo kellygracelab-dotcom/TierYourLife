@@ -418,6 +418,7 @@ private class ChoiceBoards : TierRepository by RecordingTierRepository() {
     override suspend fun getTierListById(id: Long) = saved?.takeIf { it.id == id }
     override suspend fun getTierListByUid(uid: String) = saved?.takeIf { it.uid == uid }
     override suspend fun getAllTierLists() = listOfNotNull(saved)
+    override suspend fun getCopiesOf(publishedId: String) = getAllTierLists().filter { it.takenFrom == publishedId }
     override suspend fun setRankingChoice(id: Long, choice: RankingChoice) {
         saved = saved?.copy(rankingChoice = choice)
     }
