@@ -3,6 +3,7 @@ package com.artiuillab.tieryourlife.feature.tier.board.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,14 +12,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierColorOrNull
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CoverFocus
+import kotlinx.coroutines.launch
+import java.io.File
 
 private const val MOSAIC_COLUMNS = 3
 
@@ -38,14 +46,22 @@ fun mosaicRows(count: Int): List<Int> {
 object ListArtTestTags {
     const val COLLAGE = "list_art_collage"
     const val MOSAIC = "list_art_mosaic"
+    const val BOARD_COLLAGE = "list_art_board_collage"
 }
+
+/**
+ * Where your boards' collages are kept and drawn. Unset, the app's own store;
+ * previews and screenshots have none and show the mosaic.
+ */
+val LocalBoardCollages = staticCompositionLocalOf<BoardCollages?> { null }
 
 /**
  * A published list is shown by whichever of three things it actually has. The
  * mosaic is not a placeholder: it is the author's own cards, which is the most
  * honest picture of what a reader is about to get. [collageUrl] is that
  * mosaic drawn once as one picture, one load instead of six; on any failure
- * the mosaic shows as before.
+ * the mosaic shows as before. A board of yours ([boardId]) has no published
+ * collage: the phone glues its own once and keeps it ([BoardCollages]).
  */
 @Composable
 fun ListArt(
@@ -57,6 +73,7 @@ fun ListArt(
     coverFocus: CoverFocus? = null,
     pictureFocus: Map<String, CoverFocus> = emptyMap(),
     collageUrl: String? = null,
+    boardId: String? = null,
 ) {
     val tagged = if (testTag == null) modifier else modifier.testTag(testTag)
     var collageFailed by remember(collageUrl) { mutableStateOf(false) }
@@ -75,6 +92,7 @@ fun ListArt(
                 onError = { collageFailed = true },
             )
 
+            previewImages.isNotEmpty() && boardId != null -> BoardPictures(boardId, previewImages, pictureFocus)
             previewImages.isNotEmpty() -> Mosaic(previewImages.distinct().take(MOSAIC_CELLS), pictureFocus)
             else -> TierBands(tierColors)
         }
@@ -102,6 +120,61 @@ private fun Mosaic(images: List<String>, pictureFocus: Map<String, CoverFocus>) 
                 }
             }
         }
+    }
+}
+
+private sealed interface Glued {
+    /** Not yet looked for on the phone: the plain surface, for the moment it takes, so six pictures are not asked for in vain. */
+    data object Looking : Glued
+    data object Mosaic : Glued
+    data class Ready(val file: File) : Glued
+}
+
+/** The board's collage from the phone, drawn first when there is none; the mosaic meanwhile, and whenever it cannot be. */
+@Composable
+private fun BoardPictures(boardId: String, previewImages: List<String>, pictureFocus: Map<String, CoverFocus>) {
+    val images = previewImages.distinct().take(MOSAIC_CELLS)
+    val collages = LocalBoardCollages.current ?: if (LocalInspectionMode.current) null else BoardCollages.of(LocalContext.current)
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val width = if (constraints.hasBoundedWidth) constraints.maxWidth else 0
+        val height = if (constraints.hasBoundedHeight) constraints.maxHeight else 0
+        val collage = remember(boardId, images, pictureFocus, width, height) {
+            boardCollageOf(boardId, images, pictureFocus, width, height)
+        }
+        if (collages == null || collage == null) {
+            Mosaic(images, pictureFocus)
+        } else {
+            Glued(collages, collage) { Mosaic(images, pictureFocus) }
+        }
+    }
+}
+
+@Composable
+private fun Glued(collages: BoardCollages, collage: BoardCollage, mosaic: @Composable () -> Unit) {
+    val scope = rememberCoroutineScope()
+    val glued by produceState<Glued>(collages.known(collage)?.let(Glued::Ready) ?: Glued.Looking, collages, collage) {
+        val kept = collages.known(collage) ?: collages.find(collage)
+        if (kept != null) {
+            value = Glued.Ready(kept)
+            return@produceState
+        }
+        value = Glued.Mosaic
+        collages.make(collage)?.let { value = Glued.Ready(it) }
+    }
+    var unreadable by remember(collage) { mutableStateOf(false) }
+    val shown = glued
+    when {
+        shown is Glued.Ready && !unreadable -> FocusedImage(
+            model = shown.file,
+            focus = null,
+            modifier = Modifier.fillMaxSize().testTag(ListArtTestTags.BOARD_COLLAGE),
+            onError = {
+                unreadable = true
+                scope.launch { collages.forget(collage) }
+            },
+        )
+        shown is Glued.Looking -> Unit
+        else -> mosaic()
     }
 }
 
