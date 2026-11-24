@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -54,6 +55,7 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -135,15 +137,20 @@ fun PoolSheet(
     oneByOnePanel: (@Composable (beside: Boolean) -> Unit)? = null,
     /** A reader's pool is the cards still to place: its head counts what is left rather than naming the pool. */
     countsCardsLeft: Boolean = false,
+    /** A phone's pool pulled up through one, two and four lines of cards; false keeps it one strip, as a ranked column does. */
+    pullsIntoLines: Boolean = false,
 ) {
     var expanded by rememberSaveable(pool.id, side) { mutableStateOf(poolOpensOnItsOwn(side, readOnly, pool.items.size)) }
     val memory = LocalBoardLayoutMemory.current
-    val dockRows = memory.poolDockRows.takeIf { it in BoardLayoutMemory.DockRowChoices } ?: BoardLayoutMemory.DEFAULT_DOCK_ROWS
     val lifting = docked && dragController.draggedPayload != null && !readOnly
     val toggle = oneByOneSwitch(offered = oneByOnePanel != null, memory = memory)
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
     val count = pool.items.size
     val panelInTray = panelInTray(docked, offered = oneByOnePanel != null, memory.oneCardAtATime, expanded, count)
+    val phoneLines = phoneLines(docked, pullsIntoLines, oneByOneOn = oneByOnePanel != null && memory.oneCardAtATime)
+    val lines = sheetLines(docked, phoneLines, memory)
+    val walks = expanded && (docked || phoneLines)
+    val halfWindow = halfWindowHeight()
     val description = pluralStringResource(
         if (expanded) {
             R.plurals.tier_detail_ranked_pool_expanded_description
@@ -166,6 +173,7 @@ fun PoolSheet(
             .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
             .onGloballyPositioned { coordinates -> dragController.registerRowBounds(pool.id, coordinates.boundsInRoot()) }
             .testTag(TierDetailTestTags.POOL_PANEL)
+            .atMostWhen(phoneLines && lines > 1 && expanded, halfWindow)
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .then(
                 if (isHovered) {
@@ -196,7 +204,7 @@ fun PoolSheet(
                     orientation = Orientation.Vertical,
                     state = rememberDraggableState { delta -> pulled += delta },
                     onDragStopped = {
-                        when (val outcome = pullOutcome(pulled, threshold, docked, expanded, dockRows)) {
+                        when (val outcome = pullOutcomeOf(pulled, threshold, walking = walks, lines)) {
                             is Pull.Lines -> memory.poolDockRows = outcome.lines
                             is Pull.Open -> expanded = outcome.open
                             null -> Unit
@@ -235,7 +243,7 @@ fun PoolSheet(
             pool = pool,
             expanded = expanded,
             docked = docked,
-            lines = dockRows,
+            lines = lines,
             panel = oneByOnePanel.takeIf { memory.oneCardAtATime },
             onOpen = { expanded = true },
             dragController = dragController,
@@ -245,6 +253,21 @@ fun PoolSheet(
         )
     }
 }
+
+/** A phone's pool walks through lines unless it is docked, a ranked column's, or showing one card at a time. */
+private fun phoneLines(docked: Boolean, pullsIntoLines: Boolean, oneByOneOn: Boolean): Boolean = !docked && pullsIntoLines && !oneByOneOn
+
+/** Docked, the lines chosen; a phone's pool pulled into lines, those once chosen; otherwise the one strip. */
+private fun sheetLines(docked: Boolean, phoneLines: Boolean, memory: BoardLayoutMemory): Int {
+    val chosen = memory.poolDockRows.takeIf { it in BoardLayoutMemory.DockRowChoices } ?: BoardLayoutMemory.DEFAULT_DOCK_ROWS
+    return if (docked || phoneLines && memory.poolDockRowsChosen) chosen else 1
+}
+
+@Composable
+private fun halfWindowHeight(): Dp = with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.height / 2).toDp() }
+
+/** No taller than [max] while [holdingLines]: lines of cards on a phone take half the window at most, so the rows above stay in sight. */
+private fun Modifier.atMostWhen(holdingLines: Boolean, max: Dp): Modifier = if (holdingLines) heightIn(max = max) else this
 
 /** On a phone's open tray the one-at-a-time panel stands in for the cards. */
 private fun panelInTray(docked: Boolean, offered: Boolean, oneCardAtATime: Boolean, expanded: Boolean, count: Int): Boolean =
@@ -279,7 +302,7 @@ private fun TrayHead(
 
 /** What the open sheet holds: the panel while ranking one at a time, which opens it, or the cards. */
 @Composable
-private fun SheetCards(
+private fun ColumnScope.SheetCards(
     pool: Tier,
     expanded: Boolean,
     docked: Boolean,
@@ -297,6 +320,14 @@ private fun SheetCards(
         !expanded -> Unit
         panel != null -> panel(true)
         docked -> PoolCardsWrapped(
+            pool = pool,
+            lines = lines,
+            dragController = dragController,
+            onMoveItem = onMoveItem,
+            onDeleteItem = onDeleteItem,
+            onDoubleTap = onDoubleTap,
+        )
+        lines > 1 -> PoolCardsInWholeLines(
             pool = pool,
             lines = lines,
             dragController = dragController,
@@ -557,15 +588,15 @@ private fun StripAddChips(onAddClick: () -> Unit, onGenerateClick: () -> Unit) {
 }
 
 /** What a pull on the handle does: docked, it walks through the line counts before it folds or opens. */
-private sealed interface Pull {
+internal sealed interface Pull {
     data class Lines(val lines: Int) : Pull
     data class Open(val open: Boolean) : Pull
 }
 
-private fun pullOutcome(pulled: Float, threshold: Float, docked: Boolean, expanded: Boolean, lines: Int): Pull? {
+/** Open and [walking], a pull steps through the line counts, folding only from one line; otherwise it folds or opens. */
+internal fun pullOutcomeOf(pulled: Float, threshold: Float, walking: Boolean, lines: Int): Pull? {
     val up = pulled < -threshold
     val down = pulled > threshold
-    val walking = docked && expanded
     return when {
         walking && up -> Pull.Lines(lines.moreLines())
         walking && down && lines > 1 -> Pull.Lines(lines.fewerLines())
@@ -665,6 +696,39 @@ private fun PoolCardsWrapped(
             }
         }
     }
+}
+
+/**
+ * A phone's pool in [lines] lines of cards, or as many whole lines as fit in
+ * half the window under its head: a line cut in half looks broken. The cards
+ * wrap and scroll up and down, and a drop goes by their places, as docked.
+ */
+@Composable
+private fun ColumnScope.PoolCardsInWholeLines(
+    pool: Tier,
+    lines: Int,
+    dragController: TierDragController,
+    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
+    onDeleteItem: (itemId: Long) -> Unit,
+    onDoubleTap: (itemId: Long) -> Unit,
+) {
+    BoxWithConstraints(Modifier.fillMaxWidth().weight(1f, fill = false)) {
+        PoolCardsWrapped(
+            pool = pool,
+            lines = linesThatFit(lines, maxHeight),
+            dragController = dragController,
+            onMoveItem = onMoveItem,
+            onDeleteItem = onDeleteItem,
+            onDoubleTap = onDoubleTap,
+        )
+    }
+}
+
+/** At most [lines] whole lines of pool cards in [room], never fewer than one. */
+internal fun linesThatFit(lines: Int, room: Dp): Int {
+    if (room == Dp.Infinity) return lines
+    val fit = ((room + DOCKED_GAP) / (POOL_TILE_HEIGHT + DOCKED_GAP)).toInt()
+    return fit.coerceIn(1, lines)
 }
 
 private fun Int.moreLines(): Int = BoardLayoutMemory.DockRowChoices.firstOrNull { it > this } ?: this
