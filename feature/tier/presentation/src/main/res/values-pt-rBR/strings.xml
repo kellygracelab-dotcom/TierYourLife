@@ -336,8 +336,8 @@
     <string name="publish_sheet_needs_account">Publicar exige uma conta Google. Sua lista fica aqui enquanto você entra.</string>
     <string name="publish_sheet_sign_in_and_publish">Entrar e publicar</string>
     <string name="started_discard">Descartar</string>
-    <string name="started_discard_arrangement">Descartar minha organização</string>
-    <string name="started_discarded">Organização descartada</string>
+    <string name="started_discard_arrangement">Descartar sua versão</string>
+    <string name="started_discarded">Sua versão foi descartada</string>
     <string name="started_updated_elsewhere">Atualizado em outro dispositivo</string>
     <string name="ready_list_label">NOVO POR AQUI?</string>
     <string name="ready_list_try">Experimentar</string>

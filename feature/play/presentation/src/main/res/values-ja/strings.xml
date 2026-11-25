@@ -43,7 +43,7 @@
     <string name="play_too_few_to_start_again">カードが変わり、このゲームをやり直すには残りが少なすぎます。</string>
     <string name="play_tier_gone">このゲームのティアの一つがなくなりました。</string>
     <string name="play_start_again">最初から</string>
-    <string name="play_into_mine_note">結果は「自分」に入ります。作者のランキングは変わりません。</string>
+    <string name="play_into_mine_note">結果は自分のバージョンに入ります。作者のランキングは変わりません。</string>
     <string name="play_cancel">キャンセル</string>
     <string name="play_start">開始</string>
     <string name="play_continue">次へ</string>

@@ -47,7 +47,7 @@ class BackupRefusalTest {
         show(settings(BackupRefusal("Films", BackupRefusal.Reason.TooManyTiers)))
 
         composeRule.onNodeWithTag(SettingsTestTags.BACKUP_STUCK)
-            .assertTextEquals("“Films” isn’t backed up: it has more tiers than the account keeps, 19 plus the deck. Take a tier off it.")
+            .assertTextEquals("“Films” isn’t backed up: it has more tiers than the account keeps, 19 plus Cards left. Take a tier off it.")
     }
 
     @Test

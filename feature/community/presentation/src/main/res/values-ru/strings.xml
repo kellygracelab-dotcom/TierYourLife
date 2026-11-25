@@ -39,7 +39,7 @@
         <item quantity="many">%1$d карточек</item>
         <item quantity="other">%1$d карточки</item>
     </plurals>
-    <string name="community_not_saved_yet">Ваша раскладка ещё не сохранена.</string>
+    <string name="community_not_saved_yet">Ваша версия ещё не сохранена.</string>
     <string name="community_open_failed">Не удалось открыть этот список</string>
     <string name="community_rank_it_your_way">Разложите его как захотите.</string>
     <string name="community_save_authors_list">Сохранить список автора</string>
@@ -304,8 +304,8 @@
     <string name="community_own_list_line">Так его видят посетители. Изменить его можно в «Ваших списках».</string>
     <string name="community_restore_from_trash">Вернуть из корзины</string>
     <string name="community_get_back_as_board">Вернуть в «Ваши списки»</string>
-    <string name="community_drop_to_start_yours">Отпустите, чтобы начать свою версию · Моя начнётся с рейтинга: %1$s</string>
-    <string name="community_drop_to_start_yours_unnamed">Отпустите, чтобы начать свою версию · Моя начнётся с этого рейтинга</string>
+    <string name="community_drop_to_start_yours">Отпустите, чтобы начать свою версию с рейтинга: %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">Отпустите, чтобы начать свою версию с этого рейтинга</string>
     <string name="community_started_from_theirs">Ваша версия начата с рейтинга: %1$s</string>
     <string name="community_started_from_theirs_unnamed">Ваша версия начата с рейтинга автора</string>
     <string name="community_replaced_yours">Ваша версия заменена рейтингом: %1$s</string>

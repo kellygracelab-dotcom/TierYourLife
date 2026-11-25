@@ -41,7 +41,7 @@
         <item quantity="many">%1$d بطاقة</item>
         <item quantity="other">%1$d بطاقة</item>
     </plurals>
-    <string name="community_not_saved_yet">ترتيبك لم يُحفظ بعد.</string>
+    <string name="community_not_saved_yet">نسختك لم تُحفظ بعد.</string>
     <string name="community_open_failed">تعذّر فتح هذه القائمة</string>
     <string name="community_rank_it_your_way">رتّبها كما يحلو لك.</string>
     <string name="community_save_authors_list">حفظ قائمة المؤلف</string>
@@ -318,8 +318,8 @@
     <string name="community_own_list_line">هذا ما يراه الزوار. تعدّلها في «قوائمك».</string>
     <string name="community_restore_from_trash">استعادة من سلة المهملات</string>
     <string name="community_get_back_as_board">استرجعها إلى «قوائمك»</string>
-    <string name="community_drop_to_start_yours">أفلتها لتبدأ نسختك · تبدأ نسختك بترتيب %1$s</string>
-    <string name="community_drop_to_start_yours_unnamed">أفلتها لتبدأ نسختك · تبدأ نسختك بهذا الترتيب</string>
+    <string name="community_drop_to_start_yours">أفلتها لتبدأ نسختك من ترتيب %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">أفلتها لتبدأ نسختك من هذا الترتيب</string>
     <string name="community_started_from_theirs">نسختك تبدأ من ترتيب %1$s</string>
     <string name="community_started_from_theirs_unnamed">نسختك تبدأ من ترتيب المؤلف</string>
     <string name="community_replaced_yours">استُبدلت نسختك بترتيب %1$s</string>

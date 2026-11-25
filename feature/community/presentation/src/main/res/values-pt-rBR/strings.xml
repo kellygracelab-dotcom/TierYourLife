@@ -38,7 +38,7 @@
         <item quantity="other">%1$d cartões</item>
         <item quantity="many">%1$d cartões</item>
     </plurals>
-    <string name="community_not_saved_yet">Sua organização ainda não foi salva.</string>
+    <string name="community_not_saved_yet">Sua versão ainda não foi salva.</string>
     <string name="community_open_failed">Não foi possível abrir esta lista</string>
     <string name="community_rank_it_your_way">Organize do seu jeito.</string>
     <string name="community_save_authors_list">Salvar a lista do autor</string>
@@ -297,8 +297,8 @@
     <string name="community_own_list_line">É isto que os visitantes veem. Você a altera em Suas listas.</string>
     <string name="community_restore_from_trash">Restaurar da lixeira</string>
     <string name="community_get_back_as_board">Recuperar em Suas listas</string>
-    <string name="community_drop_to_start_yours">Solte para começar sua versão · Meu começa pela classificação de %1$s</string>
-    <string name="community_drop_to_start_yours_unnamed">Solte para começar sua versão · Meu começa por esta classificação</string>
+    <string name="community_drop_to_start_yours">Solte para começar sua versão pela classificação de %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">Solte para começar sua versão por esta classificação</string>
     <string name="community_started_from_theirs">Sua versão começa pela classificação de %1$s</string>
     <string name="community_started_from_theirs_unnamed">Sua versão começa pela classificação do autor</string>
     <string name="community_replaced_yours">Sua versão foi substituída pela classificação de %1$s</string>

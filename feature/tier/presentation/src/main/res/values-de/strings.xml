@@ -319,8 +319,8 @@
     <string name="publish_sheet_needs_account">Zum Veröffentlichen brauchst du ein Google-Konto. Deine Liste bleibt hier, während du dich anmeldest.</string>
     <string name="publish_sheet_sign_in_and_publish">Anmelden und veröffentlichen</string>
     <string name="started_discard">Verwerfen</string>
-    <string name="started_discard_arrangement">Meine Anordnung verwerfen</string>
-    <string name="started_discarded">Anordnung verworfen</string>
+    <string name="started_discard_arrangement">Deine Version verwerfen</string>
+    <string name="started_discarded">Deine Version verworfen</string>
     <string name="started_updated_elsewhere">Auf einem anderen Gerät aktualisiert</string>
     <string name="ready_list_label">NEU HIER?</string>
     <string name="ready_list_try">Ausprobieren</string>

@@ -302,8 +302,8 @@
     <string name="publish_sheet_needs_account">公開には Google アカウントが必要です。ログインの間もリストはここに残ります。</string>
     <string name="publish_sheet_sign_in_and_publish">ログインして公開</string>
     <string name="started_discard">破棄</string>
-    <string name="started_discard_arrangement">自分の並びを破棄</string>
-    <string name="started_discarded">並びを破棄しました</string>
+    <string name="started_discard_arrangement">自分のバージョンを破棄</string>
+    <string name="started_discarded">自分のバージョンを破棄しました</string>
     <string name="started_updated_elsewhere">別の端末で更新されました</string>
     <string name="ready_list_label">はじめての方へ</string>
     <string name="ready_list_try">試してみる</string>

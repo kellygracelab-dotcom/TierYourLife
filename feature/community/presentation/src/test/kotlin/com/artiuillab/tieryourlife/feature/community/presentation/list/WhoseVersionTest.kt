@@ -161,7 +161,7 @@ class WhoseVersionTest {
     fun aFreshStart_isSaid_withUndo() {
         show(yours, notices = flowOf(ListNotice.StartedFromScratch(undoId = 4)))
 
-        composeRule.onNodeWithText("All cards are back in the deck").assertExists()
+        composeRule.onNodeWithText("All cards are back in Cards left").assertExists()
         composeRule.onNodeWithText("Undo").performClick()
 
         composeRule.runOnIdle { assertEquals(listOf(4L), undone) }

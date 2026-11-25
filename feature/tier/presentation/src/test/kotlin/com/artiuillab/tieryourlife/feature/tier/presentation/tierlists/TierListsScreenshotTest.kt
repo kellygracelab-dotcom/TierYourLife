@@ -291,7 +291,7 @@ class TierListsScreenshotTest {
         // The row's own button and the menu's item.
         composeRule.onAllNodesWithText("Resume game").assertCountEquals(2)
         composeRule.onNodeWithTag(TierListsTestTags.started("films") + DISCARD_TAG).performClick()
-        composeRule.onNodeWithText("Arrangement discarded").assertExists()
+        composeRule.onNodeWithText("Your version discarded").assertExists()
         assertEquals(listOf("films"), discarded)
     }
 

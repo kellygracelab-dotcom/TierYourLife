@@ -247,7 +247,7 @@
     <string name="add_to_list_new">New list…</string>
     <string name="add_to_list_new_name">List name</string>
     <string name="add_to_list_cancel">Cancel</string>
-    <string name="add_to_list_to_pool">To the deck</string>
+    <string name="add_to_list_to_pool">To Cards left</string>
     <string name="add_to_list_added">Added to %1$s</string>
     <string name="add_to_list_sign_in">Pictures from links are kept in your account. Sign in to TierYourLife to add them, or add the card without its picture.</string>
     <string name="cover_adjust_title">Adjust cover</string>
@@ -320,8 +320,8 @@
     <string name="publish_sheet_needs_account">Publishing needs a Google account. Your list stays here while you sign in.</string>
     <string name="publish_sheet_sign_in_and_publish">Sign in and publish</string>
     <string name="started_discard">Discard</string>
-    <string name="started_discard_arrangement">Discard my arrangement</string>
-    <string name="started_discarded">Arrangement discarded</string>
+    <string name="started_discard_arrangement">Discard your version</string>
+    <string name="started_discarded">Your version discarded</string>
     <string name="started_updated_elsewhere">Updated from another device</string>
     <string name="ready_list_label">NEW HERE?</string>
     <string name="ready_list_try">Try it</string>
