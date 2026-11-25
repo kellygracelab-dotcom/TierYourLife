@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,7 +53,6 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -91,6 +88,7 @@ import kotlinx.coroutines.isActive
 /** A pull past this on the handle changes the sheet's state; less is a wobble. */
 private val SHEET_PULL_THRESHOLD = 24.dp
 private val GLIMPSE_TILE = 28.dp
+private val GLIMPSE_GAP = 4.dp
 private const val GLIMPSE_TILES = 3
 private val POOL_TILE_WIDTH = 52.dp
 private val POOL_TILE_HEIGHT = 76.dp
@@ -137,20 +135,15 @@ fun PoolSheet(
     oneByOnePanel: (@Composable (beside: Boolean) -> Unit)? = null,
     /** A reader's pool is the cards still to place: its head counts what is left rather than naming the pool. */
     countsCardsLeft: Boolean = false,
-    /** A phone's pool pulled up through one, two and four lines of cards; false keeps it one strip, as a ranked column does. */
-    pullsIntoLines: Boolean = false,
 ) {
     var expanded by rememberSaveable(pool.id, side) { mutableStateOf(poolOpensOnItsOwn(side, readOnly, pool.items.size)) }
     val memory = LocalBoardLayoutMemory.current
+    val dockRows = memory.poolDockRows.takeIf { it in BoardLayoutMemory.DockRowChoices } ?: BoardLayoutMemory.DEFAULT_DOCK_ROWS
     val lifting = docked && dragController.draggedPayload != null && !readOnly
     val toggle = oneByOneSwitch(offered = oneByOnePanel != null, memory = memory)
     val isHovered = dragController.isDragging && dragController.hoveredTierId == pool.id
     val count = pool.items.size
     val panelInTray = panelInTray(docked, offered = oneByOnePanel != null, memory.oneCardAtATime, expanded, count)
-    val phoneLines = phoneLines(docked, pullsIntoLines, oneByOneOn = oneByOnePanel != null && memory.oneCardAtATime)
-    val lines = sheetLines(docked, phoneLines, memory)
-    val walks = expanded && (docked || phoneLines)
-    val halfWindow = halfWindowHeight()
     val description = pluralStringResource(
         if (expanded) {
             R.plurals.tier_detail_ranked_pool_expanded_description
@@ -173,7 +166,6 @@ fun PoolSheet(
             .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
             .onGloballyPositioned { coordinates -> dragController.registerRowBounds(pool.id, coordinates.boundsInRoot()) }
             .testTag(TierDetailTestTags.POOL_PANEL)
-            .atMostWhen(phoneLines && lines > 1 && expanded, halfWindow)
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .then(
                 if (isHovered) {
@@ -204,7 +196,7 @@ fun PoolSheet(
                     orientation = Orientation.Vertical,
                     state = rememberDraggableState { delta -> pulled += delta },
                     onDragStopped = {
-                        when (val outcome = pullOutcomeOf(pulled, threshold, walking = walks, lines)) {
+                        when (val outcome = pullOutcome(pulled, threshold, docked, expanded, dockRows)) {
                             is Pull.Lines -> memory.poolDockRows = outcome.lines
                             is Pull.Open -> expanded = outcome.open
                             null -> Unit
@@ -243,7 +235,7 @@ fun PoolSheet(
             pool = pool,
             expanded = expanded,
             docked = docked,
-            lines = lines,
+            lines = dockRows,
             panel = oneByOnePanel.takeIf { memory.oneCardAtATime },
             onOpen = { expanded = true },
             dragController = dragController,
@@ -253,21 +245,6 @@ fun PoolSheet(
         )
     }
 }
-
-/** A phone's pool walks through lines unless it is docked, a ranked column's, or showing one card at a time. */
-private fun phoneLines(docked: Boolean, pullsIntoLines: Boolean, oneByOneOn: Boolean): Boolean = !docked && pullsIntoLines && !oneByOneOn
-
-/** Docked, the lines chosen; a phone's pool pulled into lines, those once chosen; otherwise the one strip. */
-private fun sheetLines(docked: Boolean, phoneLines: Boolean, memory: BoardLayoutMemory): Int {
-    val chosen = memory.poolDockRows.takeIf { it in BoardLayoutMemory.DockRowChoices } ?: BoardLayoutMemory.DEFAULT_DOCK_ROWS
-    return if (docked || phoneLines && memory.poolDockRowsChosen) chosen else 1
-}
-
-@Composable
-private fun halfWindowHeight(): Dp = with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.height / 2).toDp() }
-
-/** No taller than [max] while [holdingLines]: lines of cards on a phone take half the window at most, so the rows above stay in sight. */
-private fun Modifier.atMostWhen(holdingLines: Boolean, max: Dp): Modifier = if (holdingLines) heightIn(max = max) else this
 
 /** On a phone's open tray the one-at-a-time panel stands in for the cards. */
 private fun panelInTray(docked: Boolean, offered: Boolean, oneCardAtATime: Boolean, expanded: Boolean, count: Int): Boolean =
@@ -297,12 +274,13 @@ private fun TrayHead(
         onGenerateClick = onGenerateClick,
         toggle = toggle.takeUnless { panelInTray },
         title = if (panelInTray) null else poolTitle(count, countsCardsLeft),
+        countsCardsLeft = countsCardsLeft,
     )
 }
 
 /** What the open sheet holds: the panel while ranking one at a time, which opens it, or the cards. */
 @Composable
-private fun ColumnScope.SheetCards(
+private fun SheetCards(
     pool: Tier,
     expanded: Boolean,
     docked: Boolean,
@@ -320,14 +298,6 @@ private fun ColumnScope.SheetCards(
         !expanded -> Unit
         panel != null -> panel(true)
         docked -> PoolCardsWrapped(
-            pool = pool,
-            lines = lines,
-            dragController = dragController,
-            onMoveItem = onMoveItem,
-            onDeleteItem = onDeleteItem,
-            onDoubleTap = onDoubleTap,
-        )
-        lines > 1 -> PoolCardsInWholeLines(
             pool = pool,
             lines = lines,
             dragController = dragController,
@@ -364,11 +334,12 @@ internal fun poolTitle(count: Int, countsCardsLeft: Boolean): String = when {
 internal fun tapATierOr(counts: String): String =
     if (LocalTierPlacing.current != null) stringResource(R.string.pool_tap_a_tier) else counts
 
-/** The first few pictures, small, so a folded pool still says what is in it. */
+/** The first few pictures, small, so a folded pool still says what is in it: as many as the line has room for. */
 @Composable
-private fun Glimpse(items: List<TierItem>) {
-    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        items.filter { it.imageUrl != null }.take(GLIMPSE_TILES).forEach { item ->
+private fun Glimpse(items: List<TierItem>, modifier: Modifier = Modifier) = BoxWithConstraints(modifier) {
+    val room = ((maxWidth + GLIMPSE_GAP) / (GLIMPSE_TILE + GLIMPSE_GAP)).toInt()
+    Row(horizontalArrangement = Arrangement.spacedBy(GLIMPSE_GAP)) {
+        items.filter { it.imageUrl != null }.take(minOf(GLIMPSE_TILES, room)).forEach { item ->
             ItemTile(item = item, width = GLIMPSE_TILE, height = GLIMPSE_TILE, named = false)
         }
     }
@@ -405,8 +376,10 @@ private fun PoolCards(
     ProvideTextCardRoom(pool.items, POOL_TILE_WIDTH, POOL_TILE_HEIGHT, STRIP_GAP) {
         LazyRow(
             state = listState,
+            // An empty pool keeps the cards' line, so the tray stays put as the last card leaves.
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(min = POOL_TILE_HEIGHT)
                 .onGloballyPositioned { coordinates ->
                     rowBounds = coordinates.boundsInRoot()
                     dragController.registerItemsRowBounds(pool.id, rowBounds)
@@ -487,7 +460,6 @@ internal fun stripEdgeSpeed(fromLeft: Float, fromRight: Float, edge: Float, fast
 }
 
 /** The phone's strip under the handle: the count, a glimpse while folded, Add; no [title] while the panel says it. */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun StripHead(
     pool: Tier,
@@ -497,25 +469,26 @@ private fun StripHead(
     onGenerateClick: () -> Unit,
     toggle: (@Composable (worded: Boolean) -> Unit)?,
     title: String?,
+    countsCardsLeft: Boolean,
 ) = BoxWithConstraints(Modifier.fillMaxWidth()) {
     val adds = !readOnly && onAddClick != null
     // The count and the chips sit on one line while they fit. When they do
     // not, as in a long language, the count takes a line of its own and the
     // chips keep their words on the next: the switch's picture alone said nothing.
-    if (!headFitsOneLine(title, adds, maxWidth)) {
+    // The choice holds for any count, so the strip does not jump as cards leave it.
+    if (!headFitsOneLine(title?.let { poolTitles(pool.items.size, countsCardsLeft) }, adds, maxWidth)) {
         StripHeadInTwoLines(title, onAddClick.takeIf { adds }, onGenerateClick, toggle)
         return@BoxWithConstraints
     }
-    FlowRow(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        itemVerticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).heightIn(min = GLIMPSE_TILE),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -529,7 +502,7 @@ private fun StripHead(
                 )
             }
             if (!expanded && title != null) {
-                Glimpse(pool.items)
+                Glimpse(pool.items, Modifier.weight(1f))
             }
         }
         // Someone else's pool is material to rank, not a place to add to.
@@ -588,15 +561,15 @@ private fun StripAddChips(onAddClick: () -> Unit, onGenerateClick: () -> Unit) {
 }
 
 /** What a pull on the handle does: docked, it walks through the line counts before it folds or opens. */
-internal sealed interface Pull {
+private sealed interface Pull {
     data class Lines(val lines: Int) : Pull
     data class Open(val open: Boolean) : Pull
 }
 
-/** Open and [walking], a pull steps through the line counts, folding only from one line; otherwise it folds or opens. */
-internal fun pullOutcomeOf(pulled: Float, threshold: Float, walking: Boolean, lines: Int): Pull? {
+private fun pullOutcome(pulled: Float, threshold: Float, docked: Boolean, expanded: Boolean, lines: Int): Pull? {
     val up = pulled < -threshold
     val down = pulled > threshold
+    val walking = docked && expanded
     return when {
         walking && up -> Pull.Lines(lines.moreLines())
         walking && down && lines > 1 -> Pull.Lines(lines.fewerLines())
@@ -698,51 +671,41 @@ private fun PoolCardsWrapped(
     }
 }
 
-/**
- * A phone's pool in [lines] lines of cards, or as many whole lines as fit in
- * half the window under its head: a line cut in half looks broken. The cards
- * wrap and scroll up and down, and a drop goes by their places, as docked.
- */
-@Composable
-private fun ColumnScope.PoolCardsInWholeLines(
-    pool: Tier,
-    lines: Int,
-    dragController: TierDragController,
-    onMoveItem: (itemId: Long, toTierId: Long, toPosition: Int) -> Unit,
-    onDeleteItem: (itemId: Long) -> Unit,
-    onDoubleTap: (itemId: Long) -> Unit,
-) {
-    BoxWithConstraints(Modifier.fillMaxWidth().weight(1f, fill = false)) {
-        PoolCardsWrapped(
-            pool = pool,
-            lines = linesThatFit(lines, maxHeight),
-            dragController = dragController,
-            onMoveItem = onMoveItem,
-            onDeleteItem = onDeleteItem,
-            onDoubleTap = onDoubleTap,
-        )
-    }
-}
-
-/** At most [lines] whole lines of pool cards in [room], never fewer than one. */
-internal fun linesThatFit(lines: Int, room: Dp): Int {
-    if (room == Dp.Infinity) return lines
-    val fit = ((room + DOCKED_GAP) / (POOL_TILE_HEIGHT + DOCKED_GAP)).toInt()
-    return fit.coerceIn(1, lines)
-}
-
 private fun Int.moreLines(): Int = BoardLayoutMemory.DockRowChoices.firstOrNull { it > this } ?: this
 
 private fun Int.fewerLines(): Int = BoardLayoutMemory.DockRowChoices.lastOrNull { it < this } ?: this
 
-/** Whether the count, the switch with its word and Add stand on one line, the count unbroken. */
+/**
+ * Every head the strip can show while its count keeps as many digits: each
+ * plural form, and the one while a card waits for its tier.
+ */
 @Composable
-private fun headFitsOneLine(title: String?, adds: Boolean, width: Dp): Boolean {
-    if (title == null) return true
+private fun poolTitles(count: Int, countsCardsLeft: Boolean): List<String> =
+    countsOfAsManyDigits(count).map {
+        if (countsCardsLeft) pluralStringResource(R.plurals.pool_cards_left, it, it) else pluralStringResource(R.plurals.tier_detail_pool_unranked_count, it, it)
+    } + stringResource(R.string.pool_tap_a_tier)
+
+/** The counts written with as many digits as [count], enough of them to meet every plural form. */
+internal fun countsOfAsManyDigits(count: Int): List<Int> {
+    val digits = count.coerceAtLeast(0).toString().length
+    val lowest = if (digits == 1) 0 else pow10(digits - 1)
+    val highest = pow10(digits) - 1
+    return (lowest..minOf(highest, lowest + PLURAL_SPAN)).toList() + highest
+}
+
+private fun pow10(power: Int): Int = (1..power).fold(1) { n, _ -> n * DECIMAL }
+
+private const val PLURAL_SPAN = 25
+private const val DECIMAL = 10
+
+/** Whether the widest of [titles], the switch with its word and Add stand on one line, the count unbroken. */
+@Composable
+private fun headFitsOneLine(titles: List<String>?, adds: Boolean, width: Dp): Boolean {
+    if (titles == null) return true
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     fun wide(text: String, style: TextStyle): Dp = with(density) { measurer.measure(text, style, maxLines = 1).size.width.toDp() }
-    val titleWidth = wide(title, MaterialTheme.typography.titleSmall)
+    val titleWidth = titles.maxOf { wide(it, MaterialTheme.typography.titleSmall) }
     val toggleWidth = 8.dp + FilterChipDefaults.IconSize + 8.dp + wide(stringResource(R.string.one_by_one_toggle), MaterialTheme.typography.labelLarge) + 16.dp
     val addWidth = if (adds) 8.dp + 12.dp + 18.dp + 4.dp + wide(stringResource(R.string.tier_detail_add), TierYourLifeType.current.supportingLabel) + 12.dp else 0.dp
     return 32.dp + titleWidth + 8.dp + toggleWidth + addWidth <= width
