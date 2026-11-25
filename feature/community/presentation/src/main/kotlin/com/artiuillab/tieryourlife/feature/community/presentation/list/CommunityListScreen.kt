@@ -712,12 +712,6 @@ private fun ReaderStrip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Their placing looked at over the reader's own: whose it is, and the way back, nothing to save or move.
-            if (state.peeking) {
-                TheirsRankingLabel(state, Modifier.weight(1f))
-                BackToYoursButton(onClick = { onShow(Showing.Mine) })
-                return@Row
-            }
             Spacer(Modifier.weight(1f))
             val savedId = state.savedId
             if (state.own) {
@@ -750,7 +744,15 @@ private fun ReaderStrip(
                 }
             }
         }
-        if (state.peeking) return@Column
+        // Their placing looked at over the reader's own: whose it is and the way back,
+        // under the Save that still keeps the reader's version, as on the web.
+        if (state.peeking) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                TheirsRankingLabel(state, Modifier.weight(1f))
+                BackToYoursButton(onClick = { onShow(Showing.Mine) })
+            }
+            return@Column
+        }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) {
                 if (state.foldsToRankIt && !lifted) {

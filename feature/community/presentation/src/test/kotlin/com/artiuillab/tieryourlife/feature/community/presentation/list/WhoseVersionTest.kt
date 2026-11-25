@@ -44,6 +44,7 @@ class WhoseVersionTest {
     private val yours = theirs.copy(mine = board, arranged = true, showing = Showing.Mine)
 
     private val shown = mutableListOf<Showing>()
+    private var saves = 0
     private var scratch = 0
     private var backToTheirs = 0
     private val undone = mutableListOf<Long>()
@@ -55,7 +56,7 @@ class WhoseVersionTest {
                     state = state,
                     onBack = {},
                     onMoveItem = { _, _, _ -> },
-                    onSave = {},
+                    onSave = { saves++ },
                     onRetry = {},
                     onShow = { shown += it },
                     onStartFromScratch = { scratch++ },
@@ -86,13 +87,32 @@ class WhoseVersionTest {
         composeRule.runOnIdle { assertEquals(listOf(Showing.Theirs), shown) }
     }
 
+    // Designer 25.11, as on the web: Save author's list before a version, Save my list after.
     @Test
-    fun theirsOverYours_isNamed_hasNoSave_andLeadsBack() {
+    fun beforeAVersion_saveKeepsTheAuthors() {
+        show(theirs)
+
+        composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertExists()
+        composeRule.onNodeWithText("Save author’s list").assertExists()
+    }
+
+    @Test
+    fun yourVersion_saveKeepsYours() {
+        show(yours)
+
+        composeRule.onNodeWithText("Save my list").assertExists()
+    }
+
+    // Looking at theirs, the same Save my list keeps the reader's version, not theirs.
+    @Test
+    fun theirsOverYours_isNamed_savesYours_andLeadsBack() {
         show(yours.copy(showing = Showing.Theirs))
 
         composeRule.onNodeWithTag(CommunityListTestTags.THEIRS_RANKING, useUnmergedTree = true).assertExists()
         composeRule.onNodeWithText("Olena M.’s ranking", useUnmergedTree = true).assertExists()
-        composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertDoesNotExist()
+        composeRule.onNodeWithText("Save author’s list").assertDoesNotExist()
+        composeRule.onNodeWithText("Save my list").performClick()
+        composeRule.runOnIdle { assertEquals(1, saves) }
         composeRule.onNodeWithTag(CommunityListTestTags.SEE_THEIRS).assertDoesNotExist()
         composeRule.onNodeWithText("Back to yours").performClick()
 

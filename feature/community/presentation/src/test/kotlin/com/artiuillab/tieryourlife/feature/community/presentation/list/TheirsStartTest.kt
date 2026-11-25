@@ -73,6 +73,24 @@ class TheirsStartTest {
         assertTrue("Hereditary" in after.mine.tiers.first { it.isPool }.items.map { it.title })
     }
 
+    // Designer 25.11, as on the web: Save my list while looking at theirs keeps the reader's version.
+    @Test
+    fun savingWhileLookingAtTheirs_keepsMine() = runBlocking {
+        val tiers = RecordingTierRepository()
+        val viewModel = viewModel(TestCommunity(arrangement = listOf(0, null)), tiers)
+        val mine = arranged(viewModel).mine
+        viewModel.show(Showing.Theirs)
+
+        viewModel.saveToMyLists()
+
+        viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.savedId != null }
+        val template = tiers.templates.single()
+        assertEquals(
+            mine.tiers.filterNot { it.isPool }.map { tier -> tier.items.map { it.title } },
+            template.tiers.map { tier -> tier.items.map { it.title } },
+        )
+    }
+
     // Danylo 25.11: with a version of one's own, theirs is only to look at; nothing on it moves.
     @Test
     fun lookingAtTheirsOverMine_isReadOnly_andMineWaitsAsItWas() = runBlocking {
@@ -256,8 +274,8 @@ class TheirsStartTest {
         assertEquals(undone, vm.state.value)
     }
 
-    private fun viewModel(community: CommunityRepository) = CommunityListViewModel(
-        community, RecordingTierRepository(), FakeAppPreferences(), SavedStateHandle(mapOf("publishedId" to "abc")),
+    private fun viewModel(community: CommunityRepository, tiers: RecordingTierRepository = RecordingTierRepository()) = CommunityListViewModel(
+        community, tiers, FakeAppPreferences(), SavedStateHandle(mapOf("publishedId" to "abc")),
         FakeAccountRepository(), FakeOpenedLists(), FollowAfterSignIn(FakeAccountRepository()), RankingDrafts.None,
     ).also { made += it }
 }
