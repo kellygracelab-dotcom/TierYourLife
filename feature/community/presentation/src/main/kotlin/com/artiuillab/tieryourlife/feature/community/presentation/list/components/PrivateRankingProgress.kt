@@ -247,7 +247,7 @@ internal class PrivateRankingProgress(
      * the next Save made a second one (Danylo's Eurovision twice in My lists).
      */
     private suspend fun savedFor(uid: String?, source: PublishedList): TierList? {
-        val copies = tiers.getAllTierLists().filter { it.takenFrom == source.summary.id }
+        val copies = tiers.getCopiesOf(source.summary.id)
         return copies.firstOrNull { it.uid == uid } ?: copies.maxByOrNull { it.editedAt ?: 0 }
     }
 

@@ -17,7 +17,7 @@ object AppCheckModule {
     @Singleton
     fun provideAppCheckInterceptor(): AppCheckInterceptor = AppCheckInterceptor {
         runCatching {
-            Tasks.await(FirebaseAppCheck.getInstance().getAppCheckToken(false)).token
+            noteSlow("App Check token") { Tasks.await(FirebaseAppCheck.getInstance().getAppCheckToken(false)).token }
         }.onFailure { Timber.w(it, "App Check token unavailable") }.getOrNull()
     }
 }
