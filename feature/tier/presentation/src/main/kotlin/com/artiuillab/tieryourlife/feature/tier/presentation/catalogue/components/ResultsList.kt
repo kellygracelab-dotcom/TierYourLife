@@ -22,9 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
@@ -75,7 +75,7 @@ internal fun ResultsList(
                         .padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Thumbnail(item.imageUrl, item.title)
+                    Thumbnail(item.thumbUrl, item.imageUrl, item.title)
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -125,15 +125,17 @@ internal fun ResultsList(
  * illustrated row start further right than the ones without.
  */
 @Composable
-private fun Thumbnail(imageUrl: String?, title: String) {
+private fun Thumbnail(thumbUrl: String?, imageUrl: String?, title: String) {
     val shape = RoundedCornerShape(6.dp)
     val modifier = Modifier
         .size(width = THUMBNAIL_WIDTH, height = THUMBNAIL_HEIGHT)
         .clip(shape)
-    if (imageUrl.isNullOrBlank()) {
+    // The small copy at the thumbnail's size: the original was up to 7 MB for a 44-dp poster.
+    val picture = pictureFor(thumbUrl, imageUrl, with(LocalDensity.current) { THUMBNAIL_WIDTH.roundToPx() })
+    if (picture == null) {
         Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant))
     } else {
-        AsyncImage(model = imageUrl, contentDescription = title, modifier = modifier)
+        SearchPicture(model = picture, contentDescription = title, modifier = modifier)
     }
 }
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -23,15 +25,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateSetOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
@@ -49,24 +53,56 @@ internal fun ResultsGrid(
     onNearEnd: () -> Unit = {},
 ) {
     val gridState = rememberLazyGridState()
+    // A picture that would not load takes its tile with it, as on the site: no grey square stays.
+    val broken = remember { mutableStateSetOf<String>() }
+    val shown = items.filter { it.id !in broken && (it.thumbUrl ?: it.imageUrl) != null }
 
-    LaunchedEffect(gridState, items.size) {
+    LaunchedEffect(gridState, shown.size) {
         snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }
             .collect { lastVisible ->
-                if (lastVisible >= items.size - LOAD_MORE_CELLS_AHEAD) onNearEnd()
+                if (lastVisible >= shown.size - LOAD_MORE_CELLS_AHEAD) onNearEnd()
             }
     }
 
+    BoxWithConstraints {
+        val cellPx = with(LocalDensity.current) { cellWidth(maxWidth).roundToPx() }
+        ResultCells(gridState, shown, selectedIds, cellPx, loadingMore, onToggle, onBroken = { broken += it })
+    }
+}
+
+/** How wide the grid's cells come out in [width]: as many [CELL_MIN_WIDTH] columns as fit, sharing what is left. */
+internal fun cellWidth(width: Dp): Dp {
+    val room = width - GRID_PADDING * 2
+    val columns = maxOf(1, ((room + CELL_GAP) / (CELL_MIN_WIDTH + CELL_GAP)).toInt())
+    return (room - CELL_GAP * (columns - 1)) / columns
+}
+
+@Composable
+private fun ResultCells(
+    gridState: LazyGridState,
+    items: List<CatalogueItem>,
+    selectedIds: Set<String>,
+    cellPx: Int,
+    loadingMore: Boolean,
+    onToggle: (CatalogueItem) -> Unit,
+    onBroken: (String) -> Unit,
+) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = CELL_MIN_WIDTH),
         state = gridState,
         modifier = Modifier.testTag(CatalogueSearchTestTags.ITEM_SEARCH_RESULTS_LIST),
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(GRID_PADDING),
+        horizontalArrangement = Arrangement.spacedBy(CELL_GAP),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         items(items, key = { it.id }) { item ->
-            ResultCell(item = item, selected = item.id in selectedIds, onToggle = { onToggle(item) })
+            ResultCell(
+                item = item,
+                picture = pictureFor(item.thumbUrl, item.imageUrl, cellPx).orEmpty(),
+                selected = item.id in selectedIds,
+                onToggle = { onToggle(item) },
+                onBroken = { onBroken(item.id) },
+            )
         }
         if (loadingMore) {
             item(key = CatalogueSearchTestTags.ITEM_SEARCH_LOADING_MORE, span = { GridItemSpan(maxLineSpan) }) {
@@ -85,7 +121,7 @@ internal fun ResultsGrid(
 }
 
 @Composable
-private fun ResultCell(item: CatalogueItem, selected: Boolean, onToggle: () -> Unit) {
+private fun ResultCell(item: CatalogueItem, picture: String, selected: Boolean, onToggle: () -> Unit, onBroken: () -> Unit) {
     val shape = RoundedCornerShape(12.dp)
     val primary = MaterialTheme.colorScheme.primary
     Column(
@@ -99,13 +135,12 @@ private fun ResultCell(item: CatalogueItem, selected: Boolean, onToggle: () -> U
                 .fillMaxWidth()
                 .aspectRatio(PICTURE_ASPECT)
                 .clip(shape)
-                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .then(if (selected) Modifier.border(3.dp, primary, shape) else Modifier),
         ) {
-            AsyncImage(
-                model = item.thumbUrl ?: item.imageUrl,
+            SearchPicture(
+                model = picture,
                 contentDescription = item.title,
-                contentScale = ContentScale.Crop,
+                onBroken = onBroken,
                 modifier = Modifier.matchParentSize(),
             )
             if (selected) {
@@ -146,3 +181,5 @@ private fun ResultCell(item: CatalogueItem, selected: Boolean, onToggle: () -> U
 
 private const val PICTURE_ASPECT = 3f / 4f
 private val CELL_MIN_WIDTH = 104.dp
+private val CELL_GAP = 10.dp
+private val GRID_PADDING = 16.dp
