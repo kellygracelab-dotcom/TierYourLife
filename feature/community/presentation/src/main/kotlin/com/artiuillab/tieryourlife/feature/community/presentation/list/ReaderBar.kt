@@ -70,6 +70,8 @@ internal fun RowScope.ReaderBarControls(
         TheirsRankingLabel(state, Modifier.widthIn(max = BAR_AUTHOR_MAX_WIDTH))
         Spacer(Modifier.width(8.dp))
         BackToYoursButton(onClick = { onShow(Showing.Mine) }, modifier = Modifier.height(height))
+        Spacer(Modifier.width(8.dp))
+        SaveInBar(state = state, mode = mode, onSaveClick = onSaveClick, onOpenSaved = onOpenSaved)
         return
     }
     // Beside the rows the line under the title says it; a short bar and a tablet's have no such line.
