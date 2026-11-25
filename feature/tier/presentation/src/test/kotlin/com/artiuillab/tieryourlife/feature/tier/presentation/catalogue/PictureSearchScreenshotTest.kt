@@ -5,9 +5,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.AsyncImagePainter
+import coil3.compose.AsyncImagePreviewHandler
+import coil3.compose.LocalAsyncImagePreviewHandler
+import coil3.request.ErrorResult
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.domain.model.CatalogueItem
 import com.artiuillab.tieryourlife.feature.tier.domain.model.PictureAttribution
@@ -16,6 +24,7 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.SearchNotice
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkPicture
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.LinkRefusal
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.LinkChoice
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ResultsGrid
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -27,6 +36,9 @@ import org.robolectric.annotation.GraphicsMode
 import java.util.Calendar
 
 /** The canvas row "Поиск картинок": a scope chosen by the board, an empty scope's way out, the web's day used up. */
+@OptIn(ExperimentalCoilApi::class)
+private val StillLoading = AsyncImagePreviewHandler { _, _ -> AsyncImagePainter.State.Loading(null) }
+
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = "w411dp-h891dp-xhdpi")
@@ -37,12 +49,38 @@ class PictureSearchScreenshotTest {
 
     private fun capture(name: String, dark: Boolean = false, content: @Composable () -> Unit) {
         composeRule.setContent {
-            TierYourLifeTheme(darkTheme = dark) {
-                Box(Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)) { content() }
+            // The pictures are still on their way: an address that cannot load here would take its tile away.
+            CompositionLocalProvider(
+                LocalInspectionMode provides true,
+                LocalAsyncImagePreviewHandler provides StillLoading,
+            ) {
+                TierYourLifeTheme(darkTheme = dark) {
+                    Box(Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)) { content() }
+                }
             }
         }
         composeRule.waitForIdle()
         composeRule.onRoot().captureRoboImage("src/test/screenshots/$name.png", roborazziOptions = OPTIONS)
+    }
+
+    @OptIn(ExperimentalCoilApi::class)
+    @Test
+    fun aPictureThatWillNotLoad_takesItsTileAway() {
+        val broken = AsyncImagePreviewHandler { _, request ->
+            if (request.data == "https://a/c17.jpg") {
+                AsyncImagePainter.State.Error(null, ErrorResult(null, request, IllegalStateException("never loads")))
+            } else {
+                AsyncImagePainter.State.Loading(null)
+            }
+        }
+        composeRule.setContent {
+            CompositionLocalProvider(LocalInspectionMode provides true, LocalAsyncImagePreviewHandler provides broken) {
+                TierYourLifeTheme { ResultsGrid(items = naruto(), selectedIds = emptySet(), onToggle = {}) }
+            }
+        }
+
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult("anilist:c17")).assertDoesNotExist()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.itemSearchResult("anilist:20")).assertExists()
     }
 
     private fun naruto() = listOf(

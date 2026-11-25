@@ -11,8 +11,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import javax.inject.Singleton
+
+internal const val PICTURES_AT_ONCE_PER_HOST = 16
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -27,6 +30,9 @@ object ImageLoaderModule {
     ): ImageLoader {
         val lowRam = context.getSystemService(ActivityManager::class.java)?.isLowRamDevice == true
         val imageClient = okHttpClient.newBuilder()
+            // Its own queue, wider than OkHttp's five to a host: a grid of posters from one
+            // catalogue came five at a time, where the site's browser asks for all of them at once.
+            .dispatcher(Dispatcher().apply { maxRequestsPerHost = PICTURES_AT_ONCE_PER_HOST })
             .addInterceptor(PublicMediaInterceptor())
             .build()
         return ImageLoader.Builder(context)

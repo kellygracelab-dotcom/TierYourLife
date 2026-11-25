@@ -31,7 +31,6 @@ import com.artiuillab.tieryourlife.feature.community.presentation.list.component
 import com.artiuillab.tieryourlife.feature.community.presentation.navigation.communityListRoute
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.cardCount
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.finishedFrom
-import com.artiuillab.tieryourlife.feature.tier.domain.lists.returningAllToPool
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
@@ -88,7 +87,7 @@ class CommunityListViewModel @Inject constructor(
     /** The readers' placings of this list: read on demand, chosen into the left half, this reader's own taken down. */
     internal val rankings = ListRankings(
         publishedId, community, _state, viewModelScope, messages,
-        reread = { open(quietly = true) }, resetMine = ::returnAllToPool,
+        reread = { open(quietly = true) },
         visibilityChanged = { progress.publicVisibility(it) },
         accounts = accounts,
         mineReady = { progress.isCurrentOwner },
@@ -114,7 +113,7 @@ class CommunityListViewModel @Inject constructor(
         forget = { openedLists.forget(publishedId) },
     )
 
-    /** A move on Theirs starts Mine from it, asking first over a Mine of one's own. */
+    /** Mine put in place in one step, with Undo: from a move on Theirs, from Theirs again, or from scratch. */
     internal val theirsStart: TheirsStart = TheirsStart(_state, viewModelScope, told::send, replacing = { game.forget() }) {
         progress.keep()
         choices.offerIfNeeded()
@@ -368,27 +367,17 @@ class CommunityListViewModel @Inject constructor(
         game.put(board, undone)
     }
 
-    /** A single private editor action; it never changes the author's arrangement. */
-    private fun returnAllToPool() {
-        val current = (_state.value as? CommunityListUiState.Success)?.takeUnless { it.own || it.arriving } ?: return
-        if (current.mine.tiers.none { !it.isPool && it.items.isNotEmpty() }) return
-        game.forget()
-        theirsStart.forget()
-        _state.value = current.copy(mine = current.mine.returningAllToPool(), showing = Showing.Mine, arranged = true, gameStep = null)
-        progress.keep()
-    }
-
     /**
      * The copy's id lands in the state; the screen then offers to open it rather than leaving on its own.
      * It becomes the reader's own board, so it keeps the words they read it in, [languageTag]'s.
-     * The switch says which: Author saves the author's arrangement, Mine the reader's own
-     * (a template has only the reader's half).
+     * Before the reader has a version, the placing on screen is the one saved;
+     * after, always theirs (a template has only the reader's half).
      */
     fun saveToMyLists(languageTag: String = "") {
         val current = _state.value as? CommunityListUiState.Success ?: return
         if (current.own || current.arriving) return
         if (current.saving || current.savedId != null) return
-        val which = if (current.twoHalves) current.showing else Showing.Mine
+        val which = if (current.twoHalves && !current.arranged) current.showing else Showing.Mine
         _state.update { (it as CommunityListUiState.Success).copy(saving = true) }
 
         viewModelScope.launch {

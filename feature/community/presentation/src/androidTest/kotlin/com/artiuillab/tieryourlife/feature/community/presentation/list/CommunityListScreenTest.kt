@@ -168,22 +168,22 @@ class CommunityListScreenTest {
 
     // The author's arrangement usually leaves nothing unranked, so the pool
     // starts folded on it; what the reader does with the board must not fold away with it.
+    // There is no switch: before the reader has a version there is nothing to switch to.
     @Test
-    fun theSwitchAndTheSave_sitInTheFoldedStrip() {
+    fun theSave_sitsInTheFoldedStrip_withNoSwitch() {
         setScreen(state = successState().withEveryCardRanked())
 
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertDoesNotExist()
-        composeRule.onNodeWithTag(CommunityListTestTags.showing(Showing.Theirs)).assertIsDisplayed()
+        composeRule.onNodeWithTag(CommunityListTestTags.SEE_THEIRS).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertIsDisplayed()
     }
 
     // Cards left in the pool of the side on screen open it, and the strip stays above them.
     @Test
-    fun aPoolWithCardsInIt_opens_withTheSwitchAndTheSaveStillThere() {
+    fun aPoolWithCardsInIt_opens_withTheSaveStillThere() {
         setScreen()
 
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertIsDisplayed()
-        composeRule.onNodeWithTag(CommunityListTestTags.showing(Showing.Theirs)).assertIsDisplayed()
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertIsDisplayed()
     }
 

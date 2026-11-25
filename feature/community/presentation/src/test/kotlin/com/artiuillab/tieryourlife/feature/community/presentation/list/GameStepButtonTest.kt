@@ -90,14 +90,14 @@ class GameStepButtonTest {
     @Test
     fun aReadersPlacing_savesAsMyList() {
         val danylo = Ranking("r1", "Danylo Petrov", null, arrangement = listOf(0, null), tierLabels = listOf("S"), updatedAtMillis = 0)
-        show(afterGame.copy(showing = Showing.Theirs, chosenRanking = danylo, gameStep = null))
+        show(afterGame.copy(showing = Showing.Theirs, chosenRanking = danylo, gameStep = null, arranged = false))
 
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertTextEquals("Save my list")
     }
 
     @Test
     fun theAuthorsPlacing_savesTheAuthorsList() {
-        show(afterGame.copy(showing = Showing.Theirs, gameStep = null))
+        show(afterGame.copy(showing = Showing.Theirs, gameStep = null, arranged = false))
 
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertTextEquals("Save author’s list")
     }

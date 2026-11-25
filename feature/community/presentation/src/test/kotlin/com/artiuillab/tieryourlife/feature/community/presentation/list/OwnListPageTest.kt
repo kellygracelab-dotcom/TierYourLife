@@ -72,7 +72,7 @@ class OwnListPageTest {
         show(mineNamed.copy(fromBoard = true, ownBoardLookedUp = true))
 
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertDoesNotExist()
-        composeRule.onNodeWithTag(CommunityListTestTags.showing(Showing.Mine)).assertDoesNotExist()
+        composeRule.onNodeWithTag(CommunityListTestTags.SEE_THEIRS).assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.YOUR_LIST).assertExists()
         composeRule.onNodeWithText("Published").assertExists()
         composeRule.onNodeWithText("This is what visitors see. You change it in Your lists.").assertExists()
