@@ -24,7 +24,7 @@ import com.artiuillab.tieryourlife.feature.community.presentation.R
 internal val CommunityListUiState.Success.mineOverTheirs: Boolean
     get() = twoHalves && arranged && showing == Showing.Mine
 
-/** "Your version · See Olena’s" under the title: no switch, one link to their placing. */
+/** "Your version · see Olena’s" under the title: no switch, one link to their placing. */
 @Composable
 internal fun YourVersionLine(state: CommunityListUiState.Success, onSeeTheirs: () -> Unit, modifier: Modifier = Modifier) {
     if (!state.mineOverTheirs) return

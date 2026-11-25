@@ -307,12 +307,12 @@
     <string name="community_drop_to_start_yours">Відпустіть, щоб почати свою версію · Моє почнеться з рейтингу: %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Відпустіть, щоб почати свою версію · Моє почнеться з цього рейтингу</string>
     <string name="community_started_from_theirs">Вашу версію почато з рейтингу: %1$s</string>
-    <string name="community_started_from_theirs_unnamed">Вашу версію почато з цього рейтингу</string>
+    <string name="community_started_from_theirs_unnamed">Вашу версію почато з рейтингу автора</string>
     <string name="community_replaced_yours">Вашу версію замінено рейтингом: %1$s</string>
-    <string name="community_replaced_yours_unnamed">Вашу версію замінено цим рейтингом</string>
+    <string name="community_replaced_yours_unnamed">Вашу версію замінено рейтингом автора</string>
     <string name="community_your_version">Ваша версія</string>
-    <string name="community_see_theirs">Переглянути: %1$s</string>
-    <string name="community_see_theirs_unnamed">Переглянути рейтинг автора</string>
+    <string name="community_see_theirs">переглянути: %1$s</string>
+    <string name="community_see_theirs_unnamed">переглянути рейтинг автора</string>
     <string name="community_theirs_ranking">Рейтинг: %1$s</string>
     <string name="community_theirs_ranking_unnamed">Рейтинг автора</string>
     <string name="community_back_to_yours">До своєї версії</string>

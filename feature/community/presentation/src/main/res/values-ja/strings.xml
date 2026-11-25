@@ -286,9 +286,9 @@
     <string name="community_drop_to_start_yours">離すと自分のバージョンを開始 · 自分は%1$sのランキングから始まります</string>
     <string name="community_drop_to_start_yours_unnamed">離すと自分のバージョンを開始 · 自分はこのランキングから始まります</string>
     <string name="community_started_from_theirs">%1$sのランキングから自分のバージョンを始めました</string>
-    <string name="community_started_from_theirs_unnamed">このランキングから自分のバージョンを始めました</string>
+    <string name="community_started_from_theirs_unnamed">作者のランキングから自分のバージョンを始めました</string>
     <string name="community_replaced_yours">自分のバージョンを%1$sのランキングに置き換えました</string>
-    <string name="community_replaced_yours_unnamed">自分のバージョンをこのランキングに置き換えました</string>
+    <string name="community_replaced_yours_unnamed">自分のバージョンを作者のランキングに置き換えました</string>
     <string name="community_your_version">自分のバージョン</string>
     <string name="community_see_theirs">%1$sのランキングを見る</string>
     <string name="community_see_theirs_unnamed">作者のランキングを見る</string>

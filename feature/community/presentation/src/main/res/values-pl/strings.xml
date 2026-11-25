@@ -307,12 +307,12 @@
     <string name="community_drop_to_start_yours">Upuść, by zacząć swoją wersję · Mój zaczyna się od rankingu: %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Upuść, by zacząć swoją wersję · Mój zaczyna się od tego rankingu</string>
     <string name="community_started_from_theirs">Twoja wersja zaczyna się od rankingu: %1$s</string>
-    <string name="community_started_from_theirs_unnamed">Twoja wersja zaczyna się od tego rankingu</string>
+    <string name="community_started_from_theirs_unnamed">Twoja wersja zaczyna się od rankingu autora</string>
     <string name="community_replaced_yours">Zastąpiono twoją wersję rankingiem: %1$s</string>
-    <string name="community_replaced_yours_unnamed">Zastąpiono twoją wersję tym rankingiem</string>
+    <string name="community_replaced_yours_unnamed">Zastąpiono twoją wersję rankingiem autora</string>
     <string name="community_your_version">Twoja wersja</string>
-    <string name="community_see_theirs">Zobacz ranking: %1$s</string>
-    <string name="community_see_theirs_unnamed">Zobacz ranking autora</string>
+    <string name="community_see_theirs">zobacz ranking: %1$s</string>
+    <string name="community_see_theirs_unnamed">zobacz ranking autora</string>
     <string name="community_theirs_ranking">Ranking: %1$s</string>
     <string name="community_theirs_ranking_unnamed">Ranking autora</string>
     <string name="community_back_to_yours">Wróć do swojej</string>

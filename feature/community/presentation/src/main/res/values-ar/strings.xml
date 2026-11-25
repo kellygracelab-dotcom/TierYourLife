@@ -321,9 +321,9 @@
     <string name="community_drop_to_start_yours">أفلتها لتبدأ نسختك · تبدأ نسختك بترتيب %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">أفلتها لتبدأ نسختك · تبدأ نسختك بهذا الترتيب</string>
     <string name="community_started_from_theirs">نسختك تبدأ من ترتيب %1$s</string>
-    <string name="community_started_from_theirs_unnamed">نسختك تبدأ من هذا الترتيب</string>
+    <string name="community_started_from_theirs_unnamed">نسختك تبدأ من ترتيب المؤلف</string>
     <string name="community_replaced_yours">استُبدلت نسختك بترتيب %1$s</string>
-    <string name="community_replaced_yours_unnamed">استُبدلت نسختك بهذا الترتيب</string>
+    <string name="community_replaced_yours_unnamed">استُبدلت نسختك بترتيب المؤلف</string>
     <string name="community_your_version">نسختك</string>
     <string name="community_see_theirs">عرض ترتيب %1$s</string>
     <string name="community_see_theirs_unnamed">عرض ترتيب المؤلف</string>

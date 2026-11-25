@@ -293,12 +293,12 @@
     <string name="community_drop_to_start_yours">Drop it to start your version · Mine begins as %1$s’s</string>
     <string name="community_drop_to_start_yours_unnamed">Drop it to start your version · Mine begins as this ranking</string>
     <string name="community_started_from_theirs">Your version starts from %1$s’s ranking</string>
-    <string name="community_started_from_theirs_unnamed">Your version starts from this ranking</string>
+    <string name="community_started_from_theirs_unnamed">Your version starts from the author’s ranking</string>
     <string name="community_replaced_yours">Replaced your version with %1$s’s ranking</string>
-    <string name="community_replaced_yours_unnamed">Replaced your version with this ranking</string>
+    <string name="community_replaced_yours_unnamed">Replaced your version with the author’s ranking</string>
     <string name="community_your_version">Your version</string>
-    <string name="community_see_theirs">See %1$s’s</string>
-    <string name="community_see_theirs_unnamed">See the author’s</string>
+    <string name="community_see_theirs">see %1$s’s</string>
+    <string name="community_see_theirs_unnamed">see the author’s</string>
     <string name="community_theirs_ranking">%1$s’s ranking</string>
     <string name="community_theirs_ranking_unnamed">The author’s ranking</string>
     <string name="community_back_to_yours">Back to yours</string>

@@ -293,12 +293,12 @@
     <string name="community_drop_to_start_yours">Kendi sürümünüzü başlatmak için bırakın · Benimki %1$s sıralamasıyla başlar</string>
     <string name="community_drop_to_start_yours_unnamed">Kendi sürümünüzü başlatmak için bırakın · Benimki bu sıralamayla başlar</string>
     <string name="community_started_from_theirs">Sürümünüz %1$s sıralamasından başlıyor</string>
-    <string name="community_started_from_theirs_unnamed">Sürümünüz bu sıralamadan başlıyor</string>
+    <string name="community_started_from_theirs_unnamed">Sürümünüz yazarın sıralamasından başlıyor</string>
     <string name="community_replaced_yours">Sürümünüz %1$s sıralamasıyla değiştirildi</string>
-    <string name="community_replaced_yours_unnamed">Sürümünüz bu sıralamayla değiştirildi</string>
+    <string name="community_replaced_yours_unnamed">Sürümünüz yazarın sıralamasıyla değiştirildi</string>
     <string name="community_your_version">Sizin sürümünüz</string>
     <string name="community_see_theirs">%1$s sıralamasını gör</string>
-    <string name="community_see_theirs_unnamed">Yazarın sıralamasını gör</string>
+    <string name="community_see_theirs_unnamed">yazarın sıralamasını gör</string>
     <string name="community_theirs_ranking">%1$s sıralaması</string>
     <string name="community_theirs_ranking_unnamed">Yazarın sıralaması</string>
     <string name="community_back_to_yours">Kendi sürümünüze dönün</string>

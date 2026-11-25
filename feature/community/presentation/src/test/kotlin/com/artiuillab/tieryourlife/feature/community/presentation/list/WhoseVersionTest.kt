@@ -81,7 +81,7 @@ class WhoseVersionTest {
         show(yours)
 
         composeRule.onNodeWithText("Your version · ").assertExists()
-        composeRule.onNodeWithText("See Olena M.’s").performClick()
+        composeRule.onNodeWithText("see Olena M.’s").performClick()
 
         composeRule.runOnIdle { assertEquals(listOf(Showing.Theirs), shown) }
     }

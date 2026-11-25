@@ -300,12 +300,12 @@
     <string name="community_drop_to_start_yours">Lâchez pour commencer votre version · Le mien part du classement de %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Lâchez pour commencer votre version · Le mien part de ce classement</string>
     <string name="community_started_from_theirs">Votre version part du classement de %1$s</string>
-    <string name="community_started_from_theirs_unnamed">Votre version part de ce classement</string>
+    <string name="community_started_from_theirs_unnamed">Votre version part du classement de l’auteur</string>
     <string name="community_replaced_yours">Votre version remplacée par le classement de %1$s</string>
-    <string name="community_replaced_yours_unnamed">Votre version remplacée par ce classement</string>
+    <string name="community_replaced_yours_unnamed">Votre version remplacée par le classement de l’auteur</string>
     <string name="community_your_version">Votre version</string>
-    <string name="community_see_theirs">Voir celui de %1$s</string>
-    <string name="community_see_theirs_unnamed">Voir celui de l’auteur</string>
+    <string name="community_see_theirs">voir celui de %1$s</string>
+    <string name="community_see_theirs_unnamed">voir celui de l’auteur</string>
     <string name="community_theirs_ranking">Classement de %1$s</string>
     <string name="community_theirs_ranking_unnamed">Classement de l’auteur</string>
     <string name="community_back_to_yours">Revenir au vôtre</string>

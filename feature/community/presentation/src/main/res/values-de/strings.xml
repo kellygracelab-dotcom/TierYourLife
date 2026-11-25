@@ -293,9 +293,9 @@
     <string name="community_drop_to_start_yours">Loslassen für deine Version · Meine beginnt mit dem Ranking von %1$s</string>
     <string name="community_drop_to_start_yours_unnamed">Loslassen für deine Version · Meine beginnt mit diesem Ranking</string>
     <string name="community_started_from_theirs">Deine Version beginnt mit dem Ranking von %1$s</string>
-    <string name="community_started_from_theirs_unnamed">Deine Version beginnt mit diesem Ranking</string>
+    <string name="community_started_from_theirs_unnamed">Deine Version beginnt mit dem Ranking des Autors</string>
     <string name="community_replaced_yours">Deine Version durch das Ranking von %1$s ersetzt</string>
-    <string name="community_replaced_yours_unnamed">Deine Version durch dieses Ranking ersetzt</string>
+    <string name="community_replaced_yours_unnamed">Deine Version durch das Ranking des Autors ersetzt</string>
     <string name="community_your_version">Deine Version</string>
     <string name="community_see_theirs">Ranking von %1$s ansehen</string>
     <string name="community_see_theirs_unnamed">Ranking des Autors ansehen</string>
