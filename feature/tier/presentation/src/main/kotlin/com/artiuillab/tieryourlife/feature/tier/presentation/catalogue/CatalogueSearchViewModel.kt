@@ -71,6 +71,9 @@ class CatalogueSearchViewModel @Inject constructor(
     private var moreJob: Job? = null
     private var typedQuery = ""
     private var searchedQuery = ""
+
+    /** The words the search on its way or on screen is for, from the moment it is planned. */
+    private var plannedQuery: String? = null
     private var everywhere = false
     private var loadedPage = FIRST_PAGE
     private var started = false
@@ -103,11 +106,16 @@ class CatalogueSearchViewModel @Inject constructor(
         _scope.value = PictureScope.All
         if (searchedQuery.length >= MIN_QUERY_LENGTH) {
             val query = searchedQuery
+            plannedQuery = query
             searchJob = viewModelScope.launch { performSearch(query) }
         }
     }
 
     fun onQueryChange(query: String) {
+        if (asksTheSame(query)) {
+            typedQuery = query
+            return
+        }
         cancelInFlight()
         typedQuery = query
         everywhere = false
@@ -117,10 +125,22 @@ class CatalogueSearchViewModel @Inject constructor(
             _state.value = CatalogueSearchUiState.Initial
             return
         }
+        plannedQuery = trimmed
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MILLIS)
             performSearch(trimmed)
         }
+    }
+
+    /**
+     * A space after the words, or the keyboard settling them again, is no new
+     * search: the one on its way, or its answer, is already for them. The
+     * app sent "Теория" twice at once that way (Backend's logs, 24.11).
+     */
+    private fun asksTheSame(query: String): Boolean {
+        if (query.trim() != plannedQuery) return false
+        val state = _state.value
+        return searchJob?.isActive == true || state is CatalogueSearchUiState.Success || state is CatalogueSearchUiState.Empty
     }
 
     fun search(query: String) {
@@ -132,6 +152,7 @@ class CatalogueSearchViewModel @Inject constructor(
             _state.value = CatalogueSearchUiState.Initial
             return
         }
+        plannedQuery = trimmed
         searchJob = viewModelScope.launch { performSearch(trimmed) }
     }
 
@@ -306,6 +327,7 @@ class CatalogueSearchViewModel @Inject constructor(
     }
 
     private fun cancelInFlight() {
+        plannedQuery = null
         searchJob?.cancel()
         moreJob?.cancel()
     }
