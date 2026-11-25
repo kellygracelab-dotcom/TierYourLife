@@ -88,7 +88,7 @@ class PrivateRankingProgressTest {
         } as CommunityListUiState.Success
         vm.theirsStart.undo()
         assertEquals(signedIn.mine, (vm.state.value as CommunityListUiState.Success).mine)
-        vm.rankings.returnAllToPool()
+        vm.theirsStart.startFromScratch()
         assertEquals(emptyList<Int>(), storage[null to "abc"]!!.pool)
         assertEquals(listOf(0, 1), storage[owner.recordKey to "abc"]!!.pool)
         accounts.accounts.value = Account.Guest
@@ -123,7 +123,7 @@ class PrivateRankingProgressTest {
         vm.state.firstWithin { it is CommunityListUiState.Success }
         vm.show(Showing.Mine)
         vm.moveItem(0, 0, 0)
-        vm.rankings.returnAllToPool()
+        vm.theirsStart.startFromScratch()
         vm.viewModelScope.cancel()
         val reopened = viewModel(drafts = drafts)
         val state = reopened.state.firstWithin { it is CommunityListUiState.Success } as CommunityListUiState.Success
@@ -146,7 +146,7 @@ class PrivateRankingProgressTest {
         val item = original.mine.tiers.first { it.isPool }.items.first()
         val target = original.mine.tiers.first { !it.isPool }
         vm.moveItem(item.id, target.id, 0)
-        vm.rankings.returnAllToPool()
+        vm.theirsStart.startFromScratch()
         val reset = vm.state.value as CommunityListUiState.Success
         assertEquals(original.list, reset.list)
         assertTrue(reset.mine.tiers.filterNot { it.isPool }.all { it.items.isEmpty() })

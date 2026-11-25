@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.itemLayout
+import com.artiuillab.tieryourlife.feature.tier.domain.lists.returningAllToPool
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.withItemMoved
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import kotlinx.coroutines.CoroutineScope
@@ -9,10 +10,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * A move while their arrangement is on screen: the reader's own version
- * begins as what they were looking at, a chosen reader's placing included,
- * with that one move made. The board stays as it was under the finger.
- * A Mine with a card in a tier is asked about first, each time, as on the web.
+ * The reader's own version put in place in one step, each with Undo and none
+ * asked about first, as on the web: a move on their placing before there is a
+ * version, their placing again from the menu, and every card back in the pool.
  */
 internal class TheirsStart(
     private val state: MutableStateFlow<CommunityListUiState>,
@@ -21,39 +21,36 @@ internal class TheirsStart(
     private val replacing: () -> Unit,
     private val changed: () -> Unit,
 ) {
-    /** Mine as it was before a move on Theirs replaced it, for Undo. */
+    /** Mine as it was before the last replacement, for Undo. */
     private var before: UndoStart? = null
     private var nextUndoId = 0L
 
-    /** The move on Theirs that asked before replacing Mine. */
-    private var asked: Triple<Long, Long, Int>? = null
-
+    /**
+     * A move while their placing is on screen and the reader has no version
+     * yet: theirs, a chosen reader's included, becomes Mine with that one move
+     * made. The board stays as it was under the finger.
+     */
     fun move(current: CommunityListUiState.Success, itemId: Long, toTierId: Long, toPosition: Int) {
         // Cards another reader added stay in their version: Mine on this page holds the list's cards only.
-        if (itemId !in current.listCards()) return
-        if (current.arranged && current.mine.tiers.any { !it.isPool && it.items.isNotEmpty() }) {
-            asked = Triple(itemId, toTierId, toPosition)
-            state.value = current.copy(replaceAsk = ReplaceAsk(current.theirsName))
-            return
+        if (itemId !in current.listCards() || current.peeking) return
+        replace(current, { name, id -> ListNotice.StartedFromTheirs(name, replaced = false, undoId = id) }) {
+            it.theirsCards().withItemMoved(itemId, toTierId, toPosition)
         }
-        start(current, itemId, toTierId, toPosition, replaced = false)
     }
 
-    /** Replace: Mine starts from Theirs with the move that asked. */
-    fun replace() {
-        val (itemId, toTierId, toPosition) = asked ?: return
-        asked = null
-        val current = state.value as? CommunityListUiState.Success ?: return
-        start(current, itemId, toTierId, toPosition, replaced = true)
+    /** "Back to Olena's ranking": Mine becomes the placing the left half holds. */
+    fun backToTheirs() {
+        val current = (state.value as? CommunityListUiState.Success)?.takeIf { it.twoHalves && !it.arriving } ?: return
+        replace(current, { name, id -> ListNotice.StartedFromTheirs(name, replaced = true, undoId = id) }) { it.theirsCards() }
     }
 
-    /** Cancel: the move is not made, and Theirs stays on screen as it was. */
-    fun keep() {
-        asked = null
-        state.update { if (it is CommunityListUiState.Success) it.copy(replaceAsk = null) else it }
+    /** "Start from scratch": every card of Mine back in the pool. */
+    fun startFromScratch() {
+        val current = (state.value as? CommunityListUiState.Success)?.takeIf { !it.own && !it.arriving && it.minePlaced } ?: return
+        replace(current, { _, id -> ListNotice.StartedFromScratch(id) }) { it.mine.returningAllToPool() }
     }
 
-    /** Mine as it was before, and their arrangement back on screen. */
+    /** Mine as it was before, and the page as it showed it. */
     fun undo() {
         before?.let { undo(it.id) }
     }
@@ -66,17 +63,16 @@ internal class TheirsStart(
             return
         }
         before = null
-        state.value = current.copy(mine = step.mine, arranged = step.arranged, showing = Showing.Theirs)
+        state.value = current.copy(mine = step.mine, arranged = step.arranged, showing = step.showing)
         scope.launch { tell(ListNotice.TheirsUndoDismissed(id)) }
         changed()
     }
 
     /** Undo no longer applies: the board was reopened, emptied or changed under it. */
     fun forget() {
-        val old = before
+        val old = before ?: return
         before = null
-        asked = null
-        if (old != null) scope.launch { tell(ListNotice.TheirsUndoDismissed(old.id)) }
+        scope.launch { tell(ListNotice.TheirsUndoDismissed(old.id)) }
     }
 
     /** A late snackbar completion must never consume a newer action's snapshot. */
@@ -86,27 +82,37 @@ internal class TheirsStart(
         scope.launch { tell(ListNotice.TheirsUndoDismissed(id)) }
     }
 
-    private fun start(current: CommunityListUiState.Success, itemId: Long, toTierId: Long, toPosition: Int, replaced: Boolean) {
-        val listCards = current.listCards()
+    private fun replace(
+        current: CommunityListUiState.Success,
+        notice: (name: String?, undoId: Long) -> ListNotice,
+        newMine: (CommunityListUiState.Success) -> TierList,
+    ) {
         val id = nextUndoId++
         replacing()
         state.update { now ->
             if (now !is CommunityListUiState.Success) return@update now
-            val theirs = now.theirs.tiers.map { tier -> tier.copy(items = tier.items.filter { it.id in listCards }) }
-            now.copy(
-                mine = now.mine.copy(tiers = theirs).withItemMoved(itemId, toTierId, toPosition),
-                showing = Showing.Mine,
-                arranged = true,
-                replaceAsk = null,
-            )
+            now.copy(mine = newMine(now), showing = Showing.Mine, arranged = true, gameStep = null)
         }
         val after = (state.value as? CommunityListUiState.Success)?.mine ?: return
-        before = UndoStart(id, current.mine, current.arranged, after, current.version)
-        scope.launch { tell(ListNotice.StartedFromTheirs(current.theirsName, replaced = replaced, undoId = id)) }
+        before = UndoStart(id, current.mine, current.arranged, current.showing, after, current.version)
+        scope.launch { tell(notice(current.theirsName, id)) }
         changed()
+    }
+
+    /** Their placing in Mine's frame, without the cards another reader added. */
+    private fun CommunityListUiState.Success.theirsCards(): TierList {
+        val listCards = listCards()
+        return mine.copy(tiers = theirs.tiers.map { tier -> tier.copy(items = tier.items.filter { it.id in listCards }) })
     }
 
     private fun CommunityListUiState.Success.listCards(): Set<Long> = list.tiers.flatMap { it.items }.mapTo(mutableSetOf()) { it.id }
 
-    private data class UndoStart(val id: Long, val mine: TierList, val arranged: Boolean, val after: TierList, val version: Long)
+    private data class UndoStart(
+        val id: Long,
+        val mine: TierList,
+        val arranged: Boolean,
+        val showing: Showing,
+        val after: TierList,
+        val version: Long,
+    )
 }

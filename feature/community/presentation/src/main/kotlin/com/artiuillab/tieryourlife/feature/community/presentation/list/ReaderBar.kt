@@ -29,14 +29,13 @@ import com.artiuillab.tieryourlife.feature.tier.board.BoardBar
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
 
 private val BAR_BUTTON_HEIGHT = 36.dp
-private val BAR_SWITCH_HEIGHT = 32.dp
 private val TABLET_CONTROL_HEIGHT = 40.dp
 private val BAR_BUTTON_MAX_WIDTH = 168.dp
 private val BAR_AUTHOR_MAX_WIDTH = 160.dp
 
 /**
- * The reader's strip, said in the bar: whose arrangement is on screen and the
- * save, without the sentence under them. In a short window's single bar the
+ * The reader's strip, said in the bar: the way to their placing or back from
+ * it, and the save, without the sentence under them. In a short window's single bar the
  * author comes along, since the line that names them has no room of its own.
  * The rankings are in the menu. A tablet held upright has the room for a
  * taller switch and a tonal save with its icon.
@@ -66,17 +65,19 @@ internal fun RowScope.ReaderBarControls(
         )
         Spacer(Modifier.width(8.dp))
     }
-    if (state.twoHalves) {
-        WhoseArrangement(
-            showing = state.showing,
-            theirsLabel = state.chosenRanking?.authorName ?: stringResource(R.string.community_showing_theirs),
-            onShow = onShow,
-            height = if (mode == BoardBar.Docked) TABLET_CONTROL_HEIGHT else BAR_SWITCH_HEIGHT,
-        )
+    val height = if (mode == BoardBar.Docked) TABLET_CONTROL_HEIGHT else BAR_BUTTON_HEIGHT
+    if (state.peeking) {
+        TheirsRankingLabel(state, Modifier.widthIn(max = BAR_AUTHOR_MAX_WIDTH))
         Spacer(Modifier.width(8.dp))
+        BackToYoursButton(onClick = { onShow(Showing.Mine) }, modifier = Modifier.height(height))
+        return
+    }
+    // Beside the rows the line under the title says it; a short bar and a tablet's have no such line.
+    if (state.mineOverTheirs && mode != BoardBar.Beside) {
+        SeeTheirsButton(state, onSeeTheirs = { onShow(Showing.Theirs) }, height = height)
+        Spacer(Modifier.width(4.dp))
     }
     if (state.own) {
-        val height = if (mode == BoardBar.Docked) TABLET_CONTROL_HEIGHT else BAR_BUTTON_HEIGHT
         ShareLinkButton(onClick = onShareLink, height = height)
         Spacer(Modifier.width(8.dp))
         OwnBoardButton(state = state, onClick = onOwnBoard, height = height, maxLines = 1)

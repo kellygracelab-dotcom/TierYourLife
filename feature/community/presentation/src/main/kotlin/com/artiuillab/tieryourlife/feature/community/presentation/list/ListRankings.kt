@@ -36,14 +36,11 @@ internal class ListRankings(
     private val scope: CoroutineScope,
     private val messages: UserMessages,
     private val reread: suspend () -> Unit,
-    private val resetMine: () -> Unit = {},
     private val visibilityChanged: suspend (Boolean) -> Unit = {},
     private val accounts: AccountRepository,
     private val mineReady: () -> Boolean = { true },
     private val savedBoard: suspend () -> TierList? = { null },
 ) {
-    fun returnAllToPool() = resetMine()
-
     /** The list as the server handed it over, for placing its cards a reader's way. */
     private var opened: PublishedList? = null
 

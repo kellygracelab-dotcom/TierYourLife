@@ -100,8 +100,6 @@ sealed interface CommunityListUiState {
         val gameStep: GameStep? = null,
         /** The reader's own ranking is in this list's Rankings: the menu updates or removes it rather than showing it. */
         val rankingShown: Boolean = false,
-        /** A move on Theirs over a Mine of one's own, waiting for Replace or Cancel; whose ranking it would start from. */
-        val replaceAsk: ReplaceAsk? = null,
     ) : CommunityListUiState {
         /** What the board area is drawing right now. */
         val shown: TierList get() = if (showing == Showing.Theirs) theirs else mine
@@ -125,8 +123,17 @@ sealed interface CommunityListUiState {
         /** Whose placing the left half shows, by name; null when it has none to give. */
         val theirsName: String? get() = (chosenRanking?.authorName ?: authorName.takeUnless { editorial })?.takeUnless { it.isBlank() }
 
-        /** Two halves to switch between and to choose from on saving: the author's placing, or a reader's chosen into its place. */
+        /** Two halves to choose from: the author's placing, or a reader's chosen into its place, and the reader's own. */
         val twoHalves: Boolean get() = !own && (knowsTheirs || chosenRanking != null)
+
+        /**
+         * Their placing looked at over a version of the reader's own: only to
+         * look at, with the way back to theirs beside it.
+         */
+        val peeking: Boolean get() = twoHalves && arranged && showing == Showing.Theirs
+
+        /** Something in Mine's tiers to send back to the pool. */
+        val minePlaced: Boolean get() = mine.tiers.any { !it.isPool && it.items.isNotEmpty() }
 
         /** Somebody else's list, arranged the reader's way, by hand or by a game. */
         val canShowRanking: Boolean get() = !own && arranged
@@ -136,17 +143,17 @@ sealed interface CommunityListUiState {
          * card the reader places: on an untouched board they promised work not done.
          */
         val nothingToSaveYet: Boolean
-            get() = !own && savedId == null && !savesTheAuthors && mine.tiers.none { !it.isPool && it.items.isNotEmpty() }
+            get() = !own && savedId == null && !savesTheAuthors && !minePlaced
     }
 
     data object Error : CommunityListUiState
 }
 
-/** "Start from [name]'s ranking? Your version will be replaced." */
-data class ReplaceAsk(val name: String?)
-
 data class CoverCredit(val imageUrl: String, val attribution: PictureAttribution)
 
-/** Save author's list only on the author's own placing; Save my list on Mine, on a reader's placing and on a single half. */
+/**
+ * Save author's list only on the author's own placing before the reader has a
+ * version; Save my list on Mine, on a reader's placing and on a single half.
+ */
 internal val CommunityListUiState.Success.savesTheAuthors: Boolean
-    get() = twoHalves && showing == Showing.Theirs && chosenRanking == null
+    get() = twoHalves && showing == Showing.Theirs && chosenRanking == null && !arranged
