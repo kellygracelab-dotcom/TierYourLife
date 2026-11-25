@@ -168,8 +168,6 @@ class SharedPreferencesAppPreferences @Inject constructor(
 
     override fun poolDockRows(): Int = prefs.getInt(KEY_POOL_DOCK_ROWS, DEFAULT_POOL_DOCK_ROWS)
 
-    override fun poolDockRowsChosen(): Boolean = prefs.contains(KEY_POOL_DOCK_ROWS)
-
     override fun setPoolDockRows(rows: Int) {
         prefs.edit { putInt(KEY_POOL_DOCK_ROWS, rows) }
     }
