@@ -19,9 +19,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -46,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,7 +53,6 @@ import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.ui.RankingChoiceDialog
-import com.artiuillab.tieryourlife.core.theme.ui.ReturnToPoolDialog
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.ReportReason
 import com.artiuillab.tieryourlife.feature.community.presentation.R
@@ -87,7 +82,6 @@ import kotlinx.coroutines.flow.filter
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
-private val SWITCH_HEIGHT = 36.dp
 private val SAVE_BUTTON_MAX_WIDTH = 180.dp
 private const val PHASE_FADE_MILLIS = 220
 
@@ -147,7 +141,8 @@ fun CommunityListScreen(
         onLoadMoreRankings = viewModel.rankings::loadMore,
         onWithdrawRanking = viewModel.rankings::withdrawMine,
         onLikeRanking = viewModel.rankings::like,
-        onReturnAllToPool = viewModel.rankings::returnAllToPool,
+        onStartFromScratch = viewModel.theirsStart::startFromScratch,
+        onBackToTheirs = viewModel.theirsStart::backToTheirs,
         onPlay = { playOpen = true },
         playSaved = playRequest?.let { play.isSaved(it.key) } == true,
         onShowMyRanking = { viewModel.showMyRanking(languageTag) },
@@ -174,9 +169,6 @@ fun CommunityListScreen(
             onShow = { viewModel.choices.choose(public = true, languageTag) },
             onNotNow = viewModel.choices::dismiss,
         )
-    }
-    loaded?.replaceAsk?.let { ask ->
-        ReplaceYoursDialog(name = ask.name, onReplace = viewModel.theirsStart::replace, onCancel = viewModel.theirsStart::keep)
     }
     if (playRequest != null) {
         play.Layer(
@@ -212,7 +204,10 @@ fun CommunityListScreenContent(
     onLoadMoreRankings: () -> Unit = {},
     onWithdrawRanking: () -> Unit = {},
     onLikeRanking: (Ranking) -> Unit = {},
-    onReturnAllToPool: () -> Unit = {},
+    /** Every card of Mine back in the pool, with Undo. */
+    onStartFromScratch: () -> Unit = {},
+    /** Mine becomes the placing on the left again, with Undo. */
+    onBackToTheirs: () -> Unit = {},
     /** Play from either half; its result fills Mine. */
     onPlay: (() -> Unit)? = null,
     playSaved: Boolean = false,
@@ -228,7 +223,6 @@ fun CommunityListScreenContent(
     onTurnGame: () -> Unit = {},
 ) {
     var actionsVisible by remember { mutableStateOf(false) }
-    var returnToPoolVisible by rememberSaveable { mutableStateOf(false) }
     // A card in the air on Theirs: the strip says what dropping it will do.
     var lifted by remember { mutableStateOf(false) }
     val snackbars = remember { SnackbarHostState() }
@@ -326,6 +320,7 @@ fun CommunityListScreenContent(
                                     onAuthorClick = onAuthorClick,
                                     onToggleFollow = onToggleFollow,
                                     onOpenList = onOpenList,
+                                    onSeeTheirs = { onShow(Showing.Theirs) },
                                 )
                             },
                             // In the pool sheet's strip, in reach whether the pool is folded or open.
@@ -395,7 +390,8 @@ fun CommunityListScreenContent(
                     onReport = { reportVisible = true },
                     onShowMyRanking = { if (loaded.signedIn) onShowMyRanking() else onSignIn() },
                     onOpenRankings = openRankings,
-                    onReturnAllToPool = { returnToPoolVisible = true },
+                    onStartFromScratch = onStartFromScratch,
+                    onBackToTheirs = onBackToTheirs,
                     onAboutCover = { coverVisible = true },
                     onRemoveRanking = { removeRankingVisible = true },
                     own = own,
@@ -412,16 +408,6 @@ fun CommunityListScreenContent(
             )
 
             CoverSheet(loaded.list.title, loaded.cover.takeIf { coverVisible }, onDismiss = { coverVisible = false })
-
-            if (returnToPoolVisible) {
-                ReturnToPoolDialog(
-                    onDismiss = { returnToPoolVisible = false },
-                    onConfirm = {
-                        returnToPoolVisible = false
-                        onReturnAllToPool()
-                    },
-                )
-            }
 
             if (reportVisible) {
                 ReportDialog(
@@ -462,25 +448,6 @@ fun CommunityListScreenContent(
             onOpenBoard = onOpenSaved,
         )
     }
-}
-
-/** Asked before a move on someone else's ranking puts it in place of one's own version. */
-@Composable
-internal fun ReplaceYoursDialog(name: String?, onReplace: () -> Unit, onCancel: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onCancel,
-        modifier = Modifier.testTag(CommunityListTestTags.REPLACE_YOURS_DIALOG),
-        title = {
-            Text(if (name != null) stringResource(R.string.community_replace_yours_ask, name) else stringResource(R.string.community_replace_yours_ask_unnamed))
-        },
-        text = { Text(stringResource(R.string.community_replace_yours_body)) },
-        confirmButton = {
-            TextButton(onClick = onReplace, modifier = Modifier.testTag(CommunityListTestTags.REPLACE_YOURS_CONFIRM)) {
-                Text(stringResource(R.string.community_action_replace))
-            }
-        },
-        dismissButton = { TextButton(onClick = onCancel) { Text(stringResource(ThemeR.string.action_cancel)) } },
-    )
 }
 
 /** Taking one's own ranking out of the list's Rankings, asked first: the board on this phone stays. */
@@ -526,7 +493,8 @@ private fun ListMenu(
     onReport: () -> Unit,
     onShowMyRanking: () -> Unit,
     onOpenRankings: () -> Unit,
-    onReturnAllToPool: () -> Unit,
+    onStartFromScratch: () -> Unit,
+    onBackToTheirs: () -> Unit,
     onAboutCover: () -> Unit,
     onRemoveRanking: () -> Unit,
     own: OwnListCallbacks,
@@ -552,8 +520,10 @@ private fun ListMenu(
         onTakeDown = closing(own.onTakeDown).takeIf { mine && !loaded.fromBoard },
         onOpenRankings = closing(onOpenRankings),
         rankingCount = loaded.rankingCount,
-        onReturnAllToPool = closing(onReturnAllToPool).takeIf { !loaded.own && !loaded.arriving && loaded.showing == Showing.Mine },
-        canReturnAllToPool = loaded.mine.tiers.any { !it.isPool && it.items.isNotEmpty() },
+        // Neither asks first: each says what it did, with Undo.
+        onBackToTheirs = closing(onBackToTheirs).takeIf { loaded.twoHalves && loaded.arranged && !loaded.arriving },
+        theirsName = loaded.theirsName,
+        onStartFromScratch = closing(onStartFromScratch).takeIf { !loaded.own && !loaded.arriving && loaded.minePlaced },
         onAboutCover = closing(onAboutCover).takeIf { loaded.cover != null },
     )
 }
@@ -630,7 +600,7 @@ private fun ListSnackbar(
         var shownUndo: Long? = null
         listNotices.filter { notice ->
             val current = notice !is ListNotice.TheirsUndoDismissed || notice.undoId == shownUndo
-            if (current) shownUndo = (notice as? ListNotice.StartedFromTheirs)?.undoId
+            if (current) shownUndo = (notice as? ListNotice.Undoable)?.undoId
             current
         }.collectLatest { notice ->
             when (notice) {
@@ -639,11 +609,11 @@ private fun ListSnackbar(
                 ListNotice.SignInToFollow -> signIn()
                 is ListNotice.FollowRefused -> host.showSnackbar(resources.sentenceFor(notice.refusal))
                 is ListNotice.TheirsUndoDismissed -> Unit
-                is ListNotice.StartedFromTheirs -> {
+                is ListNotice.Undoable -> {
                     host.currentSnackbarData?.dismiss()
                     try {
                         val answer = host.showSnackbar(
-                            message = resources.startedFromTheirs(notice),
+                            message = resources.replaced(notice),
                             actionLabel = resources.getString(R.string.community_action_undo),
                             duration = SnackbarDuration.Long,
                         )
@@ -658,7 +628,9 @@ private fun ListSnackbar(
     SnackbarHost(host, Modifier.fillMaxSize().wrapContentHeight(Alignment.Bottom).navigationBarsPadding())
 }
 
-private fun Resources.startedFromTheirs(notice: ListNotice.StartedFromTheirs): String {
+private fun Resources.replaced(notice: ListNotice.Undoable): String {
+    if (notice is ListNotice.StartedFromScratch) return getString(R.string.community_started_from_scratch)
+    notice as ListNotice.StartedFromTheirs
     val name = notice.name
     return when {
         notice.replaced && name != null -> getString(R.string.community_replaced_yours, name)
@@ -693,6 +665,7 @@ private fun UnderTheTitle(
     onAuthorClick: (uid: String, name: String, photoUrl: String?) -> Unit,
     onToggleFollow: () -> Unit,
     onOpenList: (String) -> Unit,
+    onSeeTheirs: () -> Unit,
 ) {
     // One of the app's own lists has no line to pin here; somebody's anonymous one has a line that leads nowhere.
     if (loaded.own) {
@@ -711,6 +684,7 @@ private fun UnderTheTitle(
         BasedOnLine(basedOn = basedOn, onOpen = { onOpenList(basedOn.id) })
     }
     loaded.source?.let { SourceLine(it) }
+    YourVersionLine(loaded, onSeeTheirs)
 }
 
 /**
@@ -738,14 +712,11 @@ private fun ReaderStrip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Only where there is something to switch to: a template or a snapshot
-            // without the author's arrangement has one half, and their own list has only theirs.
-            if (state.twoHalves) {
-                WhoseArrangement(
-                    showing = state.showing,
-                    theirsLabel = state.chosenRanking?.authorName ?: stringResource(R.string.community_showing_theirs),
-                    onShow = onShow,
-                )
+            // Their placing looked at over the reader's own: whose it is, and the way back, nothing to save or move.
+            if (state.peeking) {
+                TheirsRankingLabel(state, Modifier.weight(1f))
+                BackToYoursButton(onClick = { onShow(Showing.Mine) })
+                return@Row
             }
             Spacer(Modifier.weight(1f))
             val savedId = state.savedId
@@ -779,6 +750,7 @@ private fun ReaderStrip(
                 }
             }
         }
+        if (state.peeking) return@Column
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) {
                 if (state.foldsToRankIt && !lifted) {
@@ -834,33 +806,6 @@ internal val CommunityListUiState.Success.foldsToRankIt: Boolean
         !arranged &&
         savedId == null &&
         shown.tiers.firstOrNull { it.isPool }?.items.isNullOrEmpty()
-
-/** Two boards, not one: a reader who glances at the author's finds their own work where they left it. */
-@Composable
-internal fun WhoseArrangement(showing: Showing, theirsLabel: String, onShow: (Showing) -> Unit, height: Dp = SWITCH_HEIGHT) {
-    SingleChoiceSegmentedButtonRow(modifier = Modifier.height(height)) {
-        Showing.entries.forEachIndexed { index, which ->
-            SegmentedButton(
-                selected = showing == which,
-                onClick = { onShow(which) },
-                shape = SegmentedButtonDefaults.itemShape(index, Showing.entries.size),
-                modifier = Modifier.testTag(CommunityListTestTags.showing(which)),
-                // The fill already says which; a tick beside two short words only crowds them.
-                icon = {},
-            ) {
-                Text(
-                    // The left half is whoever's placing is on screen: the author's, or a reader's by name.
-                    text = if (which == Showing.Theirs) theirsLabel else stringResource(R.string.community_showing_mine),
-                    modifier = Modifier.widthIn(max = NAME_MAX_WIDTH),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-    }
-}
-
-private val NAME_MAX_WIDTH = 120.dp
 
 private enum class Phase { Loading, Ready, Error }
 
@@ -923,10 +868,14 @@ private val CommunityListUiState.Success.statusRes: Int
         else -> R.string.community_someone_elses
     }
 
+/** A card dropped on their placing, before the reader has a version, starts one. */
+private val CommunityListUiState.Success.dropStartsYours: Boolean
+    get() = !own && showing == Showing.Theirs && !peeking
+
 /** The strip's sentence; while a card is in the air on Theirs, what dropping it does. */
 @Composable
 private fun statusText(state: CommunityListUiState.Success, lifted: Boolean): String {
-    if (!lifted || state.own || state.showing != Showing.Theirs) return stringResource(state.statusRes)
+    if (!lifted || !state.dropStartsYours) return stringResource(state.statusRes)
     val name = state.theirsName
     return if (name != null) {
         stringResource(R.string.community_drop_to_start_yours, name)
@@ -938,7 +887,7 @@ private fun statusText(state: CommunityListUiState.Success, lifted: Boolean): St
 /** The same sentence, small, under the side pool's title, and a game's Undo under it. */
 @Composable
 private fun ReaderStatusLine(state: CommunityListUiState.Success, lifted: Boolean, onTurnGame: () -> Unit) {
-    if (state.nothingToSaveYet && !lifted) return
+    if (state.peeking || (state.nothingToSaveYet && !lifted)) return
     Column {
         Text(
             text = statusText(state, lifted),

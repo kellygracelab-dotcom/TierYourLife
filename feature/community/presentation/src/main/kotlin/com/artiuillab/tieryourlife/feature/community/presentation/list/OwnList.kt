@@ -20,8 +20,16 @@ sealed interface ListNotice {
     /** Their own list came down: the page has nothing left to show. */
     data object TakenDown : ListNotice
 
-    /** A move on Theirs started the reader's own version from [name]'s; [replaced] when Mine had been arranged before. */
-    data class StartedFromTheirs(val name: String?, val replaced: Boolean, val undoId: Long = 0) : ListNotice
+    /** A replacement of Mine the snackbar offers to undo. */
+    sealed interface Undoable : ListNotice {
+        val undoId: Long
+    }
+
+    /** Mine started from [name]'s placing: by a move on it, or from the menu over a version of their own when [replaced]. */
+    data class StartedFromTheirs(val name: String?, val replaced: Boolean, override val undoId: Long = 0) : Undoable
+
+    /** Every card of Mine back in the pool, from the menu. */
+    data class StartedFromScratch(override val undoId: Long = 0) : Undoable
 
     /** That particular action was consumed, expired or invalidated by a newer edit. */
     data class TheirsUndoDismissed(val undoId: Long) : ListNotice

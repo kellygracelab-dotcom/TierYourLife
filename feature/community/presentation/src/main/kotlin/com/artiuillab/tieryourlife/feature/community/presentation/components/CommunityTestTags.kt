@@ -17,6 +17,8 @@ object CommunityTestTags {
     const val ACTION_REPORT = "community_action_report"
     const val ACTION_SHOW_RANKING = "community_action_show_ranking"
     const val ACTION_REMOVE_RANKING = "community_action_remove_ranking"
+    const val ACTION_BACK_TO_THEIRS = "community_action_back_to_theirs"
+    const val ACTION_START_FROM_SCRATCH = "community_action_start_from_scratch"
     const val ACTION_RANKINGS = "community_action_rankings"
     const val ACTION_WRONG_TOPIC = "community_action_wrong_topic"
     const val ACTION_TAKE_DOWN = "community_action_take_down"

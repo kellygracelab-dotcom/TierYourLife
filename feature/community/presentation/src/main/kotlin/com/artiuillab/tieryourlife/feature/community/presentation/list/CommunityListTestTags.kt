@@ -1,7 +1,9 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
 internal object CommunityListTestTags {
-    fun showing(which: Showing): String = "community_showing_${which.name.lowercase()}"
+    const val SEE_THEIRS = "community_list_see_theirs"
+    const val THEIRS_RANKING = "community_list_theirs_ranking"
+    const val BACK_TO_YOURS = "community_list_back_to_yours"
     const val SCREEN = "community_list_screen"
     const val SKELETON = "community_list_skeleton"
     const val FOLLOW = "community_list_follow"
@@ -24,8 +26,6 @@ internal object CommunityListTestTags {
     const val GAME_STEP = "community_list_game_step"
     const val REMOVE_RANKING_DIALOG = "community_list_remove_ranking_dialog"
     const val REMOVE_RANKING_CONFIRM = "community_list_remove_ranking_confirm"
-    const val REPLACE_YOURS_DIALOG = "community_list_replace_yours_dialog"
-    const val REPLACE_YOURS_CONFIRM = "community_list_replace_yours_confirm"
     const val RANKINGS_SHEET = "community_list_rankings_sheet"
     const val RANKING_AUTHOR = "community_list_ranking_author"
     const val RANKINGS_EMPTY = "community_list_rankings_empty"

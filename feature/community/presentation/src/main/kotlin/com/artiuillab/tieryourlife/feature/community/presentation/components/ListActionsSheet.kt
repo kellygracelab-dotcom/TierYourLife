@@ -69,8 +69,11 @@ fun ListActionsSheet(
     /** On a list's page, first: the readers' placings of it, and how many there are. */
     onOpenRankings: (() -> Unit)? = null,
     rankingCount: Int = 0,
-    onReturnAllToPool: (() -> Unit)? = null,
-    canReturnAllToPool: Boolean = false,
+    /** On somebody else's list the reader has a version of: theirs in its place again, by [theirsName]. */
+    onBackToTheirs: (() -> Unit)? = null,
+    theirsName: String? = null,
+    /** Every card of the reader's version back in the pool. */
+    onStartFromScratch: (() -> Unit)? = null,
     /** A house list whose cover the editor credited: who made it. */
     onAboutCover: (() -> Unit)? = null,
 ) {
@@ -150,15 +153,7 @@ fun ListActionsSheet(
                     icon = { size, tint -> DeleteOutlineIcon(size, tint) },
                 )
             }
-            if (onReturnAllToPool != null) {
-                ActionRow(
-                    text = stringResource(com.artiuillab.tieryourlife.core.theme.R.string.community_return_all_to_pool),
-                    testTag = "community_return_all_to_pool",
-                    onClick = onReturnAllToPool,
-                    icon = { size, tint -> GridViewIcon(size, tint) },
-                    enabled = canReturnAllToPool,
-                )
-            }
+            VersionActions(onBackToTheirs, theirsName, onStartFromScratch)
             if (onTakeDown != null) {
                 ActionRow(
                     text = stringResource(R.string.moderation_action_take_down),
@@ -225,6 +220,31 @@ private fun SheetHead(title: String, authorName: String?, authorPhotoUrl: String
     }
 }
 
+/** The reader's version put in place at once, each said afterwards with Undo: their ranking again, or every card back in the pool. */
+@Composable
+private fun VersionActions(onBackToTheirs: (() -> Unit)?, theirsName: String?, onStartFromScratch: (() -> Unit)?) {
+    if (onBackToTheirs != null) {
+        ActionRow(
+            text = if (theirsName != null) {
+                stringResource(R.string.community_back_to_theirs, theirsName)
+            } else {
+                stringResource(R.string.community_back_to_theirs_unnamed)
+            },
+            testTag = CommunityTestTags.ACTION_BACK_TO_THEIRS,
+            onClick = onBackToTheirs,
+            icon = { size, tint -> FormatListNumberedIcon(size, tint) },
+        )
+    }
+    if (onStartFromScratch != null) {
+        ActionRow(
+            text = stringResource(R.string.community_start_from_scratch),
+            testTag = CommunityTestTags.ACTION_START_FROM_SCRATCH,
+            onClick = onStartFromScratch,
+            icon = { size, tint -> GridViewIcon(size, tint) },
+        )
+    }
+}
+
 @Composable
 private fun ActionRow(
     text: String,
@@ -232,13 +252,12 @@ private fun ActionRow(
     onClick: () -> Unit,
     icon: @Composable (Dp, Color) -> Unit,
     color: Color = MaterialTheme.colorScheme.onSurface,
-    enabled: Boolean = true,
 ) {
-    val tint = if (enabled) color else color.copy(alpha = 0.38f)
+    val tint = color
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable(enabled = enabled, onClick = onClick)
+            .clickable(onClick = onClick)
             .testTag(testTag)
             .padding(horizontal = 24.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
