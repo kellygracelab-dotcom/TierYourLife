@@ -22,6 +22,12 @@ interface TierRepository {
     suspend fun getAllTierLists(): List<TierList>
 
     /**
+     * This account's boards taken from the published list [publishedId]:
+     * what [getAllTierLists] holds of it, read without every other board.
+     */
+    suspend fun getCopiesOf(publishedId: String): List<TierList> = getAllTierLists().filter { it.takenFrom == publishedId }
+
+    /**
      * Every board as a list of boards shows it, without its cards: what a
      * screen of boards reads, where [getAllTierLists] would read every card.
      */

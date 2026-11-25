@@ -271,6 +271,10 @@ interface TierDao {
     @Query("SELECT * FROM active_tier_lists WHERE ownerUid IS :owner AND draft = 0 ORDER BY id ASC")
     suspend fun getAllTierListsWithTiers(owner: String?): List<TierListWithTiers>
 
+    @Transaction
+    @Query("SELECT * FROM active_tier_lists WHERE ownerUid IS :owner AND draft = 0 AND takenFrom = :publishedId ORDER BY id ASC")
+    suspend fun getCopiesWithTiers(publishedId: String, owner: String?): List<TierListWithTiers>
+
     /** Only one New list is ever open; a draft left by a closed app is nothing anyone made. */
     @Query("DELETE FROM tier_lists WHERE draft = 1")
     suspend fun dropDrafts()

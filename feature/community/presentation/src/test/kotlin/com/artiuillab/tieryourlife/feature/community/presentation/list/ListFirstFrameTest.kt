@@ -19,8 +19,11 @@ import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.ListCategory
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierItem
+import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
+import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -126,6 +129,20 @@ class ListFirstFrameTest {
         assertEquals(first.showing, loaded.showing)
         assertEquals(first.follow, loaded.follow)
         assertEquals(first.basedOn, loaded.basedOn)
+        assertEquals(listOf("Pearl", "Lady Bird"), loaded.list.tiers.first().items.map { it.title })
+    }
+
+    /**
+     * A phone's blank cards stayed up while every board in the library was
+     * read to find this list's copy (Every US president, 25.11). Only the
+     * copy is read now: a library that never finishes loading holds nothing.
+     */
+    @Test
+    fun aLibraryThatNeverFinishesLoading_doesNotHoldTheCards() = runBlocking {
+        val viewModel = viewModel(community = Answering(), tiers = LibraryNeverLoads())
+
+        val loaded = viewModel.state.firstWithin { (it as? CommunityListUiState.Success)?.arriving == false } as CommunityListUiState.Success
+
         assertEquals(listOf("Pearl", "Lady Bird"), loaded.list.tiers.first().items.map { it.title })
     }
 
@@ -253,7 +270,7 @@ class ListFirstFrameTest {
 
     private fun viewModel(
         community: Answering,
-        tiers: RecordingTierRepository = RecordingTierRepository(),
+        tiers: TierRepository = RecordingTierRepository(),
         kept: FakeOpenedLists = FakeOpenedLists(),
         route: CommunityRoute.CommunityList = CommunityRoute.CommunityList.of(summary),
     ) = CommunityListViewModel(
@@ -289,6 +306,10 @@ private fun handleOf(route: CommunityRoute.CommunityList) = SavedStateHandle(
         "basedOnAuthor" to route.basedOnAuthor,
     ).filter { it.second != null }.toMap(),
 )
+
+private class LibraryNeverLoads(base: TierRepository = RecordingTierRepository()) : TierRepository by base {
+    override suspend fun getAllTierLists(): List<TierList> = awaitCancellation()
+}
 
 /** Answers with [list] once [gate] opens, or with [failure]. */
 private class Answering(

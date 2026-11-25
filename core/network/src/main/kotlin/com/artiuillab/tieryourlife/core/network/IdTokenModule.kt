@@ -20,8 +20,8 @@ object IdTokenModule {
             val auth = FirebaseAuth.getInstance()
             // A guest identity is made on the spot rather than at launch: most
             // sessions never call anything that needs one.
-            val user = auth.currentUser ?: Tasks.await(auth.signInAnonymously()).user
-            user?.let { Tasks.await(it.getIdToken(false)).token }
+            val user = auth.currentUser ?: noteSlow("Guest sign-in") { Tasks.await(auth.signInAnonymously()).user }
+            user?.let { noteSlow("ID token") { Tasks.await(it.getIdToken(false)).token } }
         }.onFailure { Timber.w(it, "ID token unavailable") }.getOrNull()
     }
 }

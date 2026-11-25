@@ -92,7 +92,7 @@ class CommunityListViewModel @Inject constructor(
         visibilityChanged = { progress.publicVisibility(it) },
         accounts = accounts,
         mineReady = { progress.isCurrentOwner },
-        savedBoard = { tiers.getAllTierLists().firstOrNull { it.takenFrom == publishedId } },
+        savedBoard = { tiers.getCopiesOf(publishedId).firstOrNull() },
     )
 
     /** Told once a ranking was shown, or that it takes signing in. */
@@ -135,6 +135,8 @@ class CommunityListViewModel @Inject constructor(
         tiers = tiers,
     )
     internal val choices: CommunityRankingChoices = CommunityRankingChoices(_state, progress, viewModelScope, messages, told::send, rankings::showMine)
+
+    private val timing = OpenTiming()
 
     /** Taps on Follow so far: an answer asked for before the latest one does not get to undo it. */
     private var followTaps = 0
@@ -226,11 +228,12 @@ class CommunityListViewModel @Inject constructor(
         if (!showKept()) return
         if (!quietly && _state.value !is CommunityListUiState.Success) _state.value = CommunityListUiState.Loading
         val tapsBefore = followTaps
-        community.open(publishedId).fold(
+        timing.phase("server") { community.open(publishedId) }.fold(
             onSuccess = { answer ->
                 openedLists.keep(answer)
                 if (givesWayToBoard(answer)) return
-                val loaded = present(answer, fromServer = true, followTapped = followTaps != tapsBefore)
+                val loaded = timing.phase("own copy") { present(answer, fromServer = true, followTapped = followTaps != tapsBefore) }
+                timing.shown()
                 rankings.peek()
                 if (!loaded.own && !quietly) usage.step(UsageStep.OpenList)
                 if (loaded.own) {
@@ -252,7 +255,8 @@ class CommunityListViewModel @Inject constructor(
         if ((_state.value as? CommunityListUiState.Success)?.arriving == false) return true
         val kept = openedLists.read(publishedId) ?: return true
         if (givesWayToBoard(kept)) return false
-        present(kept, fromServer = false)
+        timing.phase("kept copy") { present(kept, fromServer = false) }
+        timing.shown()
         return true
     }
 
