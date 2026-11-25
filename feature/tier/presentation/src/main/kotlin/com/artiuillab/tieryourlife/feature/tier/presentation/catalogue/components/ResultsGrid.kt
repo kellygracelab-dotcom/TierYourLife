@@ -55,7 +55,7 @@ internal fun ResultsGrid(
     val gridState = rememberLazyGridState()
     // A picture that would not load takes its tile with it, as on the site: no grey square stays.
     val broken = remember { mutableStateSetOf<String>() }
-    val shown = items.filter { it.id !in broken && (it.thumbUrl ?: it.imageUrl) != null }
+    val shown = items.filter { it.id !in broken }
 
     LaunchedEffect(gridState, shown.size) {
         snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }
@@ -98,7 +98,7 @@ private fun ResultCells(
         items(items, key = { it.id }) { item ->
             ResultCell(
                 item = item,
-                picture = pictureFor(item.thumbUrl, item.imageUrl, cellPx).orEmpty(),
+                picture = pictureFor(item.thumbUrl, item.imageUrl, cellPx),
                 selected = item.id in selectedIds,
                 onToggle = { onToggle(item) },
                 onBroken = { onBroken(item.id) },
@@ -121,7 +121,7 @@ private fun ResultCells(
 }
 
 @Composable
-private fun ResultCell(item: CatalogueItem, picture: String, selected: Boolean, onToggle: () -> Unit, onBroken: () -> Unit) {
+private fun ResultCell(item: CatalogueItem, picture: String?, selected: Boolean, onToggle: () -> Unit, onBroken: () -> Unit) {
     val shape = RoundedCornerShape(12.dp)
     val primary = MaterialTheme.colorScheme.primary
     Column(
@@ -137,12 +137,17 @@ private fun ResultCell(item: CatalogueItem, picture: String, selected: Boolean, 
                 .clip(shape)
                 .then(if (selected) Modifier.border(3.dp, primary, shape) else Modifier),
         ) {
-            SearchPicture(
-                model = picture,
-                contentDescription = item.title,
-                onBroken = onBroken,
-                modifier = Modifier.matchParentSize(),
-            )
+            // A result without a picture keeps its title on a plain tile; only a picture that fails takes the tile away.
+            if (picture == null) {
+                Box(Modifier.matchParentSize().background(MaterialTheme.colorScheme.surfaceVariant))
+            } else {
+                SearchPicture(
+                    model = picture,
+                    contentDescription = item.title,
+                    onBroken = onBroken,
+                    modifier = Modifier.matchParentSize(),
+                )
+            }
             if (selected) {
                 Box(
                     modifier = Modifier
