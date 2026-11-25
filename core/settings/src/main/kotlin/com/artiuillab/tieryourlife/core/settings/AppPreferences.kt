@@ -191,9 +191,6 @@ interface AppPreferences {
     /** Lines of cards the pool docked under the rows shows on a tablet held upright. */
     fun poolDockRows(): Int = DEFAULT_POOL_DOCK_ROWS
 
-    /** Whether [poolDockRows] was ever set here rather than its default. */
-    fun poolDockRowsChosen(): Boolean = false
-
     fun setPoolDockRows(rows: Int) = Unit
 
     /** The pool ranked one card at a time, with a button per tier, instead of by dragging; this device only. */

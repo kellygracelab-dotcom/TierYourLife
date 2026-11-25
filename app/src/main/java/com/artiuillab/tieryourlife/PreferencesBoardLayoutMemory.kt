@@ -20,14 +20,10 @@ internal class PreferencesBoardLayoutMemory(private val preferences: AppPreferen
             preferences.setPoolColumnCollapsed(value)
         }
 
-    override var poolDockRowsChosen by mutableStateOf(preferences.poolDockRowsChosen())
-        private set
-
     override var poolDockRows: Int
         get() = dockRows
         set(value) {
             dockRows = value
-            poolDockRowsChosen = true
             preferences.setPoolDockRows(value)
         }
 

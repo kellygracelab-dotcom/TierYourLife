@@ -778,7 +778,6 @@ private fun TierScreenBody(
                             countWhenEmpty = actions.emptyPoolCounted,
                             oneByOnePanel = oneByOnePanel,
                             countsCardsLeft = actions.poolCountsCardsLeft,
-                            pullsIntoLines = list.displayMode != TierListDisplayMode.FLAT_RANKED,
                         )
                     }
                 }

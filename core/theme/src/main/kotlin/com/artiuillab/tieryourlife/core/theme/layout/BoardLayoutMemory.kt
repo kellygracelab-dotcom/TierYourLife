@@ -15,11 +15,8 @@ interface BoardLayoutMemory {
     /** Null until the person folds or opens the side column themselves. */
     var poolColumnCollapsed: Boolean?
 
-    /** Lines of cards in the pool under the rows, docked on a tablet or pulled open on a phone: 1, 2 or 4. */
+    /** Lines of cards in the pool docked under the rows on a tablet held upright: 1, 2 or 4. */
     var poolDockRows: Int
-
-    /** Whether [poolDockRows] was ever pulled to; until then a phone's pool keeps its one line. */
-    val poolDockRowsChosen: Boolean
 
     /** The pool ranked one card at a time: the current card and a button for each tier. */
     var oneCardAtATime: Boolean
@@ -36,15 +33,7 @@ interface BoardLayoutMemory {
 /** For previews, tests and anything drawn outside the app: remembers for as long as it lives. */
 class InMemoryBoardLayoutMemory : BoardLayoutMemory {
     override var poolColumnCollapsed: Boolean? by mutableStateOf(null)
-    private var dockRows by mutableStateOf(BoardLayoutMemory.DEFAULT_DOCK_ROWS)
-    override var poolDockRowsChosen: Boolean by mutableStateOf(false)
-        private set
-    override var poolDockRows: Int
-        get() = dockRows
-        set(value) {
-            dockRows = value
-            poolDockRowsChosen = true
-        }
+    override var poolDockRows: Int by mutableStateOf(BoardLayoutMemory.DEFAULT_DOCK_ROWS)
     override var oneCardAtATime: Boolean by mutableStateOf(false)
     override var namesOnCards: Boolean by mutableStateOf(true)
 }
