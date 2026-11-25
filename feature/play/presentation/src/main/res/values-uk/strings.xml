@@ -64,7 +64,7 @@
     <string name="play_too_few_to_start_again">Картки змінилися, і їх залишилося замало, щоб почати цю гру знову.</string>
     <string name="play_tier_gone">Тіру з цієї гри більше немає.</string>
     <string name="play_start_again">Почати знову</string>
-    <string name="play_into_mine_note">Результат потрапить у «Моє». Розстановка автора не зміниться.</string>
+    <string name="play_into_mine_note">Результат потрапить у вашу версію. Розстановка автора не зміниться.</string>
     <string name="play_cancel">Скасувати</string>
     <string name="play_start">Почати</string>
     <string name="play_continue">Далі</string>

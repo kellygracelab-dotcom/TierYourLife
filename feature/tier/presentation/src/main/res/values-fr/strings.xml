@@ -336,8 +336,8 @@
     <string name="publish_sheet_needs_account">Publier demande un compte Google. Votre liste reste ici pendant la connexion.</string>
     <string name="publish_sheet_sign_in_and_publish">Se connecter et publier</string>
     <string name="started_discard">Abandonner</string>
-    <string name="started_discard_arrangement">Abandonner mon classement</string>
-    <string name="started_discarded">Classement abandonné</string>
+    <string name="started_discard_arrangement">Abandonner votre version</string>
+    <string name="started_discarded">Votre version abandonnée</string>
     <string name="started_updated_elsewhere">Mis à jour depuis un autre appareil</string>
     <string name="ready_list_label">NOUVEAU ICI ?</string>
     <string name="ready_list_try">Essayer</string>

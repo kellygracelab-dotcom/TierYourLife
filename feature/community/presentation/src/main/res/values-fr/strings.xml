@@ -38,7 +38,7 @@
         <item quantity="other">%1$d cartes</item>
         <item quantity="many">%1$d cartes</item>
     </plurals>
-    <string name="community_not_saved_yet">Votre classement n’est pas encore enregistré.</string>
+    <string name="community_not_saved_yet">Votre version n’est pas encore enregistrée.</string>
     <string name="community_open_failed">Impossible d’ouvrir cette liste</string>
     <string name="community_rank_it_your_way">Classez-la librement.</string>
     <string name="community_save_authors_list">Enregistrer la liste de l’auteur</string>
@@ -297,8 +297,8 @@
     <string name="community_own_list_line">Voici ce que voient les visiteurs. Vous la modifiez dans Vos listes.</string>
     <string name="community_restore_from_trash">Restaurer depuis la corbeille</string>
     <string name="community_get_back_as_board">La récupérer dans Vos listes</string>
-    <string name="community_drop_to_start_yours">Lâchez pour commencer votre version · Le mien part du classement de %1$s</string>
-    <string name="community_drop_to_start_yours_unnamed">Lâchez pour commencer votre version · Le mien part de ce classement</string>
+    <string name="community_drop_to_start_yours">Lâchez pour commencer votre version à partir du classement de %1$s</string>
+    <string name="community_drop_to_start_yours_unnamed">Lâchez pour commencer votre version à partir de ce classement</string>
     <string name="community_started_from_theirs">Votre version part du classement de %1$s</string>
     <string name="community_started_from_theirs_unnamed">Votre version part du classement de l’auteur</string>
     <string name="community_replaced_yours">Votre version remplacée par le classement de %1$s</string>

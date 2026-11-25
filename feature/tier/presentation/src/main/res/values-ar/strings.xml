@@ -387,8 +387,8 @@
     <string name="publish_sheet_needs_account">النشر يحتاج إلى حساب Google. تبقى قائمتك هنا أثناء تسجيل الدخول.</string>
     <string name="publish_sheet_sign_in_and_publish">سجّل الدخول وانشر</string>
     <string name="started_discard">تجاهل</string>
-    <string name="started_discard_arrangement">تجاهل ترتيبي</string>
-    <string name="started_discarded">تم تجاهل الترتيب</string>
+    <string name="started_discard_arrangement">تجاهل نسختك</string>
+    <string name="started_discarded">تم تجاهل نسختك</string>
     <string name="started_updated_elsewhere">تم التحديث من جهاز آخر</string>
     <string name="ready_list_label">جديد هنا؟</string>
     <string name="ready_list_try">جرّبها</string>

@@ -46,10 +46,10 @@
         <item quantity="one">Published. %1$d picture from another site couldn’t be added.</item>
         <item quantity="other">Published. %1$d pictures from other sites couldn’t be added.</item>
     </plurals>
-    <string name="community_return_all_to_pool">Return all cards to the deck</string>
-    <string name="community_return_to_pool_title">Return all cards to the deck?</string>
-    <string name="community_return_to_pool_explanation">The tier arrangement will be reset.</string>
-    <string name="community_return_to_pool_confirm">Return to the deck</string>
+    <string name="community_return_all_to_pool">Put all cards back in Cards left</string>
+    <string name="community_return_to_pool_title">Put all cards back in Cards left?</string>
+    <string name="community_return_to_pool_explanation">Every tier will be emptied.</string>
+    <string name="community_return_to_pool_confirm">Put them back</string>
     <string name="ranking_choice_sign_in">Sign in to publish</string>
     <string name="ranking_offer_title">Show others how you ranked it?</string>
     <string name="ranking_offer_show">Show in Rankings</string>

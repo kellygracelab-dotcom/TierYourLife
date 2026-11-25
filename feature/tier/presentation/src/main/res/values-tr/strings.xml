@@ -319,8 +319,8 @@
     <string name="publish_sheet_needs_account">Yayınlamak için Google hesabı gerekir. Sen giriş yaparken listen burada kalır.</string>
     <string name="publish_sheet_sign_in_and_publish">Oturum aç ve yayımla</string>
     <string name="started_discard">At</string>
-    <string name="started_discard_arrangement">Düzenlememi at</string>
-    <string name="started_discarded">Düzenleme atıldı</string>
+    <string name="started_discard_arrangement">Sürümünüzü atın</string>
+    <string name="started_discarded">Sürümünüz atıldı</string>
     <string name="started_updated_elsewhere">Başka bir cihazdan güncellendi</string>
     <string name="ready_list_label">YENİ MİSİN?</string>
     <string name="ready_list_try">Dene</string>

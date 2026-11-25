@@ -37,7 +37,7 @@
         <item quantity="one">%1$d card</item>
         <item quantity="other">%1$d cards</item>
     </plurals>
-    <string name="community_not_saved_yet">Your arrangement isn’t saved yet.</string>
+    <string name="community_not_saved_yet">Your version isn’t saved yet.</string>
     <string name="community_open_failed">Could not open this list</string>
     <string name="community_rank_it_your_way">Rank it however you like.</string>
     <string name="community_save_authors_list">Save author’s list</string>
@@ -290,8 +290,8 @@
     <string name="community_own_list_line">This is what visitors see. You change it in Your lists.</string>
     <string name="community_restore_from_trash">Restore from trash</string>
     <string name="community_get_back_as_board">Get it back in Your lists</string>
-    <string name="community_drop_to_start_yours">Drop it to start your version · Mine begins as %1$s’s</string>
-    <string name="community_drop_to_start_yours_unnamed">Drop it to start your version · Mine begins as this ranking</string>
+    <string name="community_drop_to_start_yours">Drop it to start your version from %1$s’s ranking</string>
+    <string name="community_drop_to_start_yours_unnamed">Drop it to start your version from this ranking</string>
     <string name="community_started_from_theirs">Your version starts from %1$s’s ranking</string>
     <string name="community_started_from_theirs_unnamed">Your version starts from the author’s ranking</string>
     <string name="community_replaced_yours">Replaced your version with %1$s’s ranking</string>
@@ -305,7 +305,7 @@
     <string name="community_back_to_theirs">Back to %1$s’s ranking</string>
     <string name="community_back_to_theirs_unnamed">Back to the author’s ranking</string>
     <string name="community_start_from_scratch">Start from scratch</string>
-    <string name="community_started_from_scratch">All cards are back in the deck</string>
+    <string name="community_started_from_scratch">All cards are back in Cards left</string>
     <string name="community_action_undo">Undo</string>
     <string name="community_picture_credits">Picture credits</string>
     <string name="community_picture_credit_line">%1$s — %2$s</string>

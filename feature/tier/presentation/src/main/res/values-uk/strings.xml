@@ -353,8 +353,8 @@
     <string name="publish_sheet_needs_account">Для публікації потрібен обліковий запис Google. Поки ви входите, список лишається тут.</string>
     <string name="publish_sheet_sign_in_and_publish">Увійти й опублікувати</string>
     <string name="started_discard">Скинути</string>
-    <string name="started_discard_arrangement">Скинути мою розстановку</string>
-    <string name="started_discarded">Розстановку скинуто</string>
+    <string name="started_discard_arrangement">Скинути вашу версію</string>
+    <string name="started_discarded">Вашу версію скинуто</string>
     <string name="started_updated_elsewhere">Оновлено з іншого пристрою</string>
     <string name="ready_list_label">ВПЕРШЕ ТУТ?</string>
     <string name="ready_list_try">Спробувати</string>

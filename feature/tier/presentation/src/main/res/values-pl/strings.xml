@@ -353,8 +353,8 @@
     <string name="publish_sheet_needs_account">Publikowanie wymaga konta Google. Lista zostaje tutaj, gdy się logujesz.</string>
     <string name="publish_sheet_sign_in_and_publish">Zaloguj się i opublikuj</string>
     <string name="started_discard">Odrzuć</string>
-    <string name="started_discard_arrangement">Odrzuć mój układ</string>
-    <string name="started_discarded">Układ odrzucony</string>
+    <string name="started_discard_arrangement">Odrzuć twoją wersję</string>
+    <string name="started_discarded">Twoja wersja odrzucona</string>
     <string name="started_updated_elsewhere">Zaktualizowano na innym urządzeniu</string>
     <string name="ready_list_label">NOWY TUTAJ?</string>
     <string name="ready_list_try">Wypróbuj</string>

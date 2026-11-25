@@ -36,7 +36,7 @@
     <plurals name="community_item_count">
         <item quantity="other">カード %1$d 枚</item>
     </plurals>
-    <string name="community_not_saved_yet">並べ方はまだ保存されていません。</string>
+    <string name="community_not_saved_yet">自分のバージョンはまだ保存されていません。</string>
     <string name="community_open_failed">このリストを開けませんでした</string>
     <string name="community_rank_it_your_way">好きなように並べてください。</string>
     <string name="community_save_authors_list">作者のリストを保存</string>
@@ -283,8 +283,8 @@
     <string name="community_own_list_line">訪問者にはこう見えます。変更は「あなたのリスト」で行います。</string>
     <string name="community_restore_from_trash">ゴミ箱から戻す</string>
     <string name="community_get_back_as_board">「あなたのリスト」に取り戻す</string>
-    <string name="community_drop_to_start_yours">離すと自分のバージョンを開始 · 自分は%1$sのランキングから始まります</string>
-    <string name="community_drop_to_start_yours_unnamed">離すと自分のバージョンを開始 · 自分はこのランキングから始まります</string>
+    <string name="community_drop_to_start_yours">離すと%1$sのランキングから自分のバージョンを開始</string>
+    <string name="community_drop_to_start_yours_unnamed">離すとこのランキングから自分のバージョンを開始</string>
     <string name="community_started_from_theirs">%1$sのランキングから自分のバージョンを始めました</string>
     <string name="community_started_from_theirs_unnamed">作者のランキングから自分のバージョンを始めました</string>
     <string name="community_replaced_yours">自分のバージョンを%1$sのランキングに置き換えました</string>

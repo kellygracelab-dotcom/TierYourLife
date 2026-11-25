@@ -37,7 +37,7 @@
         <item quantity="one">%1$d Karte</item>
         <item quantity="other">%1$d Karten</item>
     </plurals>
-    <string name="community_not_saved_yet">Deine Anordnung ist noch nicht gespeichert.</string>
+    <string name="community_not_saved_yet">Deine Version ist noch nicht gespeichert.</string>
     <string name="community_open_failed">Diese Liste ließ sich nicht öffnen</string>
     <string name="community_rank_it_your_way">Ordne sie frei.</string>
     <string name="community_save_authors_list">Liste des Autors speichern</string>
@@ -290,8 +290,8 @@
     <string name="community_own_list_line">So sehen Besucher sie. Ändern kannst du sie in „Deine Listen“.</string>
     <string name="community_restore_from_trash">Aus dem Papierkorb holen</string>
     <string name="community_get_back_as_board">Zurück in „Deine Listen“ holen</string>
-    <string name="community_drop_to_start_yours">Loslassen für deine Version · Meine beginnt mit dem Ranking von %1$s</string>
-    <string name="community_drop_to_start_yours_unnamed">Loslassen für deine Version · Meine beginnt mit diesem Ranking</string>
+    <string name="community_drop_to_start_yours">Loslassen, um deine Version mit dem Ranking von %1$s zu beginnen</string>
+    <string name="community_drop_to_start_yours_unnamed">Loslassen, um deine Version mit diesem Ranking zu beginnen</string>
     <string name="community_started_from_theirs">Deine Version beginnt mit dem Ranking von %1$s</string>
     <string name="community_started_from_theirs_unnamed">Deine Version beginnt mit dem Ranking des Autors</string>
     <string name="community_replaced_yours">Deine Version durch das Ranking von %1$s ersetzt</string>

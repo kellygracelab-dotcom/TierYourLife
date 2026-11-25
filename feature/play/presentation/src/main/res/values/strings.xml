@@ -50,12 +50,12 @@
     <string name="play_too_few_to_start_again">The cards changed, and too few are left to start this game again.</string>
     <string name="play_tier_gone">A tier from this game is gone.</string>
     <string name="play_start_again">Start again</string>
-    <string name="play_into_mine_note">The result goes into Mine. The author’s ranking doesn’t change.</string>
+    <string name="play_into_mine_note">The result goes into your version. The author’s ranking doesn’t change.</string>
     <string name="play_cancel">Cancel</string>
     <string name="play_start">Start</string>
     <string name="play_continue">Continue</string>
     <string name="play_back">Back</string>
-    <string name="play_pool">The deck</string>
+    <string name="play_pool">Cards left</string>
     <string name="play_everything">Everything</string>
     <plurals name="play_cards">
         <item quantity="one">%1$d card</item>
