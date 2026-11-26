@@ -95,7 +95,6 @@
         <item quantity="other">%1$d cartões</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">Editar o nome da lista</string>
-    <string name="tier_detail_content_description_manual_add">Adicionar um cartão manualmente</string>
     <string name="tier_detail_item_removed">%1$s foi removido</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d cartão adicionado ao monte</item>

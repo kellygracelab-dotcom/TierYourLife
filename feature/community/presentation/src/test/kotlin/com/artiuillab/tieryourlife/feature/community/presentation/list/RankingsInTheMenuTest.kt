@@ -168,7 +168,6 @@ class RankingsInTheMenuTest {
     fun anUnrankedHouseList_opensRankingsFromMine_withoutOfferingToEditTheSource() {
         show(theirs.copy(editorial = true, showing = Showing.Mine, rankingCount = 0))
 
-        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).assertDoesNotExist()
         composeRule.onNodeWithContentDescription("Edit list name").assertDoesNotExist()
         composeRule.onNodeWithTag(CommunityListTestTags.MORE).performClick()
         composeRule.onNodeWithTag(CommunityTestTags.ACTION_RANKINGS).performClick()

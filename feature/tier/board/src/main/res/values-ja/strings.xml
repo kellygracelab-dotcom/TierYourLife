@@ -85,7 +85,6 @@
         <item quantity="other">カード %1$d 枚</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">リスト名を編集</string>
-    <string name="tier_detail_content_description_manual_add">手動でカードを追加</string>
     <string name="tier_detail_item_removed">%1$s を削除しました</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="other">%1$d枚を山札に追加しました</item>

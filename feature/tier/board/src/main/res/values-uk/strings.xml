@@ -100,7 +100,6 @@
         <item quantity="other">%1$d картки</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">Редагувати назву списку</string>
-    <string name="tier_detail_content_description_manual_add">Додати картку вручну</string>
     <string name="tier_detail_item_removed">Видалено: «%1$s»</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d картку додано до колоди</item>

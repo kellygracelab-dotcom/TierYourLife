@@ -110,7 +110,6 @@
         <item quantity="other">%1$d بطاقة</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">تعديل اسم القائمة</string>
-    <string name="tier_detail_content_description_manual_add">إضافة بطاقة يدويًا</string>
     <string name="tier_detail_item_removed">تمت إزالة %1$s</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="zero">لم تتم إضافة أي بطاقة إلى الرزمة</item>

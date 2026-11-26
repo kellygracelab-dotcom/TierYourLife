@@ -1,9 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.board
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
@@ -22,7 +20,6 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.ManualEntryDialog
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -63,29 +60,6 @@ class TierDetailSettingsTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_SCREEN).assertIsDisplayed()
         composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).performScrollTo().assertIsDisplayed()
-    }
-
-    @Test
-    fun manualAddButton_opensTheManualEntryDialog() {
-        composeRule.setContent {
-            var manualEntryVisible by remember { mutableStateOf(false) }
-            BoardTestTheme {
-                TierDetailScreenContent(
-                    state = TierDetailUiState.Success(defaultList()),
-                    actions = TierDetailActions(onManualAddClick = { manualEntryVisible = true }),
-                )
-                if (manualEntryVisible) {
-                    ManualEntryDialog(
-                        onDismiss = { manualEntryVisible = false },
-                        onSave = { _, _ -> },
-                    )
-                }
-            }
-        }
-
-        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ENTRY_DIALOG).assertDoesNotExist()
-        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).performClick()
-        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ENTRY_DIALOG).assertIsDisplayed()
     }
 
     @Test

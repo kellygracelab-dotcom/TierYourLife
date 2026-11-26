@@ -100,7 +100,6 @@
         <item quantity="other">%1$d karty</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">Edytuj nazwę listy</string>
-    <string name="tier_detail_content_description_manual_add">Dodaj kartę ręcznie</string>
     <string name="tier_detail_item_removed">Usunięto %1$s</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d karta dodana do talii</item>

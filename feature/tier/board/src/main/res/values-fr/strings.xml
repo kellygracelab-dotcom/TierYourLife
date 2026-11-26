@@ -95,7 +95,6 @@
         <item quantity="other">%1$d cartes</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">Modifier le nom de la liste</string>
-    <string name="tier_detail_content_description_manual_add">Ajouter une carte manuellement</string>
     <string name="tier_detail_item_removed">%1$s a été retiré</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d carte ajoutée à la pioche</item>

@@ -90,7 +90,6 @@
         <item quantity="other">%1$d kart</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">Liste adını düzenle</string>
-    <string name="tier_detail_content_description_manual_add">Kartı elle ekle</string>
     <string name="tier_detail_item_removed">%1$s silindi</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d kart desteye eklendi</item>

@@ -90,7 +90,6 @@
         <item quantity="other">%1$d Karten</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">Listennamen bearbeiten</string>
-    <string name="tier_detail_content_description_manual_add">Karte manuell hinzufügen</string>
     <string name="tier_detail_item_removed">%1$s entfernt</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d Karte zum Stapel hinzugefügt</item>

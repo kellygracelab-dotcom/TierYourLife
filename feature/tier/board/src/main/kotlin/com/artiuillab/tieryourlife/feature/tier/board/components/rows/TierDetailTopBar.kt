@@ -82,7 +82,6 @@ import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.tips.Tip
 import com.artiuillab.tieryourlife.core.theme.tips.tipAnchor
-import com.artiuillab.tieryourlife.core.theme.ui.AddPhotoIcon
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CloudOffIcon
@@ -109,7 +108,6 @@ private const val TITLE_MAX_LENGTH = 80
 fun TierScreenTopBar(
     title: String,
     onBack: () -> Unit,
-    onManualAdd: () -> Unit,
     onMoreClick: () -> Unit = {},
     onRenameList: (String) -> Unit = {},
     titleEditable: Boolean = false,
@@ -142,7 +140,6 @@ fun TierScreenTopBar(
     shareLink: (() -> Unit)? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
-    val manualAddDescription = stringResource(R.string.tier_detail_content_description_manual_add)
     val moreDescription = stringResource(ThemeR.string.tier_detail_content_description_more)
 
     // The bar spans the window; what it holds keeps the board's measure, so the
@@ -196,7 +193,6 @@ fun TierScreenTopBar(
                         .testTag(TierDetailTestTags.MORE),
                 ) { MoreIcon() }
             } else if (!readOnly) {
-                if (publish?.narrow != true) ManualAddAction(onManualAdd, manualAddDescription)
                 IconButton(
                     onClick = onMoreClick,
                     modifier = Modifier
@@ -252,17 +248,6 @@ private fun RowScope.ReadTitle(title: String, style: TextStyle, subline: (@Compo
             )
         }
     }
-}
-
-@Composable
-private fun ManualAddAction(onManualAdd: () -> Unit, description: String) {
-    IconButton(
-        onClick = onManualAdd,
-        modifier = Modifier
-            .size(48.dp)
-            .semantics { contentDescription = description }
-            .testTag(TierDetailTestTags.MANUAL_ADD_BUTTON),
-    ) { AddPhotoIcon() }
 }
 
 /** The bar's way to show the tiers otherwise, as on the web: the current one's picture, the three in a menu. */
@@ -417,8 +402,8 @@ enum class Publishing { Publish, Update, ShareRanking }
 /**
  * The bar's publish button, always with its word: an arrow alone reads as upload
  * or share. [primary] once every card is placed: filled; tonal before. On a
- * [narrow] bar it is tighter, and the camera gives it its room by moving to the
- * list's page behind the overflow; the title shortens with an ellipsis.
+ * [narrow] bar it is tighter, and the view button gives it its room; the title
+ * shortens with an ellipsis.
  */
 @Immutable
 data class PublishButton(
@@ -544,7 +529,7 @@ private fun playKeepsItsWord(publish: PublishButton?, view: ViewButton?, width: 
     val publishText = wide(stringResource(publish.label()))
     val publishWidth = 8.dp + (if (publish.narrow) 22.dp + 6.dp else 28.dp + 8.dp) + 18.dp + publishText
     val playWidth = 8.dp + 28.dp + 18.dp + 6.dp + wide(stringResource(R.string.tier_detail_content_description_play))
-    val icons = 8.dp + 48.dp * 2 + (if (publish.narrow) 0.dp else 48.dp) + (if (view != null && !publish.narrow) 48.dp else 0.dp) +
+    val icons = 8.dp + 48.dp * 2 + (if (view != null && !publish.narrow) 48.dp else 0.dp) +
         (if (shareLink) 48.dp else 0.dp)
     return icons + publishWidth + playWidth <= width
 }
@@ -565,7 +550,6 @@ fun OwnBoardTopBar(
     counts: String,
     state: TopAppBarState,
     onBack: () -> Unit,
-    onManualAdd: (() -> Unit)?,
     onMoreClick: () -> Unit,
     onRenameList: ((String) -> Unit)?,
     play: PlayButton?,
@@ -616,9 +600,6 @@ fun OwnBoardTopBar(
                 }
             }
             BarActions(publish, shareLink, play, view, playWorded = playKeepsItsWord(publish, view, barWidth, shareLink != null))
-            if (onManualAdd != null && publish?.narrow != true) {
-                ManualAddAction(onManualAdd, stringResource(R.string.tier_detail_content_description_manual_add))
-            }
             IconButton(
                 onClick = onMoreClick,
                 modifier = Modifier
