@@ -219,6 +219,12 @@
     <string name="list_settings_ranked_status">W rankingach ✓</string>
     <string name="list_settings_take_down">Usuń z publikacji</string>
     <string name="list_settings_publication">Publikacja</string>
+    <string name="list_settings_group_list">Lista</string>
+    <string name="list_settings_group_careful">Ostrożnie</string>
+    <string name="list_settings_delete">Usuń listę</string>
+    <string name="list_settings_delete_title">Usunąć listę?</string>
+    <string name="list_settings_delete_body">„%1$s” trafi do kosza. Możesz go stamtąd przywrócić.</string>
+    <string name="list_settings_delete_public">Jej kopia w Społeczności też zostanie usunięta.</string>
     <string name="list_settings_unpublished_changes">Zmiany jeszcze nieopublikowane</string>
     <string name="board_published_short">Opublikowano</string>
     <string name="board_updated_short">Zaktualizowano w Społeczności</string>

@@ -204,7 +204,11 @@ internal class FakeTierRepository(
         val queue = ArrayDeque(orderedTierIds.mapNotNull { byId[it] })
         list = list.copy(tiers = list.tiers.map { tier -> if (tier.id in orderedSet) queue.removeFirst() else tier })
     }
-    override suspend fun deleteTierLists(ids: List<Long>) = unsupported()
+    val deletedLists = mutableListOf<Long>()
+
+    override suspend fun deleteTierLists(ids: List<Long>) {
+        deletedLists += ids
+    }
     override suspend fun restoreTierLists(ids: List<Long>) = unsupported()
     val restoredItems = mutableListOf<RemovedTierItem>()
     val forgotten = CompletableDeferred<RemovedTierItem>()
