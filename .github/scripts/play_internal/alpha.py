@@ -20,6 +20,7 @@ REJECTED = "RELEASE_LIFECYCLE_STATE_NOT_APPROVED"
 # Only these let a new release in: live, or rejected and so replaceable. Anything
 # else (in review, waiting to be sent, a state this code does not know) holds it.
 SETTLED = (PUBLISHED, REJECTED)
+READS_BEFORE = 6
 KNOWN_STATUSES = ("completed", "inProgress", "halted", "draft")
 
 
@@ -64,6 +65,7 @@ class Promoter:
             data = self.api.request("GET", f"/tracks/{ALPHA}/releases")
         except ApiError as error:
             require(error.status in (403, 404), "Cannot read closed testing releases")
+            print(f"Alpha lifecycle read refused: HTTP {error.status}")
             return None
         require(set(data) <= {"releases"}, "Unexpected release-list schema")
         releases = data.get("releases", [])
@@ -102,8 +104,9 @@ class Promoter:
                 and receipt.get("signedSha256") == digest, "Internal build lacks this workflow's SERVED receipt for the same bytes")
         base = {"versionCode": code, "signedSha256": digest, "internalSource": receipt.get("source")}
         alpha = tracks[ALPHA].get("releases", [])
-        states = self.lifecycle()
+        states = self.lifecycle_before()
         base["alphaLifecycle"] = None if states is None else {str(number): state for number, state in sorted(states.items())}
+        print(f"Alpha lifecycle before: {base['alphaLifecycle']}")
         in_alpha = [number for release in alpha for number in release_codes(release)]
         if in_alpha and max(in_alpha) >= code:
             latest = max(in_alpha)
@@ -113,9 +116,14 @@ class Promoter:
         if states and code in states:
             # Sent already and not yet live: never send it again.
             return {**base, "outcome": "ALREADY_SENT", "lifecycle": states[code]}
+        if states is None:
+            # Not knowing whether Google rejected or still reviews the last one, send nothing.
+            return {**base, "outcome": "SKIPPED_LIFECYCLE_UNREADABLE"}
+        if any(state == REJECTED for state in states.values()):
+            return {**base, "outcome": "ALPHA_REJECTED"}
         if any(release.get("status") != "completed" for release in alpha):
             return {**base, "outcome": "SKIPPED_ALPHA_NOT_SETTLED"}
-        if states and any(state not in SETTLED for state in states.values()):
+        if any(state not in SETTLED for state in states.values()):
             return {**base, "outcome": "SKIPPED_ALPHA_PENDING"}
         name = f"closed-{code}-{str(receipt['source']['sha'])[:12]}"
         target = {"track": ALPHA, "releases": [{"name": name, "versionCodes": [str(code)], "status": "completed"}]}
@@ -138,26 +146,32 @@ class Promoter:
                 return {**base, "outcome": "NOT_SENT", "reason": str(failure)}
         return {**base, **self.after_commit(code, name, digest), "releaseName": name}
 
+    def lifecycle_before(self):
+        # A refused read is sometimes only a hiccup: ask again before giving up for the night.
+        for attempt in range(READS_BEFORE):
+            states = self.lifecycle()
+            if states is not None:
+                return states
+            if attempt < READS_BEFORE - 1:
+                self.sleep(10)
+        return None
+
     def after_commit(self, code, name, digest):
         state, readable = None, False
         for attempt in range(24):
             states = self.lifecycle()
             # Enum names only: what the release went through, for the run's log.
             print(f"Alpha lifecycle after commit: {states}")
-            if states is None:
-                # Once read, a later refusal is a hiccup, not an answer: keep asking.
-                if not readable:
-                    return {"outcome": "COMMITTED", "lifecycle": None, "served": self.alpha_serves(code, name, digest)}
-                if attempt < 23:
-                    self.sleep(5)
-                continue
-            readable = True
-            state = states.get(code)
-            require(state != REJECTED, f"Closed testing release {code} was rejected: {REJECTED}")
-            if state == PUBLISHED and self.alpha_serves(code, name, digest):
-                return {"outcome": "SERVED", "lifecycle": state, "served": True}
+            if states is not None:
+                readable = True
+                state = states.get(code)
+                require(state != REJECTED, f"Closed testing release {code} was rejected: {REJECTED}")
+                if state == PUBLISHED and self.alpha_serves(code, name, digest):
+                    return {"outcome": "SERVED", "lifecycle": state, "served": True}
             if attempt < 23:
                 self.sleep(5)
+        if not readable:
+            return {"outcome": "COMMITTED", "lifecycle": None, "served": self.alpha_serves(code, name, digest)}
         require(state is not None, "Committed release does not show in closed testing")
         # Committed: anything else is said by its own name, not guessed.
         return {"outcome": WAITING.get(state, "COMMITTED"), "lifecycle": state, "served": False}
@@ -173,6 +187,8 @@ SAID = {
     "NOT_SENT": "не отправлено, ничего не изменено: у приложения есть изменения на проверке или Play отказал; повтор следующей ночью",
     "SKIPPED_DRAFT_IN_CONSOLE": "пропуск: в Консоли есть черновик",
     "SKIPPED_ALPHA_NOT_SETTLED": "пропуск: выпуск закрытого теста не завершён",
+    "SKIPPED_LIFECYCLE_UNREADABLE": "пропуск: Play не отдал состояние выпусков закрытого теста; без него ничего не отправляем",
+    "ALPHA_REJECTED": "Google отклонил выпуск закрытого теста; следующая сборка не отправлена, нужен человек",
     "SKIPPED_ALPHA_PENDING": "пропуск: выпуск закрытого теста ещё не выдаётся (на проверке, ждёт отправки или в незнакомом состоянии)",
 }
 

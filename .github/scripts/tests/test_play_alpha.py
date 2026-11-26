@@ -114,12 +114,29 @@ class PromoteTests(unittest.TestCase):
         self.assertIn(IN_REVIEW, summary(result))
         self.assertEqual([], play.writes())
 
-    def test_an_old_rejected_alpha_release_does_not_block_every_night(self):
+    def test_a_rejected_alpha_release_stops_and_sends_nothing(self):
         play = FakePlay()
         play.states = {590: "RELEASE_LIFECYCLE_STATE_NOT_APPROVED", 600: PUBLISHED}
         result = promote(play)
-        self.assertEqual("SERVED", result["outcome"])
+        self.assertEqual("ALPHA_REJECTED", result["outcome"])
         self.assertEqual({"590": "RELEASE_LIFECYCLE_STATE_NOT_APPROVED", "600": PUBLISHED}, result["alphaLifecycle"])
+        self.assertIn("RELEASE_LIFECYCLE_STATE_NOT_APPROVED", summary(result))
+        self.assertEqual([], play.writes())
+
+    def test_a_refused_read_before_is_asked_again(self):
+        play = FakePlay()
+        refusals = {"left": 2}
+        real = play.request
+
+        def flaky(method, path, body=None, upload=False):
+            if path == "/tracks/alpha/releases" and refusals["left"]:
+                refusals["left"] -= 1
+                raise ApiError(404)
+            return real(method, path, body, upload)
+        play.request = flaky
+        result = promote(play)
+        self.assertEqual("SERVED", result["outcome"])
+        self.assertEqual({"600": PUBLISHED}, result["alphaLifecycle"])
 
     def test_approved_but_unpublished_is_left_for_the_console(self):
         play = FakePlay()
@@ -207,13 +224,28 @@ class PromoteTests(unittest.TestCase):
         with self.assertRaises(Stop):
             promote(play)
 
-    def test_unreadable_lifecycle_never_claims_review_state(self):
+    def test_unreadable_lifecycle_sends_nothing(self):
         play = FakePlay()
         play.lifecycle_forbidden = True
         result = promote(play)
+        self.assertEqual("SKIPPED_LIFECYCLE_UNREADABLE", result["outcome"])
+        self.assertIsNone(result["alphaLifecycle"])
+        self.assertIn("not readable", summary(result))
+        self.assertEqual([], play.writes())
+
+    def test_unreadable_only_after_commit_never_claims_review_state(self):
+        play = FakePlay()
+        real = play.request
+
+        def after(method, path, body=None, upload=False):
+            if path == "/tracks/alpha/releases" and 640 in play.states:
+                raise ApiError(403)
+            return real(method, path, body, upload)
+        play.request = after
+        result = promote(play)
         self.assertEqual("COMMITTED", result["outcome"])
         self.assertIsNone(result["lifecycle"])
-        self.assertIn("not readable", summary(result))
+        self.assertEqual({"600": PUBLISHED}, result["alphaLifecycle"])
 
     def test_bytes_other_than_the_served_receipt_are_never_promoted(self):
         for receipt in ({**RECEIPT, "signedSha256": "0" * 64}, {**RECEIPT, "outcome": "STAGED"}, {**RECEIPT, "versionCode": 639}):

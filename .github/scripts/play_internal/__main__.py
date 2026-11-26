@@ -48,6 +48,7 @@ def run_alpha(command):
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
             stream.write(closed.summary(result))
+    require(result["outcome"] != "ALPHA_REJECTED", "Google rejected a closed testing release; nothing sent, a person has to look")
 
 
 def main():
