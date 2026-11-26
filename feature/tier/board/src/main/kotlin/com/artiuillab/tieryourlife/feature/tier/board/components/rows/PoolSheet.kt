@@ -485,9 +485,9 @@ private fun StripHead(
     // not, as in a long language, the count takes a line of its own and the
     // chips keep their words on the next: the switch's picture alone said nothing.
     // The choice holds for any count, so the strip does not jump as cards leave it.
-    // Measured as if the switch were there and with every word the head can say: the strip keeps its lines down to none.
-    val titles = title?.let { poolTitles(pool.items.size, countsCardsLeft) + stringResource(R.string.one_by_one_done) }
-    if (!headFitsOneLine(titles, adds, maxWidth)) {
+    // Every count is measured beside the switch and the last word beside its mark, so the strip keeps its lines down to none.
+    val titles = title?.let { poolTitles(pool.items.size, countsCardsLeft) }
+    if (!headFitsOneLine(titles, stringResource(R.string.one_by_one_done).takeIf { adds }, adds, maxWidth)) {
         StripHeadInTwoLines(title, onAddClick.takeIf { adds }, onGenerateClick, toggle, allPlaced)
         return@BoxWithConstraints
     }
@@ -716,9 +716,9 @@ private fun pow10(power: Int): Int = (1..power).fold(1) { n, _ -> n * DECIMAL }
 private const val PLURAL_SPAN = 25
 private const val DECIMAL = 10
 
-/** Whether the widest of [titles], the switch with its word and Add stand on one line, the count unbroken. */
+/** Whether the widest of [titles] with the switch, and [done] with its mark, each stand on one line with Add. */
 @Composable
-private fun headFitsOneLine(titles: List<String>?, adds: Boolean, width: Dp): Boolean {
+private fun headFitsOneLine(titles: List<String>?, done: String?, adds: Boolean, width: Dp): Boolean {
     if (titles == null) return true
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
@@ -726,7 +726,8 @@ private fun headFitsOneLine(titles: List<String>?, adds: Boolean, width: Dp): Bo
     val titleWidth = titles.maxOf { wide(it, MaterialTheme.typography.titleSmall) }
     val toggleWidth = 8.dp + FilterChipDefaults.IconSize + 8.dp + wide(stringResource(R.string.one_by_one_toggle), MaterialTheme.typography.labelLarge) + 16.dp
     val addWidth = if (adds) 8.dp + 12.dp + 18.dp + 4.dp + wide(stringResource(R.string.tier_detail_add), TierYourLifeType.current.supportingLabel) + 12.dp else 0.dp
-    return 32.dp + titleWidth + 8.dp + toggleWidth + addWidth <= width
+    val doneWidth = done?.let { PLACED_MARK + 8.dp + wide(it, MaterialTheme.typography.titleSmall) } ?: 0.dp
+    return 32.dp + maxOf(titleWidth + 8.dp + toggleWidth, doneWidth) + addWidth <= width
 }
 
 @Composable
@@ -755,9 +756,10 @@ private fun AddChip(onClick: () -> Unit, filled: Boolean = false) {
 }
 
 private val SWITCH_HEIGHT = 48.dp
+private val PLACED_MARK = 18.dp
 
 @Composable
-private fun PlacedMark() = CheckCircleIcon(18.dp, MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.surfaceContainer)
+private fun PlacedMark() = CheckCircleIcon(PLACED_MARK, MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.surfaceContainer)
 
 @Preview(showBackground = true)
 @Composable
