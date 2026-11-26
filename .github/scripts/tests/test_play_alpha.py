@@ -111,6 +111,7 @@ class PromoteTests(unittest.TestCase):
         result = promote(play)
         self.assertEqual("SKIPPED_ALPHA_PENDING", result["outcome"])
         self.assertEqual({"600": IN_REVIEW}, result["alphaLifecycle"])
+        self.assertIn(IN_REVIEW, summary(result))
         self.assertEqual([], play.writes())
 
     def test_an_old_rejected_alpha_release_does_not_block_every_night(self):
@@ -125,6 +126,31 @@ class PromoteTests(unittest.TestCase):
         play.states = {600: "RELEASE_LIFECYCLE_STATE_APPROVED_NOT_PUBLISHED"}
         self.assertEqual("SKIPPED_ALPHA_PENDING", promote(play)["outcome"])
         self.assertEqual([], play.writes())
+
+    def test_a_state_this_code_does_not_know_holds_closed_testing(self):
+        play = FakePlay()
+        play.states = {600: "RELEASE_LIFECYCLE_STATE_SOMETHING_NEW"}
+        result = promote(play)
+        self.assertEqual("SKIPPED_ALPHA_PENDING", result["outcome"])
+        self.assertIn("RELEASE_LIFECYCLE_STATE_SOMETHING_NEW", summary(result))
+        self.assertEqual([], play.writes())
+
+    def test_our_version_sent_and_not_live_is_never_sent_again(self):
+        for state in ("RELEASE_LIFECYCLE_STATE_NOT_SENT_FOR_REVIEW", "RELEASE_LIFECYCLE_STATE_UNSPECIFIED", IN_REVIEW):
+            play = FakePlay()
+            play.states = {600: PUBLISHED, 640: state}
+            result = promote(play)
+            with self.subTest(state=state):
+                self.assertEqual("ALREADY_SENT", result["outcome"])
+                self.assertEqual(state, result["lifecycle"])
+                self.assertEqual([], play.writes())
+
+    def test_committed_in_a_state_not_known_says_its_name(self):
+        play = FakePlay()
+        play.after_commit = "RELEASE_LIFECYCLE_STATE_NOT_SENT_FOR_REVIEW"
+        result = promote(play)
+        self.assertEqual("COMMITTED", result["outcome"])
+        self.assertIn("RELEASE_LIFECYCLE_STATE_NOT_SENT_FOR_REVIEW", summary(result))
 
     def test_a_draft_anywhere_is_preserved(self):
         play = FakePlay()
@@ -170,7 +196,7 @@ class PromoteTests(unittest.TestCase):
         result = promote(play)
         self.assertEqual("COMMITTED", result["outcome"])
         self.assertIsNone(result["lifecycle"])
-        self.assertIn("не видно", summary(result))
+        self.assertIn("not readable", summary(result))
 
     def test_bytes_other_than_the_served_receipt_are_never_promoted(self):
         for receipt in ({**RECEIPT, "signedSha256": "0" * 64}, {**RECEIPT, "outcome": "STAGED"}, {**RECEIPT, "versionCode": 639}):
