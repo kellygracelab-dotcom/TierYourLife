@@ -144,8 +144,13 @@ The job:
 3. Does nothing when alpha already has that version or newer, or has it sent and
    not yet live (ALREADY_SENT), when any track has a draft, when an alpha rollout
    is not completed, or when any alpha release is in a lifecycle other than
-   PUBLISHED or NOT_APPROVED (applications.tracks.releases.list for alpha): in
-   review, waiting to be sent, or a state this code does not know.
+   PUBLISHED (applications.tracks.releases.list for alpha): in review, waiting
+   to be sent, or a state this code does not know. A refused lifecycle read is
+   asked again a few times; still refused, nothing is sent that night
+   (SKIPPED_LIFECYCLE_UNREADABLE). A release Google rejected (NOT_APPROVED)
+   stops the job red with ALPHA_REJECTED and nothing sent, so a person looks.
+   The lifecycle of every alpha release before any write is in the log and
+   the receipt.
 4. Otherwise writes **only the alpha track**: the same version code, no upload,
    release name closed-<versionCode>-<sha12>. Commit uses ERROR_IF_IN_REVIEW;
    a review is never cancelled. A commit Play refuses while the edit stays open
