@@ -22,6 +22,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
+import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
 
 /** Two phones signed into one account, each with its own database, meeting only through the proxy. */
@@ -143,6 +144,63 @@ class SyncTest {
 
         first.sync.sync()
         assertEquals("Films, second phone", first.board(id).title)
+    }
+
+    // Danylo, 25.11: with the phone and the site both open, a second board
+    // appeared. Different cards changed on each side are one board with both.
+    @Test
+    fun differentCardsMovedOnBothPhones_makeOneBoardWithBoth() = runBlocking<Unit> {
+        val id = first.newBoard("Albums", ranked = mapOf("S" to listOf("Kid A"), "A" to listOf("Blue Lines")))
+        val uid = first.board(id).uid
+        first.sync.sync()
+        second.sync.sync()
+
+        val here = first.board(id)
+        first.boards.moveItem(here.tiers.single { it.label == "S" }.items.single().id, here.tiers.single { it.label == "A" }.id, 1)
+        first.sync.sync()
+        val there = checkNotNull(second.boardByUid(uid))
+        second.boards.moveItem(there.tiers.single { it.label == "A" }.items.single().id, there.tiers.single { it.label == "B" }.id, 0)
+        second.boards.renameTierList(there.id, "Albums, second phone")
+        assertEquals(0, second.sync.sync().refused)
+        first.sync.sync()
+
+        for (phone in listOf(first, second)) {
+            assertEquals(listOf(uid), phone.boards.getAllTierLists().map { it.uid })
+            val board = checkNotNull(phone.boardByUid(uid))
+            assertEquals("Albums, second phone", board.title)
+            assertEquals(emptyList<String>(), phone.cardsIn(board, "S"))
+            assertEquals(listOf("Kid A"), phone.cardsIn(board, "A"))
+            assertEquals(listOf("Blue Lines"), phone.cardsIn(board, "B"))
+        }
+    }
+
+    // 24.11, Backend's logs: only this phone wrote, and its own write coming
+    // back made a second board. Writes in a row, the answer to one lost.
+    @Test
+    fun ownWritesInARow_withAnAnswerLost_makeNoSecondBoard() = runBlocking<Unit> {
+        val id = first.newBoard("Series", ranked = mapOf("S" to listOf("The Wire"), "A" to listOf("Lost")))
+        val uid = first.board(id).uid
+        first.sync.sync()
+
+        first.boards.renameTierList(id, "Series I've watched")
+        val lose = AtomicBoolean(true)
+        first.afterAnswer = { answer ->
+            if (answer.method == "PUT" && answer.path == "/boards/$uid" && lose.getAndSet(false)) throw IOException("The answer never came")
+        }
+        first.sync.sync()
+        first.afterAnswer = {}
+        val board = first.board(id)
+        first.boards.moveItem(board.tiers.single { it.label == "A" }.items.single().id, board.tiers.single { it.label == "B" }.id, 0)
+        assertEquals(0, first.sync.sync().refused)
+        first.sync.sync()
+        second.sync.sync()
+
+        for (phone in listOf(first, second)) {
+            assertEquals(listOf(uid), phone.boards.getAllTierLists().map { it.uid })
+            val arrived = checkNotNull(phone.boardByUid(uid))
+            assertEquals("Series I've watched", arrived.title)
+            assertEquals(listOf("Lost"), phone.cardsIn(arrived, "B"))
+        }
     }
 
     // QA 490 N2b: the website discarded a game and started another; nothing on

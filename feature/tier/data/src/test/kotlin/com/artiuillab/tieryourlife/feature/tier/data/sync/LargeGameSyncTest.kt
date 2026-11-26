@@ -56,12 +56,28 @@ class LargeGameSyncTest : SyncEngineBench() {
     }
 
     @Test
-    fun aLocalEdit_keepsBothAndRenamesAllGameReferencesInTheConflictCopy() = runBlocking {
+    fun aLocalEdit_andTheUnreadGame_bothStayOnOneBoard() = runBlocking {
         val uid = givenLocalBoard("Films")
         val engine = engine()
         engine.sync()
         dao.renameBoard(uid, "My edited title")
         boards.server[uid] = largeBoard(uid)
+
+        assertEquals(0, engine.sync().refused)
+        val board = dao.allBoards().single()
+        assertEquals("My edited title", board.title)
+        assertEquals(largeBoard(uid).play.toString(), board.play)
+        assertEquals((0 until 91).map { "remote-card-$it" }.toSet(), dao.itemsOf(board.id).map { it.uid }.toSet())
+        assertEquals(board.play, boards.kept.last().second.play.toString())
+    }
+
+    @Test
+    fun aConflictingEdit_keepsBothAndRenamesAllGameReferencesInTheConflictCopy() = runBlocking {
+        val uid = givenLocalBoard("Films")
+        val engine = engine()
+        engine.sync()
+        dao.renameBoard(uid, "My edited title")
+        boards.server[uid] = largeBoard(uid).copy(title = "Films, renamed elsewhere")
 
         assertEquals(0, engine.sync().refused)
         assertEquals("My edited title", dao.boardByUid(uid)!!.title)
