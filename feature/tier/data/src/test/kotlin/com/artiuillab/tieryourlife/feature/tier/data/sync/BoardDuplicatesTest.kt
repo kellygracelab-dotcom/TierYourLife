@@ -113,6 +113,47 @@ class BoardDuplicatesTest : SyncEngineBench() {
         assertEquals(listOf("Quake", "Doom II", "Alien"), titlesHere(uid))
     }
 
+    // 26.11, Flip6: moved online, airplane mode before the answer came, the same
+    // card moved again offline: "changed on two phones" and a second board.
+    @Test
+    fun ourOwnWriteWhoseAnswerWasLost_thenTheSameCardEditedHere_isNoSecondBoard() = runBlocking {
+        val uid = givenBoard("Alien", "Doom")
+        engine(api = TheAccount()).sync()
+
+        editedHere(uid, "Doom", "Doom II")
+        runCatching { engine(api = TheAccount(loseAnswer = 1)).sync() }
+        editedHere(uid, "Doom II", "Doom III")
+        // Offline still: this write goes nowhere, and the lost one is still known as ours.
+        boards.keepFails = true
+        runCatching { engine(api = TheAccount()).sync() }
+        boards.keepFails = false
+        engine(api = TheAccount()).sync()
+
+        assertEquals(1, dao.boardsOf(someone).size)
+        assertEquals(listOf("Alien", "Doom III"), titlesHere(uid))
+        assertEquals(listOf("Alien", "Doom III"), titlesThere(uid))
+        // Agreed again: the next run sends nothing.
+        val writes = boards.kept.size
+        engine(api = TheAccount()).sync()
+        assertEquals(writes, boards.kept.size)
+    }
+
+    // What makes it ours is what was sent: another phone's write of the same card still keeps both.
+    @Test
+    fun aLostAnswer_thenAnotherPhonesEdit_stillKeepsBoth() = runBlocking {
+        val uid = givenBoard("Alien", "Doom")
+        engine(api = TheAccount()).sync()
+
+        editedHere(uid, "Doom", "Doom II")
+        runCatching { engine(api = TheAccount(loseAnswer = 1)).sync() }
+        editedOnTheSite(uid) { if (it.title == "Doom II") it.copy(title = "Doom on the site") else it }
+        editedHere(uid, "Doom II", "Doom III")
+        engine(api = TheAccount()).sync()
+
+        assertEquals(2, dao.boardsOf(someone).size)
+        assertEquals(listOf("Alien", "Doom III"), titlesHere(uid))
+    }
+
     @Test
     fun theSameCardEditedOnBothSides_stillKeepsBoth() = runBlocking {
         val uid = givenBoard("Alien", "Doom")
