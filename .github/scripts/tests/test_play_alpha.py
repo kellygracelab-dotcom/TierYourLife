@@ -127,6 +127,23 @@ class PromoteTests(unittest.TestCase):
         self.assertEqual("SKIPPED_ALPHA_PENDING", promote(play)["outcome"])
         self.assertEqual([], play.writes())
 
+    def test_a_refused_read_after_commit_does_not_end_the_wait(self):
+        play = FakePlay()
+        play.after_commit = IN_REVIEW
+        calls = {"n": 0}
+        real = play.request
+
+        def flaky(method, path, body=None, upload=False):
+            if path == "/tracks/alpha/releases" and play.states.get(640):
+                calls["n"] += 1
+                if calls["n"] == 2:
+                    raise ApiError(404)
+            return real(method, path, body, upload)
+        play.request = flaky
+        result = promote(play)
+        self.assertEqual("SENT_FOR_REVIEW", result["outcome"])
+        self.assertEqual(IN_REVIEW, result["lifecycle"])
+
     def test_a_state_this_code_does_not_know_holds_closed_testing(self):
         play = FakePlay()
         play.states = {600: "RELEASE_LIFECYCLE_STATE_SOMETHING_NEW"}

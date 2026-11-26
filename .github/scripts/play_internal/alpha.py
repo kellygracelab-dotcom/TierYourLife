@@ -139,11 +139,19 @@ class Promoter:
         return {**base, **self.after_commit(code, name, digest), "releaseName": name}
 
     def after_commit(self, code, name, digest):
-        state = None
+        state, readable = None, False
         for attempt in range(24):
             states = self.lifecycle()
+            # Enum names only: what the release went through, for the run's log.
+            print(f"Alpha lifecycle after commit: {states}")
             if states is None:
-                return {"outcome": "COMMITTED", "lifecycle": None, "served": self.alpha_serves(code, name, digest)}
+                # Once read, a later refusal is a hiccup, not an answer: keep asking.
+                if not readable:
+                    return {"outcome": "COMMITTED", "lifecycle": None, "served": self.alpha_serves(code, name, digest)}
+                if attempt < 23:
+                    self.sleep(5)
+                continue
+            readable = True
             state = states.get(code)
             require(state != REJECTED, f"Closed testing release {code} was rejected: {REJECTED}")
             if state == PUBLISHED and self.alpha_serves(code, name, digest):
