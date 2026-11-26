@@ -101,12 +101,10 @@ import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PoolSheet
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.PublishButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedList
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.RankedPoolSection
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.SHARE_LINK_WIDTH
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.SubtitleLink
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRow
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierRowDensity
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.TierScreenTopBar
-import com.artiuillab.tieryourlife.feature.tier.board.components.rows.ViewButton
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.boardCounts
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.everyCardPlaced
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.publishingOf
@@ -177,6 +175,8 @@ fun TierDetailScreenContent(
     poolNote: (@Composable () -> Unit)? = null,
     /** On a tablet held upright, the line under the title that takes [belowTopBar]'s place: who made it, in which section. */
     titleSubline: (@Composable () -> Unit)? = null,
+    /** On a phone held upright, a reader's row under the title after Play: Save and Share. */
+    readerActions: (@Composable RowScope.() -> Unit)? = null,
     /** Under the last row, scrolling with them. */
     footer: (@Composable () -> Unit)? = null,
 ) {
@@ -212,6 +212,7 @@ fun TierDetailScreenContent(
                 barExtras = barExtras,
                 poolNote = poolNote,
                 titleSubline = titleSubline,
+                readerActions = readerActions,
                 footer = footer,
                 indexBeside = showsIndex,
             )
@@ -237,6 +238,7 @@ private fun TierDetailPane(
     barExtras: (@Composable RowScope.(BoardBar) -> Unit)?,
     poolNote: (@Composable () -> Unit)?,
     titleSubline: (@Composable () -> Unit)?,
+    readerActions: (@Composable RowScope.() -> Unit)?,
     footer: (@Composable () -> Unit)?,
     indexBeside: Boolean,
 ) {
@@ -278,6 +280,7 @@ private fun TierDetailPane(
                     barExtras = barExtras,
                     poolNote = poolNote,
                     titleSubline = titleSubline,
+                    readerActions = readerActions,
                     footer = footer,
                     indexBeside = indexBeside,
                 )
@@ -325,6 +328,7 @@ private fun TierScreenBody(
     barExtras: (@Composable RowScope.(BoardBar) -> Unit)? = null,
     poolNote: (@Composable () -> Unit)? = null,
     titleSubline: (@Composable () -> Unit)? = null,
+    readerActions: (@Composable RowScope.() -> Unit)? = null,
     footer: (@Composable () -> Unit)? = null,
     indexBeside: Boolean = false,
 ) {
@@ -602,10 +606,8 @@ private fun TierScreenBody(
         val playButton = actions.onPlay?.takeUnless { glanceable }?.let { onPlay ->
             PlayButton(cards = list.tiers.sumOf { it.items.size }, saved = actions.playSaved, onClick = onPlay)
         }
-        val ownView = ViewButton(list.displayMode, onSetDisplayMode).takeIf { actions.onPublish != null && !glanceable && !readOnly }
-        // One's own board once it is out: its link, one tap away.
+        // One's own board once it is out: its link, one tap away, where Publish is while there is nothing to publish.
         val ownShare = list.publishedId?.takeIf { actions.onPublish != null && !glanceable && !readOnly }?.let { { shareLink(list) } }
-        val shareRoom = if (ownShare != null) SHARE_LINK_WIDTH else 0.dp
         val bar: @Composable () -> Unit = if (ownTwoStorey) {
             {
                 val reader = onReaderMoreClick
@@ -618,11 +620,11 @@ private fun TierScreenBody(
                     onMoreClick = reader ?: { listSettingsVisible = true },
                     onRenameList = onRenameList.takeIf { reader == null },
                     play = playButton,
-                    publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - OWN_BAR_BESIDE_PUBLISH - shareRoom)
+                    publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - OWN_BAR_BESIDE_PUBLISH)
                         ?.takeUnless { reader != null && readOnly },
-                    view = ownView,
                     moreTag = TierDetailTestTags.MORE.takeIf { reader != null },
                     shareLink = ownShare.takeIf { reader == null },
+                    readerActions = readerActions.takeIf { reader != null },
                 )
             }
         } else {
@@ -648,9 +650,7 @@ private fun TierScreenBody(
                 },
                 subline = readerSubline,
                 play = playButton,
-                publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - BAR_BESIDE_PUBLISH - shareRoom)?.takeUnless { glanceable || readOnly },
-                // One's own board only: a reader's page keeps the author's choice.
-                view = ownView,
+                publish = publishButton(list, actions, narrow = maxWidth < WindowShape.MediumFrom, room = maxWidth - BAR_BESIDE_PUBLISH)?.takeUnless { glanceable || readOnly },
                 shareLink = ownShare.takeIf { onReaderMoreClick == null },
             )
             }

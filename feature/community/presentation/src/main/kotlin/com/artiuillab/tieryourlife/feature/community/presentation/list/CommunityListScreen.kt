@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -82,7 +80,6 @@ import kotlinx.coroutines.flow.filter
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
-private val SAVE_BUTTON_MAX_WIDTH = 180.dp
 private const val PHASE_FADE_MILLIS = 220
 
 @Composable
@@ -329,8 +326,6 @@ fun CommunityListScreenContent(
                                     state = loaded,
                                     lifted = lifted,
                                     onShow = onShow,
-                                    onSaveClick = onSaveClick,
-                                    onOpenSaved = onOpenSaved,
                                     onOwnBoard = onOwnBoard,
                                     onShareLink = shareOwn,
                                     onTurnGame = onTurnGame,
@@ -350,6 +345,12 @@ fun CommunityListScreenContent(
                                     onOwnBoard = onOwnBoard,
                                     onShareLink = shareOwn,
                                 )
+                            },
+                            // A phone's bar: Save and Share under the title, after Play.
+                            readerActions = if (loaded.own) {
+                                null
+                            } else {
+                                { ReaderActions(loaded, onSaveClick = onSaveClick, onOpenSaved = onOpenSaved, onShareLink = shareOwn) }
                             },
                             // On a tablet held upright the bar grows and says who and where under the title.
                             titleSubline = {
@@ -697,8 +698,6 @@ private fun ReaderStrip(
     state: CommunityListUiState.Success,
     lifted: Boolean,
     onShow: (Showing) -> Unit,
-    onSaveClick: () -> Unit,
-    onOpenSaved: (Long) -> Unit,
     onOwnBoard: () -> Unit,
     onShareLink: () -> Unit,
     onTurnGame: () -> Unit,
@@ -708,44 +707,18 @@ private fun ReaderStrip(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Spacer(Modifier.weight(1f))
-            val savedId = state.savedId
-            if (state.own) {
+        // Someone else's list has Save and Share under its title, in the bar.
+        if (state.own) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Spacer(Modifier.weight(1f))
                 ShareLinkButton(onClick = onShareLink)
                 OwnBoardButton(state = state, onClick = onOwnBoard)
-            } else if (state.nothingToSaveYet) {
-                Unit
-            } else if (savedId != null) {
-                Button(
-                    onClick = { onOpenSaved(savedId) },
-                    modifier = Modifier
-                        .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
-                        .testTag(CommunityListTestTags.OPEN_SAVED),
-                ) {
-                    Text(text = stringResource(R.string.community_saved), textAlign = TextAlign.Center)
-                }
-            } else {
-                Button(
-                    onClick = onSaveClick,
-                    enabled = !state.saving,
-                    modifier = Modifier
-                        .widthIn(max = SAVE_BUTTON_MAX_WIDTH)
-                        .testTag(CommunityListTestTags.SAVE),
-                ) {
-                    Text(
-                        text = stringResource(state.saveLabel),
-                        textAlign = TextAlign.Center,
-                        maxLines = 2,
-                    )
-                }
             }
         }
-        // Their placing looked at over the reader's own: whose it is and the way back,
-        // under the Save that still keeps the reader's version, as on the web.
+        // Their placing looked at over the reader's own: whose it is and the way back.
         if (state.peeking) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 TheirsRankingLabel(state, Modifier.weight(1f))

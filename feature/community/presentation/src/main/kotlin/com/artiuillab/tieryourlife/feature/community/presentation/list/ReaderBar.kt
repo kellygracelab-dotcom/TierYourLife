@@ -1,5 +1,6 @@
 package com.artiuillab.tieryourlife.feature.community.presentation.list
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,11 +8,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,10 +29,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.core.theme.ui.BookmarkAddIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
 import com.artiuillab.tieryourlife.feature.community.presentation.R
 import com.artiuillab.tieryourlife.feature.community.presentation.components.AuthorPill
 import com.artiuillab.tieryourlife.feature.tier.board.BoardBar
 import com.artiuillab.tieryourlife.feature.tier.board.common.sectionLabel
+import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
 private val BAR_BUTTON_HEIGHT = 36.dp
 private val TABLET_CONTROL_HEIGHT = 40.dp
@@ -126,6 +134,51 @@ private fun SaveInBar(state: CommunityListUiState.Success, mode: BoardBar, onSav
             )
         }
     }
+}
+
+/**
+ * Someone else's list on a phone, in the row under its title after Play: Save
+ * my list (Saved, which opens the copy, once there is one) and the list's link,
+ * as on the site.
+ */
+@Composable
+internal fun RowScope.ReaderActions(
+    state: CommunityListUiState.Success,
+    onSaveClick: () -> Unit,
+    onOpenSaved: (Long) -> Unit,
+    onShareLink: () -> Unit,
+) {
+    val savedId = state.savedId
+    OutlinedButton(
+        onClick = { if (savedId != null) onOpenSaved(savedId) else onSaveClick() },
+        enabled = savedId != null || !state.saving,
+        contentPadding = PaddingValues(start = 12.dp, end = 16.dp),
+        modifier = Modifier
+            .weight(1f, fill = false)
+            .heightIn(min = 40.dp)
+            .testTag(if (savedId != null) CommunityListTestTags.OPEN_SAVED else CommunityListTestTags.SAVE),
+    ) {
+        if (savedId == null) {
+            BookmarkAddIcon(18.dp, LocalContentColor.current)
+            Spacer(Modifier.width(8.dp))
+        }
+        Text(
+            text = stringResource(if (savedId != null) R.string.community_saved else state.saveLabel),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+    Spacer(Modifier.width(8.dp))
+    val shareDescription = stringResource(BoardR.string.share_link)
+    OutlinedIconButton(
+        onClick = onShareLink,
+        // The same line as Save's beside it.
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier
+            .size(40.dp)
+            .semantics { contentDescription = shareDescription }
+            .testTag(CommunityListTestTags.SHARE_LINK),
+    ) { ShareIcon(18.dp, MaterialTheme.colorScheme.primary) }
 }
 
 /** A tablet's line under the title: who made the list and in which section, a tap away from their profile. */

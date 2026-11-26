@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -37,6 +38,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,6 +66,7 @@ import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.BarredScreen
 import com.artiuillab.tieryourlife.core.theme.layout.CenteredContent
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.layout.topBarHeight
 import com.artiuillab.tieryourlife.core.theme.layout.topBarTitleStyle
@@ -346,6 +349,32 @@ private fun DisplayModeSection(
                 testTag = TierDetailTestTags.LIST_SETTINGS_MODE_RANKED,
             )
         }
+        NamesOnCardsRow()
+    }
+}
+
+/** Under the three ways to show the tiers: the names on the pictures, on or off for every list on this device. */
+@Composable
+private fun NamesOnCardsRow() {
+    val memory = LocalBoardLayoutMemory.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .toggleable(value = memory.namesOnCards, role = Role.Switch, onValueChange = { memory.namesOnCards = it })
+            .testTag(TierDetailTestTags.NAMES_ON_CARDS)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(text = stringResource(R.string.board_names_on_cards), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = stringResource(R.string.board_names_on_cards_sub),
+                style = TierYourLifeType.current.supportingLabel,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(checked = memory.namesOnCards, onCheckedChange = null)
     }
 }
 

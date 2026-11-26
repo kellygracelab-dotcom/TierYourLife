@@ -105,12 +105,13 @@ class ShareLinkTest {
         capture("board_share_link")
     }
 
+    // One place for both (walkthrough 26.11.2026): Update while there is one, the link after.
     @Test
-    fun aChangedOne_offersUpdateAndTheLinkBoth() {
+    fun aChangedOne_offersUpdateInTheLinksPlace() {
         show(placed.copy(publishedId = "pub-1"), behind = true)
 
         composeRule.onNodeWithTag(TierDetailTestTags.PUBLISH).assertExists()
-        composeRule.onNodeWithTag(TierDetailTestTags.SHARE_LINK).assertExists()
+        assertEquals(0, composeRule.onAllNodes(hasTestTag(TierDetailTestTags.SHARE_LINK)).fetchSemanticsNodes().size)
         capture("board_share_link_behind")
     }
 
