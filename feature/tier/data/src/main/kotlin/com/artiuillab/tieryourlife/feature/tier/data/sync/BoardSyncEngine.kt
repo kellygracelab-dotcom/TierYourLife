@@ -441,7 +441,7 @@ class BoardSyncEngine @Inject constructor(
                 // Theirs comes down first, so it is safe here even if the
                 // write below never happens.
                 val theirs = api.board(step.uid)
-                if (!agreements.merge(account, theirs, ::settleText)) keepBeside(account, theirs)
+                if (agreements.isOurOwnLastWrite(account, theirs) || !agreements.merge(account, theirs, ::settleText)) keepBeside(account, theirs)
                 send(account, step.uid, basedOn = theirs.revision)
             }
             is SyncStep.Restore -> takeOver(account, api.board(step.uid), planned = fingerprints[step.uid])
@@ -484,12 +484,14 @@ class BoardSyncEngine @Inject constructor(
      * The account's version as a copy beside ours, and with it the record of
      * agreeing on that version: should our write then be refused for good, the
      * next run only sends ours again instead of bringing down another copy.
-     * A marker is not a board, so there is nothing to keep beside.
+     * A marker is not a board, so there is nothing to keep beside; nor is our
+     * own write whose answer never came (the network went, the app was stopped):
+     * that is only agreed on, and the board here goes up over it.
      */
     private suspend fun keepBeside(account: String, theirs: KeptBoardDto) {
         if (theirs.deleted) return
         dao.together {
-            adopt(account, theirs, asCopy = true)
+            if (!agreements.isOurOwnLastWrite(account, theirs)) adopt(account, theirs, asCopy = true)
             remember(account, theirs.uid, theirs.revision, theirs.fingerprint.orEmpty(), theirs.fingerprint, theirs.favouriteChangedAt, agreements.sideOf(theirs))
         }
     }
@@ -509,7 +511,7 @@ class BoardSyncEngine @Inject constructor(
         val items = dao.itemsOf(board.id)
         val fingerprint = BoardFingerprint.of(board, tiers, items, images::pictureIdOf)
         val learned = preferences.coverIdsLearned(account)
-        val answer = api.keep(uid, request(board, tiers, items, fingerprint, basedOn).coverAsLearned(learned))
+        val answer = api.keepAsSent(agreements, account, uid, request(board, tiers, items, fingerprint, basedOn).coverAsLearned(learned))
 
         if (answer.isSuccessful) {
             val kept = answer.body() ?: error("The account kept $uid but named no revision")
@@ -536,7 +538,7 @@ class BoardSyncEngine @Inject constructor(
         // Thrown away elsewhere meanwhile: ours was being sent because it
         // changed here, and that outweighs the delete.
         keepBeside(account, theirs)
-        val second = api.keep(uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision).coverAsLearned(learned))
+        val second = api.keepAsSent(agreements, account, uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision).coverAsLearned(learned))
         if (!second.isSuccessful) throw refused(second, refusalOf(second), board.title, tiers.size)
         second.body()?.let { kept ->
             remember(account, uid, kept.revision, fingerprint, accountStar = board.star.changedAt, side = BoardSide(board, tiers, items))
@@ -555,7 +557,7 @@ class BoardSyncEngine @Inject constructor(
         if (!here.isNewerThan(theirs.favouriteChangedAt)) {
             return remember(account, board.uid, theirs.revision, fingerprint, accountStar = theirs.favouriteChangedAt)
         }
-        val answer = api.keep(board.uid, again)
+        val answer = api.keepAsSent(agreements, account, board.uid, again)
         if (!answer.isSuccessful) throw refused(answer, refusalOf(answer), board.title, again.tiers.size)
         val kept = answer.body() ?: error("The account kept ${board.uid} but named no revision")
         remember(account, board.uid, kept.revision, fingerprint, accountStar = here.changedAt)
@@ -582,7 +584,7 @@ class BoardSyncEngine @Inject constructor(
         val tiers = dao.tiersOf(board.id)
         val items = dao.itemsOf(board.id)
         val fingerprint = BoardFingerprint.of(board, tiers, items, images::pictureIdOf)
-        val answer = api.keep(kept.uid, request(board, tiers, items, fingerprint, basedOn = kept.revision).coverAsLearned(learned))
+        val answer = api.keepAsSent(agreements, account, kept.uid, request(board, tiers, items, fingerprint, basedOn = kept.revision).coverAsLearned(learned))
         if (!answer.isSuccessful) throw refused(answer, refusalOf(answer), board.title, tiers.size)
         val next = answer.body() ?: error("The account kept ${kept.uid} but named no revision")
         remember(account, next.uid, next.revision, fingerprint, accountStar = board.star.changedAt, side = BoardSide(board, tiers, items))
@@ -979,3 +981,9 @@ internal fun KeptBoardDto.tiers(
  */
 internal fun standInFor(account: String, uid: String): String =
     UUID.nameUUIDFromBytes("$account\n$uid".toByteArray()).toString()
+
+/** Every write goes through here: what it sends is kept first, so a lost answer is still known as ours. */
+private suspend fun BoardsApi.keepAsSent(agreements: Agreements, account: String, uid: String, request: KeepBoardRequestDto): Response<KeptBoardRevisionDto> {
+    agreements.sending(account, uid, request.fingerprint)
+    return keep(uid, request)
+}
