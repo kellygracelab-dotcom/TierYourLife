@@ -73,6 +73,8 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.tips.Tip
@@ -667,6 +669,13 @@ private fun EditableListTitle(
             val trimmed = fieldValue.text.trim()
             if (trimmed.isNotEmpty()) onRename(trimmed)
             isEditing = false
+        }
+
+        // Going to the background moves no focus: keep what is typed so far, in case
+        // the app is closed there (seen on a fresh list, 26.11.2026). The field stays open.
+        LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+            val draft = fieldValue.text.trim()
+            if (draft.isNotEmpty() && draft != title) onRename(draft)
         }
 
         BasicTextField(
