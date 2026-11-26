@@ -93,7 +93,6 @@ object TierDetailTestTags {
     const val TIER_EDITOR_CONTRAST_READOUT = "tier_detail_tier_editor_contrast_readout"
     const val TIER_EDITOR_PREVIEW_LIGHT = "tier_detail_tier_editor_preview_light"
     const val TIER_EDITOR_PREVIEW_DARK = "tier_detail_tier_editor_preview_dark"
-    const val MANUAL_ADD_BUTTON = "tier_detail_manual_add_button"
     const val MANUAL_ENTRY_DIALOG = "tier_detail_manual_entry_dialog"
     const val MANUAL_ENTRY_NAME_FIELD = "tier_detail_manual_entry_name_field"
     const val MANUAL_ENTRY_PHOTO_FRAME = "tier_detail_manual_entry_photo_frame"

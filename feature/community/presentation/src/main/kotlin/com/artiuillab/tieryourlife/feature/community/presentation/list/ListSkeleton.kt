@@ -114,7 +114,6 @@ private fun SkeletonFlatBar(title: String, author: String?, short: Boolean, dock
     TierScreenTopBar(
         title = title,
         onBack = onBack,
-        onManualAdd = {},
         readOnly = true,
         compact = short,
         barHeight = if (docked) 72.dp else null,
@@ -146,7 +145,6 @@ private fun SkeletonTwoStoreyBar(preview: ListPreview, onBack: () -> Unit) {
         counts = counts,
         state = rememberTopAppBarState(),
         onBack = onBack,
-        onManualAdd = null,
         onMoreClick = {},
         onRenameList = null,
         play = null,

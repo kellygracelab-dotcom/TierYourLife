@@ -285,7 +285,7 @@ private fun TierDetailPane(
 
             TierDetailUiState.Error -> {
                 Column {
-                    TierScreenTopBar(title = "", onBack = actions.onBack, onManualAdd = actions.onManualAddClick)
+                    TierScreenTopBar(title = "", onBack = actions.onBack)
                     Text(
                         text = stringResource(R.string.tier_detail_not_found),
                         modifier = Modifier.padding(16.dp),
@@ -330,7 +330,6 @@ private fun TierScreenBody(
 ) {
     val onBack = actions.onBack
     val onAddClick = actions.onAddClick
-    val onManualAddClick = actions.onManualAddClick
     val onMoveItem = actions.onMoveItem
     val onDeleteItem = actions.onDeleteItem
     val onRestoreItem = actions.onRestoreItem
@@ -615,7 +614,6 @@ private fun TierScreenBody(
                     countsLink = subtitleLink.takeIf { reader != null },
                     state = ownBarScroll.state,
                     onBack = onBack,
-                    onManualAdd = onManualAddClick.takeIf { reader == null },
                     onMoreClick = reader ?: { listSettingsVisible = true },
                     onRenameList = onRenameList.takeIf { reader == null },
                     play = playButton,
@@ -631,7 +629,6 @@ private fun TierScreenBody(
             TierScreenTopBar(
                 title = list.title,
                 onBack = onBack,
-                onManualAdd = onManualAddClick,
                 onMoreClick = { listSettingsVisible = true },
                 onRenameList = onRenameList,
                 titleEditable = !readOnly && !glanceable,

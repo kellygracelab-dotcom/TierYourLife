@@ -100,7 +100,6 @@
         <item quantity="other">%1$d карточки</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">Изменить название списка</string>
-    <string name="tier_detail_content_description_manual_add">Добавить карточку вручную</string>
     <string name="tier_detail_item_removed">Удалено: «%1$s»</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d карточка добавлена в колоду</item>

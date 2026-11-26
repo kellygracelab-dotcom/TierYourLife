@@ -67,7 +67,11 @@ private fun MacrobenchmarkScope.dragFromPoolInto(row: Int) {
 }
 
 private fun MacrobenchmarkScope.addItemByHand(title: String) {
-    if (!tap(By.res("tier_detail_manual_add_button"))) return
+    if (!tap(By.res("tier_detail_add_chip"), LONG_WAIT)) return
+    if (!tap(By.res("item_search_own_photo"))) {
+        device.pressBack()
+        return
+    }
     // A dialog is a window of its own, which test tags do not reach.
     val label = appString("manual_dialog_add").orEmpty()
     val typed = label.isNotEmpty() && type(TEXT_FIELD, title)

@@ -90,7 +90,6 @@
         <item quantity="other">%1$d cards</item>
     </plurals>
     <string name="tier_detail_content_description_edit_title">Edit list name</string>
-    <string name="tier_detail_content_description_manual_add">Add a card by hand</string>
     <string name="tier_detail_item_removed">Removed %1$s</string>
     <plurals name="tier_detail_items_added_to_pool">
         <item quantity="one">%1$d card added to Cards left</item>

@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -98,23 +99,25 @@ class PublishButtonTest {
     }
 
     @Test
-    fun publishedAndUnchanged_hasNoButton_andThePhoneKeepsItsCamera() {
+    fun publishedAndUnchanged_hasNoButton() {
         show(placed.copy(publishedId = "p"))
         assertEquals(0, composeRule.onAllNodes(hasTestTag(TierDetailTestTags.PUBLISH)).fetchSemanticsNodes().size)
-        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).assertExists()
+        composeRule.onNodeWithContentDescription(OLD_CAMERA).assertDoesNotExist()
     }
 
+    // 26.11: cards of one's own come from Add → Your photo alone; the bar's camera did the same.
     @Test
-    fun onAPhone_theCameraGivesPublishItsRoom() {
+    fun onAPhone_theBarHasNoCamera() {
         show(placed)
-        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).assertDoesNotExist()
+        composeRule.onNodeWithContentDescription(OLD_CAMERA).assertDoesNotExist()
     }
 
     @Test
     @Config(qualifiers = "w720dp-h820dp-xhdpi")
-    fun anOpenFlip_keepsTheCameraBesidePublish() {
+    fun anOpenFlip_hasNoCameraEither() {
         show(placed)
-        composeRule.onNodeWithTag(TierDetailTestTags.MANUAL_ADD_BUTTON).assertExists()
+        composeRule.onNodeWithTag(TierDetailTestTags.PUBLISH).assertExists()
+        composeRule.onNodeWithContentDescription(OLD_CAMERA).assertDoesNotExist()
     }
 
     @Test
@@ -217,3 +220,6 @@ class PublishButtonTest {
         )
     }
 }
+
+/** What the bar's camera was called until 26.11. */
+private const val OLD_CAMERA = "Add a card by hand"

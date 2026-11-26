@@ -68,10 +68,6 @@ internal fun BoardTips(
                     add()
                 }
             },
-            onManualAddClick = {
-                memory.markSeen(Tip.Add)
-                actions.onManualAddClick()
-            },
         )
     }
     val tip = memory.tipFor(list, readOnly, canAdd = actions.onAddClick != null, canPlay = actions.onPlay != null)

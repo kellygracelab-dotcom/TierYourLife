@@ -27343,7 +27343,6 @@ SPLcom/artiuillab/tieryourlife/feature/tier/board/TierDetailActions;->getOnDelet
 SPLcom/artiuillab/tieryourlife/feature/tier/board/TierDetailActions;->getOnDeleteTierToPool()Lkotlin/jvm/functions/Function1;
 SPLcom/artiuillab/tieryourlife/feature/tier/board/TierDetailActions;->getOnEditTier()Lkotlin/jvm/functions/Function5;
 SPLcom/artiuillab/tieryourlife/feature/tier/board/TierDetailActions;->getOnForgetDeletedItem()Lkotlin/jvm/functions/Function1;
-SPLcom/artiuillab/tieryourlife/feature/tier/board/TierDetailActions;->getOnManualAddClick()Lkotlin/jvm/functions/Function0;
 SPLcom/artiuillab/tieryourlife/feature/tier/board/TierDetailActions;->getOnMoveItem()Lkotlin/jvm/functions/Function3;
 SPLcom/artiuillab/tieryourlife/feature/tier/board/TierDetailActions;->getOnPlay()Lkotlin/jvm/functions/Function0;
 SPLcom/artiuillab/tieryourlife/feature/tier/board/TierDetailActions;->getOnRenameList()Lkotlin/jvm/functions/Function1;
