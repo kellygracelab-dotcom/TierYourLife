@@ -108,6 +108,21 @@ class PromoteTests(unittest.TestCase):
     def test_an_alpha_release_in_review_is_never_replaced(self):
         play = FakePlay()
         play.states = {600: IN_REVIEW}
+        result = promote(play)
+        self.assertEqual("SKIPPED_ALPHA_PENDING", result["outcome"])
+        self.assertEqual({"600": IN_REVIEW}, result["alphaLifecycle"])
+        self.assertEqual([], play.writes())
+
+    def test_an_old_rejected_alpha_release_does_not_block_every_night(self):
+        play = FakePlay()
+        play.states = {590: "RELEASE_LIFECYCLE_STATE_NOT_APPROVED", 600: PUBLISHED}
+        result = promote(play)
+        self.assertEqual("SERVED", result["outcome"])
+        self.assertEqual({"590": "RELEASE_LIFECYCLE_STATE_NOT_APPROVED", "600": PUBLISHED}, result["alphaLifecycle"])
+
+    def test_approved_but_unpublished_is_left_for_the_console(self):
+        play = FakePlay()
+        play.states = {600: "RELEASE_LIFECYCLE_STATE_APPROVED_NOT_PUBLISHED"}
         self.assertEqual("SKIPPED_ALPHA_PENDING", promote(play)["outcome"])
         self.assertEqual([], play.writes())
 

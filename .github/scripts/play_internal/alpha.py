@@ -16,6 +16,9 @@ PUBLISHED = "RELEASE_LIFECYCLE_STATE_PUBLISHED"
 # Committed and on its way: Google's review, or approved and waiting for a manual publish.
 WAITING = {"RELEASE_LIFECYCLE_STATE_IN_REVIEW": "SENT_FOR_REVIEW",
            "RELEASE_LIFECYCLE_STATE_APPROVED_NOT_PUBLISHED": "APPROVED_NOT_PUBLISHED"}
+# Still on its way: a new release would replace it mid-review. A rejected or long
+# superseded one is not; the new build simply takes its place.
+PENDING = ("RELEASE_LIFECYCLE_STATE_DRAFT", "RELEASE_LIFECYCLE_STATE_NOT_SENT_FOR_REVIEW", *WAITING)
 KNOWN_STATUSES = ("completed", "inProgress", "halted", "draft")
 
 
@@ -107,8 +110,10 @@ class Promoter:
             return {**base, "outcome": "ALREADY_IN_ALPHA", "alphaVersionCode": latest, "lifecycle": state, "served": served}
         if any(release.get("status") != "completed" for release in alpha):
             return {**base, "outcome": "SKIPPED_ALPHA_NOT_SETTLED"}
-        if states and any(state != PUBLISHED for state in states.values()):
-            return {**base, "outcome": "SKIPPED_ALPHA_PENDING", "lifecycle": sorted(set(states.values()) - {PUBLISHED})}
+        lifecycle = None if states is None else {str(number): state for number, state in sorted(states.items())}
+        if states and any(state in PENDING for state in states.values()):
+            return {**base, "outcome": "SKIPPED_ALPHA_PENDING", "alphaLifecycle": lifecycle}
+        base["alphaLifecycle"] = lifecycle
         name = f"closed-{code}-{str(receipt['source']['sha'])[:12]}"
         target = {"track": ALPHA, "releases": [{"name": name, "versionCodes": [str(code)], "status": "completed"}]}
         try:
@@ -163,6 +168,8 @@ def summary(result):
     line = f"Closed testing ({ALPHA}) {PACKAGE}: **{result['outcome']}** — {SAID[result['outcome']]}."
     if "versionCode" in result:
         line += f" Internal served {result['versionCode']}, AAB SHA-256 `{result['signedSha256']}`."
+    if "alphaLifecycle" in result:
+        line += f" Alpha lifecycle before: {result['alphaLifecycle'] or 'not readable by this account'}."
     return line + "\n"
 
 
