@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife
 
 import android.graphics.Color
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.LocalActivity
@@ -29,6 +30,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.LocalShortWindow
 import com.artiuillab.tieryourlife.core.theme.layout.LocalWindowShape
+import com.artiuillab.tieryourlife.core.theme.layout.ThreeButtonBand
 import com.artiuillab.tieryourlife.core.theme.layout.WindowShape
 import com.artiuillab.tieryourlife.core.theme.tips.InMemoryTipMemory
 import com.artiuillab.tieryourlife.core.theme.tips.LocalTipMemory
@@ -91,6 +93,7 @@ fun AppRoot(
                     onLanguageTagChange = onLanguageTagChange,
                 )
             }
+            ThreeButtonBand()
         }
     }
 }
@@ -107,6 +110,8 @@ private fun SystemBarIconsFor(darkTheme: Boolean) {
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme },
             navigationBarStyle = SystemBarStyle.auto(LIGHT_SCRIM, DARK_SCRIM) { darkTheme },
         )
+        // The app draws its own solid band under three buttons; the system's see-through scrim over it is not needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) activity.window.isNavigationBarContrastEnforced = false
         onDispose {}
     }
 }
