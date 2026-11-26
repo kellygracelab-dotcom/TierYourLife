@@ -197,6 +197,12 @@
     <string name="list_settings_ranked_status">In den Ranglisten ✓</string>
     <string name="list_settings_take_down">Entfernen</string>
     <string name="list_settings_publication">Veröffentlichung</string>
+    <string name="list_settings_group_list">Liste</string>
+    <string name="list_settings_group_careful">Vorsicht</string>
+    <string name="list_settings_delete">Liste löschen</string>
+    <string name="list_settings_delete_title">Liste löschen?</string>
+    <string name="list_settings_delete_body">„%1$s“ kommt in den Papierkorb. Dort kannst du sie wiederherstellen.</string>
+    <string name="list_settings_delete_public">Ihre Kopie in der Community wird ebenfalls entfernt.</string>
     <string name="list_settings_unpublished_changes">Änderungen noch nicht veröffentlicht</string>
     <string name="board_published_short">Veröffentlicht</string>
     <string name="board_updated_short">In der Community aktualisiert</string>

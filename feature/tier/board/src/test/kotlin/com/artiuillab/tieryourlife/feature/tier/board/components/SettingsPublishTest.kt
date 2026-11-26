@@ -7,6 +7,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeDown
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.components.rows.Publishing
@@ -23,7 +26,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** One Publication row: the bar's button before, then the status with Update, Share, Open in Community and Take it down (Danylo, 16.11.2026; 23.11). */
+/** The Publication group: the bar's button before, then the status with Update, Share and Open in Community; Take it down is under Careful (Danylo, 16.11.2026; 23.11; 26.11). */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = RobolectricDeviceQualifiers.Pixel7)
@@ -54,14 +57,15 @@ class SettingsPublishTest {
     }
 
     @Test
-    fun published_saysSo_andTakeDownIsBesideIt() {
+    fun published_saysSo_andTakeDownIsUnderCareful() {
         show(previewTierList.copy(publishedId = "p"))
-        composeRule.onNodeWithText("Publication").assertExists()
+        composeRule.onNodeWithText("PUBLICATION").assertExists()
         composeRule.onNodeWithText("Published ✓").assertExists()
         composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_PUBLISH).assertDoesNotExist()
         composeRule.onNodeWithTag(TierDetailTestTags.UNPUBLISHED_CHANGES).assertDoesNotExist()
-        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_TAKE_DOWN).performClick()
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_TAKE_DOWN).performScrollTo().performClick()
         assertEquals(listOf(false), setPublic)
+        composeRule.onRoot().performTouchInput { swipeDown() }
         capture("settings_published")
     }
 

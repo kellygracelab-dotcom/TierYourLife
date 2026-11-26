@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -30,9 +31,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -71,12 +72,15 @@ import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CategoryIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ChevronRightIcon
+import com.artiuillab.tieryourlife.core.theme.ui.CloudOffIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CoverIcon
+import com.artiuillab.tieryourlife.core.theme.ui.DeleteIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
 import com.artiuillab.tieryourlife.core.theme.ui.OpenInNewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
+import com.artiuillab.tieryourlife.core.theme.ui.RestoreIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ReturnToPoolDialog
 import com.artiuillab.tieryourlife.core.theme.ui.SectionLabel
 import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
@@ -135,11 +139,15 @@ fun TierListSettingsScreenContent(
     /** The Community list a copy was made from; there whether or not the link under the title was hidden. */
     onOpenOriginal: (() -> Unit)? = null,
     onReturnAllToPool: (() -> Unit)? = null,
+    /** Into the trash after asking; null where there is no deleting from here. */
+    onDeleteList: (() -> Unit)? = null,
 ) {
+    var deleteVisible by rememberSaveable { mutableStateOf(false) }
     var tierEditorVisible by rememberSaveable { mutableStateOf(false) }
     var returnToPoolVisible by rememberSaveable { mutableStateOf(false) }
     var categorySheetVisible by rememberSaveable { mutableStateOf(false) }
     val rankedTierCount = list.tiers.count { !it.isPool }
+    val published = publicPending ?: list.isPublic
 
     Column(Modifier.fillMaxSize().testTag(TierDetailTestTags.LIST_SETTINGS_SCREEN)) {
         BarredScreen(
@@ -158,56 +166,47 @@ fun TierListSettingsScreenContent(
                         .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)))
                         .padding(bottom = 16.dp),
                 ) {
-                    // First, so it is there the moment the page opens: adding a
-                    // tier is what people come here for most.
+                    // Three groups: what others see of the list, the list itself, and
+                    // last, apart and in the warning colour, what cannot be taken back lightly.
+                    PublicationGroup(
+                        list = list,
+                        published = published,
+                        signedIn = signedIn,
+                        publishing = publishing,
+                        publishError = publishError,
+                        publishedIsBehind = publishedIsBehind,
+                        awaitingApproval = awaitingApproval,
+                        publicPending = publicPending,
+                        onPublish = onPublish,
+                        onSetPublic = onSetPublic,
+                        onUpdatePublished = onUpdatePublished,
+                        onAddCards = onAddCards,
+                        onSeeInCommunity = onSeeInCommunity,
+                        onShareLink = onShareLink,
+                        onOpenOriginal = onOpenOriginal,
+                        onChooseCategory = { categorySheetVisible = true },
+                        onChooseTopic = onChooseTopic,
+                        onChooseCover = onChooseCover,
+                        onAdjustCover = onAdjustCover,
+                        onShare = onShare,
+                    )
+
+                    GroupLabel(stringResource(R.string.list_settings_group_list))
                     NewTierRow(
                         tierCount = rankedTierCount,
                         hasRoom = list.hasRoomForATier,
                         onClick = { tierEditorVisible = true },
                     )
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                    )
-
-                    PublishSection(
-                        list = list,
-                        published = publicPending ?: list.isPublic,
-                        signedIn = signedIn,
-                        busy = publishing,
-                        error = publishError,
-                        behind = publishedIsBehind,
-                        awaiting = awaitingApproval,
-                        onPublish = onPublish ?: { kind -> if (kind == Publishing.Update) onUpdatePublished() else onSetPublic(true) },
-                        onTakeDown = { onSetPublic(false) },
-                        onAddCards = onAddCards,
-                        // A ranking's original has its own row just under: no second button for it here.
-                        onOpenInCommunity = onSeeInCommunity.takeIf { list.rankingOf == null && publicPending != false },
-                        onShareLink = onShareLink.takeIf { publicPending != false },
-                    )
-                    if (onOpenOriginal != null) OpenOriginalRow(onClick = onOpenOriginal)
-
-                    // A category exists only for the feed; a cover is also the card's
-                    // own art, so it stays available to a guest.
-                    CategoryRow(category = list.category, onClick = { categorySheetVisible = true })
-                    // A topic lives inside a section: with none yet, the Section sheet comes first.
-                    TopicRow(
-                        topicName = list.topicName,
-                        newTopicName = list.newTopicName,
-                        onClick = { if (list.category == null) categorySheetVisible = true else onChooseTopic() },
-                    )
-                    CoverRows(list, onChooseCover = onChooseCover, onAdjustCover = onAdjustCover)
-                    // Beside the cover: sharing is not publishing and needs no account.
-                    ShareRow(onClick = onShare)
-                    if (onReturnAllToPool != null) {
-                        TextButton(
-                            onClick = { returnToPoolVisible = true },
-                            enabled = list.tiers.any { !it.isPool && it.items.isNotEmpty() },
-                            modifier = Modifier.padding(horizontal = 16.dp).testTag("board_return_all_to_pool"),
-                        ) { Text(stringResource(ThemeR.string.community_return_all_to_pool)) }
-                    }
-
                     DisplayModeSection(selected = list.displayMode, onSelect = onSetDisplayMode)
+
+                    CarefulGroup(
+                        onReturnAllToPool = onReturnAllToPool?.let { { returnToPoolVisible = true } },
+                        hasPlacedCards = list.tiers.any { !it.isPool && it.items.isNotEmpty() },
+                        // Down while it is going down already: nothing to offer.
+                        onTakeDown = { onSetPublic(false) }.takeIf { published && publicPending != false },
+                        takeDownEnabled = !publishing,
+                        onDelete = onDeleteList?.let { { deleteVisible = true } },
+                    )
                 }
             }
         }
@@ -219,6 +218,18 @@ fun TierListSettingsScreenContent(
             onConfirm = {
                 returnToPoolVisible = false
                 onReturnAllToPool?.invoke()
+            },
+        )
+    }
+
+    if (deleteVisible && onDeleteList != null) {
+        DeleteListDialog(
+            title = list.title,
+            published = published,
+            onDismiss = { deleteVisible = false },
+            onConfirm = {
+                deleteVisible = false
+                onDeleteList()
             },
         )
     }
@@ -297,9 +308,11 @@ private fun DisplayModeSection(
     onSelect: (TierListDisplayMode) -> Unit,
 ) {
     Column {
-        SectionLabel(
+        Text(
             text = stringResource(R.string.tier_list_settings_display_section),
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 2.dp),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
             text = stringResource(R.string.tier_list_settings_display_section_caption),
@@ -512,6 +525,160 @@ private fun OpenOriginalRow(onClick: () -> Unit) {
 }
 
 @Composable
+private fun GroupLabel(text: String, color: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
+    SectionLabel(
+        text = text,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 4.dp),
+        color = color,
+    )
+}
+
+/** Last and apart: cards back to Cards left, the list out of Community, the list into the trash. */
+@Composable
+private fun PublicationGroup(
+    list: TierList,
+    published: Boolean,
+    signedIn: Boolean,
+    publishing: Boolean,
+    publishError: PublishError?,
+    publishedIsBehind: Boolean,
+    awaitingApproval: Boolean,
+    publicPending: Boolean?,
+    onPublish: ((Publishing) -> Unit)?,
+    onSetPublic: (Boolean) -> Unit,
+    onUpdatePublished: () -> Unit,
+    onAddCards: () -> Unit,
+    onSeeInCommunity: (() -> Unit)?,
+    onShareLink: (() -> Unit)?,
+    onOpenOriginal: (() -> Unit)?,
+    onChooseCategory: () -> Unit,
+    onChooseTopic: () -> Unit,
+    onChooseCover: () -> Unit,
+    onAdjustCover: () -> Unit,
+    onShare: () -> Unit,
+) {
+    GroupLabel(stringResource(R.string.list_settings_publication))
+    PublishSection(
+        list = list,
+        published = published,
+        signedIn = signedIn,
+        busy = publishing,
+        error = publishError,
+        behind = publishedIsBehind,
+        awaiting = awaitingApproval,
+        onPublish = onPublish ?: { kind -> if (kind == Publishing.Update) onUpdatePublished() else onSetPublic(true) },
+        onAddCards = onAddCards,
+        // A ranking's original has its own row just under: no second button for it here.
+        onOpenInCommunity = onSeeInCommunity.takeIf { list.rankingOf == null && publicPending != false },
+        onShareLink = onShareLink.takeIf { publicPending != false },
+    )
+    if (onOpenOriginal != null) OpenOriginalRow(onClick = onOpenOriginal)
+
+    // A category exists only for the feed; a cover is also the card's
+    // own art, so it stays available to a guest.
+    CategoryRow(category = list.category, onClick = onChooseCategory)
+    // A topic lives inside a section: with none yet, the Section sheet comes first.
+    TopicRow(
+        topicName = list.topicName,
+        newTopicName = list.newTopicName,
+        onClick = { if (list.category == null) onChooseCategory() else onChooseTopic() },
+    )
+    CoverRows(list, onChooseCover = onChooseCover, onAdjustCover = onAdjustCover)
+    // Beside the cover: sharing is not publishing and needs no account.
+    ShareRow(onClick = onShare)
+}
+
+@Composable
+private fun CarefulGroup(
+    onReturnAllToPool: (() -> Unit)?,
+    hasPlacedCards: Boolean,
+    onTakeDown: (() -> Unit)?,
+    takeDownEnabled: Boolean,
+    onDelete: (() -> Unit)?,
+) {
+    if (onReturnAllToPool == null && onTakeDown == null && onDelete == null) return
+    GroupLabel(stringResource(R.string.list_settings_group_careful), MaterialTheme.colorScheme.error)
+    val plain = MaterialTheme.colorScheme.onSurface
+    if (onReturnAllToPool != null) {
+        CarefulRow(
+            icon = { RestoreIcon(24.dp, it) },
+            title = stringResource(ThemeR.string.community_return_all_to_pool),
+            color = plain,
+            onClick = onReturnAllToPool,
+            enabled = hasPlacedCards,
+            testTag = TierDetailTestTags.SETTINGS_RETURN_ALL,
+        )
+    }
+    if (onTakeDown != null) {
+        CarefulRow(
+            icon = { CloudOffIcon(24.dp, it) },
+            title = stringResource(R.string.list_settings_take_down),
+            color = plain,
+            onClick = onTakeDown,
+            enabled = takeDownEnabled,
+            testTag = TierDetailTestTags.SETTINGS_TAKE_DOWN,
+        )
+    }
+    if (onDelete != null) {
+        CarefulRow(
+            icon = { DeleteIcon(24.dp, it) },
+            title = stringResource(R.string.list_settings_delete),
+            color = MaterialTheme.colorScheme.error,
+            onClick = onDelete,
+            testTag = TierDetailTestTags.SETTINGS_DELETE_LIST,
+        )
+    }
+}
+
+@Composable
+private fun CarefulRow(
+    icon: @Composable (Color) -> Unit,
+    title: String,
+    color: Color,
+    onClick: () -> Unit,
+    testTag: String,
+    enabled: Boolean = true,
+) {
+    val shown = if (enabled) color else color.copy(alpha = DISABLED_ALPHA)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 56.dp)
+            .clickable(enabled = enabled, onClick = onClick)
+            .testTag(testTag)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        icon(shown)
+        Text(
+            text = title,
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.titleMedium,
+            color = shown,
+        )
+    }
+}
+
+@Composable
+private fun DeleteListDialog(title: String, published: Boolean, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.testTag(TierDetailTestTags.DELETE_LIST_DIALOG),
+        title = { Text(stringResource(R.string.list_settings_delete_title)) },
+        text = {
+            val body = stringResource(R.string.list_settings_delete_body, title)
+            Text(if (published) body + " " + stringResource(R.string.list_settings_delete_public) else body)
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm, modifier = Modifier.testTag(TierDetailTestTags.DELETE_LIST_CONFIRM)) {
+                Text(stringResource(R.string.list_settings_delete), color = MaterialTheme.colorScheme.error)
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(ThemeR.string.action_cancel)) } },
+    )
+}
+
+@Composable
 private fun NewTierRow(tierCount: Int, hasRoom: Boolean, onClick: () -> Unit) {
     SettingsActionRow(
         icon = { PlusIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) },
@@ -565,7 +732,6 @@ private fun PublishSection(
     behind: Boolean,
     awaiting: Boolean,
     onPublish: (Publishing) -> Unit,
-    onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
     onOpenInCommunity: (() -> Unit)?,
     onShareLink: (() -> Unit)?,
@@ -578,7 +744,6 @@ private fun PublishSection(
     error = error,
     kind = publishingOf(list, behind) ?: if (list.takenFrom != null) Publishing.ShareRanking else Publishing.Publish,
     onPublish = onPublish,
-    onTakeDown = onTakeDown,
     onAddCards = onAddCards,
     behind = behind,
     awaiting = awaiting,
@@ -597,7 +762,6 @@ private fun PublishSection(
     error: PublishError?,
     kind: Publishing,
     onPublish: (Publishing) -> Unit,
-    onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
     behind: Boolean,
     awaiting: Boolean = false,
@@ -608,14 +772,8 @@ private fun PublishSection(
         Modifier
             // An empty list: the button cannot go, and the row leads to the cards it is asking for.
             .then(if (!published && !hasItems) Modifier.clickable(onClick = onAddCards) else Modifier)
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp),
     ) {
-        Text(
-            text = stringResource(R.string.list_settings_publication),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(Modifier.height(6.dp))
         if (published) {
             PublishedStatus(asRankingOf = asRankingOf, behind = behind)
             if (awaiting && asRankingOf == null) {
@@ -629,7 +787,7 @@ private fun PublishSection(
             PublishedActions(
                 behind = behind,
                 busy = busy,
-                calls = PublishedCalls(onUpdate = { onPublish(Publishing.Update) }, onShareLink, onOpenInCommunity, onTakeDown),
+                calls = PublishedCalls(onUpdate = { onPublish(Publishing.Update) }, onShareLink, onOpenInCommunity),
             )
         } else {
             PublishLine(
@@ -690,10 +848,9 @@ private class PublishedCalls(
     val onUpdate: () -> Unit,
     val onShareLink: (() -> Unit)?,
     val onOpenInCommunity: (() -> Unit)?,
-    val onTakeDown: () -> Unit,
 )
 
-/** Update (filled only when there is something to send) · Share · Open in Community · Take it down. */
+/** Update (filled only when there is something to send) · Share · Open in Community; taking it down is under Careful. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PublishedActions(behind: Boolean, busy: Boolean, calls: PublishedCalls) {
@@ -725,9 +882,6 @@ private fun PublishedActions(behind: Boolean, busy: Boolean, calls: PublishedCal
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.list_live_open))
             }
-        }
-        TextButton(onClick = calls.onTakeDown, enabled = !busy, modifier = Modifier.testTag(TierDetailTestTags.SETTINGS_TAKE_DOWN)) {
-            Text(stringResource(R.string.list_settings_take_down))
         }
     }
 }

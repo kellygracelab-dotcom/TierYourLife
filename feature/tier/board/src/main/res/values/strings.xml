@@ -198,6 +198,12 @@
     <string name="list_settings_ranked_status">In Rankings ✓</string>
     <string name="list_settings_take_down">Take it down</string>
     <string name="list_settings_publication">Publication</string>
+    <string name="list_settings_group_list">List</string>
+    <string name="list_settings_group_careful">Careful</string>
+    <string name="list_settings_delete">Delete list</string>
+    <string name="list_settings_delete_title">Delete list?</string>
+    <string name="list_settings_delete_body">“%1$s” moves to the trash. You can restore it from there.</string>
+    <string name="list_settings_delete_public">Its copy in Community comes down too.</string>
     <string name="list_settings_unpublished_changes">Changes not published yet</string>
     <string name="board_published_short">Published</string>
     <string name="board_updated_short">Updated in Community</string>

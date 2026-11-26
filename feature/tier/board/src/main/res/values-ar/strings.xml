@@ -241,6 +241,12 @@
     <string name="list_settings_ranked_status">في الترتيبات ✓</string>
     <string name="list_settings_take_down">إزالة</string>
     <string name="list_settings_publication">النشر</string>
+    <string name="list_settings_group_list">القائمة</string>
+    <string name="list_settings_group_careful">انتبه</string>
+    <string name="list_settings_delete">حذف القائمة</string>
+    <string name="list_settings_delete_title">حذف القائمة؟</string>
+    <string name="list_settings_delete_body">ستنتقل «%1$s» إلى سلة المهملات، ويمكنك استعادتها من هناك.</string>
+    <string name="list_settings_delete_public">وستُزال نسختها من المجتمع أيضًا.</string>
     <string name="list_settings_unpublished_changes">التغييرات لم تُنشر بعد</string>
     <string name="board_published_short">تم النشر</string>
     <string name="board_updated_short">تم التحديث في المجتمع</string>

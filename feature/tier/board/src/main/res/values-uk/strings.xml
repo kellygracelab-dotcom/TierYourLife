@@ -219,6 +219,12 @@
     <string name="list_settings_ranked_status">У рейтингах ✓</string>
     <string name="list_settings_take_down">Зняти</string>
     <string name="list_settings_publication">Публікація</string>
+    <string name="list_settings_group_list">Список</string>
+    <string name="list_settings_group_careful">Обережно</string>
+    <string name="list_settings_delete">Видалити список</string>
+    <string name="list_settings_delete_title">Видалити список?</string>
+    <string name="list_settings_delete_body">«%1$s» потрапить у кошик. Звідти його можна відновити.</string>
+    <string name="list_settings_delete_public">Його копію у Спільноті теж буде знято.</string>
     <string name="list_settings_unpublished_changes">Є неопубліковані зміни</string>
     <string name="board_published_short">Опубліковано</string>
     <string name="board_updated_short">Оновлено в спільноті</string>

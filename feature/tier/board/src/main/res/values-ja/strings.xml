@@ -186,6 +186,12 @@
     <string name="list_settings_ranked_status">ランキングに表示中 ✓</string>
     <string name="list_settings_take_down">取り下げる</string>
     <string name="list_settings_publication">公開</string>
+    <string name="list_settings_group_list">リスト</string>
+    <string name="list_settings_group_careful">注意</string>
+    <string name="list_settings_delete">リストを削除</string>
+    <string name="list_settings_delete_title">リストを削除しますか？</string>
+    <string name="list_settings_delete_body">「%1$s」はゴミ箱に移動します。そこから元に戻せます。</string>
+    <string name="list_settings_delete_public">コミュニティの公開も取り下げられます。</string>
     <string name="list_settings_unpublished_changes">変更はまだ公開されていません</string>
     <string name="board_published_short">公開しました</string>
     <string name="board_updated_short">コミュニティで更新しました</string>

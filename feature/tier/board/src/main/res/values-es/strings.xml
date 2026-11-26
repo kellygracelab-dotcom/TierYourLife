@@ -208,6 +208,12 @@
     <string name="list_settings_ranked_status">En clasificaciones ✓</string>
     <string name="list_settings_take_down">Retirar</string>
     <string name="list_settings_publication">Publicación</string>
+    <string name="list_settings_group_list">Lista</string>
+    <string name="list_settings_group_careful">Cuidado</string>
+    <string name="list_settings_delete">Eliminar lista</string>
+    <string name="list_settings_delete_title">¿Eliminar la lista?</string>
+    <string name="list_settings_delete_body">«%1$s» irá a la papelera. Podrás restaurarla desde allí.</string>
+    <string name="list_settings_delete_public">Su copia en Comunidad también se retira.</string>
     <string name="list_settings_unpublished_changes">Cambios aún sin publicar</string>
     <string name="board_published_short">Publicada</string>
     <string name="board_updated_short">Actualizada en la Comunidad</string>
