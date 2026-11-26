@@ -62,6 +62,12 @@
     <string name="item_search_try_again">Спробувати ще раз</string>
     <string name="item_search_scope_all">Усе</string>
     <string name="item_search_scope_animals">Тварини</string>
+    <plurals name="item_search_results_in">
+        <item quantity="one">%2$s: %1$s результат</item>
+        <item quantity="few">%2$s: %1$s результати</item>
+        <item quantity="many">%2$s: %1$s результатів</item>
+        <item quantity="other">%2$s: %1$s результату</item>
+    </plurals>
     <string name="item_search_everywhere">Шукати всюди</string>
     <string name="item_search_empty_everywhere_body">Пошукати в усіх каталогах та в інтернеті?</string>
     <string name="item_search_notice_web_daily">Пошук в інтернеті на сьогодні закінчився. Шукаємо в каталогах — завтра знову всюди.</string>

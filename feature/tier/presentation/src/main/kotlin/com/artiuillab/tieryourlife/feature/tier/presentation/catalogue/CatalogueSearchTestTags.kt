@@ -6,6 +6,7 @@ internal object CatalogueSearchTestTags {
     const val ITEM_SEARCH_OWN_PHOTO = "item_search_own_photo"
     const val ITEM_SEARCH_OWN_NAME = "item_search_own_name"
     const val ITEM_SEARCH_FIELD = "tier_detail_item_search_field"
+    const val ITEM_SEARCH_SCOPE_LINE = "item_search_scope_line"
     const val ITEM_SEARCH_CLOSE = "tier_detail_item_search_close"
     const val ITEM_SEARCH_CLEAR = "tier_detail_item_search_clear"
     const val ITEM_SEARCH_SELECTED_COUNT = "tier_detail_item_search_selected_count"

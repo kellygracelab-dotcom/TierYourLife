@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImagePainter
 import coil3.compose.AsyncImagePreviewHandler
@@ -27,6 +29,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ResultsGrid
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -103,6 +106,62 @@ class PictureSearchScreenshotTest {
             selectedIds = setOf("anilist:20"),
             scopes = ScopeChoice(first = PictureScope.Anime, selected = PictureScope.Anime, onSelect = {}),
         )
+    }
+
+    // Walkthrough 26.11.2026, item 13: "pizza" in an Anime list found two anime and said nothing of where it looked.
+    @Test
+    fun aSectionsResults_sayWhereTheSearchLooked_andTheWayOut() {
+        var everywhere = 0
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CatalogueSearchScreenContent(
+                    state = CatalogueSearchUiState.Success(items = naruto().take(2)),
+                    query = "pizza",
+                    onQueryChange = {},
+                    onSearchClick = {},
+                    scopes = ScopeChoice(first = PictureScope.Anime, selected = PictureScope.Anime, onSelect = {}),
+                    onSearchEverywhere = { everywhere++ },
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("2 results in Anime").assertExists()
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_EVERYWHERE).performClick()
+        assertEquals(1, everywhere)
+    }
+
+    @Test
+    fun moreToLoad_theCountIsAFloor() {
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CatalogueSearchScreenContent(
+                    state = CatalogueSearchUiState.Success(items = naruto(), canLoadMore = true),
+                    query = "naruto",
+                    onQueryChange = {},
+                    onSearchClick = {},
+                    scopes = ScopeChoice(first = PictureScope.Anime, selected = PictureScope.Anime, onSelect = {}),
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("6+ results in Anime").assertExists()
+    }
+
+    @Test
+    fun searchingEverything_saysNothingOfAScope() {
+        composeRule.setContent {
+            TierYourLifeTheme {
+                CatalogueSearchScreenContent(
+                    state = CatalogueSearchUiState.Success(items = naruto()),
+                    query = "naruto",
+                    onQueryChange = {},
+                    onSearchClick = {},
+                    scopes = ScopeChoice(first = PictureScope.Anime, selected = PictureScope.All, onSelect = {}),
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(CatalogueSearchTestTags.ITEM_SEARCH_SCOPE_LINE).assertDoesNotExist()
     }
 
     @Test
