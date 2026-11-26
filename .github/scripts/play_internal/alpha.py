@@ -16,9 +16,10 @@ PUBLISHED = "RELEASE_LIFECYCLE_STATE_PUBLISHED"
 # Committed and on its way: Google's review, or approved and waiting for a manual publish.
 WAITING = {"RELEASE_LIFECYCLE_STATE_IN_REVIEW": "SENT_FOR_REVIEW",
            "RELEASE_LIFECYCLE_STATE_APPROVED_NOT_PUBLISHED": "APPROVED_NOT_PUBLISHED"}
-# Still on its way: a new release would replace it mid-review. A rejected or long
-# superseded one is not; the new build simply takes its place.
-PENDING = ("RELEASE_LIFECYCLE_STATE_DRAFT", "RELEASE_LIFECYCLE_STATE_NOT_SENT_FOR_REVIEW", *WAITING)
+REJECTED = "RELEASE_LIFECYCLE_STATE_NOT_APPROVED"
+# Only these let a new release in: live, or rejected and so replaceable. Anything
+# else (in review, waiting to be sent, a state this code does not know) holds it.
+SETTLED = (PUBLISHED, REJECTED)
 KNOWN_STATUSES = ("completed", "inProgress", "halted", "draft")
 
 
@@ -102,18 +103,20 @@ class Promoter:
         base = {"versionCode": code, "signedSha256": digest, "internalSource": receipt.get("source")}
         alpha = tracks[ALPHA].get("releases", [])
         states = self.lifecycle()
+        base["alphaLifecycle"] = None if states is None else {str(number): state for number, state in sorted(states.items())}
         in_alpha = [number for release in alpha for number in release_codes(release)]
         if in_alpha and max(in_alpha) >= code:
             latest = max(in_alpha)
             state = None if states is None else states.get(latest)
             served = state == PUBLISHED and self.alpha_serves(latest, None, self.bundle_sha(edit, latest))
             return {**base, "outcome": "ALREADY_IN_ALPHA", "alphaVersionCode": latest, "lifecycle": state, "served": served}
+        if states and code in states:
+            # Sent already and not yet live: never send it again.
+            return {**base, "outcome": "ALREADY_SENT", "lifecycle": states[code]}
         if any(release.get("status") != "completed" for release in alpha):
             return {**base, "outcome": "SKIPPED_ALPHA_NOT_SETTLED"}
-        lifecycle = None if states is None else {str(number): state for number, state in sorted(states.items())}
-        if states and any(state in PENDING for state in states.values()):
-            return {**base, "outcome": "SKIPPED_ALPHA_PENDING", "alphaLifecycle": lifecycle}
-        base["alphaLifecycle"] = lifecycle
+        if states and any(state not in SETTLED for state in states.values()):
+            return {**base, "outcome": "SKIPPED_ALPHA_PENDING"}
         name = f"closed-{code}-{str(receipt['source']['sha'])[:12]}"
         target = {"track": ALPHA, "releases": [{"name": name, "versionCodes": [str(code)], "status": "completed"}]}
         try:
@@ -142,25 +145,27 @@ class Promoter:
             if states is None:
                 return {"outcome": "COMMITTED", "lifecycle": None, "served": self.alpha_serves(code, name, digest)}
             state = states.get(code)
-            require(state is None or state == PUBLISHED or state in WAITING, "Closed testing release rejected or in an unknown state")
+            require(state != REJECTED, f"Closed testing release {code} was rejected: {REJECTED}")
             if state == PUBLISHED and self.alpha_serves(code, name, digest):
                 return {"outcome": "SERVED", "lifecycle": state, "served": True}
             if attempt < 23:
                 self.sleep(5)
-        require(state in WAITING, "Committed release does not show in closed testing")
-        return {"outcome": WAITING[state], "lifecycle": state, "served": False}
+        require(state is not None, "Committed release does not show in closed testing")
+        # Committed: anything else is said by its own name, not guessed.
+        return {"outcome": WAITING.get(state, "COMMITTED"), "lifecycle": state, "served": False}
 
 
 SAID = {
     "SERVED": "выдаётся тестерам",
     "SENT_FOR_REVIEW": "отправлено на проверку Google",
     "APPROVED_NOT_PUBLISHED": "проверено, ждёт ручной публикации в Консоли",
-    "COMMITTED": "отправлено; состояние проверки этому аккаунту не видно",
+    "COMMITTED": "отправлено; выдачу тестерам Play пока не подтвердил",
     "ALREADY_IN_ALPHA": "в закрытом тесте уже эта версия или новее",
+    "ALREADY_SENT": "эта версия уже отправлена в закрытый тест и ещё не выдаётся; не трогаем",
     "NOT_SENT": "не отправлено, ничего не изменено: у приложения есть изменения на проверке или Play отказал; повтор следующей ночью",
     "SKIPPED_DRAFT_IN_CONSOLE": "пропуск: в Консоли есть черновик",
     "SKIPPED_ALPHA_NOT_SETTLED": "пропуск: выпуск закрытого теста не завершён",
-    "SKIPPED_ALPHA_PENDING": "пропуск: выпуск закрытого теста ещё на проверке",
+    "SKIPPED_ALPHA_PENDING": "пропуск: выпуск закрытого теста ещё не выдаётся (на проверке, ждёт отправки или в незнакомом состоянии)",
 }
 
 
@@ -168,6 +173,8 @@ def summary(result):
     line = f"Closed testing ({ALPHA}) {PACKAGE}: **{result['outcome']}** — {SAID[result['outcome']]}."
     if "versionCode" in result:
         line += f" Internal served {result['versionCode']}, AAB SHA-256 `{result['signedSha256']}`."
+    if result.get("lifecycle"):
+        line += f" State: {result['lifecycle']}."
     if "alphaLifecycle" in result:
         line += f" Alpha lifecycle before: {result['alphaLifecycle'] or 'not readable by this account'}."
     return line + "\n"

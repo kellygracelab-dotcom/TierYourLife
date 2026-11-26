@@ -141,9 +141,11 @@ The job:
 2. Reads a new edit. Internal must have one completed release; its bundle hash
    must equal this workflow's own SERVED receipt (play-result artifact of a
    trusted main run). Nothing else is promoted.
-3. Does nothing when alpha already has that version or newer, when any track
-   has a draft, when an alpha rollout is not completed, or when an alpha release
-   is still in review (applications.tracks.releases.list for alpha).
+3. Does nothing when alpha already has that version or newer, or has it sent and
+   not yet live (ALREADY_SENT), when any track has a draft, when an alpha rollout
+   is not completed, or when any alpha release is in a lifecycle other than
+   PUBLISHED or NOT_APPROVED (applications.tracks.releases.list for alpha): in
+   review, waiting to be sent, or a state this code does not know.
 4. Otherwise writes **only the alpha track**: the same version code, no upload,
    release name closed-<versionCode>-<sha12>. Commit uses ERROR_IF_IN_REVIEW;
    a review is never cancelled. A commit Play refuses while the edit stays open
@@ -151,8 +153,9 @@ The job:
    tries again. Any other refusal, e.g. a missing permission, fails the job.
 5. Reports honestly: SERVED only when the alpha lifecycle is PUBLISHED and a new
    read edit shows the version completed with the exact bundle hash;
-   SENT_FOR_REVIEW or APPROVED_NOT_PUBLISHED while Google has it; COMMITTED when
-   this account may not read the alpha lifecycle. Receipt artifact:
+   SENT_FOR_REVIEW or APPROVED_NOT_PUBLISHED while Google has it; otherwise
+   COMMITTED with the lifecycle state as Play names it (or none, when this
+   account may not read it). Every receipt lists alpha's lifecycle by version. Receipt artifact:
    play-alpha-<run>-<attempt>, plus the run summary.
 
 Production and other tracks are never written. The service account's testing
