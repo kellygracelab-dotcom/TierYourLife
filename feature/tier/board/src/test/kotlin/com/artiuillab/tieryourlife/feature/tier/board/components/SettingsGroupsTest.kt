@@ -2,7 +2,10 @@ package com.artiuillab.tieryourlife.feature.tier.board.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -10,6 +13,8 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.core.theme.layout.InMemoryBoardLayoutMemory
+import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.TierListSettingsScreenContent
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
@@ -17,6 +22,7 @@ import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -95,6 +101,22 @@ class SettingsGroupsTest {
 
         composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_RETURN_ALL).performScrollTo().assertIsNotEnabled()
         assertEquals(0, returned)
+    }
+
+    // Moved from the bar's Display menu (walkthrough 26.11.2026): Display lives here now.
+    @Test
+    fun namesOnCards_isASwitchUnderDisplay() {
+        val memory = InMemoryBoardLayoutMemory()
+        composeRule.setContent {
+            CompositionLocalProvider(LocalBoardLayoutMemory provides memory) {
+                TierYourLifeTheme {
+                    TierListSettingsScreenContent(list = previewTierList, onBack = {}, onAddTier = { _, _, _, _ -> }, onSetDisplayMode = {})
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag(TierDetailTestTags.NAMES_ON_CARDS).performScrollTo().assertIsOn().performClick().assertIsOff()
+        assertFalse(memory.namesOnCards)
     }
 
     @Test
