@@ -208,6 +208,12 @@
     <string name="list_settings_ranked_status">Dans les classements ✓</string>
     <string name="list_settings_take_down">Retirer</string>
     <string name="list_settings_publication">Publication</string>
+    <string name="list_settings_group_list">Liste</string>
+    <string name="list_settings_group_careful">Attention</string>
+    <string name="list_settings_delete">Supprimer la liste</string>
+    <string name="list_settings_delete_title">Supprimer la liste ?</string>
+    <string name="list_settings_delete_body">« %1$s » ira dans la corbeille. Vous pourrez la restaurer depuis celle-ci.</string>
+    <string name="list_settings_delete_public">Sa copie dans Communauté est aussi retirée.</string>
     <string name="list_settings_unpublished_changes">Modifications pas encore publiées</string>
     <string name="board_published_short">Publiée</string>
     <string name="board_updated_short">Mise à jour dans la Communauté</string>

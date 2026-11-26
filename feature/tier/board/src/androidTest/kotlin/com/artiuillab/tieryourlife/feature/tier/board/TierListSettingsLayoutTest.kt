@@ -27,7 +27,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Where the list settings page puts its rows: what people came for at the top, and nothing under the system bar at the bottom. */
+/** Where the list settings page puts its rows: Publication, List, then Careful last, and nothing under the system bar at the bottom. */
 @RunWith(AndroidJUnit4::class)
 class TierListSettingsLayoutTest {
 
@@ -46,6 +46,8 @@ class TierListSettingsLayoutTest {
                         onBack = {},
                         onAddTier = { _, _, _, _ -> },
                         onSetDisplayMode = {},
+                        onReturnAllToPool = {},
+                        onDeleteList = {},
                     )
                 }
             }
@@ -53,13 +55,13 @@ class TierListSettingsLayoutTest {
     }
 
     @Test
-    fun newTier_isTheFirstRow_andShowsWithoutScrolling() {
+    fun publication_comesFirst_thenNewTier_thenDeleteLast() {
         open()
 
-        composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).assertIsDisplayed()
-        val newTierTop = composeRule.onNodeWithTag(TierDetailTestTags.NEW_TIER_ROW).getBoundsInRoot().top
-        val publishTop = composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_PUBLISH).getBoundsInRoot().top
-        assertTrue("New tier stands above Publish", newTierTop < publishTop)
+        composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_PUBLISH).assertIsDisplayed()
+        val top = { tag: String -> composeRule.onNodeWithTag(tag).fetchSemanticsNode().positionInRoot.y }
+        assertTrue("Publish stands above New tier", top(TierDetailTestTags.SETTINGS_PUBLISH) < top(TierDetailTestTags.NEW_TIER_ROW))
+        assertTrue("New tier stands above Delete list", top(TierDetailTestTags.NEW_TIER_ROW) < top(TierDetailTestTags.SETTINGS_DELETE_LIST))
     }
 
     @Test
@@ -75,7 +77,7 @@ class TierListSettingsLayoutTest {
         val density = Density(composeRule.activity)
         val navigationBar = with(density) { navigationBarPx.toDp() }
         val rootBottom = composeRule.onNodeWithTag(FRAME).getBoundsInRoot().bottom
-        val lastBottom = composeRule.onNodeWithTag(TierDetailTestTags.LIST_SETTINGS_MODE_RANKED).getBoundsInRoot().bottom
+        val lastBottom = composeRule.onNodeWithTag(TierDetailTestTags.SETTINGS_DELETE_LIST).getBoundsInRoot().bottom
         // A device without a navigation bar has nothing to keep clear of; the faked-bar screenshots cover it there.
         assumeTrue("this device shows a navigation bar", navigationBarPx > 0)
         assertTrue(

@@ -44,6 +44,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.navigation.tierDeta
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardPublicationController
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.CopiedPictures
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.PublishSheetController
+import com.artiuillab.tieryourlife.feature.tier.presentation.trash.publishedByAnotherAccount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
@@ -426,6 +427,31 @@ class TierDetailViewModel @Inject constructor(
         val current = board as? TierDetailUiState.Success ?: return
         if (current.list.tiers.none { !it.isPool && it.items.isNotEmpty() }) return
         mutate("Returning all cards to the pool") { repository.returnAllToPool(tierListId) }
+    }
+
+    /**
+     * Into the trash from List settings, as Delete does in Your lists: a list out in
+     * the community comes down first, or stays here, out, and says so. One out under
+     * another account is that account's to take down. [onGone] once it is in the trash.
+     */
+    fun deleteList(onGone: () -> Unit) {
+        val list = (board as? TierDetailUiState.Success)?.list ?: return
+        viewModelScope.launch {
+            carrier.stop(tierListId)
+            val somebodyElses = preferences?.let { publishedByAnotherAccount(accountRepository, it) }.orEmpty()
+            val out = list.rankingOf != null || list.publishedId != null
+            if (out && list.publishedId !in somebodyElses) {
+                if (takeDown(list).isFailure) {
+                    messages.send(UserMessage.PublishedListStillPublic)
+                    return@launch
+                }
+                messages.guard("Recording the list taken down") {
+                    repository.setPublished(tierListId, null, null)
+                    repository.setRankingOf(tierListId, null)
+                }
+            }
+            if (messages.guard("Deleting the list") { repository.deleteTierLists(listOf(tierListId)) }) onGone()
+        }
     }
 
     fun reorderTiers(orderedTierIds: List<Long>) {

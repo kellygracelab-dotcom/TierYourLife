@@ -15,6 +15,7 @@ internal class FakeCommunityRepositoryForDetail(
     /** What the server says of any topic it is asked about. */
     private val topicStatus: TopicStatus = TopicStatus.Pending,
     private val publicationKind: PublicationKind? = null,
+    private val unpublishResult: Result<Unit> = Result.success(Unit),
 ) : FakeCommunityRepository() {
     val published = mutableListOf<TierList>()
 
@@ -44,6 +45,6 @@ internal class FakeCommunityRepositoryForDetail(
 
     override suspend fun unpublish(publishedId: String): Result<Unit> {
         unpublished += publishedId
-        return Result.success(Unit)
+        return unpublishResult
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
@@ -14,7 +15,7 @@ import androidx.compose.ui.unit.sp
  * the colour and tracking.
  */
 @Composable
-fun SectionLabel(text: String, modifier: Modifier = Modifier) {
+fun SectionLabel(text: String, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
     // The locale of this composition rather than the process default: the app
     // has its own language setting, and Turkish turns i into İ, not I.
     val locale = LocalResources.current.configuration.locales[0]
@@ -22,7 +23,7 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
         text = text.uppercase(locale),
         modifier = modifier,
         style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = color,
         letterSpacing = 0.5.sp,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,

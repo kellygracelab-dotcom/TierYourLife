@@ -197,6 +197,12 @@
     <string name="list_settings_ranked_status">Sıralamalarda ✓</string>
     <string name="list_settings_take_down">Yayından kaldır</string>
     <string name="list_settings_publication">Yayın</string>
+    <string name="list_settings_group_list">Liste</string>
+    <string name="list_settings_group_careful">Dikkat</string>
+    <string name="list_settings_delete">Listeyi sil</string>
+    <string name="list_settings_delete_title">Liste silinsin mi?</string>
+    <string name="list_settings_delete_body">“%1$s” çöp kutusuna taşınır. Oradan geri yükleyebilirsin.</string>
+    <string name="list_settings_delete_public">Topluluktaki kopyası da kaldırılır.</string>
     <string name="list_settings_unpublished_changes">Değişiklikler henüz yayımlanmadı</string>
     <string name="board_published_short">Yayımlandı</string>
     <string name="board_updated_short">Toplulukta güncellendi</string>

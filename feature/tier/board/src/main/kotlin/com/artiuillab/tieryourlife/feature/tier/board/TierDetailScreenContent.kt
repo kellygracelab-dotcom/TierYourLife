@@ -386,6 +386,7 @@ private fun TierScreenBody(
             onShare = { share(list) },
             onShareLink = list.publishedId?.takeIf { actions.onPublish != null }?.let { { shareLink(list) } },
             onReturnAllToPool = actions.onReturnAllToPool,
+            onDeleteList = actions.onDeleteList,
             onSeeInCommunity = actions.onSeeInCommunity?.let { open -> list.publishedId?.let { id -> { open(id) } } },
             onOpenOriginal = actions.onOpenOriginal,
         )
