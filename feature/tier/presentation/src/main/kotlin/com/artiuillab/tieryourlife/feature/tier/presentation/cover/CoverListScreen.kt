@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -165,7 +166,7 @@ private fun CoverTierRow(tier: Tier, open: Boolean, onToggle: () -> Unit, onCard
             .semantics { contentDescription = description }
             .testTag(CoverTestTags.tierRow(tier.id)),
     ) {
-        val plan = coverRowPlan(tier.items.size, coverCardsPerLine(maxWidth.value.toInt()), open)
+        val plan = coverRowPlan(tier.items.size, coverCardsPerLine(constraints.maxWidth, LocalDensity.current.density), open)
         Box(Modifier.matchParentSize()) {
             Column(
                 modifier = Modifier

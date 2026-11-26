@@ -167,6 +167,9 @@
     <string name="local_only_footer">%1$s, лише на цьому телефоні</string>
     <string name="local_only_notice_keep_one">Увійдіть, щоб вона залишилася після зміни телефону.</string>
     <string name="local_only_notice_keep_many">Увійдіть, щоб вони залишилися після зміни телефону.</string>
+    <string name="local_only_footer_device">%1$s, лише на цьому пристрої</string>
+    <string name="local_only_notice_keep_one_device">Увійдіть, щоб вона залишилася після зміни пристрою.</string>
+    <string name="local_only_notice_keep_many_device">Увійдіть, щоб вони залишилися після зміни пристрою.</string>
     <string name="local_only_card_not_now">Не зараз</string>
     <string name="local_only_card_sign_in">Увійти</string>
     <string name="restoring_one_picture">Відновлюємо картинку</string>

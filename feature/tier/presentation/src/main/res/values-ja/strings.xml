@@ -140,6 +140,9 @@
     <string name="local_only_footer">%1$s、この端末だけにあります</string>
     <string name="local_only_notice_keep_one">ログインすれば機種変更しても残ります。</string>
     <string name="local_only_notice_keep_many">ログインすれば機種変更しても残ります。</string>
+    <string name="local_only_footer_device">%1$s、この端末だけにあります</string>
+    <string name="local_only_notice_keep_one_device">ログインすれば機種変更しても残ります。</string>
+    <string name="local_only_notice_keep_many_device">ログインすれば機種変更しても残ります。</string>
     <string name="local_only_card_not_now">今はしない</string>
     <string name="local_only_card_sign_in">ログイン</string>
     <string name="restoring_one_picture">画像を復元しています</string>

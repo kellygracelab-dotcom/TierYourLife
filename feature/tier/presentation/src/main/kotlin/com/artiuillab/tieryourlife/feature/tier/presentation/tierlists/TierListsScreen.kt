@@ -2,6 +2,11 @@ package com.artiuillab.tieryourlife.feature.tier.presentation.tierlists
 
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -94,6 +99,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.TierListCard
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.homeSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.previewTierLists
+import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.components.rememberShownWhileScrollingUp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -440,18 +446,19 @@ fun TierListsScreenContent(
             if (mode == HomeMode.Browsing && !hasRail) {
                 val newListDescription = stringResource(R.string.cd_new_list)
                 val fabModifier = Modifier
+                    .semantics { contentDescription = newListDescription }
+                    .testTag(TierListsTestTags.FAB)
+                val fabPlace = Modifier
                     .align(Alignment.BottomEnd)
                     .navigationBarsPadding()
                     .padding(16.dp)
-                    .semantics { contentDescription = newListDescription }
-                    .testTag(TierListsTestTags.FAB)
 
                 // A bare plus has nothing to take its meaning from until the
                 // first board exists.
                 if (showsEmptyState) {
                     ExtendedFloatingActionButton(
                         onClick = onCreateList,
-                        modifier = fabModifier,
+                        modifier = fabPlace.then(fabModifier),
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         shape = RoundedCornerShape(16.dp),
@@ -459,14 +466,21 @@ fun TierListsScreenContent(
                         text = { Text(stringResource(R.string.home_new_list)) },
                     )
                 } else {
-                    FloatingActionButton(
-                        onClick = onCreateList,
-                        modifier = fabModifier.size(56.dp),
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        shape = RoundedCornerShape(16.dp),
+                    AnimatedVisibility(
+                        visible = rememberShownWhileScrollingUp(boardsScroll),
+                        modifier = fabPlace,
+                        enter = scaleIn() + fadeIn(),
+                        exit = scaleOut() + fadeOut(),
                     ) {
-                        PlusIcon(24.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+                        FloatingActionButton(
+                            onClick = onCreateList,
+                            modifier = fabModifier.size(56.dp),
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            shape = RoundedCornerShape(16.dp),
+                        ) {
+                            PlusIcon(24.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
                     }
                 }
             }

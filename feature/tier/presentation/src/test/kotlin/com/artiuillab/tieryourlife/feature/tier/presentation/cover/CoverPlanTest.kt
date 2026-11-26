@@ -18,6 +18,12 @@ class CoverPlanTest {
     }
 
     @Test
+    fun aFlipCoverAt1_875PxPerDp_countsInPixels_soTheMoreTileStaysOnTheLine() {
+        // A 358dp row is 672px: eight places fit in dp, but rounded to pixels the eighth spills over.
+        assertEquals(7, coverCardsPerLine(672, density = 1.875f))
+    }
+
+    @Test
     fun aNarrowRow_stillHoldsOneCard() {
         assertEquals(1, coverCardsPerLine(40))
     }
