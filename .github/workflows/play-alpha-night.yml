@@ -1,0 +1,20 @@
+name: Play Alpha Night
+
+# Only a clock. Play Internal's alpha job, under its existing Play identity,
+# moves the newest Internal build already served to closed testing once a
+# night. 00:30 UTC is 02:30 in Kyiv in winter, 03:30 in summer.
+on:
+  schedule:
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  tick:
+    name: Nightly closed testing tick
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Hand over to Play Internal
+        run: echo 'Play Internal promotes the newest served Internal build to closed testing.'

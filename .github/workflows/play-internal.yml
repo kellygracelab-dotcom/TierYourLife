@@ -2,7 +2,8 @@ name: Play Internal
 
 on:
   workflow_run:
-    workflows: [CI]
+    # Play Alpha Night is only a nightly clock for the alpha job below.
+    workflows: [CI, Play Alpha Night]
     types: [completed]
     branches: [main]
 
@@ -316,5 +317,68 @@ jobs:
         with:
           name: play-result-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/play/result.json
+          if-no-files-found: error
+          retention-days: 30
+
+  # Once a night: the Internal build already SERVED goes to closed testing (alpha).
+  # Same version code and AAB; nothing signed or uploaded; no signing secret is read.
+  alpha:
+    name: Closed testing from served Internal
+    if: >-
+      github.repository_id == '1279175743' &&
+      github.repository_owner_id == '280666991' &&
+      (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch') &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.path == '.github/workflows/play-alpha-night.yml' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.id == 1279175743 &&
+      github.event.workflow_run.head_repository.owner.id == 280666991
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: play-internal
+    concurrency:
+      group: android-play-alpha
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+
+      # An alpha commit would invalidate an Internal edit still open.
+      - name: Wait for Internal publishing to finish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/play-internal.py alpha-wait
+
+      - name: Get short-lived Play token through WIF
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ vars.PLAY_WIF_PROVIDER }}
+          service_account: ${{ vars.PLAY_PUBLISHER_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+          access_token_lifetime: 1800s
+          create_credentials_file: false
+          export_environment_variables: false
+
+      - name: Promote served Internal to closed testing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: python3 .github/scripts/play-internal.py alpha
+
+      - name: Save closed testing receipt
+        if: success()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: play-alpha-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/play-alpha/result.json
           if-no-files-found: error
           retention-days: 30

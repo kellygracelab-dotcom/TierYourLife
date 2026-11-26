@@ -35,8 +35,10 @@ through delivery, rather than leave tested work on a branch:
 The existing CI and commit-count versionCode mechanism remain authoritative;
 verify that the delivered version is greater than the installed version before
 updating. `fast` is the R8, debug-signed sideload variant and must not reach Play.
-Internal CD is authorized after green main; production remains Danylo's manual
-decision. See `docs/play-internal-delivery.md`. Do not read .env, credentials,
+Internal CD is authorized after green main. Since 26.11.2026 the newest served
+Internal build also goes to closed testing (alpha) by itself once a night, with
+no manual hold; the hold is only for other Console changes. Production remains
+Danylo's manual decision. See `docs/play-internal-delivery.md`. Do not read .env, credentials,
 upload keys or account configuration, and do not weaken CI or security settings.
 
 ## Existing command path
