@@ -6,6 +6,7 @@ import coil3.ImageLoader
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.allowRgb565
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.PublicMediaInterceptor
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.SmallCardCopies
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,6 +38,7 @@ object ImageLoaderModule {
             .build()
         return ImageLoader.Builder(context)
             .components {
+                add(SmallCardCopies())
                 add(OkHttpNetworkFetcherFactory(callFactory = { imageClient }))
             }
             // Half the memory per opaque picture where the phone says it has little: a board is hundreds of them.
