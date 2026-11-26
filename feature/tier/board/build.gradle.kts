@@ -23,6 +23,7 @@ dependencies {
     // A board's settings sheet publishes it, and says why it could not.
     implementation(projects.feature.community.domain)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.coil.compose)
