@@ -6,7 +6,7 @@ import re
 import subprocess
 
 from .artifacts import extract_data
-from .policy import (CD_PATH, CI_PATH, OWNER_ID, REPO, REPO_ID, artifact_name,
+from .policy import (CD_PATH, CI_PATH, OWNER_ID, REPO, REPO_ID, Stop, artifact_name,
                      read_json, require)
 
 
@@ -91,6 +91,36 @@ class GitHub:
                     if step.get("status") in ("in_progress", "completed"):
                         return True
         return None  # Missing history is uncertainty, never proof of no commit.
+
+    def trusted_cd(self, run):
+        require(run.get("path") == CD_PATH and run.get("event") == "workflow_run" and run.get("head_branch") == "main",
+                "Unexpected Play Internal run")
+        for field in ("repository", "head_repository"):
+            repo = run.get(field, {})
+            require(repo.get("id") == REPO_ID and repo.get("owner", {}).get("id") == OWNER_ID, "Untrusted workflow repository")
+
+    def served_receipt(self, code, directory):
+        """This workflow's own SERVED receipt for Internal [code], newest runs first."""
+        runs = self.get("actions/workflows/play-internal.yml/runs?branch=main&event=workflow_run&status=success&per_page=50")["workflow_runs"]
+        for run in runs:
+            self.trusted_cd(run)
+            artifacts = self.get(f"actions/runs/{int(run['id'])}/artifacts?per_page=100")["artifacts"]
+            for artifact in artifacts:
+                if not re.fullmatch(rf"play-result-{int(run['id'])}-[0-9]+", artifact["name"]):
+                    continue
+                require(artifact.get("workflow_run", {}).get("id") == run["id"], "Wrong receipt run")
+                target = Path(directory) / str(int(artifact["id"]))
+                self.download(artifact, target, {"result.json"})
+                receipt = read_json(target / "result.json")
+                if receipt.get("versionCode") == code:
+                    return receipt
+        raise Stop("No SERVED Internal receipt for the version Internal shows")
+
+    def cd_runs_going(self):
+        runs = []
+        for status in ("queued", "in_progress", "waiting", "pending", "requested"):
+            runs += self.get(f"actions/workflows/play-internal.yml/runs?status={status}&per_page=100")["workflow_runs"]
+        return runs
 
     def download(self, artifact, directory, allowed):
         require(not artifact.get("expired"), "Release artifact expired; build a new main revision")

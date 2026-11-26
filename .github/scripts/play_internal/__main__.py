@@ -3,7 +3,7 @@ import argparse
 import os
 from pathlib import Path
 
-from . import artifacts
+from . import alpha as closed, artifacts
 from .github import GitHub, prepare
 from .play import PlayApi, Publisher
 from .policy import (Stop, artifact_name, output, read_json, require, source_env,
@@ -34,10 +34,29 @@ def record_result(work, result):
             stream.write(f"Internal **{result['versionCode']} SERVED**, completed. Verified through a fresh deployed-state edit; lifecycle enum was not queried. Already served: {result['alreadyPublished']}.\n\nMain `{result['source']['sha']}`; signed AAB SHA-256 `{result['signedSha256']}`.\n")
 
 
+def run_alpha(command):
+    work = Path(os.environ["RUNNER_TEMP"]) / "play-alpha"
+    github = GitHub()
+    if command == "alpha-wait":
+        closed.wait_for_internal(github.cd_runs_going, int(os.environ["GITHUB_RUN_ID"]))
+        return
+    promoter = closed.Promoter(PlayApi(os.environ.get("PLAY_ACCESS_TOKEN")),
+                               lambda code: github.served_receipt(code, work / "receipts"))
+    result = {"package": closed.PACKAGE, "track": closed.ALPHA, **promoter.promote()}
+    write_json(work / "result.json", result)
+    print(closed.summary(result), end="")
+    if os.environ.get("GITHUB_STEP_SUMMARY"):
+        with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
+            stream.write(closed.summary(result))
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("produce", "gates", "prepare", "restore", "sign", "begin", "stage", "commit", "seal-intent", "verify-signed-cache", "verify-intent-cache", "park-signed-cache", "park-intent-cache"))
+    parser.add_argument("command", choices=("alpha", "alpha-wait", "produce", "gates", "prepare", "restore", "sign", "begin", "stage", "commit", "seal-intent", "verify-signed-cache", "verify-intent-cache", "park-signed-cache", "park-intent-cache"))
     args = parser.parse_args()
+    if args.command.startswith("alpha"):
+        run_alpha(args.command)
+        return
     source = source_env()
     root = Path(os.environ["GITHUB_WORKSPACE"])
     work = Path(os.environ.get("PLAY_WORK_DIR", str(Path(os.environ["RUNNER_TEMP"]) / "play")))

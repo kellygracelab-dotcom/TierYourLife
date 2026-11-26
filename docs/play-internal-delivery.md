@@ -3,8 +3,10 @@
 A successful **push-main CI** starts .github/workflows/play-internal.yml through
 workflow_run. It signs the exact CI-produced release AAB and releases
 com.artiuillab.tieryourlife to **internal**, status **completed**.
-Production stays Danylo's manual decision. There is no selectable package/track
-input. This workflow never installs anything on his phone.
+Once a night the same workflow also moves the newest Internal build already
+served to **closed testing (alpha)**; see below. Production stays Danylo's manual
+decision. There is no selectable package/track input. This workflow never
+installs anything on his phone.
 
 Every existing Android CI gate remains mandatory. Code changes require build,
 unit/lint/static checks, screenshots/coverage, the R8 release AAB, proxy E2E and
@@ -121,6 +123,41 @@ commit marker whose specific Commit step demonstrably never started, recovery
 can resume; missing/ambiguous history stays conservative. Store propagation and
 the real Samsung Google-login check remain the coordinator's separate runtime QA.
 
+## Nightly closed testing (alpha)
+
+Danylo's decision of 26.11.2026: closed testing gets the latest build by itself,
+without a manual hold each time. .github/workflows/play-alpha-night.yml is only a
+clock (00:30 UTC, 02:30/03:30 Kyiv; it can also be dispatched on main). Its
+completion starts the **alpha** job of play-internal.yml through workflow_run, so
+the existing WIF binding (play-internal.yml, workflow_run, environment
+play-internal) applies unchanged. The job reads no signing secret.
+
+Once a night, not on every push: each closed-testing release goes through Google's
+review, and a new one every push would keep restarting it.
+
+The job:
+1. Waits until no other Play Internal run is going: an alpha commit would
+   invalidate an Internal edit still open.
+2. Reads a new edit. Internal must have one completed release; its bundle hash
+   must equal this workflow's own SERVED receipt (play-result artifact of a
+   trusted main run). Nothing else is promoted.
+3. Does nothing when alpha already has that version or newer, when any track
+   has a draft, when an alpha rollout is not completed, or when an alpha release
+   is still in review (applications.tracks.releases.list for alpha).
+4. Otherwise writes **only the alpha track**: the same version code, no upload,
+   release name closed-<versionCode>-<sha12>. Commit uses ERROR_IF_IN_REVIEW;
+   a review is never cancelled. A commit Play refuses while the edit stays open
+   (HTTP 400/409) changed nothing: the receipt says NOT_SENT and the next night
+   tries again. Any other refusal, e.g. a missing permission, fails the job.
+5. Reports honestly: SERVED only when the alpha lifecycle is PUBLISHED and a new
+   read edit shows the version completed with the exact bundle hash;
+   SENT_FOR_REVIEW or APPROVED_NOT_PUBLISHED while Google has it; COMMITTED when
+   this account may not read the alpha lifecycle. Receipt artifact:
+   play-alpha-<run>-<attempt>, plus the run summary.
+
+Production and other tracks are never written. The service account's testing
+release access covers closed testing; no broader permission is requested.
+
 ## Hold for manual Console changes
 
 The Publishing API can send pre-existing ready Console changes for review.
@@ -128,8 +165,10 @@ Neither a track snapshot nor ERROR_IF_IN_REVIEW fully enumerates unsent listing,
 data-safety and other metadata. Do not claim that those are all visible to this
 API. Use a **specific manual-write window**, not a confirmation for each release.
 
-Before preparing manual production/other Console changes, the owner disables
-**only Play Internal**:
+Moving a build to closed testing no longer needs this hold: the nightly job
+does it. The hold is only for other Console changes (production, listing, data
+safety and so on). Before preparing them, the owner disables **only Play
+Internal**, which also stops the nightly closed-testing job:
 
     gh workflow disable play-internal.yml -R kellygracelab-dotcom/TierYourLife
 
