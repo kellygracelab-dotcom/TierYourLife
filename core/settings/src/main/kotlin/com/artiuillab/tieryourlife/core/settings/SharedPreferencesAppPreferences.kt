@@ -45,6 +45,7 @@ private const val KEY_NAMES_ON_CARDS = "namesOnCards"
 private const val KEY_SEND_USAGE = "sendUsage"
 private const val KEY_PUBLISHED_OWNERS = "published_owners"
 private const val KEY_LAST_PUBLISHING_ACCOUNT = "last_publishing_account"
+private const val KEY_AWAITING_APPROVAL = "awaiting_approval"
 private const val KEY_ACCOUNT_ERASED_NOTICE = "account_erased_where"
 private const val KEY_ERASED_ACCOUNT_TO_LEAVE = "erased_account_to_leave"
 
@@ -141,6 +142,12 @@ class SharedPreferencesAppPreferences @Inject constructor(
     override fun setPublishedOwners(owners: Map<String, String>) {
         val records = owners.entries.fold(emptySet<String>()) { records, (id, account) -> HiddenRecords.with(records, id, account) }
         prefs.edit { putStringSet(KEY_PUBLISHED_OWNERS, records) }
+    }
+
+    override fun awaitingApproval(): Set<String> = prefs.getStringSet(KEY_AWAITING_APPROVAL, null).orEmpty().toSet()
+
+    override fun setAwaitingApproval(ids: Set<String>) {
+        prefs.edit { if (ids.isEmpty()) remove(KEY_AWAITING_APPROVAL) else putStringSet(KEY_AWAITING_APPROVAL, ids.toSet()) }
     }
 
     override fun lastPublishingAccount(): String? = prefs.getString(KEY_LAST_PUBLISHING_ACCOUNT, null)

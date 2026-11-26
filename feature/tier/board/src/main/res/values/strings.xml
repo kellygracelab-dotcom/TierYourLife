@@ -234,4 +234,6 @@
     <string name="tip_add">Type a name — the picture comes with it.</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">Card</string>
+    <string name="list_awaiting_approval">It will appear in the feed after a check. Anyone with the link can see it now.</string>
+    <string name="board_updated_awaiting">Updated. It will appear in the feed after a check.</string>
 </resources>

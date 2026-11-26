@@ -248,4 +248,6 @@
     <string name="tip_add">Digite um nome e a imagem vem junto.</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">Cartão</string>
+    <string name="list_awaiting_approval">Vai aparecer no feed depois de uma verificação. Com o link, já dá para ver.</string>
+    <string name="board_updated_awaiting">Atualizada. Vai aparecer no feed depois de uma verificação.</string>
 </resources>

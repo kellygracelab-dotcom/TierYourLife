@@ -263,4 +263,6 @@
     <string name="tip_add">Введіть назву — картинка підбереться сама.</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">Картка</string>
+    <string name="list_awaiting_approval">У стрічці з’явиться після перевірки, за посиланням доступно вже зараз.</string>
+    <string name="board_updated_awaiting">Оновлено. У стрічці з’явиться після перевірки.</string>
 </resources>

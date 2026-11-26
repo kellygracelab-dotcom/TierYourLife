@@ -107,6 +107,7 @@ fun TierDetailScreen(
                 categoryWanted = publish.categoryWanted,
                 onSetPublic = viewModel::setPublic,
                 publishedIsBehind = publish.publishedIsBehind,
+                awaitingApproval = publish.awaitingApproval,
                 onUpdatePublished = viewModel::updatePublished,
                 onSeeInCommunity = onSeeInCommunity,
                 onOpenOriginal = loadedList?.original()?.let { id -> { onOpenPublishedList(id) } },

@@ -247,6 +247,7 @@ class BoardSyncEngine @Inject constructor(
         } else {
             community.myPublished().getOrElse { return }
         }
+        preferences.setAwaitingApproval(published.filter { it.awaitingApproval }.mapTo(mutableSetOf()) { it.id })
         val mine = published.associate { it.id to it.boardUid }
         val theirs = mine.keys
         relinkPublished(unlinked, mine, claimed).forEach { (uid, publishedId) ->

@@ -304,6 +304,7 @@ private val UserMessage.Published.opensLiveSheet: Boolean
 private fun UserMessage.Published.text(resources: Resources): String = when {
     droppedPictures > 0 -> UserMessage.PicturesDropped(droppedPictures).text(resources)
     ranking -> resources.getString(R.string.board_ranked_short)
+    updated && awaitingApproval -> resources.getString(R.string.board_updated_awaiting)
     updated -> resources.getString(R.string.board_updated_short)
     else -> resources.getString(R.string.board_published_short)
 }
@@ -354,6 +355,7 @@ private fun TierScreenBody(
     val copyLink = rememberCopyListLink()
     // Right after a first publish: the moment a list is most worth sending.
     var liveSheet by rememberSaveable { mutableStateOf(false) }
+    var liveAwaitingApproval by rememberSaveable { mutableStateOf(false) }
 
     if (listSettingsVisible) {
         TierListSettingsScreenContent(
@@ -368,6 +370,7 @@ private fun TierScreenBody(
             categoryWanted = actions.categoryWanted,
             onSetPublic = actions.onSetPublic,
             publishedIsBehind = actions.publishedIsBehind,
+            awaitingApproval = actions.awaitingApproval,
             onUpdatePublished = actions.onUpdatePublished,
             onPublish = actions.onPublish,
             onSetCategory = actions.onSetCategory,
@@ -426,6 +429,7 @@ private fun TierScreenBody(
     LaunchedEffect(Unit) {
         userMessages.collect { message ->
             if (message is UserMessage.Published && message.opensLiveSheet) {
+                liveAwaitingApproval = message.awaitingApproval
                 liveSheet = true
                 return@collect
             }
@@ -874,6 +878,7 @@ private fun TierScreenBody(
         LiveSheet(
             section = list.category?.let { sectionLabel(it) }.orEmpty(),
             link = publishedId?.let(::publishedListLink),
+            awaitingApproval = liveAwaitingApproval,
             calls = LiveSheetCalls(
                 onShare = { shareLink(list) },
                 onCopy = { publishedId?.let(copyLink) },

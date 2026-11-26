@@ -233,4 +233,6 @@
     <string name="tip_add">Gib einen Namen ein – das Bild kommt von selbst.</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">Karte</string>
+    <string name="list_awaiting_approval">Sie erscheint nach einer Prüfung im Feed. Mit dem Link ist sie schon jetzt sichtbar.</string>
+    <string name="board_updated_awaiting">Aktualisiert. Sie erscheint nach einer Prüfung im Feed.</string>
 </resources>

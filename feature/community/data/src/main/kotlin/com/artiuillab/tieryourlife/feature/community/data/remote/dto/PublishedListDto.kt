@@ -22,6 +22,8 @@ data class PublishedListSummaryDto(
     val tierColors: List<String> = emptyList(),
     val updatedAt: Long = 0,
     val anonymous: Boolean = false,
+    /** True while the list waits for approval before the feed: its link opens all the same. Absent otherwise. */
+    val awaitingApproval: Boolean = false,
     val topicId: String? = null,
     val topicName: String? = null,
     val rankingCount: Int = 0,
@@ -194,6 +196,8 @@ data class PublishedIdDto(
     val underReview: Boolean = false,
     /** Pictures from other sites the server could not fetch or check in time, published without; absent when none. */
     val droppedPictures: Int = 0,
+    /** True when a new list waits for approval before the feed; its link opens all the same. */
+    val awaitingApproval: Boolean = false,
 )
 
 @Serializable

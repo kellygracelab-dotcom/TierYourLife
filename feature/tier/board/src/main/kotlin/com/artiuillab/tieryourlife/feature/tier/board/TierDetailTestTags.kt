@@ -60,6 +60,7 @@ object TierDetailTestTags {
     const val SETTINGS_OPEN_IN_COMMUNITY = "tier_detail_settings_open_in_community"
     const val SETTINGS_SHARE_LINK = "tier_detail_settings_share_link"
     const val UNPUBLISHED_CHANGES = "tier_detail_unpublished_changes"
+    const val AWAITING_APPROVAL = "tier_detail_awaiting_approval"
     const val PUBLISH_PROGRESS = "tier_detail_publish_progress"
     const val VIEW_MODE = "tier_detail_view_mode"
     const val NAMES_ON_CARDS = "tier_detail_names_on_cards"

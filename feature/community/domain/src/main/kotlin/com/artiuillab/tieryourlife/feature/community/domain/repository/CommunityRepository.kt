@@ -238,4 +238,6 @@ data class Published(
     val underReview: Boolean = false,
     /** Pictures from other sites the server left out: their cards went without art. */
     val droppedPictures: Int = 0,
+    /** True when the list waits for approval before the feed; anyone with its link sees it already. */
+    val awaitingApproval: Boolean = false,
 )

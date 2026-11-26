@@ -1,6 +1,7 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail
 
 import androidx.lifecycle.SavedStateHandle
+import com.artiuillab.tieryourlife.core.settings.FakeAppPreferences
 import com.artiuillab.tieryourlife.core.testing.MainDispatcherRule
 import com.artiuillab.tieryourlife.core.testing.firstWithin
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
@@ -254,6 +255,33 @@ class TierDetailViewModelTest {
 
         assertEquals("p-1", (viewModel.screen.value.board as TierDetailUiState.Success).list.publishedId)
         assertEquals(UserMessage.PublishedUnderReview, said.await())
+    }
+
+    // Danylo, 26.11: a new list waits for approval before the feed, its link working already.
+    @Test
+    fun setPublic_waitingForApproval_saysSo_andTheBoardKeepsSayingItUntilApproved() = runBlocking {
+        val preferences = FakeAppPreferences()
+        val community = FakeCommunityRepositoryForDetail(publishResult = Result.success(Published("p-1", "sent", awaitingApproval = true)))
+        val accounts = FakeAccountRepository(FakeAccountRepository.signedIn)
+        val viewModel = TierDetailViewModel(FakeTierRepository(listWithOneCard()), community, accounts, savedStateHandle(), preferences = preferences)
+        viewModel.board.firstWithin { it is TierDetailUiState.Success }
+        val said = async { viewModel.userMessages.first() }
+
+        viewModel.publishAfterPreview()
+        viewModel.screen.firstWithin { !it.publish.publishing }
+
+        assertEquals(UserMessage.Published(updated = false, awaitingApproval = true), said.await())
+        assertTrue(viewModel.screen.value.publish.awaitingApproval)
+        assertEquals(setOf("p-1"), preferences.awaitingApproval())
+
+        // Opened again, the board says it from what the last check of what is published said.
+        val reopened = TierDetailViewModel(FakeTierRepository(listWithOneCard(), publishedId = "p-1"), community, accounts, savedStateHandle(), preferences = preferences)
+        reopened.screen.firstWithin { it.board is TierDetailUiState.Success && it.publish.awaitingApproval }
+
+        preferences.setAwaitingApproval(emptySet())
+        val approved = TierDetailViewModel(FakeTierRepository(listWithOneCard(), publishedId = "p-1"), community, accounts, savedStateHandle(), preferences = preferences)
+        approved.board.firstWithin { it is TierDetailUiState.Success }
+        assertFalse(approved.screen.value.publish.awaitingApproval)
     }
 
     @Test

@@ -248,4 +248,6 @@
     <string name="tip_add">Escribe un nombre y la imagen llega sola.</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">Tarjeta</string>
+    <string name="list_awaiting_approval">Aparecerá en el feed tras una revisión. Con el enlace ya se puede ver.</string>
+    <string name="board_updated_awaiting">Actualizada. Aparecerá en el feed tras una revisión.</string>
 </resources>

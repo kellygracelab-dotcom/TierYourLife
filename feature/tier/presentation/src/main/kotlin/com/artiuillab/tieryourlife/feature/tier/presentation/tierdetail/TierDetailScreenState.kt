@@ -33,4 +33,6 @@ data class PublishState(
     val publicPending: Boolean? = null,
     /** Set when the switch was turned on and the list has no category yet. */
     val categoryWanted: Boolean = false,
+    /** Out, but waiting for approval before the feed: its link opens all the same. */
+    val awaitingApproval: Boolean = false,
 )

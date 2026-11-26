@@ -115,6 +115,7 @@ fun TierListSettingsScreenContent(
     categoryWanted: Boolean = false,
     onSetPublic: (Boolean) -> Unit = {},
     publishedIsBehind: Boolean = false,
+    awaitingApproval: Boolean = false,
     onUpdatePublished: () -> Unit = {},
     /** The bar's publish, so both places say and do the same; null falls back to [onSetPublic] and [onUpdatePublished]. */
     onPublish: ((Publishing) -> Unit)? = null,
@@ -176,6 +177,7 @@ fun TierListSettingsScreenContent(
                         busy = publishing,
                         error = publishError,
                         behind = publishedIsBehind,
+                        awaiting = awaitingApproval,
                         onPublish = onPublish ?: { kind -> if (kind == Publishing.Update) onUpdatePublished() else onSetPublic(true) },
                         onTakeDown = { onSetPublic(false) },
                         onAddCards = onAddCards,
@@ -561,6 +563,7 @@ private fun PublishSection(
     busy: Boolean,
     error: PublishError?,
     behind: Boolean,
+    awaiting: Boolean,
     onPublish: (Publishing) -> Unit,
     onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
@@ -578,6 +581,7 @@ private fun PublishSection(
     onTakeDown = onTakeDown,
     onAddCards = onAddCards,
     behind = behind,
+    awaiting = awaiting,
     onOpenInCommunity = onOpenInCommunity,
     onShareLink = onShareLink,
 )
@@ -596,6 +600,7 @@ private fun PublishSection(
     onTakeDown: () -> Unit,
     onAddCards: () -> Unit,
     behind: Boolean,
+    awaiting: Boolean = false,
     onOpenInCommunity: (() -> Unit)? = null,
     onShareLink: (() -> Unit)? = null,
 ) {
@@ -613,6 +618,14 @@ private fun PublishSection(
         Spacer(Modifier.height(6.dp))
         if (published) {
             PublishedStatus(asRankingOf = asRankingOf, behind = behind)
+            if (awaiting && asRankingOf == null) {
+                Text(
+                    text = stringResource(R.string.list_awaiting_approval),
+                    modifier = Modifier.testTag(TierDetailTestTags.AWAITING_APPROVAL),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             PublishedActions(
                 behind = behind,
                 busy = busy,

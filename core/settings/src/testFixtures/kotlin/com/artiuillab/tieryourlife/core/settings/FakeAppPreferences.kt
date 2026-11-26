@@ -187,6 +187,14 @@ class FakeAppPreferences(
         this.owners = owners
     }
 
+    private var awaiting = emptySet<String>()
+
+    override fun awaitingApproval(): Set<String> = awaiting
+
+    override fun setAwaitingApproval(ids: Set<String>) {
+        awaiting = ids
+    }
+
     override fun lastPublishingAccount(): String? = publishingAccount
 
     override fun setLastPublishingAccount(account: String?) {

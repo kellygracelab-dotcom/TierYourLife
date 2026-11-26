@@ -45,7 +45,7 @@ class LiveSheetCalls(
  * for the frame or two before the new id reaches the board.
  */
 @Composable
-fun LiveSheet(section: String, link: String?, calls: LiveSheetCalls) {
+fun LiveSheet(section: String, link: String?, calls: LiveSheetCalls, awaitingApproval: Boolean = false) {
     AdaptiveSheet(onDismiss = calls.onDone, modifier = Modifier.testTag(TierDetailTestTags.LIVE_SHEET)) {
         Column(
             modifier = Modifier
@@ -64,7 +64,8 @@ fun LiveSheet(section: String, link: String?, calls: LiveSheetCalls) {
             )
             Spacer(Modifier.size(6.dp))
             Text(
-                stringResource(R.string.list_live_body, section),
+                // Waiting for approval: in the feed only later, so the link is the whole of it for now.
+                if (awaitingApproval) stringResource(R.string.list_awaiting_approval) else stringResource(R.string.list_live_body, section),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

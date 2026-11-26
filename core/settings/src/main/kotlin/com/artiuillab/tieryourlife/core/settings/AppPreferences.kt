@@ -159,6 +159,11 @@ interface AppPreferences {
 
     fun setPublishedOwners(owners: Map<String, String>) = Unit
 
+    /** This account's published ids that wait for approval before the feed, as the last check of what is published said. */
+    fun awaitingApproval(): Set<String> = emptySet()
+
+    fun setAwaitingApproval(ids: Set<String>) = Unit
+
     /** The account the last check of what is published ran for: a different one now means somebody switched. */
     fun lastPublishingAccount(): String? = null
 

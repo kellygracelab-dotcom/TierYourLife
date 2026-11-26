@@ -263,4 +263,6 @@
     <string name="tip_add">Wpisz nazwę — obrazek dobierze się sam.</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">Karta</string>
+    <string name="list_awaiting_approval">Pojawi się w kanale po sprawdzeniu. Przez link jest dostępna już teraz.</string>
+    <string name="board_updated_awaiting">Zaktualizowano. Pojawi się w kanale po sprawdzeniu.</string>
 </resources>
