@@ -167,10 +167,10 @@ class CommunityListScreenTest {
     }
 
     // The author's arrangement usually leaves nothing unranked, so the pool
-    // starts folded on it; what the reader does with the board must not fold away with it.
+    // starts folded on it; Save is under the title (walkthrough 26.11.2026), whatever the pool does.
     // There is no switch: before the reader has a version there is nothing to switch to.
     @Test
-    fun theSave_sitsInTheFoldedStrip_withNoSwitch() {
+    fun theSave_sitsUnderTheTitle_withNoSwitch() {
         setScreen(state = successState().withEveryCardRanked())
 
         composeRule.onNodeWithTag(TierDetailTestTags.POOL_ITEMS).assertDoesNotExist()
@@ -178,7 +178,7 @@ class CommunityListScreenTest {
         composeRule.onNodeWithTag(CommunityListTestTags.SAVE).assertIsDisplayed()
     }
 
-    // Cards left in the pool of the side on screen open it, and the strip stays above them.
+    // Cards left in the pool of the side on screen open it, and Save stays where it is.
     @Test
     fun aPoolWithCardsInIt_opens_withTheSaveStillThere() {
         setScreen()

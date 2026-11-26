@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -25,11 +26,8 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -59,8 +57,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.toggleableState
-import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -78,27 +74,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.layout.ContentWidth
-import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.layout.atMost
 import com.artiuillab.tieryourlife.core.theme.tips.Tip
 import com.artiuillab.tieryourlife.core.theme.tips.tipAnchor
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
-import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CloudOffIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CloudUploadIcon
-import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
-import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
 import com.artiuillab.tieryourlife.core.theme.ui.LeaderboardIcon
 import com.artiuillab.tieryourlife.core.theme.ui.MoreIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlayArrowIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PublishIcon
 import com.artiuillab.tieryourlife.core.theme.ui.ShareIcon
-import com.artiuillab.tieryourlife.core.theme.ui.ViewCarouselIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
 import com.artiuillab.tieryourlife.feature.tier.board.play.PLAY_MIN_CARDS
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
-import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListDisplayMode
 import kotlin.math.roundToInt
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
@@ -134,9 +124,7 @@ fun TierScreenTopBar(
     play: PlayButton? = null,
     /** Publish, Update or Share ranking, before Play; null leaves it out. */
     publish: PublishButton? = null,
-    /** How the tiers are shown, first of the actions; it gives way on a narrow bar where Publish needs the room. */
-    view: ViewButton? = null,
-    /** The published list's link, one tap from the board; null while it is not out. */
+    /** The published list's link, in Publish's place while there is nothing to publish; null while it is not out. */
     shareLink: (() -> Unit)? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
@@ -182,7 +170,7 @@ fun TierScreenTopBar(
                 ReadTitle(title, titleStyle, subline, subtitle.takeIf { roomy && subline == null }?.let { withLink(it, subtitleLink) })
             }
             trailing?.invoke(this)
-            BarActions(publish, shareLink, play, view, playWorded = roomy)
+            BarActions(publish, shareLink, play, playWorded = roomy, shareWorded = !compact)
             if (onReaderMoreClick != null) {
                 // Moving cards in Mine does not make the reader the list's editor.
                 IconButton(
@@ -249,92 +237,6 @@ private fun RowScope.ReadTitle(title: String, style: TextStyle, subline: (@Compo
         }
     }
 }
-
-/** The bar's way to show the tiers otherwise, as on the web: the current one's picture, the three in a menu. */
-@Immutable
-data class ViewButton(val mode: TierListDisplayMode, val onSelect: (TierListDisplayMode) -> Unit)
-
-private val ViewModes = listOf(TierListDisplayMode.WRAP, TierListDisplayMode.HORIZONTAL_SCROLL, TierListDisplayMode.FLAT_RANKED)
-
-@Composable
-private fun ViewModeIcon(mode: TierListDisplayMode, color: Color) = when (mode) {
-    TierListDisplayMode.WRAP -> GridViewIcon(24.dp, color)
-    TierListDisplayMode.HORIZONTAL_SCROLL -> ViewCarouselIcon(24.dp, color)
-    TierListDisplayMode.FLAT_RANKED -> FormatListNumberedIcon(24.dp, color)
-}
-
-fun viewModeLabel(mode: TierListDisplayMode): Int = when (mode) {
-    TierListDisplayMode.WRAP -> R.string.tier_list_settings_mode_wrapped
-    TierListDisplayMode.HORIZONTAL_SCROLL -> R.string.tier_list_settings_mode_strip
-    TierListDisplayMode.FLAT_RANKED -> R.string.tier_list_settings_mode_ranked
-}
-
-@Composable
-private fun ViewAction(view: ViewButton) {
-    var open by remember { mutableStateOf(false) }
-    val description = stringResource(R.string.tier_list_settings_display_section) + ": " + stringResource(viewModeLabel(view.mode))
-    Box {
-        IconButton(
-            onClick = { open = true },
-            modifier = Modifier
-                .size(48.dp)
-                .semantics { contentDescription = description }
-                .testTag(TierDetailTestTags.VIEW_MODE),
-        ) { ViewModeIcon(view.mode, MaterialTheme.colorScheme.onSurfaceVariant) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            ViewModes.forEach { mode ->
-                val chosen = mode == view.mode
-                val tint = if (chosen) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                DropdownMenuItem(
-                    text = { Text(stringResource(viewModeLabel(mode))) },
-                    onClick = {
-                        open = false
-                        if (!chosen) view.onSelect(mode)
-                    },
-                    modifier = Modifier.testTag(TierDetailTestTags.viewMode(mode.name)),
-                    leadingIcon = { ViewModeIcon(mode, tint) },
-                    trailingIcon = if (chosen) {
-                        { CheckIcon(20.dp, MaterialTheme.colorScheme.primary) }
-                    } else {
-                        null
-                    },
-                )
-            }
-            HorizontalDivider(Modifier.padding(vertical = 4.dp))
-            NamesOnCardsItem(onDone = { open = false })
-        }
-    }
-}
-
-/** Under the three ways to show the tiers: the names on the pictures, on or off for every list on this device. */
-@Composable
-private fun NamesOnCardsItem(onDone: () -> Unit) {
-    val memory = LocalBoardLayoutMemory.current
-    val on = memory.namesOnCards
-    DropdownMenuItem(
-        text = {
-            Column(Modifier.widthIn(max = NAMES_ITEM_MAX_WIDTH)) {
-                Text(stringResource(R.string.board_names_on_cards))
-                Text(
-                    text = stringResource(R.string.board_names_on_cards_sub),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        },
-        onClick = {
-            onDone()
-            memory.namesOnCards = !on
-        },
-        modifier = Modifier
-            .semantics { toggleableState = ToggleableState(on) }
-            .testTag(TierDetailTestTags.NAMES_ON_CARDS),
-        leadingIcon = { Spacer(Modifier.size(24.dp)) },
-        trailingIcon = { Box(Modifier.size(20.dp)) { if (on) CheckIcon(20.dp, MaterialTheme.colorScheme.primary) } },
-    )
-}
-
-private val NAMES_ITEM_MAX_WIDTH = 220.dp
 
 /** The bar's Play: how many cards there are decides whether it can start, a saved game puts a dot on it. */
 @Immutable
@@ -437,26 +339,80 @@ fun publishingOf(list: TierList, publishedIsBehind: Boolean): Publishing? = when
 fun everyCardPlaced(list: TierList): Boolean =
     list.tiers.any { it.items.isNotEmpty() } && list.tiers.filter { it.isPool }.all { it.items.isEmpty() }
 
-/** The bar's actions after the title: publishing, the link, then Play. */
+/**
+ * The bar's actions after the title, always in the same places: Publish, or
+ * Share once there is nothing to publish, then Play. Folded, they are icons and
+ * the title has the room.
+ */
 @Composable
-private fun BarActions(publish: PublishButton?, shareLink: (() -> Unit)?, play: PlayButton?, view: ViewButton?, playWorded: Boolean) {
-    if (view != null && publish?.narrow != true) ViewAction(view)
-    publish?.let { PublishAction(it) }
-    shareLink?.let { ShareLinkAction(it) }
-    play?.let { PlayAction(it, worded = playWorded) }
+private fun BarActions(
+    publish: PublishButton?,
+    shareLink: (() -> Unit)?,
+    play: PlayButton?,
+    playWorded: Boolean,
+    shareWorded: Boolean = true,
+    iconsOnly: Boolean = false,
+) {
+    when {
+        publish != null -> if (iconsOnly) PublishIconAction(publish) else PublishAction(publish)
+        shareLink != null -> ShareLinkAction(shareLink, worded = shareWorded && !iconsOnly)
+    }
+    play?.let { PlayAction(it, worded = playWorded && !iconsOnly) }
 }
 
-/** The share sheet with the list's link, in the accent: once a board is out, this is what it is for. */
+/** The share sheet with the list's link: once a board is out, this is what it is for. */
 @Composable
-private fun ShareLinkAction(onClick: () -> Unit) {
+private fun ShareLinkAction(onClick: () -> Unit, worded: Boolean) {
     val description = stringResource(R.string.share_link)
+    if (worded) {
+        FilledTonalButton(
+            onClick = onClick,
+            contentPadding = PaddingValues(start = 12.dp, end = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .heightIn(min = 40.dp)
+                .semantics { contentDescription = description }
+                .testTag(TierDetailTestTags.SHARE_LINK),
+        ) {
+            ShareIcon(18.dp, LocalContentColor.current)
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = stringResource(R.string.share_button),
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
+                modifier = Modifier.clearAndSetSemantics {},
+            )
+        }
+        return
+    }
     IconButton(
         onClick = onClick,
         modifier = Modifier
             .size(48.dp)
             .semantics { contentDescription = description }
             .testTag(TierDetailTestTags.SHARE_LINK),
-    ) { ShareIcon(24.dp, MaterialTheme.colorScheme.primary) }
+    ) { ShareIcon(24.dp, MaterialTheme.colorScheme.onSurfaceVariant) }
+}
+
+/** Publish in a folded bar: its icon, or its progress while it goes. */
+@Composable
+private fun PublishIconAction(publish: PublishButton) {
+    val label = stringResource(publish.label())
+    val tint = if (publish.primary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+    IconButton(
+        onClick = publish.onClick,
+        enabled = !publish.busy,
+        modifier = Modifier
+            .size(48.dp)
+            .semantics { contentDescription = label }
+            .testTag(TierDetailTestTags.PUBLISH),
+    ) {
+        when {
+            publish.busy && publish.waiting -> CloudOffIcon(24.dp, tint)
+            publish.busy -> CircularProgressIndicator(Modifier.size(20.dp).testTag(TierDetailTestTags.PUBLISH_PROGRESS), color = tint, strokeWidth = 2.dp)
+            else -> PublishingIcon(publish.kind, tint, 24.dp)
+        }
+    }
 }
 
 @Composable
@@ -503,35 +459,33 @@ fun publishLabel(kind: Publishing): Int = when (kind) {
 fun sendingLabel(kind: Publishing): Int = if (kind == Publishing.Update) R.string.board_updating else R.string.board_publishing
 
 @Composable
-fun PublishingIcon(kind: Publishing, tint: Color) = when (kind) {
-    Publishing.Publish -> PublishIcon(18.dp, tint)
-    Publishing.Update -> CloudUploadIcon(18.dp, tint)
-    Publishing.ShareRanking -> LeaderboardIcon(18.dp, tint)
+fun PublishingIcon(kind: Publishing, tint: Color, size: Dp = 18.dp) = when (kind) {
+    Publishing.Publish -> PublishIcon(size, tint)
+    Publishing.Update -> CloudUploadIcon(size, tint)
+    Publishing.ShareRanking -> LeaderboardIcon(size, tint)
 }
 
 /** The publish button's room in the two-storey bar: back, Play's triangle, the overflow and their margins. */
 val OWN_BAR_BESIDE_PUBLISH: Dp = 48.dp * 3 + 16.dp
 
-/** What the link's button takes from the publish button's room. */
-val SHARE_LINK_WIDTH: Dp = 48.dp
-
 /**
- * Play says its word only while Publish keeps its own on one line beside it;
- * on a narrow phone in a long language the triangle gives way, as the view button does.
+ * Play says its word only while Publish, or Share in its place, keeps its own
+ * on one line beside it; on a narrow phone in a long language the triangle gives way.
  */
 @Composable
-private fun playKeepsItsWord(publish: PublishButton?, view: ViewButton?, width: Dp, shareLink: Boolean): Boolean {
-    if (publish == null) return true
+private fun playKeepsItsWord(publish: PublishButton?, width: Dp, shareLink: Boolean): Boolean {
+    if (publish == null && !shareLink) return true
     val measurer = rememberTextMeasurer()
     val style = MaterialTheme.typography.labelLarge
     val density = LocalDensity.current
     fun wide(text: String): Dp = with(density) { measurer.measure(text, style, maxLines = 1).size.width.toDp() }
-    val publishText = wide(stringResource(publish.label()))
-    val publishWidth = 8.dp + (if (publish.narrow) 22.dp + 6.dp else 28.dp + 8.dp) + 18.dp + publishText
+    val firstWidth = if (publish != null) {
+        8.dp + (if (publish.narrow) 22.dp + 6.dp else 28.dp + 8.dp) + 18.dp + wide(stringResource(publish.label()))
+    } else {
+        8.dp + 28.dp + 18.dp + 6.dp + wide(stringResource(R.string.share_button))
+    }
     val playWidth = 8.dp + 28.dp + 18.dp + 6.dp + wide(stringResource(R.string.tier_detail_content_description_play))
-    val icons = 8.dp + 48.dp * 2 + (if (view != null && !publish.narrow) 48.dp else 0.dp) +
-        (if (shareLink) 48.dp else 0.dp)
-    return icons + publishWidth + playWidth <= width
+    return 8.dp + 48.dp * 2 + firstWidth + playWidth <= width
 }
 
 /**
@@ -554,12 +508,16 @@ fun OwnBoardTopBar(
     onRenameList: ((String) -> Unit)?,
     play: PlayButton?,
     publish: PublishButton?,
-    view: ViewButton?,
     moreTag: String? = null,
     /** Tapped at the end of [counts]: someone else's list's rankings. */
     countsLink: SubtitleLink? = null,
-    /** The published list's link, one tap from the board; null while it is not out. */
+    /** The published list's link, in Publish's place while there is nothing to publish; null while it is not out. */
     shareLink: (() -> Unit)? = null,
+    /**
+     * Someone else's list: a row under the counts, Play and then these (Save,
+     * Share), as on the site. Folded, Play comes up into the bar as its triangle.
+     */
+    readerActions: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val backDescription = stringResource(ThemeR.string.tier_detail_content_description_back)
     val moreDescription = stringResource(ThemeR.string.tier_detail_content_description_more)
@@ -587,8 +545,9 @@ fun OwnBoardTopBar(
                     .semantics { contentDescription = backDescription },
             ) { BackIcon() }
             // The short title only once the long one is mostly gone; until then it would be said twice.
+            val titleUp = folded > FOLDED_TITLE_FROM
             Box(Modifier.weight(1f).padding(horizontal = 4.dp)) {
-                if (folded > FOLDED_TITLE_FROM) {
+                if (titleUp) {
                     Text(
                         text = title,
                         modifier = Modifier.graphicsLayer { alpha = (folded - FOLDED_TITLE_FROM) / (1f - FOLDED_TITLE_FROM) },
@@ -599,7 +558,12 @@ fun OwnBoardTopBar(
                     )
                 }
             }
-            BarActions(publish, shareLink, play, view, playWorded = playKeepsItsWord(publish, view, barWidth, shareLink != null))
+            // With the title up the actions are icons, so it is the title that has the room.
+            if (readerActions == null) {
+                BarActions(publish, shareLink, play, playWorded = playKeepsItsWord(publish, barWidth, shareLink != null), iconsOnly = titleUp)
+            } else {
+                BarActions(publish, null, play.takeIf { titleUp }, playWorded = false, iconsOnly = titleUp)
+            }
             IconButton(
                 onClick = onMoreClick,
                 modifier = Modifier
@@ -639,6 +603,16 @@ fun OwnBoardTopBar(
                     maxLines = if (countsLink != null) 2 else 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                if (readerActions != null) {
+                    Row(
+                        modifier = Modifier.padding(top = 12.dp).offset(x = (-4).dp).testTag(TierDetailTestTags.READER_ACTIONS),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        play?.let { PlayAction(it, worded = true) }
+                        Spacer(Modifier.width(4.dp))
+                        readerActions()
+                    }
+                }
             }
         }
     }
