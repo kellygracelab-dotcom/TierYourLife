@@ -31,6 +31,8 @@ dependencies {
     // Coil shares this module's Wikimedia-aware OkHttpClient.
     implementation(libs.coil.core)
     implementation(libs.coil.network.okhttp)
+    // A publish the app was closed on finishes when the system next runs us.
+    implementation(libs.androidx.work.runtime.ktx)
     androidTestImplementation(testFixtures(projects.core.settings))
     androidTestImplementation(testFixtures(projects.feature.account.domain))
     androidTestImplementation(testFixtures(projects.feature.community.domain))
@@ -39,6 +41,8 @@ dependencies {
     testImplementation(testFixtures(projects.core.settings))
     testImplementation(testFixtures(projects.feature.account.domain))
     testImplementation(testFixtures(projects.feature.community.domain))
+    testImplementation(testFixtures(projects.feature.tier.domain))
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.work.testing)
 }

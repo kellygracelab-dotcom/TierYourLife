@@ -19,6 +19,8 @@ data class TierDetailActions(
     val publishedIsBehind: Boolean = false,
     /** Out, and in the feed only once approved. */
     val awaitingApproval: Boolean = false,
+    /** A publish on its way, waiting for a connection. */
+    val waitingForConnection: Boolean = false,
     val onUpdatePublished: () -> Unit = {},
     /** The board's published list as others see it, by its id; null where there is no going there. */
     val onSeeInCommunity: ((publishedId: String) -> Unit)? = null,

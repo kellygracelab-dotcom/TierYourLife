@@ -328,4 +328,5 @@
         <item quantity="one">Eine fertige Liste · %1$d Karte</item>
         <item quantity="other">Eine fertige Liste · %1$d Karten</item>
     </plurals>
+    <string name="lists_public_updating">Öffentlich · wird aktualisiert</string>
 </resources>

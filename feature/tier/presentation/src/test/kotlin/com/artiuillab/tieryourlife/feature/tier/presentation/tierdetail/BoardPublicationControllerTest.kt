@@ -11,7 +11,9 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedList
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.Ranking
 import com.artiuillab.tieryourlife.feature.community.domain.model.ShownRanking
+import com.artiuillab.tieryourlife.feature.community.domain.repository.InlinePublishCarrier
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
+import com.artiuillab.tieryourlife.feature.community.domain.repository.RecordPublished
 import com.artiuillab.tieryourlife.feature.tier.domain.RecordingTierRepository
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
 import com.artiuillab.tieryourlife.feature.tier.domain.model.Tier
@@ -20,8 +22,10 @@ import com.artiuillab.tieryourlife.feature.tier.domain.model.TierList
 import com.artiuillab.tieryourlife.feature.tier.domain.repository.TierRepository
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierdetail.components.BoardPublicationController
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -407,9 +411,10 @@ class BoardPublicationControllerTest {
         }
     }
 
-    private class Harness(scope: CoroutineScope, board: TierList = copy(), account: Account = FakeAccountRepository.signedIn) {
+    private class Harness(scope: TestScope, board: TierList = copy(), account: Account = FakeAccountRepository.signedIn) {
         val repository = Boards(board)
         val community = Community()
+        val carrier = InlinePublishCarrier(scope, community, RecordPublished(repository, community))
         val accounts = FakeAccountRepository(account)
         var visible = board
         var categoryRequests = 0
@@ -429,7 +434,13 @@ class BoardPublicationControllerTest {
                 repository.board = repository.board.copy(publishedId = result?.takeUnless { it.ranking }?.id, rankingOf = result?.takeIf { it.ranking }?.id)
             },
             reload = { visible = repository.board },
+            carrier = carrier,
         )
+
+        init {
+            // Unconfined: advancing the test runs no background work once the foreground is idle.
+            scope.backgroundScope.launch(UnconfinedTestDispatcher(scope.testScheduler)) { carrier.ended.collect { controller.carried(it) } }
+        }
 
         fun replace(board: TierList) {
             repository.board = board

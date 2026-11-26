@@ -35,4 +35,6 @@ data class PublishState(
     val categoryWanted: Boolean = false,
     /** Out, but waiting for approval before the feed: its link opens all the same. */
     val awaitingApproval: Boolean = false,
+    /** A publish on its way failed for want of a connection, and goes once one is back. */
+    val waitingForConnection: Boolean = false,
 )

@@ -152,6 +152,13 @@ internal fun TierListCard(
                     style = TierYourLifeType.current.supportingLabel,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (list.updating) {
+                    Text(
+                        text = updatingLine(list),
+                        style = TierYourLifeType.current.supportingLabel,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
                 // Which of the two was worked on more recently is the thing
                 // that actually tells them apart; the phone's name only helps
                 // when it happens to be a human one.

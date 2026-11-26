@@ -13,6 +13,7 @@ import com.artiuillab.tieryourlife.feature.community.domain.model.FeedSort
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishedListSummary
 import com.artiuillab.tieryourlife.feature.community.domain.model.SearchWords
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.PublishCarrier
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDraft
 import com.artiuillab.tieryourlife.feature.community.domain.repository.RankingDrafts
 import com.artiuillab.tieryourlife.feature.community.domain.repository.StartedSync
@@ -39,6 +40,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -59,6 +62,7 @@ class TierListsViewModel @Inject constructor(
     private val drafts: RankingDrafts = RankingDrafts.None,
     private val games: SavedGames = NoSavedGames,
     private val startedSync: StartedSync = StartedSync.None,
+    private val carrier: PublishCarrier? = null,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TierListsUiState>(TierListsUiState.Loading)
@@ -121,6 +125,12 @@ class TierListsViewModel @Inject constructor(
         // A run from a returning connection, with no screen having asked for it.
         viewModelScope.launch {
             boardSync.finished.collect { report -> if (loaded && report.carried > 0) showWhatTheRunLeft() }
+        }
+        // A list on its way out says so on its tile.
+        carrier?.let { carrying ->
+            viewModelScope.launch {
+                carrying.going.map { it.keys }.distinctUntilChanged().collect { if (loaded) emitSuccess() }
+            }
         }
         // Lists begun on another device, or taken out of Continue there.
         viewModelScope.launch {
@@ -263,7 +273,8 @@ class TierListsViewModel @Inject constructor(
      * redraw cancels an older one, so a burst of keystrokes draws only the last.
      */
     private fun emitSuccess(): Job {
-        val lists = lastLoadedLists
+        val going = carrier?.going?.value?.keys.orEmpty()
+        val lists = lastLoadedLists.map { if (it.id in going) it.copy(updating = true) else it }
         val mode = mode
         val sort = boardSort
         val filters = boardFilters
@@ -463,6 +474,8 @@ class TierListsViewModel @Inject constructor(
 
     /** Answers with the ids that could not be taken out of the community. Another account's stay up, theirs to take down. */
     private suspend fun takeDownPublished(ids: List<Long>): Set<Long> {
+        // A publish on its way is waited for, or never goes.
+        ids.forEach { carrier?.stop(it) }
         val published = lastLoadedLists.filter { it.id in ids && it.isPublic }
         val somebodyElses = publishedByAnotherAccount(accounts, preferences)
         return published.mapNotNull { list ->

@@ -5,7 +5,10 @@ import com.artiuillab.tieryourlife.feature.account.domain.model.Account
 import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepository
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublicationKind
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
+import com.artiuillab.tieryourlife.feature.community.domain.repository.Carried
+import com.artiuillab.tieryourlife.feature.community.domain.repository.CarryRequest
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.PublishCarrier
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
 import com.artiuillab.tieryourlife.feature.tier.board.components.sheets.fixedInSettings
 import com.artiuillab.tieryourlife.feature.tier.domain.model.RankingChoice
@@ -34,6 +37,9 @@ internal class BoardPublicationController(
     private val takeDown: suspend (TierList) -> Result<Published?>,
     private val recorded: suspend (TierList, Published?) -> Unit,
     private val reload: suspend () -> Unit,
+    private val carrier: PublishCarrier,
+    /** An Update the server turned down for no reason a screen can name: said in one line, with Try again. */
+    private val couldNotUpdate: suspend () -> Unit = {},
 ) {
     private val mutable = MutableStateFlow(BoardPublicationState())
     val state = mutable.asStateFlow()
@@ -120,7 +126,7 @@ internal class BoardPublicationController(
      */
     fun setPublic(public: Boolean, asRanking: Boolean = false, direct: Boolean = false) {
         val list = current() ?: return
-        if (mutable.value.busy) return
+        if (mutable.value.busy || (public && list.id in carrier.going.value)) return
         error(null)
         offerJob?.cancel()
         mutable.value = BoardPublicationState()
@@ -260,16 +266,35 @@ internal class BoardPublicationController(
     private suspend fun send(list: TierList, public: Boolean, kind: PublicationKind?, who: String?, ticket: Int) {
         if (!public && list.rankingOf != null) repository.setRankingChoice(list.id, RankingChoice.Ranking)
         if (!active(ticket, who) || !present(list, who)) return
-        if (public && kind is PublicationKind.Ranking && kind.ownCards) return showWithOwnCards(list, kind, requireNotNull(who), ticket)
-        val sending = publicationRequest(list, kind)
-        val published = (if (public) community.publishOwned(sending, requireNotNull(who)) else takeDown(list)).getOrThrow()
+        when {
+            !public -> bringDown(list, who, ticket)
+            kind is PublicationKind.Ranking && kind.ownCards -> showWithOwnCards(list, kind, requireNotNull(who), ticket)
+            // Handed on: the board stays open and editable, and the slot follows the carrier from here.
+            else -> carrier.send(carryRequest(list, kind, requireNotNull(who)))
+        }
+    }
+
+    /** Take it down: an Update on its way is waited for, one not yet gone never goes. */
+    private suspend fun bringDown(list: TierList, who: String?, ticket: Int) {
+        carrier.stop(list.id)
+        if (!active(ticket, who)) return
+        takeDown(list).getOrThrow()
         if (active(ticket, who)) {
-            rememberPublication(sending, published, kind, ticket, who)
-            if (active(ticket, who)) {
-                recorded(sending, published)
-                finish(ticket)
-                if (active(ticket, who)) reload()
+            recorded(list, null)
+            finish(ticket)
+            if (active(ticket, who)) reload()
+        }
+    }
+
+    /** How a publish ended, for the board on screen; the board itself was written by the carrier. */
+    suspend fun carried(event: Carried) {
+        if (event.boardId != current()?.id) return
+        when (event) {
+            is Carried.Out -> {
+                recorded(event.sent, event.published)
+                reload()
             }
+            is Carried.Refused -> if (event.update && event.reason == PublishError.Unknown) couldNotUpdate() else fail(event.reason)
         }
     }
 
@@ -284,21 +309,10 @@ internal class BoardPublicationController(
         reload()
     }
 
-    private suspend fun rememberPublication(list: TierList, published: Published?, kind: PublicationKind?, ticket: Int, who: String?) {
-        if (published == null || list.takenFrom == null) return
-        val version = when (kind) {
-            is PublicationKind.Ranking -> kind.version
-            is PublicationKind.NewList -> kind.sourceVersion
-            null -> null
-        }
-        if (version != null) repository.setRankingOrigin(list.id, version)
-        if (active(ticket, who)) repository.setRankingChoice(list.id, RankingChoice.Ranking)
-    }
-
-    private fun publicationRequest(list: TierList, kind: PublicationKind?): TierList = when (kind) {
-        is PublicationKind.Ranking -> list.copy(originVersion = kind.version, category = list.category ?: "other")
-        is PublicationKind.NewList -> list.copy(originVersion = kind.sourceVersion ?: list.originVersion)
-        null -> list
+    private fun carryRequest(list: TierList, kind: PublicationKind?, who: String): CarryRequest = when (kind) {
+        is PublicationKind.Ranking -> CarryRequest(list, who, originVersion = kind.version, categoryIfNone = "other")
+        is PublicationKind.NewList -> CarryRequest(list, who, originVersion = kind.sourceVersion)
+        null -> CarryRequest(list, who)
     }
 
     private fun finish(ticket: Int) {

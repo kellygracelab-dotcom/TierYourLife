@@ -211,7 +211,7 @@
     <string name="list_settings_publication">Publicação</string>
     <string name="list_settings_unpublished_changes">Alterações ainda não publicadas</string>
     <string name="board_published_short">Publicada</string>
-    <string name="board_updated_short">Atualizada</string>
+    <string name="board_updated_short">Atualizada na Comunidade</string>
     <string name="board_ranked_short">Nas classificações</string>
     <string name="board_publishing">Publicando…</string>
     <string name="board_updating">Atualizando…</string>
@@ -250,4 +250,7 @@
     <string name="card_unnamed">Cartão</string>
     <string name="list_awaiting_approval">Vai aparecer no feed depois de uma verificação. Com o link, já dá para ver.</string>
     <string name="board_updated_awaiting">Atualizada. Vai aparecer no feed depois de uma verificação.</string>
+    <string name="board_waiting_for_connection">Aguardando conexão</string>
+    <string name="board_still_updating">Ainda atualizando — pode continuar</string>
+    <string name="board_could_not_update">Não foi possível atualizar. Suas alterações estão seguras aqui.</string>
 </resources>

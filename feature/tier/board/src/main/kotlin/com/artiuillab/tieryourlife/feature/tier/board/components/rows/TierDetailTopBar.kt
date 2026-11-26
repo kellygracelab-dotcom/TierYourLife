@@ -85,6 +85,7 @@ import com.artiuillab.tieryourlife.core.theme.tips.tipAnchor
 import com.artiuillab.tieryourlife.core.theme.ui.AddPhotoIcon
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
+import com.artiuillab.tieryourlife.core.theme.ui.CloudOffIcon
 import com.artiuillab.tieryourlife.core.theme.ui.CloudUploadIcon
 import com.artiuillab.tieryourlife.core.theme.ui.FormatListNumberedIcon
 import com.artiuillab.tieryourlife.core.theme.ui.GridViewIcon
@@ -428,7 +429,16 @@ data class PublishButton(
     val room: Dp = Dp.Unspecified,
     val busy: Boolean,
     val onClick: () -> Unit,
+    /** On its way, held up for want of a connection. */
+    val waiting: Boolean = false,
 )
+
+/** What the button says: what it will do, or what it is doing. */
+fun PublishButton.label(): Int = when {
+    busy && waiting -> R.string.board_waiting_for_connection
+    busy -> sendingLabel(kind)
+    else -> publishLabel(kind)
+}
 
 /** Nothing to send from an empty board, nor from a published one that has not moved on. */
 fun publishingOf(list: TierList, publishedIsBehind: Boolean): Publishing? = when {
@@ -467,13 +477,15 @@ private fun ShareLinkAction(onClick: () -> Unit) {
 @Composable
 private fun PublishAction(publish: PublishButton) {
     // While it goes, the button says so in place and takes no second tap.
-    val label = stringResource(if (publish.busy) sendingLabel(publish.kind) else publishLabel(publish.kind))
+    val label = stringResource(publish.label())
     val modifier = Modifier
         .padding(horizontal = 4.dp)
         .semantics { contentDescription = label }
         .testTag(TierDetailTestTags.PUBLISH)
     val content: @Composable RowScope.() -> Unit = {
-        if (publish.busy) {
+        if (publish.busy && publish.waiting) {
+            CloudOffIcon(16.dp, LocalContentColor.current)
+        } else if (publish.busy) {
             CircularProgressIndicator(Modifier.size(16.dp).testTag(TierDetailTestTags.PUBLISH_PROGRESS), color = LocalContentColor.current, strokeWidth = 2.dp)
         } else {
             PublishingIcon(publish.kind, LocalContentColor.current)
@@ -529,7 +541,7 @@ private fun playKeepsItsWord(publish: PublishButton?, view: ViewButton?, width: 
     val style = MaterialTheme.typography.labelLarge
     val density = LocalDensity.current
     fun wide(text: String): Dp = with(density) { measurer.measure(text, style, maxLines = 1).size.width.toDp() }
-    val publishText = wide(stringResource(if (publish.busy) sendingLabel(publish.kind) else publishLabel(publish.kind)))
+    val publishText = wide(stringResource(publish.label()))
     val publishWidth = 8.dp + (if (publish.narrow) 22.dp + 6.dp else 28.dp + 8.dp) + 18.dp + publishText
     val playWidth = 8.dp + 28.dp + 18.dp + 6.dp + wide(stringResource(R.string.tier_detail_content_description_play))
     val icons = 8.dp + 48.dp * 2 + (if (publish.narrow) 0.dp else 48.dp) + (if (view != null && !publish.narrow) 48.dp else 0.dp) +

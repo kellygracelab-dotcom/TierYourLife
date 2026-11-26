@@ -244,7 +244,7 @@
     <string name="list_settings_publication">النشر</string>
     <string name="list_settings_unpublished_changes">التغييرات لم تُنشر بعد</string>
     <string name="board_published_short">تم النشر</string>
-    <string name="board_updated_short">تم التحديث</string>
+    <string name="board_updated_short">تم التحديث في المجتمع</string>
     <string name="board_ranked_short">في الترتيبات</string>
     <string name="board_publishing">جارٍ النشر…</string>
     <string name="board_updating">جارٍ التحديث…</string>
@@ -295,4 +295,7 @@
     <string name="card_unnamed">بطاقة</string>
     <string name="list_awaiting_approval">ستظهر في الخلاصة بعد المراجعة. ويمكن لأي شخص لديه الرابط رؤيتها الآن.</string>
     <string name="board_updated_awaiting">تم التحديث. ستظهر في الخلاصة بعد المراجعة.</string>
+    <string name="board_waiting_for_connection">في انتظار الاتصال</string>
+    <string name="board_still_updating">لا يزال التحديث جاريًا — يمكنك المتابعة</string>
+    <string name="board_could_not_update">تعذّر التحديث. تغييراتك محفوظة هنا.</string>
 </resources>

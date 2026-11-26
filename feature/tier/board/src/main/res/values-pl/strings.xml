@@ -222,7 +222,7 @@
     <string name="list_settings_publication">Publikacja</string>
     <string name="list_settings_unpublished_changes">Zmiany jeszcze nieopublikowane</string>
     <string name="board_published_short">Opublikowano</string>
-    <string name="board_updated_short">Zaktualizowano</string>
+    <string name="board_updated_short">Zaktualizowano w Społeczności</string>
     <string name="board_ranked_short">W rankingach</string>
     <string name="board_publishing">Publikowanie…</string>
     <string name="board_updating">Aktualizowanie…</string>
@@ -265,4 +265,7 @@
     <string name="card_unnamed">Karta</string>
     <string name="list_awaiting_approval">Pojawi się w kanale po sprawdzeniu. Przez link jest dostępna już teraz.</string>
     <string name="board_updated_awaiting">Zaktualizowano. Pojawi się w kanale po sprawdzeniu.</string>
+    <string name="board_waiting_for_connection">Czekam na połączenie</string>
+    <string name="board_still_updating">Wciąż aktualizuję — możesz działać dalej</string>
+    <string name="board_could_not_update">Nie udało się zaktualizować. Twoje zmiany są tu bezpieczne.</string>
 </resources>

@@ -200,7 +200,7 @@
     <string name="list_settings_publication">Yayın</string>
     <string name="list_settings_unpublished_changes">Değişiklikler henüz yayımlanmadı</string>
     <string name="board_published_short">Yayımlandı</string>
-    <string name="board_updated_short">Güncellendi</string>
+    <string name="board_updated_short">Toplulukta güncellendi</string>
     <string name="board_ranked_short">Sıralamalarda</string>
     <string name="board_publishing">Yayımlanıyor…</string>
     <string name="board_updating">Güncelleniyor…</string>
@@ -235,4 +235,7 @@
     <string name="card_unnamed">Kart</string>
     <string name="list_awaiting_approval">Bir kontrolden sonra akışta görünecek. Bağlantıyla şimdiden görülebilir.</string>
     <string name="board_updated_awaiting">Güncellendi. Bir kontrolden sonra akışta görünecek.</string>
+    <string name="board_waiting_for_connection">Bağlantı bekleniyor</string>
+    <string name="board_still_updating">Hâlâ güncelleniyor; devam edebilirsin</string>
+    <string name="board_could_not_update">Güncellenemedi. Değişikliklerin burada güvende.</string>
 </resources>
