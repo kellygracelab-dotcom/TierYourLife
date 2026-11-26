@@ -1,6 +1,15 @@
 <resources>
     <string name="tier_lists_private">خاص</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="zero">لا شيء عام</item>
+        <item quantity="one">واحدة عامة</item>
+        <item quantity="two">اثنتان عامتان</item>
+        <item quantity="few">%1$d عامة</item>
+        <item quantity="many">%1$d عامة</item>
+        <item quantity="other">%1$d عامة</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · لم يوضع أي شيء بعد</string>
     <string name="tier_lists_status_start_dragging">اسحب لتبدأ التصنيف</string>
 
@@ -108,7 +117,8 @@
     <string name="trash_title">سلة المهملات</string>
     <string name="trash_load_error">تعذّر تحميل سلة المهملات.</string>
     <string name="trash_subtitle">تبقى القوائم المحذوفة هنا حتى تزيلها.</string>
-    <string name="trash_row_list_meta">قائمة · %1$s · حُذفت %2$s</string>
+    <string name="trash_row_list_meta">%1$s · حُذفت %2$s</string>
+    <string name="trash_restore">استعادة</string>
     <string name="trash_time_just_now">الآن</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="zero">قبل أقل من دقيقة</item>
@@ -208,6 +218,7 @@
     <string name="topic_picker_title">الموضوع</string>
     <string name="topic_picker_done">تم</string>
     <string name="topic_picker_hint">ابحث عن موضوع أو سمّه</string>
+    <string name="topic_picker_in_section">في %1$s</string>
     <string name="topic_picker_none">بلا موضوع</string>
     <string name="topic_picker_none_sub">تبقى القائمة في قسمها وحدها.</string>
     <string name="topic_picker_create_note">ينتظر مشرفاً. حتى ذلك الحين تبقى القائمة في «أخرى» مع هذه الشارة.</string>
@@ -404,4 +415,5 @@
         <item quantity="other">قائمة جاهزة · %1$d بطاقة</item>
     </plurals>
     <string name="lists_public_updating">عامة · جارٍ التحديث</string>
+    <string name="lists_public_placed">عامة · %1$s</string>
 </resources>

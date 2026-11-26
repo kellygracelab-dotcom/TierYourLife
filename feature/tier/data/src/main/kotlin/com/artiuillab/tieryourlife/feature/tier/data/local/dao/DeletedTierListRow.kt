@@ -7,4 +7,6 @@ data class DeletedTierListRow(
     val deletedAt: Long,
     val publishedId: String?,
     val rankingOf: String?,
+    val coverImageUrl: String? = null,
+    val coverImageUrls: String? = null,
 )

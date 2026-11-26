@@ -321,6 +321,7 @@ class TierListsViewModel @Inject constructor(
             filedUnder = lists.mapNotNull { it.category }.distinct().sorted(),
             totalListCount = lists.size,
             rankedCount = lists.sumOf { it.rankedCount },
+            publicCount = lists.count { it.isPublic },
             mode = mode,
         )
     }

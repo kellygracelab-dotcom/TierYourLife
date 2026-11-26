@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
@@ -104,17 +105,25 @@ internal fun FeedCard(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            // Always two lines tall, so the footer sits at the same height on every card.
-            Text(
-                text = summary.shownTitle(),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                minLines = 2,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Spacer(Modifier.height(8.dp))
-            CardFooter(summary)
+            // The count right under the title, as on the site; a card keeps room for a two-line title
+            // under it instead, so cards side by side stay one height.
+            Box {
+                Column(Modifier.alpha(0f).clearAndSetSemantics {}) {
+                    Text(text = "", style = MaterialTheme.typography.titleSmall, minLines = 2)
+                    Spacer(Modifier.height(FOOTER_GAP + FOOTER_HEIGHT))
+                }
+                Column {
+                    Text(
+                        text = summary.shownTitle(),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Spacer(Modifier.height(FOOTER_GAP))
+                    CardFooter(summary)
+                }
+            }
         }
     }
 }
@@ -145,13 +154,15 @@ private fun CardFooter(summary: PublishedListSummary) {
     Row(
         Modifier
             .fillMaxWidth()
-            .height(20.dp),
+            .height(FOOTER_HEIGHT),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CardAuthor(summary, Modifier.weight(1f))
+        // Nobody's name to show: the count alone, where the eye goes after the title.
+        val authorless = summary.editorial && !summary.mine
+        if (!authorless) CardAuthor(summary, Modifier.weight(1f))
         Text(
             text = cardMeta(summary),
-            modifier = Modifier.padding(start = 6.dp),
+            modifier = Modifier.padding(start = if (authorless) 0.dp else 6.dp),
             style = MetaStyle,
             color = MaterialTheme.colorScheme.outline,
             maxLines = 1,
@@ -168,10 +179,6 @@ private fun CardAuthor(summary: PublishedListSummary, modifier: Modifier) {
             own?.name ?: summary.authorName,
             stringResource(R.string.community_your_list),
         )
-        summary.editorial -> {
-            Spacer(modifier)
-            return
-        }
         else -> Triple(summary.authorPhotoUrl, summary.authorName, shownName(summary.authorName))
     }
     val anonymouslyMine = summary.mine && summary.anonymous
@@ -199,6 +206,9 @@ private fun CardAuthor(summary: PublishedListSummary, modifier: Modifier) {
         }
     }
 }
+
+private val FOOTER_HEIGHT = 20.dp
+private val FOOTER_GAP = 2.dp
 
 @Composable
 private fun cardMeta(summary: PublishedListSummary): String = countText(R.plurals.explore_cards, summary.itemCount)
@@ -283,7 +293,7 @@ internal fun SkeletonCard(alpha: () -> Float, modifier: Modifier = Modifier) {
             Box(Modifier.height(20.dp), contentAlignment = Alignment.CenterStart) {
                 Bar(Modifier.fillMaxWidth(0.5f).height(13.dp))
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(FOOTER_GAP))
             Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     Modifier

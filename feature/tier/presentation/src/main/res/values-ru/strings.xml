@@ -1,6 +1,13 @@
 <resources>
     <string name="tier_lists_private">приватно</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="one">%1$d публичный</item>
+        <item quantity="few">%1$d публичных</item>
+        <item quantity="many">%1$d публичных</item>
+        <item quantity="other">%1$d публичного</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · пока ничего не разложено</string>
     <string name="tier_lists_status_start_dragging">Перетащите, чтобы оценить</string>
 
@@ -98,7 +105,8 @@
     <string name="trash_title">Корзина</string>
     <string name="trash_load_error">Не удалось загрузить корзину.</string>
     <string name="trash_subtitle">Удалённые списки остаются здесь, пока вы их не уберёте.</string>
-    <string name="trash_row_list_meta">Список · %1$s · удалён %2$s</string>
+    <string name="trash_row_list_meta">%1$s · удалён %2$s</string>
+    <string name="trash_restore">Восстановить</string>
     <string name="trash_time_just_now">только что</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d мин назад</item>
@@ -190,6 +198,7 @@
     <string name="topic_picker_title">Тема</string>
     <string name="topic_picker_done">Готово</string>
     <string name="topic_picker_hint">Найти или назвать тему</string>
+    <string name="topic_picker_in_section">В разделе «%1$s»</string>
     <string name="topic_picker_none">Без темы</string>
     <string name="topic_picker_none_sub">Список лежит в своём разделе сам по себе.</string>
     <string name="topic_picker_create_note">Будет ждать модератора. До тех пор список лежит в разделе «Другое» с этим ярлыком.</string>
@@ -368,4 +377,5 @@
         <item quantity="other">Готовый список · %1$d карточки</item>
     </plurals>
     <string name="lists_public_updating">Публичный · обновляем</string>
+    <string name="lists_public_placed">Публичный · %1$s</string>
 </resources>

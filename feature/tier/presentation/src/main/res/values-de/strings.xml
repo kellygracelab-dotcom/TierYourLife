@@ -1,6 +1,11 @@
 <resources>
     <string name="tier_lists_private">privat</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="one">%1$d öffentlich</item>
+        <item quantity="other">%1$d öffentlich</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · noch nichts platziert</string>
     <string name="tier_lists_status_start_dragging">Zum Einstufen ziehen</string>
 
@@ -88,7 +93,8 @@
     <string name="trash_title">Papierkorb</string>
     <string name="trash_load_error">Papierkorb konnte nicht geladen werden.</string>
     <string name="trash_subtitle">Gelöschte Listen bleiben hier, bis du sie entfernst.</string>
-    <string name="trash_row_list_meta">Liste · %1$s · gelöscht %2$s</string>
+    <string name="trash_row_list_meta">%1$s · gelöscht %2$s</string>
+    <string name="trash_restore">Wiederherstellen</string>
     <string name="trash_time_just_now">gerade eben</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">vor %1$d Min.</item>
@@ -172,6 +178,7 @@
     <string name="topic_picker_title">Thema</string>
     <string name="topic_picker_done">Fertig</string>
     <string name="topic_picker_hint">Thema suchen oder benennen</string>
+    <string name="topic_picker_in_section">In %1$s</string>
     <string name="topic_picker_none">Kein Thema</string>
     <string name="topic_picker_none_sub">Die Liste steht allein in ihrer Rubrik.</string>
     <string name="topic_picker_create_note">Wartet auf einen Moderator. Bis dahin liegt die Liste unter Sonstiges mit diesem Etikett.</string>
@@ -332,4 +339,5 @@
         <item quantity="other">Eine fertige Liste · %1$d Karten</item>
     </plurals>
     <string name="lists_public_updating">Öffentlich · wird aktualisiert</string>
+    <string name="lists_public_placed">Öffentlich · %1$s</string>
 </resources>

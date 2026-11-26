@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -142,15 +144,24 @@ fun TopicPickerScreenContent(
                 if (state.searching) {
                     LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
                 }
+                val listState = rememberLazyListState()
+                // Topics found come in above the rows already shown; the list starts over from its first line
+                // rather than keep its place on a row now further down, which left the first ones under the field.
+                LaunchedEffect(state.results, state.suggestion) { listState.scrollToItem(0) }
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .imePadding(),
-                    contentPadding = systemBarsContentPadding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp),
+                    state = listState,
+                    contentPadding = systemBarsContentPadding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 8.dp),
                 ) {
                     if (state.needsSection) {
                         item(key = "section") { ChooseSectionRow(onChooseSection) }
                         return@LazyColumn
+                    }
+                    // Every topic here is the board's section's: said once, not under each one.
+                    state.section?.let { section ->
+                        item(key = "in-section") { InSection(section) }
                     }
                     currentTopic(state.chosen)
                     val suggestion = state.suggestion
@@ -158,7 +169,7 @@ fun TopicPickerScreenContent(
                         item(key = "suggestion") {
                             ChoiceRow(
                                 title = stringResource(R.string.topic_picker_suggestion, suggestion.name),
-                                subtitle = suggestion.sectionLine(),
+                                subtitle = null,
                                 selected = false,
                                 onClick = { onChoose(suggestion) },
                                 testTag = TopicPickerTestTags.SUGGESTION,
@@ -290,12 +301,19 @@ private fun ChooseSectionRow(onClick: () -> Unit) {
 }
 
 @Composable
-private fun Topic.sectionLine(): String? = section?.let { sectionLabel(it) }
+private fun InSection(section: String) {
+    Text(
+        text = stringResource(R.string.topic_picker_in_section, sectionLabel(section)),
+        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp).testTag(TopicPickerTestTags.IN_SECTION),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
 
 @Composable
 private fun Topic.standing(): String? = when (status) {
     TopicStatus.Pending -> stringResource(R.string.topic_picker_waiting)
-    TopicStatus.Approved -> sectionLine()
+    TopicStatus.Approved -> null
     TopicStatus.Rejected -> stringResource(R.string.topic_picker_rejected)
     TopicStatus.Merged -> stringResource(R.string.topic_picker_merged)
 }
@@ -319,7 +337,7 @@ private fun ChoiceRow(
     testTag: String,
     enabled: Boolean = true,
 ) {
-    val tint = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow
+    val tint = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
     val text = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
     Column(
         Modifier

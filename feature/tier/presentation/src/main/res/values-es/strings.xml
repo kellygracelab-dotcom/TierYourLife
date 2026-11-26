@@ -1,6 +1,12 @@
 ﻿<resources>
     <string name="tier_lists_private">privado</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="one">%1$d pública</item>
+        <item quantity="many">%1$d públicas</item>
+        <item quantity="other">%1$d públicas</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · nada colocado todavía</string>
     <string name="tier_lists_status_start_dragging">Arrastra para clasificar</string>
 
@@ -93,7 +99,8 @@
     <string name="trash_title">Papelera</string>
     <string name="trash_load_error">No se pudo cargar la papelera.</string>
     <string name="trash_subtitle">Las listas eliminadas permanecen aquí hasta que las quites.</string>
-    <string name="trash_row_list_meta">Lista · %1$s · eliminada %2$s</string>
+    <string name="trash_row_list_meta">%1$s · eliminada %2$s</string>
+    <string name="trash_restore">Restaurar</string>
     <string name="trash_time_just_now">ahora mismo</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">hace %1$d min</item>
@@ -181,6 +188,7 @@
     <string name="topic_picker_title">Tema</string>
     <string name="topic_picker_done">Hecho</string>
     <string name="topic_picker_hint">Buscar o nombrar un tema</string>
+    <string name="topic_picker_in_section">En %1$s</string>
     <string name="topic_picker_none">Sin tema</string>
     <string name="topic_picker_none_sub">La lista queda sola en su sección.</string>
     <string name="topic_picker_create_note">Espera a un moderador. Hasta entonces la lista queda en Otros con esta etiqueta.</string>
@@ -350,4 +358,5 @@
         <item quantity="other">Una lista preparada · %1$d cartas</item>
     </plurals>
     <string name="lists_public_updating">Pública · actualizando</string>
+    <string name="lists_public_placed">Pública · %1$s</string>
 </resources>
