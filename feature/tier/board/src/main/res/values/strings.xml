@@ -201,7 +201,7 @@
     <string name="list_settings_publication">Publication</string>
     <string name="list_settings_unpublished_changes">Changes not published yet</string>
     <string name="board_published_short">Published</string>
-    <string name="board_updated_short">Updated</string>
+    <string name="board_updated_short">Updated in Community</string>
     <string name="board_ranked_short">In Rankings</string>
     <string name="board_publishing">Publishing…</string>
     <string name="board_updating">Updating…</string>
@@ -236,4 +236,7 @@
     <string name="card_unnamed">Card</string>
     <string name="list_awaiting_approval">It will appear in the feed after a check. Anyone with the link can see it now.</string>
     <string name="board_updated_awaiting">Updated. It will appear in the feed after a check.</string>
+    <string name="board_waiting_for_connection">Waiting for connection</string>
+    <string name="board_still_updating">Still updating — you can keep going</string>
+    <string name="board_could_not_update">Couldn’t update. Your changes are safe here.</string>
 </resources>

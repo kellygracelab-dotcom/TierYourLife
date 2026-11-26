@@ -331,4 +331,5 @@
         <item quantity="one">Hazır bir liste · %1$d kart</item>
         <item quantity="other">Hazır bir liste · %1$d kart</item>
     </plurals>
+    <string name="lists_public_updating">Herkese açık · güncelleniyor</string>
 </resources>

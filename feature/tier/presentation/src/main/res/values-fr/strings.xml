@@ -349,4 +349,5 @@
         <item quantity="many">Une liste prête · %1$d cartes</item>
         <item quantity="other">Une liste prête · %1$d cartes</item>
     </plurals>
+    <string name="lists_public_updating">Publique · mise à jour</string>
 </resources>

@@ -313,4 +313,5 @@
     <plurals name="ready_list_cards">
         <item quantity="other">できあがったリスト · %1$d枚</item>
     </plurals>
+    <string name="lists_public_updating">公開 · 更新中</string>
 </resources>

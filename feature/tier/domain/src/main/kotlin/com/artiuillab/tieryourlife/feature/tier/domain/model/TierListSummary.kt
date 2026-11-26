@@ -27,6 +27,8 @@ data class TierListSummary(
     val favouritedAt: Long? = null,
     /** True while this board and one beside it are two versions of the same thing. */
     val hasTwin: Boolean = false,
+    /** On its way out from this phone: published, or an Update, still going. */
+    val updating: Boolean = false,
 ) {
     val isPublic: Boolean get() = publishedId != null || rankingOf != null
 

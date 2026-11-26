@@ -403,4 +403,5 @@
         <item quantity="many">قائمة جاهزة · %1$d بطاقة</item>
         <item quantity="other">قائمة جاهزة · %1$d بطاقة</item>
     </plurals>
+    <string name="lists_public_updating">عامة · جارٍ التحديث</string>
 </resources>

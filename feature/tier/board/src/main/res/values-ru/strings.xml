@@ -222,7 +222,7 @@
     <string name="list_settings_publication">Публикация</string>
     <string name="list_settings_unpublished_changes">Есть неопубликованные изменения</string>
     <string name="board_published_short">Опубликовано</string>
-    <string name="board_updated_short">Обновлено</string>
+    <string name="board_updated_short">Обновлено в сообществе</string>
     <string name="board_ranked_short">В рейтингах</string>
     <string name="board_publishing">Публикуем…</string>
     <string name="board_updating">Обновляем…</string>
@@ -265,4 +265,7 @@
     <string name="card_unnamed">Карточка</string>
     <string name="list_awaiting_approval">В ленте появится после проверки, по ссылке доступно уже сейчас.</string>
     <string name="board_updated_awaiting">Обновлено. В ленте появится после проверки.</string>
+    <string name="board_waiting_for_connection">Ждём подключения</string>
+    <string name="board_still_updating">Ещё обновляем — можно продолжать</string>
+    <string name="board_could_not_update">Не удалось обновить. Ваши изменения сохранены здесь.</string>
 </resources>

@@ -211,7 +211,7 @@
     <string name="list_settings_publication">Publication</string>
     <string name="list_settings_unpublished_changes">Modifications pas encore publiées</string>
     <string name="board_published_short">Publiée</string>
-    <string name="board_updated_short">Mise à jour</string>
+    <string name="board_updated_short">Mise à jour dans la Communauté</string>
     <string name="board_ranked_short">Dans les classements</string>
     <string name="board_publishing">Publication…</string>
     <string name="board_updating">Mise à jour…</string>
@@ -250,4 +250,7 @@
     <string name="card_unnamed">Carte</string>
     <string name="list_awaiting_approval">Elle apparaîtra dans le fil après une vérification. Avec le lien, elle est déjà visible.</string>
     <string name="board_updated_awaiting">Mise à jour. Elle apparaîtra dans le fil après une vérification.</string>
+    <string name="board_waiting_for_connection">En attente de connexion</string>
+    <string name="board_still_updating">Mise à jour en cours — vous pouvez continuer</string>
+    <string name="board_could_not_update">Mise à jour impossible. Vos modifications sont en sécurité ici.</string>
 </resources>

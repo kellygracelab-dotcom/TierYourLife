@@ -200,7 +200,7 @@
     <string name="list_settings_publication">Veröffentlichung</string>
     <string name="list_settings_unpublished_changes">Änderungen noch nicht veröffentlicht</string>
     <string name="board_published_short">Veröffentlicht</string>
-    <string name="board_updated_short">Aktualisiert</string>
+    <string name="board_updated_short">In der Community aktualisiert</string>
     <string name="board_ranked_short">In den Ranglisten</string>
     <string name="board_publishing">Wird veröffentlicht…</string>
     <string name="board_updating">Wird aktualisiert…</string>
@@ -235,4 +235,7 @@
     <string name="card_unnamed">Karte</string>
     <string name="list_awaiting_approval">Sie erscheint nach einer Prüfung im Feed. Mit dem Link ist sie schon jetzt sichtbar.</string>
     <string name="board_updated_awaiting">Aktualisiert. Sie erscheint nach einer Prüfung im Feed.</string>
+    <string name="board_waiting_for_connection">Warte auf Verbindung</string>
+    <string name="board_still_updating">Wird noch aktualisiert – du kannst weitermachen</string>
+    <string name="board_could_not_update">Aktualisieren hat nicht geklappt. Deine Änderungen sind hier sicher.</string>
 </resources>
