@@ -217,6 +217,7 @@ fun TierListsScreenContent(
     val lists = success?.lists.orEmpty()
     val totalListCount = success?.totalListCount ?: 0
     val rankedCount = success?.rankedCount ?: 0
+    val publicCount = success?.publicCount ?: 0
     val localOnly = success?.localOnly ?: LocalOnly.Unknown
     val restoringPictures = success?.restoringPictures ?: PictureRestore.Progress.Idle
     val conflict = success?.conflict
@@ -315,7 +316,7 @@ fun TierListsScreenContent(
     // until there is more than one board.
     val top: @Composable () -> Unit = {
         Column {
-            if (!short) HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount)
+            if (!short) HomeHeader(totalListCount = totalListCount, rankedCount = rankedCount, publicCount = publicCount)
             if (continuing != null) {
                 Box(Modifier.padding(top = 8.dp, bottom = 4.dp).widthIn(max = ContentWidth.Reading)) { continuing() }
             }
@@ -373,7 +374,7 @@ fun TierListsScreenContent(
                                 } else {
                                     stringResource(ThemeR.string.app_name_display)
                                 },
-                                count = homeSummary(totalListCount, rankedCount).takeIf { short && totalListCount > 0 },
+                                count = homeSummary(totalListCount, rankedCount, publicCount).takeIf { short && totalListCount > 0 },
                                 contentMax = ContentWidth.Board,
                                 statusBarPadding = false,
                             )

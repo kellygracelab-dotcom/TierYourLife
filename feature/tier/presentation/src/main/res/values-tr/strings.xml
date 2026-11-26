@@ -1,6 +1,11 @@
 <resources>
     <string name="tier_lists_private">gizli</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="one">%1$d herkese açık</item>
+        <item quantity="other">%1$d herkese açık</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · henüz yerleştirilen yok</string>
     <string name="tier_lists_status_start_dragging">Sıralamak için sürükleyin</string>
 
@@ -88,7 +93,8 @@
     <string name="trash_title">Çöp kutusu</string>
     <string name="trash_load_error">Çöp kutusu yüklenemedi.</string>
     <string name="trash_subtitle">Silinen listeler, siz silene kadar burada kalır.</string>
-    <string name="trash_row_list_meta">Liste · %1$s · silindi %2$s</string>
+    <string name="trash_row_list_meta">%1$s · silindi %2$s</string>
+    <string name="trash_restore">Geri yükle</string>
     <string name="trash_time_just_now">az önce</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d dk önce</item>
@@ -172,6 +178,7 @@
     <string name="topic_picker_title">Konu</string>
     <string name="topic_picker_done">Bitti</string>
     <string name="topic_picker_hint">Konu ara veya adlandır</string>
+    <string name="topic_picker_in_section">%1$s bölümünde</string>
     <string name="topic_picker_none">Konu yok</string>
     <string name="topic_picker_none_sub">Liste kendi bölümünde tek başına durur.</string>
     <string name="topic_picker_create_note">Bir moderatörü bekler. O zamana kadar liste bu etiketle Diğer bölümünde durur.</string>
@@ -332,4 +339,5 @@
         <item quantity="other">Hazır bir liste · %1$d kart</item>
     </plurals>
     <string name="lists_public_updating">Herkese açık · güncelleniyor</string>
+    <string name="lists_public_placed">Herkese açık · %1$s</string>
 </resources>

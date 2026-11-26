@@ -354,7 +354,10 @@ class RoomTierRepository internal constructor(
 
     // A card with a deletedAt from an older phone or the web stays hidden and unlisted until the trash is emptied.
     override suspend fun getTrashEntries(): List<TrashEntry> =
-        dao.getDeletedTierLists(owner()).map { it.toDomain() }
+        dao.getDeletedTierLists(owner()).map { row ->
+            val left = row.coverImageUrl == null && row.coverImageUrls.isNullOrBlank()
+            row.toDomain(cardPictures = if (left) dao.getPreviewImages(row.id, TRASH_PICTURES) else emptyList())
+        }
 
     /**
      * A card's picture leaves the cover with the last card on the board showing it, so it is not
@@ -383,3 +386,6 @@ class RoomTierRepository internal constructor(
 
     private suspend fun picturesInUse(): List<String> = dao.getAllImageRefs() + dao.getAllCoverRefs()
 }
+
+/** As many card pictures as a small cover shows. */
+private const val TRASH_PICTURES = 4

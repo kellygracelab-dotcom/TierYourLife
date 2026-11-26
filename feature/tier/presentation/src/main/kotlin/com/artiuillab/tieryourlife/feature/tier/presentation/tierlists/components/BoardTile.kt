@@ -4,8 +4,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.artiuillab.tieryourlife.core.theme.ui.GlobeIcon
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
@@ -108,12 +111,26 @@ internal fun BoardTile(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(
-            text = if (list.updating) updatingLine(list) else pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, ranked, ranked),
+        val placed = pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, ranked, ranked)
+        Row(
             modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 2.dp, bottom = 12.dp),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // Out in the community, as the site's tile says: Your lists no longer reads as all private.
+            if (list.isPublic && !list.updating) GlobeIcon(14.dp, MaterialTheme.colorScheme.primary)
+            Text(
+                text = when {
+                    list.updating -> updatingLine(list)
+                    list.isPublic -> stringResource(R.string.lists_public_placed, placed)
+                    else -> placed
+                },
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
 

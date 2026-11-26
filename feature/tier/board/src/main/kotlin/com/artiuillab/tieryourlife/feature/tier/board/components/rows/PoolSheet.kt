@@ -73,6 +73,7 @@ import com.artiuillab.tieryourlife.core.theme.layout.LocalBoardLayoutMemory
 import com.artiuillab.tieryourlife.core.theme.tips.Tip
 import com.artiuillab.tieryourlife.core.theme.tips.tipAnchor
 import com.artiuillab.tieryourlife.core.theme.type.TierYourLifeType
+import com.artiuillab.tieryourlife.core.theme.ui.CheckCircleIcon
 import com.artiuillab.tieryourlife.core.theme.ui.PlusIcon
 import com.artiuillab.tieryourlife.feature.tier.board.R
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailTestTags
@@ -266,15 +267,22 @@ private fun TrayHead(
     val count = pool.items.size
     val adds = !readOnly && onAddClick != null
     if (!stripCounts(countWhenEmpty, count, readOnly) || panelInTray && !adds) return
+    // Nothing left to place on one's own board: it says so, nothing offers to place one by one, and Add leads.
+    val allPlaced = adds && count == 0 && LocalTierPlacing.current == null
     StripHead(
         pool = pool,
         expanded = expanded,
         readOnly = readOnly,
         onAddClick = onAddClick,
         onGenerateClick = onGenerateClick,
-        toggle = toggle.takeUnless { panelInTray },
-        title = if (panelInTray) null else poolTitle(count, countsCardsLeft),
+        toggle = toggle.takeUnless { panelInTray || allPlaced },
+        title = when {
+            panelInTray -> null
+            allPlaced -> stringResource(R.string.one_by_one_done)
+            else -> poolTitle(count, countsCardsLeft)
+        },
         countsCardsLeft = countsCardsLeft,
+        allPlaced = allPlaced,
     )
 }
 
@@ -470,14 +478,17 @@ private fun StripHead(
     toggle: (@Composable (worded: Boolean) -> Unit)?,
     title: String?,
     countsCardsLeft: Boolean,
+    allPlaced: Boolean = false,
 ) = BoxWithConstraints(Modifier.fillMaxWidth()) {
     val adds = !readOnly && onAddClick != null
     // The count and the chips sit on one line while they fit. When they do
     // not, as in a long language, the count takes a line of its own and the
     // chips keep their words on the next: the switch's picture alone said nothing.
     // The choice holds for any count, so the strip does not jump as cards leave it.
-    if (!headFitsOneLine(title?.let { poolTitles(pool.items.size, countsCardsLeft) }, adds, maxWidth)) {
-        StripHeadInTwoLines(title, onAddClick.takeIf { adds }, onGenerateClick, toggle)
+    // Every count is measured beside the switch and the last word beside its mark, so the strip keeps its lines down to none.
+    val titles = title?.let { poolTitles(pool.items.size, countsCardsLeft) }
+    if (!headFitsOneLine(titles, stringResource(R.string.one_by_one_done).takeIf { adds }, adds, maxWidth)) {
+        StripHeadInTwoLines(title, onAddClick.takeIf { adds }, onGenerateClick, toggle, allPlaced)
         return@BoxWithConstraints
     }
     Row(
@@ -492,6 +503,7 @@ private fun StripHead(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (allPlaced) PlacedMark()
             if (title != null) {
                 Text(
                     text = title,
@@ -501,18 +513,20 @@ private fun StripHead(
                     maxLines = 1,
                 )
             }
-            if (!expanded && title != null) {
+            if (!expanded && title != null && !allPlaced) {
                 Glimpse(pool.items, Modifier.weight(1f))
             }
         }
         // Someone else's pool is material to rank, not a place to add to.
         if (adds || toggle != null) {
             Row(
+                // As tall as the switch's touch target, which leaves once every card is placed.
+                modifier = Modifier.heightIn(min = SWITCH_HEIGHT),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 toggle?.invoke(true)
-                if (adds && onAddClick != null) StripAddChips(onAddClick, onGenerateClick)
+                if (adds && onAddClick != null) StripAddChips(onAddClick, onGenerateClick, filled = allPlaced)
             }
         }
     }
@@ -525,6 +539,7 @@ private fun StripHeadInTwoLines(
     onAddClick: (() -> Unit)?,
     onGenerateClick: () -> Unit,
     toggle: (@Composable (worded: Boolean) -> Unit)?,
+    allPlaced: Boolean = false,
 ) {
     Column(
         modifier = Modifier
@@ -533,27 +548,30 @@ private fun StripHeadInTwoLines(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (title != null) {
-            Text(
-                text = title,
-                modifier = Modifier.testTag(TierDetailTestTags.POOL_COUNT),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (allPlaced) PlacedMark()
+                Text(
+                    text = title,
+                    modifier = Modifier.testTag(TierDetailTestTags.POOL_COUNT),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
         }
         if (onAddClick != null || toggle != null) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().heightIn(min = SWITCH_HEIGHT), verticalAlignment = Alignment.CenterVertically) {
                 toggle?.invoke(true)
                 Spacer(Modifier.weight(1f))
-                onAddClick?.let { StripAddChips(it, onGenerateClick) }
+                onAddClick?.let { StripAddChips(it, onGenerateClick, filled = allPlaced) }
             }
         }
     }
 }
 
 @Composable
-private fun StripAddChips(onAddClick: () -> Unit, onGenerateClick: () -> Unit) {
+private fun StripAddChips(onAddClick: () -> Unit, onGenerateClick: () -> Unit, filled: Boolean = false) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-        AddChip(onClick = onAddClick)
+        AddChip(onClick = onAddClick, filled = filled)
         if (Features.GENERATION_OFFERED) {
             GenerateChip(onClick = onGenerateClick)
         }
@@ -698,9 +716,9 @@ private fun pow10(power: Int): Int = (1..power).fold(1) { n, _ -> n * DECIMAL }
 private const val PLURAL_SPAN = 25
 private const val DECIMAL = 10
 
-/** Whether the widest of [titles], the switch with its word and Add stand on one line, the count unbroken. */
+/** Whether the widest of [titles] with the switch, and [done] with its mark, each stand on one line with Add. */
 @Composable
-private fun headFitsOneLine(titles: List<String>?, adds: Boolean, width: Dp): Boolean {
+private fun headFitsOneLine(titles: List<String>?, done: String?, adds: Boolean, width: Dp): Boolean {
     if (titles == null) return true
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
@@ -708,30 +726,40 @@ private fun headFitsOneLine(titles: List<String>?, adds: Boolean, width: Dp): Bo
     val titleWidth = titles.maxOf { wide(it, MaterialTheme.typography.titleSmall) }
     val toggleWidth = 8.dp + FilterChipDefaults.IconSize + 8.dp + wide(stringResource(R.string.one_by_one_toggle), MaterialTheme.typography.labelLarge) + 16.dp
     val addWidth = if (adds) 8.dp + 12.dp + 18.dp + 4.dp + wide(stringResource(R.string.tier_detail_add), TierYourLifeType.current.supportingLabel) + 12.dp else 0.dp
-    return 32.dp + titleWidth + 8.dp + toggleWidth + addWidth <= width
+    val doneWidth = done?.let { PLACED_MARK + 8.dp + wide(it, MaterialTheme.typography.titleSmall) } ?: 0.dp
+    return 32.dp + maxOf(titleWidth + 8.dp + toggleWidth, doneWidth) + addWidth <= width
 }
 
 @Composable
-private fun AddChip(onClick: () -> Unit) {
+private fun AddChip(onClick: () -> Unit, filled: Boolean = false) {
+    // Filled once nothing waits in the tray: then adding is what is left to do; beside cards it keeps quiet.
+    val container = if (filled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
+    val content = if (filled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(100.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(container)
             .clickable(onClick = onClick)
             .tipAnchor(Tip.Add)
             .testTag(TierDetailTestTags.ADD_CHIP)
             .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PlusIcon(18.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+        PlusIcon(18.dp, content)
         Spacer(Modifier.width(4.dp))
         Text(
             text = stringResource(R.string.tier_detail_add),
             style = TierYourLifeType.current.supportingLabel,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = content,
         )
     }
 }
+
+private val SWITCH_HEIGHT = 48.dp
+private val PLACED_MARK = 18.dp
+
+@Composable
+private fun PlacedMark() = CheckCircleIcon(PLACED_MARK, MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.surfaceContainer)
 
 @Preview(showBackground = true)
 @Composable

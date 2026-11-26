@@ -20,6 +20,15 @@ fun CheckCircleIcon(iconSize: Dp, color: Color, tick: Color) = VectorIcon(iconSi
     drawLine(tick, Offset(10.5f * scale, 15.5f * scale), Offset(16.5f * scale, 9f * scale), stroke, StrokeCap.Round)
 }
 
+/** A globe: out in the community. */
+@Composable
+fun GlobeIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+    val stroke = Stroke(width = 1.8f * scale)
+    drawCircle(color, 9f * scale, Offset(12f * scale, 12f * scale), style = stroke)
+    drawOval(color, Offset(8f * scale, 3f * scale), Size(8f * scale, 18f * scale), style = stroke)
+    drawLine(color, Offset(3f * scale, 12f * scale), Offset(21f * scale, 12f * scale), 1.8f * scale)
+}
+
 /** A bookmark with a plus: keep this. */
 @Composable
 fun BookmarkAddIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->

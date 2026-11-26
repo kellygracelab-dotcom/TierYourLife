@@ -1,6 +1,10 @@
 <resources>
     <string name="tier_lists_private">非公開</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="other">%1$d 件が公開</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · まだ何も配置されていません</string>
     <string name="tier_lists_status_start_dragging">ドラッグしてランク付け</string>
 
@@ -83,7 +87,8 @@
     <string name="trash_title">ゴミ箱</string>
     <string name="trash_load_error">ゴミ箱を読み込めませんでした。</string>
     <string name="trash_subtitle">削除されたリストは、削除するまでここに残ります。</string>
-    <string name="trash_row_list_meta">リスト · %1$s · %2$s に削除</string>
+    <string name="trash_row_list_meta">%1$s · %2$s に削除</string>
+    <string name="trash_restore">復元</string>
     <string name="trash_time_just_now">たった今</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="other">%1$d分前</item>
@@ -163,6 +168,7 @@
     <string name="topic_picker_title">トピック</string>
     <string name="topic_picker_done">完了</string>
     <string name="topic_picker_hint">トピックを検索または入力</string>
+    <string name="topic_picker_in_section">%1$s内</string>
     <string name="topic_picker_none">トピックなし</string>
     <string name="topic_picker_none_sub">リストはセクションの中にそのまま置かれます。</string>
     <string name="topic_picker_create_note">モデレーターの承認を待ちます。それまでリストは「その他」にこのラベル付きで置かれます。</string>
@@ -314,4 +320,5 @@
         <item quantity="other">できあがったリスト · %1$d枚</item>
     </plurals>
     <string name="lists_public_updating">公開 · 更新中</string>
+    <string name="lists_public_placed">公開 · %1$s</string>
 </resources>

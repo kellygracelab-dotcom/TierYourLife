@@ -26,11 +26,11 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierLists
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
 
 @Composable
-internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {
+internal fun HomeHeader(totalListCount: Int, rankedCount: Int, publicCount: Int = 0) {
     // The first line of the boards' own column, so it starts where they start.
     if (totalListCount > 0) {
         Text(
-            text = homeSummary(totalListCount, rankedCount),
+            text = homeSummary(totalListCount, rankedCount, publicCount),
             modifier = Modifier.padding(top = 12.dp, bottom = 4.dp).testTag(TierListsTestTags.SUMMARY),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -40,12 +40,20 @@ internal fun HomeHeader(totalListCount: Int, rankedCount: Int) {
 
 /** The counts the header says, also said in the bar where the window has no room for a line of their own. */
 @Composable
-internal fun homeSummary(totalListCount: Int, rankedCount: Int): String = stringResource(
-    R.string.tier_lists_summary,
-    pluralStringResource(ThemeR.plurals.tier_lists_count, totalListCount, totalListCount),
-    pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, rankedCount, rankedCount),
-    stringResource(R.string.tier_lists_private),
-)
+internal fun homeSummary(totalListCount: Int, rankedCount: Int, publicCount: Int = 0): String {
+    val lists = pluralStringResource(ThemeR.plurals.tier_lists_count, totalListCount, totalListCount)
+    // "Private" only while it is true of every one; once some are out, how many.
+    return if (publicCount > 0) {
+        stringResource(R.string.tier_lists_summary_public, lists, pluralStringResource(R.plurals.tier_lists_public_count, publicCount, publicCount))
+    } else {
+        stringResource(
+            R.string.tier_lists_summary,
+            lists,
+            pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, rankedCount, rankedCount),
+            stringResource(R.string.tier_lists_private),
+        )
+    }
+}
 
 @Composable
 internal fun SelectionTopBar(

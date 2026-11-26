@@ -1,6 +1,13 @@
 <resources>
     <string name="tier_lists_private">приватно</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="one">%1$d публічний</item>
+        <item quantity="few">%1$d публічних</item>
+        <item quantity="many">%1$d публічних</item>
+        <item quantity="other">%1$d публічного</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · ще нічого не розкладено</string>
     <string name="tier_lists_status_start_dragging">Перетягніть, щоб оцінити</string>
 
@@ -98,7 +105,8 @@
     <string name="trash_title">Кошик</string>
     <string name="trash_load_error">Не вдалося завантажити кошик.</string>
     <string name="trash_subtitle">Видалені списки залишаються тут, доки ви їх не приберете.</string>
-    <string name="trash_row_list_meta">Список · %1$s · видалено %2$s</string>
+    <string name="trash_row_list_meta">%1$s · видалено %2$s</string>
+    <string name="trash_restore">Відновити</string>
     <string name="trash_time_just_now">щойно</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d хв тому</item>
@@ -190,6 +198,7 @@
     <string name="topic_picker_title">Тема</string>
     <string name="topic_picker_done">Готово</string>
     <string name="topic_picker_hint">Знайти або назвати тему</string>
+    <string name="topic_picker_in_section">У розділі «%1$s»</string>
     <string name="topic_picker_none">Без теми</string>
     <string name="topic_picker_none_sub">Список лежить у своєму розділі сам по собі.</string>
     <string name="topic_picker_create_note">Чекатиме на модератора. До того список лежить у розділі «Інше» з цим ярликом.</string>
@@ -368,4 +377,5 @@
         <item quantity="other">Готовий список · %1$d картки</item>
     </plurals>
     <string name="lists_public_updating">Публічний · оновлюємо</string>
+    <string name="lists_public_placed">Публічний · %1$s</string>
 </resources>

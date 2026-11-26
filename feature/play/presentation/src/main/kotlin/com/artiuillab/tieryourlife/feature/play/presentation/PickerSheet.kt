@@ -424,15 +424,14 @@ private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, actions: PickerActions)
         Row(Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             HistoryIcon(20.dp, MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.width(12.dp))
-            Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            // Two lines, the game over when it began: side by side each broke in two.
+            Column(Modifier.weight(1f)) {
                 val name = stringResource(offer.kind.nameRes)
                 Text(
                     text = if (offer.changed) name else stringResource(R.string.play_resume_progress, name, offer.played, offer.total),
-                    modifier = Modifier.weight(1f, fill = false),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Spacer(Modifier.width(10.dp))
                 val started = startedText(offer.startedAt)
                 Text(
                     text = when {
@@ -442,7 +441,6 @@ private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, actions: PickerActions)
                         offer.joined > 0 -> started + " · " + pluralStringResource(R.plurals.play_new_cards_join, offer.joined, offer.joined)
                         else -> started
                     },
-                    modifier = Modifier.weight(1f, fill = false),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

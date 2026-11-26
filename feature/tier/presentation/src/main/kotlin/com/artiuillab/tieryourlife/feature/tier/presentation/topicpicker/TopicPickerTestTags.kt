@@ -12,6 +12,7 @@ object TopicPickerTestTags {
     const val CHOOSE_SECTION = "topic_picker_choose_section"
     const val SUGGESTION = "topic_picker_suggestion"
     const val CURRENT = "topic_picker_current"
+    const val IN_SECTION = "topic_picker_in_section"
 
     fun topic(id: String): String = "topic_picker_topic_$id"
 }

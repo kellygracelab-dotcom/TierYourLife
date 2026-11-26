@@ -1,6 +1,13 @@
 <resources>
     <string name="tier_lists_private">prywatne</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="one">%1$d publiczna</item>
+        <item quantity="few">%1$d publiczne</item>
+        <item quantity="many">%1$d publicznych</item>
+        <item quantity="other">%1$d publicznej</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · nic jeszcze nie umieszczono</string>
     <string name="tier_lists_status_start_dragging">Przeciągnij, aby ocenić</string>
 
@@ -98,7 +105,8 @@
     <string name="trash_title">Kosz</string>
     <string name="trash_load_error">Nie udało się wczytać kosza.</string>
     <string name="trash_subtitle">Usunięte listy pozostają tutaj, dopóki ich nie usuniesz.</string>
-    <string name="trash_row_list_meta">Lista · %1$s · usunięto %2$s</string>
+    <string name="trash_row_list_meta">%1$s · usunięto %2$s</string>
+    <string name="trash_restore">Przywróć</string>
     <string name="trash_time_just_now">przed chwilą</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d min temu</item>
@@ -190,6 +198,7 @@
     <string name="topic_picker_title">Temat</string>
     <string name="topic_picker_done">Gotowe</string>
     <string name="topic_picker_hint">Znajdź lub nazwij temat</string>
+    <string name="topic_picker_in_section">W dziale %1$s</string>
     <string name="topic_picker_none">Bez tematu</string>
     <string name="topic_picker_none_sub">Lista leży w swoim dziale sama.</string>
     <string name="topic_picker_create_note">Poczeka na moderatora. Do tego czasu lista leży w dziale Inne z tą etykietą.</string>
@@ -368,4 +377,5 @@
         <item quantity="other">Gotowa lista · %1$d karty</item>
     </plurals>
     <string name="lists_public_updating">Publiczna · aktualizacja</string>
+    <string name="lists_public_placed">Publiczna · %1$s</string>
 </resources>

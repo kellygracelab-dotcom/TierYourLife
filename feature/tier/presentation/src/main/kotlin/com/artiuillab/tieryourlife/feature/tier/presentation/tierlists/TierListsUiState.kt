@@ -14,6 +14,8 @@ sealed interface TierListsUiState {
         val totalListCount: Int,
         val rankedCount: Int,
         val mode: HomeMode = HomeMode.Browsing,
+        /** How many of them are out in the community. */
+        val publicCount: Int = 0,
         /** Your own boards drawn as pictures rather than as rows. */
         val asPictures: Boolean = false,
         /** Starred boards, already in the order they belong in. */

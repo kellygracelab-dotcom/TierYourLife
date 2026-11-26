@@ -1,22 +1,23 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.trash.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,11 +29,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.artiuillab.tieryourlife.core.theme.color.TierYourLifeMedia
 import com.artiuillab.tieryourlife.core.theme.layout.systemBarsContentPadding
 import com.artiuillab.tieryourlife.core.theme.ui.DeleteIcon
 import com.artiuillab.tieryourlife.core.theme.ui.RestoreIcon
-import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
+import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.trash.TrashTestTags
@@ -60,7 +60,16 @@ internal fun TrashList(
 @Composable
 private fun TrashListRow(entry: TrashEntry.DeletedList, onRestore: () -> Unit, onRemove: () -> Unit) {
     TrashRow(
-        thumbnail = { ListThumbnail() },
+        thumbnail = {
+            ListArt(
+                coverImageUrl = entry.coverImageUrl,
+                previewImages = entry.pictures,
+                tierColors = emptyList(),
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+            )
+        },
         title = entry.title,
         meta = stringResource(
             R.string.trash_row_list_meta,
@@ -85,72 +94,53 @@ private fun TrashRow(
     val restoreDescription = stringResource(R.string.cd_restore, title)
     val removeDescription = stringResource(R.string.cd_remove, title)
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 72.dp)
-            .testTag(TrashTestTags.row(entry))
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        thumbnail()
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = meta,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        // Icons, not words: "Restore" and "Delete" side by side left the title
-        // four characters wide in Russian and broke the line into single
-        // syllables. The words live on in the descriptions.
-        IconButton(
-            onClick = onRestore,
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        // The word where the title keeps its room; on the narrowest phones the arrow, as before,
+        // or "Restore" in Russian left the title four characters wide.
+        val worded = maxWidth >= WORDED_FROM
+        Row(
             modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 72.dp)
+                .testTag(TrashTestTags.row(entry))
+                .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            thumbnail()
+            Spacer(Modifier.width(4.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = meta,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            val restoreTag = Modifier
                 .semantics { contentDescription = restoreDescription }
-                .testTag(TrashTestTags.restoreButton(entry)),
-        ) { RestoreIcon(22.dp, MaterialTheme.colorScheme.primary) }
-        IconButton(
-            onClick = onRemove,
-            modifier = Modifier
-                .semantics { contentDescription = removeDescription }
-                .testTag(TrashTestTags.removeButton(entry)),
-        ) { DeleteIcon(22.dp, MaterialTheme.colorScheme.error) }
+                .testTag(TrashTestTags.restoreButton(entry))
+            if (worded) {
+                TextButton(onClick = onRestore, modifier = restoreTag) { Text(stringResource(R.string.trash_restore)) }
+            } else {
+                IconButton(onClick = onRestore, modifier = restoreTag) { RestoreIcon(22.dp, MaterialTheme.colorScheme.primary) }
+            }
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier
+                    .semantics { contentDescription = removeDescription }
+                    .testTag(TrashTestTags.removeButton(entry)),
+            ) { DeleteIcon(22.dp, MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
     }
 }
 
-@Composable
-private fun ListThumbnail() {
-    val media = TierYourLifeMedia.current
-    val sBand = tierRowColors("#B03A32", "#F1948C").band
-    val aBand = tierRowColors("#C06A25", "#E9A867").band
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(media.tilePlaceholder)
-            .padding(6.dp),
-    ) {
-        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-            listOf(sBand, aBand, media.unrankedRibbon).forEach { color ->
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(color),
-                )
-            }
-        }
-    }
-}
+private val WORDED_FROM = 360.dp

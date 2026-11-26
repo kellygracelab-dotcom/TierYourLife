@@ -3,7 +3,8 @@ package com.artiuillab.tieryourlife.feature.tier.data.mapper
 import com.artiuillab.tieryourlife.feature.tier.data.local.dao.DeletedTierListRow
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TrashEntry
 
-internal fun DeletedTierListRow.toDomain(): TrashEntry.DeletedList =
+/** [cardPictures] stand in for a cover left to the cards. */
+internal fun DeletedTierListRow.toDomain(cardPictures: List<String> = emptyList()): TrashEntry.DeletedList =
     TrashEntry.DeletedList(
         id = id,
         title = title,
@@ -11,4 +12,6 @@ internal fun DeletedTierListRow.toDomain(): TrashEntry.DeletedList =
         deletedAtMillis = deletedAt,
         publishedId = publishedId,
         rankingOf = rankingOf,
+        coverImageUrl = coverImageUrl,
+        pictures = coverImageUrls.toCoverImageUrls().ifEmpty { cardPictures },
     )
