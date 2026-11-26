@@ -222,7 +222,7 @@
     <string name="list_settings_publication">Публікація</string>
     <string name="list_settings_unpublished_changes">Є неопубліковані зміни</string>
     <string name="board_published_short">Опубліковано</string>
-    <string name="board_updated_short">Оновлено</string>
+    <string name="board_updated_short">Оновлено в спільноті</string>
     <string name="board_ranked_short">У рейтингах</string>
     <string name="board_publishing">Публікуємо…</string>
     <string name="board_updating">Оновлюємо…</string>
@@ -265,4 +265,7 @@
     <string name="card_unnamed">Картка</string>
     <string name="list_awaiting_approval">У стрічці з’явиться після перевірки, за посиланням доступно вже зараз.</string>
     <string name="board_updated_awaiting">Оновлено. У стрічці з’явиться після перевірки.</string>
+    <string name="board_waiting_for_connection">Чекаємо на з’єднання</string>
+    <string name="board_still_updating">Ще оновлюємо — можна продовжувати</string>
+    <string name="board_could_not_update">Не вдалося оновити. Ваші зміни збережено тут.</string>
 </resources>

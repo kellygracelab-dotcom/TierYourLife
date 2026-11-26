@@ -21,13 +21,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artiuillab.tieryourlife.feature.tier.board.components.ListArt
 import com.artiuillab.tieryourlife.feature.tier.domain.model.TierListSummary
+import com.artiuillab.tieryourlife.feature.tier.presentation.R
 import com.artiuillab.tieryourlife.feature.tier.presentation.tierlists.TierListsTestTags
 import com.artiuillab.tieryourlife.core.theme.R as ThemeR
+import com.artiuillab.tieryourlife.feature.tier.board.R as BoardR
 
 /**
  * Your own board drawn the way the feed draws a stranger's: twenty boards of
@@ -106,7 +109,7 @@ internal fun BoardTile(
             overflow = TextOverflow.Ellipsis,
         )
         Text(
-            text = pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, ranked, ranked),
+            text = if (list.updating) updatingLine(list) else pluralStringResource(ThemeR.plurals.tier_lists_ranked_count, ranked, ranked),
             modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 2.dp, bottom = 12.dp),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -119,3 +122,8 @@ internal val TILE_MIN_WIDTH = 150.dp
 
 internal const val ART_RATIO = 1.35f
 private const val TIER_COLOURS = 5
+
+/** Said while a publish from this phone is on its way: the list keeps its place, and its tile says why it may lag. */
+@Composable
+internal fun updatingLine(list: TierListSummary): String =
+    stringResource(if (list.isPublic) R.string.lists_public_updating else BoardR.string.board_publishing)

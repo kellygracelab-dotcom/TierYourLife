@@ -38,6 +38,12 @@ sealed interface UserMessage {
 
     /** Published, but [count] pictures from other sites could not be added. */
     data class PicturesDropped(val count: Int) : UserMessage
+
+    /** An Update over a minute on its way: no error yet, and nothing to wait for. */
+    data object StillUpdating : UserMessage
+
+    /** An Update the server turned down: the list is safe here, and Try again sends it once more. */
+    data object CouldNotUpdate : UserMessage
 }
 
 /** Null when nothing was left out, which is also what an answer without the field means. */

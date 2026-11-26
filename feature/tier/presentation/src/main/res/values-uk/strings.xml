@@ -364,4 +364,5 @@
         <item quantity="many">Готовий список · %1$d карток</item>
         <item quantity="other">Готовий список · %1$d картки</item>
     </plurals>
+    <string name="lists_public_updating">Публічний · оновлюємо</string>
 </resources>

@@ -20,9 +20,12 @@ import com.artiuillab.tieryourlife.feature.account.domain.repository.AccountRepo
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishError
 import com.artiuillab.tieryourlife.feature.community.domain.model.PublishRefused
 import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
-import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
+import com.artiuillab.tieryourlife.feature.community.domain.repository.Carrying
 import com.artiuillab.tieryourlife.feature.community.domain.repository.CommunityRepository
+import com.artiuillab.tieryourlife.feature.community.domain.repository.InlinePublishCarrier
+import com.artiuillab.tieryourlife.feature.community.domain.repository.PublishCarrier
 import com.artiuillab.tieryourlife.feature.community.domain.repository.Published
+import com.artiuillab.tieryourlife.feature.community.domain.repository.RecordPublished
 import com.artiuillab.tieryourlife.feature.tier.board.TierDetailUiState
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.cardCount
 import com.artiuillab.tieryourlife.feature.tier.domain.lists.finishedFrom
@@ -52,6 +55,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -70,6 +74,7 @@ class TierDetailViewModel @Inject constructor(
     private val uploads: UploadAllowance = UploadAllowance.None,
     private val usage: Usage = Usage.None,
     private val preferences: AppPreferences? = null,
+    publishCarrier: PublishCarrier? = null,
 ) : ViewModel() {
 
     private val tierListId = savedStateHandle.tierDetailRoute().tierListId
@@ -118,17 +123,40 @@ class TierDetailViewModel @Inject constructor(
         awaitingApproval = list?.publishedId?.let { it in preferences?.awaitingApproval().orEmpty() } == true
     }
 
-    /** Said by the answer to a publish: kept, so the board says it again until a check of what is published says otherwise. */
-    private fun keepAwaitingApproval(published: Published?) {
-        val id = published?.takeUnless { it.ranking }?.id
-        awaitingApproval = id != null && published.awaitingApproval
-        val store = preferences ?: return
-        val ids = store.awaitingApproval()
-        if (id != null) store.setAwaitingApproval(if (published.awaitingApproval) ids + id else ids - id)
-    }
-
     private fun updatePublish(change: (PublishState) -> PublishState) =
         _screen.update { it.copy(publish = change(it.publish)) }
+
+    /** With none given, a publish lives as long as this screen does. */
+    private val carrier = publishCarrier
+        ?: InlinePublishCarrier(viewModelScope, community, RecordPublished(repository, community, ::storeAwaitingApproval))
+
+    private fun storeAwaitingApproval(id: String, waiting: Boolean) {
+        val store = preferences ?: return
+        val ids = store.awaitingApproval()
+        store.setAwaitingApproval(if (waiting) ids + id else ids - id)
+    }
+
+    // The publish button's state, from the checks before a publish and from the carrier after.
+    private var checking = false
+    private var checkingPending: Boolean? = null
+    private var carrying: Carrying? = null
+
+    private fun showSending() {
+        // Read now, not as last collected: the checks hand on and stop being busy in one step.
+        val going = carrier.going.value[tierListId]
+        publishing = checking || going != null
+        publicPending = checkingPending ?: true.takeIf { going != null }
+        updatePublish { it.copy(waitingForConnection = going?.offline == true) }
+    }
+
+    /** On its way: the sheet's work is done; past a minute, said once. */
+    private fun carryingNow(now: Carrying?) {
+        val was = carrying
+        carrying = now
+        if (now != null && was == null) sheet.close()
+        if (now?.slow == true && was?.slow != true) viewModelScope.launch { messages.send(UserMessage.StillUpdating) }
+        showSending()
+    }
 
     private val messages = UserMessages()
     val userMessages: Flow<UserMessage> = messages.flow
@@ -138,8 +166,9 @@ class TierDetailViewModel @Inject constructor(
         repository, community, accountRepository, viewModelScope,
         current = { (board as? TierDetailUiState.Success)?.list },
         busy = { value, pending ->
-            publishing = value
-            publicPending = pending
+            checking = value
+            checkingPending = pending
+            showSending()
         },
         error = { reason ->
             publishError = reason
@@ -150,6 +179,8 @@ class TierDetailViewModel @Inject constructor(
         takeDown = ::takeDown,
         recorded = ::recordPublished,
         reload = ::reloadTierList,
+        carrier = carrier,
+        couldNotUpdate = { messages.send(UserMessage.CouldNotUpdate) },
     )
     internal val publicationState = publication.state
 
@@ -198,6 +229,8 @@ class TierDetailViewModel @Inject constructor(
     }
 
     init {
+        viewModelScope.launch { carrier.going.map { it[tierListId] }.distinctUntilChanged().collect(::carryingNow) }
+        viewModelScope.launch { carrier.ended.collect { publication.carried(it) } }
         // What the website or another phone did since shows on the board that is open, not the next time it opens.
         viewModelScope.launch {
             boardSync.finished.collect { report ->
@@ -252,34 +285,28 @@ class TierDetailViewModel @Inject constructor(
         }
     }
 
+    /** Out or down. Out, the carrier has written it onto the board already: this is what the screen shows of it. */
     private suspend fun recordPublished(list: TierList, published: Published?) {
-        var waiting: String? = null
-        val recorded = messages.guard("Recording the published list") {
-            // A ranking has no id of its own: it is out as part of the list it answers.
-            repository.setPublished(tierListId, published?.takeUnless { it.ranking }?.id, published?.fingerprint)
-            repository.setRankingOf(tierListId, published?.takeIf { it.ranking }?.id)
-            // The server named the topic: a name that waited is a topic now, though maybe one still waiting.
-            val topicId = published?.topicId
-            if (topicId != null) {
-                waiting = waitingName(list, topicId)
-                repository.setTopic(tierListId, topicId, published.topicName ?: list.topicName ?: list.newTopicName, waiting)
-            } else if (published != null && list.topicTakenOff) {
-                // Said once and done: from now on no topic here leaves the list's as it is.
-                repository.setTopic(tierListId, null, null, null)
+        if (published == null) {
+            val recorded = messages.guard("Recording the list taken down") {
+                repository.setPublished(tierListId, null, null)
+                repository.setRankingOf(tierListId, null)
             }
+            if (recorded) showPublished(null, null)
+            awaitingApproval = false
+            return
         }
-        // Reading the list back would land after publicPending clears
-        // and spring the switch back for a frame. The id and the topic are all that changed.
-        if (recorded) showPublished(published, waiting)
-        // Just sent, so nothing is behind any more.
+        // Before anything waits: reading the list back would land after the
+        // switch stops showing it as pending, and spring it back for a frame.
+        showPublished(published, list.newTopicName?.takeIf { published.topicId != null && list.topicId == null })
+        awaitingApproval = !published.ranking && published.awaitingApproval
+        // As sent; the reading after says whether the board changed meanwhile.
         publishedIsBehind = false
-        if (recorded) keepAwaitingApproval(published)
-        if (recorded && published != null) announcePublished(list, published)
+        announcePublished(list, published)
     }
 
     /** Out: the sheet has done its work, and the snackbar says the rest. */
     private suspend fun announcePublished(list: TierList, published: Published) {
-        sheet.close()
         val wasOut = list.publishedId != null || list.rankingOf != null
         if (!wasOut) usage.step(UsageStep.Published)
         messages.send(publishedMessage(published, wasOut = wasOut))
@@ -550,13 +577,6 @@ class TierDetailViewModel @Inject constructor(
                 },
             )
         }
-    }
-
-    /** A name the server had not seen is a topic now; whether it still waits for a moderator decides what the row says. */
-    private suspend fun waitingName(list: TierList, topicId: String): String? {
-        val proposed = list.newTopicName?.takeIf { list.topicId == null } ?: return null
-        val settled = community.topic(topicId).map { it.status != TopicStatus.Pending }.getOrDefault(false)
-        return proposed.takeUnless { settled }
     }
 
     /** The list it was out as is not there to replace: the board is private again, and Public makes a new one. */

@@ -346,4 +346,5 @@
         <item quantity="many">Uma lista pronta · %1$d cards</item>
         <item quantity="other">Uma lista pronta · %1$d cards</item>
     </plurals>
+    <string name="lists_public_updating">Pública · atualizando</string>
 </resources>

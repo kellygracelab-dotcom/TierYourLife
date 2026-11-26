@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
@@ -419,6 +420,8 @@ private fun TierScreenBody(
     val undoLabel = stringResource(R.string.tier_detail_snackbar_undo)
     val actionFailedMessage = stringResource(ThemeR.string.snack_action_failed)
     val underReviewMessage = stringResource(ThemeR.string.snack_published_under_review)
+    val tryAgainLabel = stringResource(ThemeR.string.action_try_again)
+    val onUpdatePublished by rememberUpdatedState(actions.onUpdatePublished)
     // What the action after an update or a ranking says: where it goes, not "View" of the board already in sight.
     val openLabel by rememberUpdatedState(stringResource(if (list.rankingOf != null) R.string.list_settings_original else R.string.list_live_open))
     // What others see: the list in Community, or the Rankings of the list this one answers.
@@ -441,9 +444,17 @@ private fun TierScreenBody(
                 }
                 return@collect
             }
+            if (message == UserMessage.CouldNotUpdate) {
+                // Nothing lost: the board is as it was, and the button says Update again.
+                snackbar.show(resources.getString(R.string.board_could_not_update), tryAgainLabel, SnackbarDuration.Long) {
+                    if (it == SnackbarResult.ActionPerformed) onUpdatePublished()
+                }
+                return@collect
+            }
             snackbar.show(
                 when (message) {
                     UserMessage.PublishedUnderReview -> underReviewMessage
+                    UserMessage.StillUpdating -> resources.getString(R.string.board_still_updating)
                     UserMessage.UploadsToday -> resources.getString(ThemeR.string.snack_uploads_today)
                     is UserMessage.PicturesDropped -> message.text(resources)
                     else -> actionFailedMessage
@@ -1035,5 +1046,6 @@ private fun publishButton(list: TierList, actions: TierDetailActions, narrow: Bo
         room = room,
         busy = actions.publishing,
         onClick = { onPublish(kind) },
+        waiting = actions.waitingForConnection,
     )
 }

@@ -89,7 +89,14 @@ fun PublishIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
 
 /** A cloud with an arrow up: send the published copy again. */
 @Composable
-fun CloudUploadIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale ->
+fun CloudUploadIcon(iconSize: Dp, color: Color) = CloudIcon(iconSize, color, struck = false)
+
+/** The same cloud struck through: waiting for a connection. */
+@Composable
+fun CloudOffIcon(iconSize: Dp, color: Color) = CloudIcon(iconSize, color, struck = true)
+
+@Composable
+private fun CloudIcon(iconSize: Dp, color: Color, struck: Boolean) = VectorIcon(iconSize) { scale ->
     val stroke = 1.7f * scale
     val cloud = Path().apply {
         moveTo(7f * scale, 18.5f * scale)
@@ -102,7 +109,11 @@ fun CloudUploadIcon(iconSize: Dp, color: Color) = VectorIcon(iconSize) { scale -
         close()
     }
     drawPath(cloud, color, style = Stroke(stroke, join = StrokeJoin.Round))
-    drawLine(color, Offset(12f * scale, 16f * scale), Offset(12f * scale, 10f * scale), stroke, StrokeCap.Round)
-    drawLine(color, Offset(9.5f * scale, 12.5f * scale), Offset(12f * scale, 10f * scale), stroke, StrokeCap.Round)
-    drawLine(color, Offset(14.5f * scale, 12.5f * scale), Offset(12f * scale, 10f * scale), stroke, StrokeCap.Round)
+    if (struck) {
+        drawLine(color, Offset(3.5f * scale, 3.5f * scale), Offset(20.5f * scale, 20.5f * scale), stroke, StrokeCap.Round)
+    } else {
+        drawLine(color, Offset(12f * scale, 16f * scale), Offset(12f * scale, 10f * scale), stroke, StrokeCap.Round)
+        drawLine(color, Offset(9.5f * scale, 12.5f * scale), Offset(12f * scale, 10f * scale), stroke, StrokeCap.Round)
+        drawLine(color, Offset(14.5f * scale, 12.5f * scale), Offset(12f * scale, 10f * scale), stroke, StrokeCap.Round)
+    }
 }
