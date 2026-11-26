@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.artiuillab.tieryourlife.core.logging.runSuspendCatching
+import com.artiuillab.tieryourlife.core.settings.AppPreferences
 import com.artiuillab.tieryourlife.core.settings.ReviewMoments
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessage
 import com.artiuillab.tieryourlife.core.theme.messages.UserMessages
@@ -68,6 +69,7 @@ class TierDetailViewModel @Inject constructor(
     private val reviewMoments: ReviewMoments = ReviewMoments.None,
     private val uploads: UploadAllowance = UploadAllowance.None,
     private val usage: Usage = Usage.None,
+    private val preferences: AppPreferences? = null,
 ) : ViewModel() {
 
     private val tierListId = savedStateHandle.tierDetailRoute().tierListId
@@ -107,6 +109,23 @@ class TierDetailViewModel @Inject constructor(
     private var categoryWanted: Boolean
         get() = _screen.value.publish.categoryWanted
         set(value) = updatePublish { it.copy(categoryWanted = value) }
+    private var awaitingApproval: Boolean
+        get() = _screen.value.publish.awaitingApproval
+        set(value) = updatePublish { it.copy(awaitingApproval = value) }
+
+    /** As the last check of what is published said; a run of sync asks again. */
+    private fun readAwaitingApproval(list: TierList?) {
+        awaitingApproval = list?.publishedId?.let { it in preferences?.awaitingApproval().orEmpty() } == true
+    }
+
+    /** Said by the answer to a publish: kept, so the board says it again until a check of what is published says otherwise. */
+    private fun keepAwaitingApproval(published: Published?) {
+        val id = published?.takeUnless { it.ranking }?.id
+        awaitingApproval = id != null && published.awaitingApproval
+        val store = preferences ?: return
+        val ids = store.awaitingApproval()
+        if (id != null) store.setAwaitingApproval(if (published.awaitingApproval) ids + id else ids - id)
+    }
 
     private fun updatePublish(change: (PublishState) -> PublishState) =
         _screen.update { it.copy(publish = change(it.publish)) }
@@ -181,7 +200,9 @@ class TierDetailViewModel @Inject constructor(
     init {
         // What the website or another phone did since shows on the board that is open, not the next time it opens.
         viewModelScope.launch {
-            boardSync.finished.collect { report -> if (report.carried > 0) reloadTierList() }
+            boardSync.finished.collect { report ->
+                if (report.carried > 0) reloadTierList() else readAwaitingApproval((board as? TierDetailUiState.Success)?.list)
+            }
         }
         viewModelScope.launch { runSuspendCatching { boardSync.sync() } }
         viewModelScope.launch {
@@ -252,6 +273,7 @@ class TierDetailViewModel @Inject constructor(
         if (recorded) showPublished(published, waiting)
         // Just sent, so nothing is behind any more.
         publishedIsBehind = false
+        if (recorded) keepAwaitingApproval(published)
         if (recorded && published != null) announcePublished(list, published)
     }
 
@@ -266,7 +288,12 @@ class TierDetailViewModel @Inject constructor(
     /** Held for a moderator says more than where the copy went, and has nothing to view yet. */
     private fun publishedMessage(published: Published, wasOut: Boolean): UserMessage = when {
         published.underReview -> picturesDroppedMessage(published.droppedPictures) ?: UserMessage.PublishedUnderReview
-        else -> UserMessage.Published(updated = wasOut, ranking = published.ranking, droppedPictures = published.droppedPictures)
+        else -> UserMessage.Published(
+            updated = wasOut,
+            ranking = published.ranking,
+            droppedPictures = published.droppedPictures,
+            awaitingApproval = published.awaitingApproval,
+        )
     }
 
     /** Finishes the publish that asked for it: a tap becoming two is smaller than a tap that only refuses. */
@@ -588,6 +615,7 @@ class TierDetailViewModel @Inject constructor(
             board = if (list != null) {
                 dropSettledPublishError(list)
                 if (list.publishedId != null) refreshPublishedStanding(list)
+                readAwaitingApproval(list)
                 TierDetailUiState.Success(list)
             } else {
                 TierDetailUiState.Error

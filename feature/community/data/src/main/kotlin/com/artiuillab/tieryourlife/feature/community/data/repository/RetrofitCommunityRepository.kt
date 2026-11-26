@@ -478,6 +478,7 @@ internal fun PublishedIdDto.toPublished(fingerprint: String) = Published(
     ranking = ranking,
     underReview = underReview,
     droppedPictures = droppedPictures.coerceAtLeast(0),
+    awaitingApproval = awaitingApproval,
 )
 
 private const val TOO_MANY_FOLLOWING = "TOO_MANY_FOLLOWING"
@@ -549,6 +550,7 @@ internal fun PublishedListSummaryDto.toSummary(me: String? = null) = PublishedLi
     names = names,
     boardUid = boardUid?.takeIf { it.isNotBlank() },
     collageUrl = collageUrl.webPictureOrNull(),
+    awaitingApproval = awaitingApproval,
 )
 
 /** Old lists stored the word "null" as a cover; only a web address is a picture. */

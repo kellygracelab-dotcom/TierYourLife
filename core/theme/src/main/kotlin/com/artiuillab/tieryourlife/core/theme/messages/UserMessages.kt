@@ -16,7 +16,13 @@ sealed interface UserMessage {
     data object PublishedListStillPublic : UserMessage
 
     /** Out from the board: first time or [updated] over the same link, as a list or beside one as a [ranking]. */
-    data class Published(val updated: Boolean, val ranking: Boolean = false, val droppedPictures: Int = 0) : UserMessage
+    data class Published(
+        val updated: Boolean,
+        val ranking: Boolean = false,
+        val droppedPictures: Int = 0,
+        /** Out by its link, in the feed only once approved. */
+        val awaitingApproval: Boolean = false,
+    ) : UserMessage
 
     /** The list was kept, but it waits for a moderator before anyone else can see it. */
     data object PublishedUnderReview : UserMessage

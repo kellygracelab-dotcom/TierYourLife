@@ -293,4 +293,6 @@
     <string name="tip_add">اكتب اسمًا وستأتي الصورة معه.</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">بطاقة</string>
+    <string name="list_awaiting_approval">ستظهر في الخلاصة بعد المراجعة. ويمكن لأي شخص لديه الرابط رؤيتها الآن.</string>
+    <string name="board_updated_awaiting">تم التحديث. ستظهر في الخلاصة بعد المراجعة.</string>
 </resources>

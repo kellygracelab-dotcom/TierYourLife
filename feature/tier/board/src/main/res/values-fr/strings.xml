@@ -248,4 +248,6 @@
     <string name="tip_add">Tapez un nom, l’image arrive avec.</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">Carte</string>
+    <string name="list_awaiting_approval">Elle apparaîtra dans le fil après une vérification. Avec le lien, elle est déjà visible.</string>
+    <string name="board_updated_awaiting">Mise à jour. Elle apparaîtra dans le fil après une vérification.</string>
 </resources>

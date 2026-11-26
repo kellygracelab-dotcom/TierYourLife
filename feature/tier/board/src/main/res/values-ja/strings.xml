@@ -218,4 +218,6 @@
     <string name="tip_add">名前を入力すると、画像は自動で付きます。</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">カード</string>
+    <string name="list_awaiting_approval">確認後にフィードに表示されます。リンクからは今すぐ見られます。</string>
+    <string name="board_updated_awaiting">更新しました。確認後にフィードに表示されます。</string>
 </resources>

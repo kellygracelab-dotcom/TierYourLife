@@ -233,4 +233,6 @@
     <string name="tip_add">Bir ad yaz, resmi kendiliğinden gelsin.</string>
     <!-- Spoken for a card that shows only its picture; never drawn on it. -->
     <string name="card_unnamed">Kart</string>
+    <string name="list_awaiting_approval">Bir kontrolden sonra akışta görünecek. Bağlantıyla şimdiden görülebilir.</string>
+    <string name="board_updated_awaiting">Güncellendi. Bir kontrolden sonra akışta görünecek.</string>
 </resources>

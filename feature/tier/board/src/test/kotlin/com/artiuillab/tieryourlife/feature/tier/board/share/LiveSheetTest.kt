@@ -52,6 +52,18 @@ class LiveSheetTest {
         assertEquals(listOf("share", "copy", "image", "open", "done"), pressed)
     }
 
+    // Danylo, 26.11: a new list waits for approval before the feed; its link works at once.
+    @Test
+    fun aListWaitingForApproval_saysTheLinkWorksNow_andTheFeedComesLater() {
+        composeRule.setContent {
+            TierYourLifeTheme { LiveSheet(section = "Games", link = "https://tieryourlife.com/l/pub-1", calls = calls(), awaitingApproval = true) }
+        }
+
+        composeRule.onNodeWithText("Your list is live").assertExists()
+        composeRule.onNodeWithText("It will appear in the feed after a check. Anyone with the link can see it now.").assertExists()
+        composeRule.onNodeWithText("Anyone with the link can see it. It is also in Community → Games.").assertDoesNotExist()
+    }
+
     // The id may reach the board a frame after the word that it went out.
     @Test
     fun beforeTheLinkArrives_nothingSendsANonLink() {

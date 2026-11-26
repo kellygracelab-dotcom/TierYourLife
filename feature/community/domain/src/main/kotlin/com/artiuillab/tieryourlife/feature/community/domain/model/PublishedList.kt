@@ -48,6 +48,8 @@ data class PublishedListSummary(
     val boardUid: String? = null,
     /** [previewImages] as one picture the website drew, to load at once; the mosaic stays for when it does not come. */
     val collageUrl: String? = null,
+    /** On the author's own list: it waits for approval before the feed, and opens by its link all the same. */
+    val awaitingApproval: Boolean = false,
 ) {
     /** Shown without its author, and leading to no profile. */
     val editorial: Boolean get() = EditorialAuthors.isEditorial(authorUid, anonymous)
