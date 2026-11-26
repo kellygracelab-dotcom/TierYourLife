@@ -106,7 +106,10 @@ class SmallCardCopiesTest {
                 SuccessResult(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImage(), chain.request, DataSource.NETWORK)
             }
         }
-        val loader = ImageLoader.Builder(context).components { add(SmallCardCopies()); add(network) }.build()
+        val loader = ImageLoader.Builder(context).components {
+            add(SmallCardCopies())
+            add(network)
+        }.build()
         return loader.execute(
             ImageRequest.Builder(context).data(url).size(width, height)
                 .memoryCachePolicy(CachePolicy.DISABLED).build(),
