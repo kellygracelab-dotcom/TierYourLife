@@ -43,7 +43,13 @@ import com.artiuillab.tieryourlife.core.theme.ui.CheckIcon
 import com.artiuillab.tieryourlife.feature.settings.presentation.R
 import com.artiuillab.tieryourlife.feature.settings.presentation.SettingsTestTags
 
-private val SegmentReservedWidth = 42.dp
+/**
+ * A segment's 12dp padding each side, its border, the 18dp check mark and the
+ * 8dp after it, which push the label off centre by half their width; without
+ * the mark, the padding and border alone.
+ */
+private val SegmentReservedWidth = 52.dp
+private val SegmentPaddingWidth = 26.dp
 
 @Composable
 internal fun ThemeSection(themeChoice: ThemeChoice, onThemeChoiceChange: (ThemeChoice) -> Unit) {
@@ -81,10 +87,12 @@ internal fun ThemeSection(themeChoice: ThemeChoice, onThemeChoiceChange: (ThemeC
                 }
             }
 
-            if (widest <= segmentWidth - SegmentReservedWidth) {
-                ThemeSegmentedRow(options, labels, themeChoice, onThemeChoiceChange)
-            } else {
-                ThemeStackedRows(options, labels, themeChoice, onThemeChoiceChange)
+            // A narrow phone keeps the three side by side and drops the check
+            // mark: the filled segment says which one is chosen.
+            when {
+                widest <= segmentWidth - SegmentReservedWidth -> ThemeSegmentedRow(options, labels, themeChoice, onThemeChoiceChange, checkMark = true)
+                widest <= segmentWidth - SegmentPaddingWidth -> ThemeSegmentedRow(options, labels, themeChoice, onThemeChoiceChange, checkMark = false)
+                else -> ThemeStackedRows(options, labels, themeChoice, onThemeChoiceChange)
             }
         }
     }
@@ -97,10 +105,11 @@ private fun ThemeSegmentedRow(
     labels: List<String>,
     themeChoice: ThemeChoice,
     onThemeChoiceChange: (ThemeChoice) -> Unit,
+    checkMark: Boolean,
 ) {
     key(LocalLayoutDirection.current) {
         SingleChoiceSegmentedButtonRow(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp).height(40.dp),
+            modifier = Modifier.fillMaxWidth().height(40.dp),
         ) {
             options.forEachIndexed { index, (choice, _, tag) ->
                 val selected = themeChoice == choice
@@ -114,11 +123,11 @@ private fun ThemeSegmentedRow(
                         inactiveContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     ),
                     icon = {
-                        if (selected) CheckIcon(18.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+                        if (selected && checkMark) CheckIcon(18.dp, MaterialTheme.colorScheme.onPrimaryContainer)
                     },
                     modifier = Modifier.testTag(tag),
                 ) {
-                    Text(text = labels[index], style = TierYourLifeType.current.supportingLabel)
+                    Text(text = labels[index], style = TierYourLifeType.current.supportingLabel, maxLines = 1)
                 }
             }
         }

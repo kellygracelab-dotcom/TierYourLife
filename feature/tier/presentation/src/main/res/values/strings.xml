@@ -149,6 +149,9 @@
     <string name="local_only_footer">%1$s, on this phone only</string>
     <string name="local_only_notice_keep_one">Sign in to keep it when you change phones.</string>
     <string name="local_only_notice_keep_many">Sign in to keep them when you change phones.</string>
+    <string name="local_only_footer_device">%1$s, on this device only</string>
+    <string name="local_only_notice_keep_one_device">Sign in to keep it when you change devices.</string>
+    <string name="local_only_notice_keep_many_device">Sign in to keep them when you change devices.</string>
     <string name="local_only_card_not_now">Not now</string>
     <string name="local_only_card_sign_in">Sign in</string>
     <string name="restoring_one_picture">Restoring 1 picture</string>
