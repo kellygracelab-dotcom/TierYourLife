@@ -1,6 +1,12 @@
 ﻿<resources>
     <string name="tier_lists_private">privé</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="one">%1$d publique</item>
+        <item quantity="many">%1$d publiques</item>
+        <item quantity="other">%1$d publiques</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · rien de placé pour l’instant</string>
     <string name="tier_lists_status_start_dragging">Glissez pour classer</string>
 
@@ -93,7 +99,8 @@
     <string name="trash_title">Corbeille</string>
     <string name="trash_load_error">Impossible de charger la corbeille.</string>
     <string name="trash_subtitle">Les listes supprimées restent ici jusqu’à ce que vous les retiriez.</string>
-    <string name="trash_row_list_meta">Liste · %1$s · supprimée %2$s</string>
+    <string name="trash_row_list_meta">%1$s · supprimée %2$s</string>
+    <string name="trash_restore">Restaurer</string>
     <string name="trash_time_just_now">à l’instant</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">il y a %1$d min</item>
@@ -181,6 +188,7 @@
     <string name="topic_picker_title">Thème</string>
     <string name="topic_picker_done">Terminé</string>
     <string name="topic_picker_hint">Chercher ou nommer un thème</string>
+    <string name="topic_picker_in_section">Dans %1$s</string>
     <string name="topic_picker_none">Sans thème</string>
     <string name="topic_picker_none_sub">La liste reste seule dans sa rubrique.</string>
     <string name="topic_picker_create_note">Attend un modérateur. Jusque-là la liste reste dans Autres avec cette étiquette.</string>
@@ -350,4 +358,5 @@
         <item quantity="other">Une liste prête · %1$d cartes</item>
     </plurals>
     <string name="lists_public_updating">Publique · mise à jour</string>
+    <string name="lists_public_placed">Publique · %1$s</string>
 </resources>

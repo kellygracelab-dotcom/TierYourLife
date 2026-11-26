@@ -1,11 +1,16 @@
 package com.artiuillab.tieryourlife.feature.tier.presentation.topicpicker
 
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.artiuillab.tieryourlife.core.theme.TierYourLifeTheme
+import com.artiuillab.tieryourlife.feature.community.domain.model.Topic
+import com.artiuillab.tieryourlife.feature.community.domain.model.TopicStatus
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -50,6 +55,27 @@ class TopicPickerLayoutTest {
 
         composeRule.onNodeWithTag(TopicPickerTestTags.PROPOSE).assertIsDisplayed().performClick()
         assertEquals(1, started)
+    }
+
+    // Walkthrough 26.11, item 9: the section is said once, above the topics, not under each.
+    @Test
+    fun theSection_isSaidOnce_aboveItsTopics() {
+        val found = listOf("Disney", "Star Wars", "Christopher Nolan").mapIndexed { i, name ->
+            Topic(id = "t$i", name = name, section = "film_tv", status = TopicStatus.Approved)
+        }
+        composeRule.setContent {
+            TierYourLifeTheme {
+                TopicPickerScreenContent(
+                    state = TopicPickerUiState(section = "film_tv", loaded = true, results = found, mine = listOf(found[0])),
+                    onBack = {},
+                    onDone = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(TopicPickerTestTags.IN_SECTION).assertTextEquals("In Film & TV")
+        composeRule.onAllNodesWithText("Film & TV", substring = true).assertCountEquals(1)
+        composeRule.onNodeWithTag(TopicPickerTestTags.topic("t1")).assertIsDisplayed()
     }
 
     @Test

@@ -14,5 +14,8 @@ sealed interface TrashEntry {
         val publishedId: String? = null,
         /** The same for a list that was out as a ranking of somebody's. */
         val rankingOf: String? = null,
+        /** The board's cover, as its tile on Your lists draws it. */
+        val coverImageUrl: String? = null,
+        val pictures: List<String> = emptyList(),
     ) : TrashEntry
 }

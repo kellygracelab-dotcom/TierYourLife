@@ -7,9 +7,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
@@ -161,6 +163,26 @@ class OneByOneTest {
 
         assertFalse(memory.oneCardAtATime)
         composeRule.onNodeWithTag(TierDetailTestTags.ONE_BY_ONE_PANEL).assertDoesNotExist()
+    }
+
+    // Walkthrough 26.11, item 12: nothing left in the tray says so, offers no One by one, and Add leads.
+    @Test
+    fun anEmptyTray_saysEveryCardIsPlaced_withoutTheSwitch() {
+        list = board(poolCards = 0)
+        setBoard()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_COUNT, useUnmergedTree = true).assertTextEquals("Every card is placed")
+        composeRule.onNodeWithTag(TierDetailTestTags.ONE_BY_ONE_TOGGLE).assertDoesNotExist()
+        composeRule.onNodeWithTag(TierDetailTestTags.ADD_CHIP).assertIsDisplayed()
+    }
+
+    @Test
+    fun aTrayWithCards_keepsItsCountAndTheSwitch() {
+        setBoard()
+
+        composeRule.onNodeWithTag(TierDetailTestTags.ONE_BY_ONE_TOGGLE).assertIsDisplayed()
+        composeRule.onNodeWithTag(TierDetailTestTags.POOL_COUNT, useUnmergedTree = true).assertIsDisplayed()
+        composeRule.onAllNodesWithText("Every card is placed", useUnmergedTree = true).assertCountEquals(0)
     }
 
     private fun current(title: String) {

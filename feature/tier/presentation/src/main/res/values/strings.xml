@@ -1,6 +1,11 @@
 <resources>
     <string name="tier_lists_private">private</string>
     <string name="tier_lists_summary">%1$s · %2$s · %3$s</string>
+    <string name="tier_lists_summary_public">%1$s · %2$s</string>
+    <plurals name="tier_lists_public_count">
+        <item quantity="one">%1$d public</item>
+        <item quantity="other">%1$d public</item>
+    </plurals>
     <string name="tier_lists_card_nothing_ranked_yet">%1$s · nothing placed yet</string>
     <string name="tier_lists_status_start_dragging">Start dragging to rank these</string>
 
@@ -88,7 +93,8 @@
     <string name="trash_title">Trash</string>
     <string name="trash_load_error">Couldn’t load the trash.</string>
     <string name="trash_subtitle">Deleted lists stay here until you remove them.</string>
-    <string name="trash_row_list_meta">List · %1$s · deleted %2$s</string>
+    <string name="trash_row_list_meta">%1$s · deleted %2$s</string>
+    <string name="trash_restore">Restore</string>
     <string name="trash_time_just_now">just now</string>
     <plurals name="trash_time_minutes_ago">
         <item quantity="one">%1$d min ago</item>
@@ -172,6 +178,7 @@
     <string name="topic_picker_title">Topic</string>
     <string name="topic_picker_done">Done</string>
     <string name="topic_picker_hint">Search or name a topic</string>
+    <string name="topic_picker_in_section">In %1$s</string>
     <string name="topic_picker_none">No topic</string>
     <string name="topic_picker_none_sub">The list sits in its section alone.</string>
     <string name="topic_picker_create_note">Waits for a moderator. Until then the list sits under Other with this label.</string>
@@ -333,4 +340,5 @@
         <item quantity="other">A ready list · %1$d cards</item>
     </plurals>
     <string name="lists_public_updating">Public · updating</string>
+    <string name="lists_public_placed">Public · %1$s</string>
 </resources>
