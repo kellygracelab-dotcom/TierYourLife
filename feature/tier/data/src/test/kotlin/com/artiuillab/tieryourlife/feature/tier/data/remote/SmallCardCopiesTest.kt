@@ -50,6 +50,25 @@ class SmallCardCopiesTest {
         assertEquals(listOf<Any>("https://tieryourlife.com/img/200/published/list-1/w-ab12"), asked)
     }
 
+    // Lists now carry the web's address for the original, not the bucket's.
+    @Test
+    fun theWebsOriginalAddress_comesAsItsCopy_too() = runBlocking {
+        load("https://tieryourlife.com/img/original/published/list-1/w-ab12", 137, 200)
+        load("https://tieryourlife.com/img/original/avatars/user-1/face", 137, 200)
+        load("https://tieryourlife.com/img/original/published/..%2F..%2Fx/w-ab12", 137, 200)
+        load("https://tieryourlife.com/img/original/published/list-1/w-ab12?x=1", 137, 200)
+
+        assertEquals(
+            listOf<Any>(
+                "https://tieryourlife.com/img/200/published/list-1/w-ab12",
+                "https://tieryourlife.com/img/original/avatars/user-1/face",
+                "https://tieryourlife.com/img/original/published/..%2F..%2Fx/w-ab12",
+                "https://tieryourlife.com/img/original/published/list-1/w-ab12?x=1",
+            ),
+            asked,
+        )
+    }
+
     @Test
     fun aCopyThatDoesNotCome_givesWayToTheOriginal() = runBlocking {
         failing = { it.contains("/img/") }
