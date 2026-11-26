@@ -87,6 +87,8 @@ class CatalogueSearchTypingTest {
         viewModel.state.firstWithin { it is CatalogueSearchUiState.Error }
 
         viewModel.onQueryChange("Теория ")
+        // Waited for rather than slept on: a busy CI machine takes longer than the debounce.
+        withTimeout(5_000) { while (search.quickAsked.count { it == "Теория" } < 2) delay(20) }
         delay(SETTLE_MILLIS)
 
         assertEquals(2, search.quickAsked.count { it == "Теория" })

@@ -37,8 +37,7 @@ class BackgroundUpdateTest {
     fun update_isHandedOn_andTheSlotSaysUpdatingUntilItIsOut() = runBlocking<Unit> {
         val h = harness()
 
-        h.viewModel.updatePublished()
-        h.viewModel.screen.firstWithin { it.publish.publishing }
+        h.update()
         assertEquals("Films", h.carrier.sent.single().board.title)
 
         val said = async { h.viewModel.userMessages.first() }
@@ -51,8 +50,7 @@ class BackgroundUpdateTest {
     @Test
     fun withNoConnection_theSlotSaysItWaitsForOne() = runBlocking<Unit> {
         val h = harness()
-        h.viewModel.updatePublished()
-        h.viewModel.screen.firstWithin { it.publish.publishing }
+        h.update()
 
         h.carrier.going.update { it + (BOARD to Carrying(update = true, offline = true)) }
 
@@ -62,8 +60,7 @@ class BackgroundUpdateTest {
     @Test
     fun overAMinute_saysOnceThatOneCanKeepGoing() = runBlocking<Unit> {
         val h = harness()
-        h.viewModel.updatePublished()
-        h.viewModel.screen.firstWithin { it.publish.publishing }
+        h.update()
         val said = async { h.viewModel.userMessages.first() }
 
         h.carrier.going.update { it + (BOARD to Carrying(update = true, slow = true)) }
@@ -74,8 +71,7 @@ class BackgroundUpdateTest {
     @Test
     fun anUpdateTurnedDown_saysTheChangesAreSafe_andOffersToTryAgain() = runBlocking<Unit> {
         val h = harness()
-        h.viewModel.updatePublished()
-        h.viewModel.screen.firstWithin { it.publish.publishing }
+        h.update()
         val said = async { h.viewModel.userMessages.first() }
 
         h.carrier.end(Carried.Refused(BOARD, update = true, reason = PublishError.Unknown))
@@ -88,8 +84,7 @@ class BackgroundUpdateTest {
     @Test
     fun aRefusalWithAReason_isSaidAsBefore() = runBlocking<Unit> {
         val h = harness()
-        h.viewModel.updatePublished()
-        h.viewModel.screen.firstWithin { it.publish.publishing }
+        h.update()
 
         h.carrier.end(Carried.Refused(BOARD, update = true, reason = PublishError.TooLarge))
 
@@ -99,8 +94,7 @@ class BackgroundUpdateTest {
     @Test
     fun takeItDown_duringAnUpdate_stopsItFirst() = runBlocking<Unit> {
         val h = harness()
-        h.viewModel.updatePublished()
-        h.viewModel.screen.firstWithin { it.publish.publishing }
+        h.update()
 
         h.viewModel.setPublic(false)
         h.viewModel.board.firstWithin { (it as? TierDetailUiState.Success)?.list?.publishedId == null }
@@ -111,8 +105,7 @@ class BackgroundUpdateTest {
     @Test
     fun aSecondTap_whileOneIsOnItsWay_sendsNothingMore() = runBlocking<Unit> {
         val h = harness()
-        h.viewModel.updatePublished()
-        h.viewModel.screen.firstWithin { it.publish.publishing }
+        h.update()
 
         h.viewModel.updatePublished()
 
@@ -121,7 +114,14 @@ class BackgroundUpdateTest {
         assertTrue(h.viewModel.screen.value.publish.publishing)
     }
 
-    private class Harness(val viewModel: TierDetailViewModel, val carrier: Carrier)
+    private class Harness(val viewModel: TierDetailViewModel, val carrier: Carrier) {
+        /** Tapped, and handed on: the slot can say Updating a moment before the carrier has it. */
+        suspend fun update() {
+            viewModel.updatePublished()
+            viewModel.screen.firstWithin { it.publish.publishing }
+            carrier.going.firstWithin { BOARD in it }
+        }
+    }
 
     private suspend fun harness(): Harness {
         val carrier = Carrier()
