@@ -32,11 +32,22 @@ internal class Agreements(
 
     /** Written with each record of agreeing; [side] when what was agreed is not the board here as it stands. */
     suspend fun agreed(account: String, uid: String, fingerprint: String, side: BoardSide?) {
+        store.answered(account, uid)
         val agreedOn = side ?: dao.boardByUid(uid)?.let { sideOf(it) }?.takeIf { it.fingerprint() == fingerprint }
         if (agreedOn == null) store.forget(account, uid) else store.write(account, uid, merger.agreedOf(fingerprint, agreedOn))
     }
 
     fun keepOnly(account: String, uids: Collection<String>) = store.keepOnly(account, uids)
+
+    fun sending(account: String, uid: String, fingerprint: String) = store.sending(account, uid, fingerprint)
+
+    /**
+     * The account's board is one this phone sent since they last agreed, though
+     * the answer never came: our own write, not another phone's, so nothing to
+     * merge or keep beside.
+     */
+    fun isOurOwnLastWrite(account: String, theirs: KeptBoardDto): Boolean =
+        !theirs.deleted && theirs.fingerprint != null && theirs.fingerprint in store.sentSinceAgreed(account, theirs.uid)
 
     /**
      * Changed here and in the account since the last agreement: the account's
