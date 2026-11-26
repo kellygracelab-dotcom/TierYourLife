@@ -30,7 +30,10 @@ class PublicMediaInterceptor : Interceptor {
     }
 }
 
-private fun publicUrl(url: HttpUrl): HttpUrl? {
+private fun publicUrl(url: HttpUrl): HttpUrl? = publicPath(url)?.let { "$PUBLIC_ORIGIN/img/original/$it".toHttpUrl() }
+
+/** "published/{id}/{picture}" and the like for a public picture of our bucket; null for anything else. */
+internal fun publicPath(url: HttpUrl): String? {
     if (url.scheme != STORAGE_PREFIX.scheme || url.host != STORAGE_PREFIX.host || url.port != STORAGE_PREFIX.port) return null
     if (url.username.isNotEmpty() || url.password.isNotEmpty() || url.queryParameter("alt") != "media") return null
     val segments = url.pathSegments
@@ -39,5 +42,9 @@ private fun publicUrl(url: HttpUrl): HttpUrl? {
     val parts = path.split('/')
     if (path.length > MAX_OBJECT_PATH_LENGTH || parts.size != PUBLIC_PATH_PARTS || parts[0] !in PUBLIC_KINDS) return null
     if (!ID.matches(parts[1]) || !PICTURE.matches(parts[2])) return null
-    return "$PUBLIC_ORIGIN/img/original/$path".toHttpUrl()
+    return path
 }
+
+/** The web's smaller copy of a published card picture: /img/{200|400}/published/{id}/{picture}. */
+internal fun publishedCopyUrl(url: HttpUrl, width: Int): String? =
+    publicPath(url)?.takeIf { it.startsWith("published/") }?.let { "$PUBLIC_ORIGIN/img/$width/$it" }
