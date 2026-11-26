@@ -22,6 +22,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
+import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
 
 /** Two phones signed into one account, each with its own database, meeting only through the proxy. */
@@ -170,6 +171,35 @@ class SyncTest {
             assertEquals(emptyList<String>(), phone.cardsIn(board, "S"))
             assertEquals(listOf("Kid A"), phone.cardsIn(board, "A"))
             assertEquals(listOf("Blue Lines"), phone.cardsIn(board, "B"))
+        }
+    }
+
+    // 24.11, Backend's logs: only this phone wrote, and its own write coming
+    // back made a second board. Writes in a row, the answer to one lost.
+    @Test
+    fun ownWritesInARow_withAnAnswerLost_makeNoSecondBoard() = runBlocking<Unit> {
+        val id = first.newBoard("Series", ranked = mapOf("S" to listOf("The Wire"), "A" to listOf("Lost")))
+        val uid = first.board(id).uid
+        first.sync.sync()
+
+        first.boards.renameTierList(id, "Series I've watched")
+        val lose = AtomicBoolean(true)
+        first.afterAnswer = { answer ->
+            if (answer.method == "PUT" && answer.path == "/boards/$uid" && lose.getAndSet(false)) throw IOException("The answer never came")
+        }
+        first.sync.sync()
+        first.afterAnswer = {}
+        val board = first.board(id)
+        first.boards.moveItem(board.tiers.single { it.label == "A" }.items.single().id, board.tiers.single { it.label == "B" }.id, 0)
+        assertEquals(0, first.sync.sync().refused)
+        first.sync.sync()
+        second.sync.sync()
+
+        for (phone in listOf(first, second)) {
+            assertEquals(listOf(uid), phone.boards.getAllTierLists().map { it.uid })
+            val arrived = checkNotNull(phone.boardByUid(uid))
+            assertEquals("Series I've watched", arrived.title)
+            assertEquals(listOf("Lost"), phone.cardsIn(arrived, "B"))
         }
     }
 
