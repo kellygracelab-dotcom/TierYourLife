@@ -23,6 +23,7 @@ import com.artiuillab.tieryourlife.feature.tier.data.repository.RoomTierReposito
 import com.artiuillab.tieryourlife.feature.tier.data.sync.BoardSyncEngine
 import com.artiuillab.tieryourlife.feature.tier.data.sync.Connection
 import com.artiuillab.tieryourlife.feature.tier.data.sync.DeviceName
+import com.artiuillab.tieryourlife.feature.tier.data.sync.LastAgreedBoards
 import com.artiuillab.tieryourlife.feature.tier.data.sync.OwnPicturesOnThisPhone
 import com.artiuillab.tieryourlife.feature.tier.data.sync.PictureSync
 import com.artiuillab.tieryourlife.feature.tier.data.sync.Pictures
@@ -40,6 +41,7 @@ import okhttp3.Response
 import org.robolectric.Shadows.shadowOf
 import java.io.Closeable
 import java.net.URI
+import java.nio.file.Files
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
@@ -89,6 +91,10 @@ class Phone(requestedIdentity: Identity) : Closeable {
         pictures = OwnPicturesOnThisPhone(images, pictures, accounts),
         auth = session.auth,
     )
+
+    // Its own, as its database is: the phones share one app context.
+    private val agreedOn = Files.createTempDirectory("agreed").toFile()
+
     val sync = BoardSyncEngine(
         dao = database.boardSyncDao(),
         api = boardsApi,
@@ -101,6 +107,7 @@ class Phone(requestedIdentity: Identity) : Closeable {
         community = community,
         ownership = ownership,
         lock = SyncLock(),
+        agreed = LastAgreedBoards(agreedOn),
     )
 
     /** What the board screen's switch does: publish, then write the answer onto the board. */
@@ -150,6 +157,7 @@ class Phone(requestedIdentity: Identity) : Closeable {
     override fun close() {
         try {
             database.close()
+            agreedOn.deleteRecursively()
         } finally {
             session.auth.signOut()
             // The SDK's emulator registry shares the demo key across apps and still visits them on useEmulator.

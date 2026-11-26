@@ -145,6 +145,34 @@ class SyncTest {
         assertEquals("Films, second phone", first.board(id).title)
     }
 
+    // Danylo, 25.11: with the phone and the site both open, a second board
+    // appeared. Different cards changed on each side are one board with both.
+    @Test
+    fun differentCardsMovedOnBothPhones_makeOneBoardWithBoth() = runBlocking<Unit> {
+        val id = first.newBoard("Albums", ranked = mapOf("S" to listOf("Kid A"), "A" to listOf("Blue Lines")))
+        val uid = first.board(id).uid
+        first.sync.sync()
+        second.sync.sync()
+
+        val here = first.board(id)
+        first.boards.moveItem(here.tiers.single { it.label == "S" }.items.single().id, here.tiers.single { it.label == "A" }.id, 1)
+        first.sync.sync()
+        val there = checkNotNull(second.boardByUid(uid))
+        second.boards.moveItem(there.tiers.single { it.label == "A" }.items.single().id, there.tiers.single { it.label == "B" }.id, 0)
+        second.boards.renameTierList(there.id, "Albums, second phone")
+        assertEquals(0, second.sync.sync().refused)
+        first.sync.sync()
+
+        for (phone in listOf(first, second)) {
+            assertEquals(listOf(uid), phone.boards.getAllTierLists().map { it.uid })
+            val board = checkNotNull(phone.boardByUid(uid))
+            assertEquals("Albums, second phone", board.title)
+            assertEquals(emptyList<String>(), phone.cardsIn(board, "S"))
+            assertEquals(listOf("Kid A"), phone.cardsIn(board, "A"))
+            assertEquals(listOf("Blue Lines"), phone.cardsIn(board, "B"))
+        }
+    }
+
     // QA 490 N2b: the website discarded a game and started another; nothing on
     // the board changed but its game, which still has to reach a phone that has
     // already run once with the board open.

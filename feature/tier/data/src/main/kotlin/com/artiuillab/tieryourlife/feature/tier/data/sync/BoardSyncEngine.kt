@@ -84,7 +84,10 @@ class BoardSyncEngine @Inject constructor(
     private val community: CommunityRepository,
     private val ownership: BoardOwnership,
     private val lock: SyncLock,
+    private val agreed: LastAgreedBoards,
 ) : BoardSync {
+
+    private val agreements = Agreements(dao, images, agreed)
 
     /**
      * One run at a time. The list screen and a returning connection both start
@@ -138,11 +141,13 @@ class BoardSyncEngine @Inject constructor(
             local = dao.boardsOf(account)
             fingerprints = fingerprintsOf(local)
         }
+        val records = dao.syncRecordsOf(account)
         val steps = planSync(
             local = local.map { board -> LocalBoard(board.uid, fingerprints.getValue(board.uid), inTrash = board.deletedAt != null) },
             remote = remote.values.toList(),
-            synced = dao.syncRecordsOf(account).map { SyncedBoard(it.listUid, it.revision, it.fingerprint, it.remoteFingerprint) },
+            synced = records.map { SyncedBoard(it.listUid, it.revision, it.fingerprint, it.remoteFingerprint) },
         )
+        agreements.seed(account, local, fingerprints, records)
 
         // Pictures before boards, so no board ever names a picture the other
         // phone cannot fetch yet.
@@ -157,6 +162,7 @@ class BoardSyncEngine @Inject constructor(
             refused == 0 -> preferences.setBoardRefusal(account, null)
         }
         if (!lock.stopAsked) afterTheBoards(account)
+        agreements.keepOnly(account, dao.syncRecordsOf(account).map { it.listUid })
 
         // Only after a complete run: a partial one leaves the account behind,
         // which is what this timestamp is there to report.
@@ -434,7 +440,7 @@ class BoardSyncEngine @Inject constructor(
                 // Theirs comes down first, so it is safe here even if the
                 // write below never happens.
                 val theirs = api.board(step.uid)
-                keepBeside(account, theirs)
+                if (!agreements.merge(account, theirs, ::settleText)) keepBeside(account, theirs)
                 send(account, step.uid, basedOn = theirs.revision)
             }
             is SyncStep.Restore -> takeOver(account, api.board(step.uid), planned = fingerprints[step.uid])
@@ -483,7 +489,7 @@ class BoardSyncEngine @Inject constructor(
         if (theirs.deleted) return
         dao.together {
             adopt(account, theirs, asCopy = true)
-            remember(account, theirs.uid, theirs.revision, theirs.fingerprint.orEmpty(), theirs.fingerprint, theirs.favouriteChangedAt)
+            remember(account, theirs.uid, theirs.revision, theirs.fingerprint.orEmpty(), theirs.fingerprint, theirs.favouriteChangedAt, agreements.sideOf(theirs))
         }
     }
 
@@ -493,7 +499,7 @@ class BoardSyncEngine @Inject constructor(
      * fingerprint is of what goes up, not of what the run started with: an
      * edit in between, recorded under the older one, went up again next run.
      */
-    private suspend fun send(account: String, uid: String, basedOn: Int?, starOnly: Boolean = false) {
+    private suspend fun send(account: String, uid: String, basedOn: Int?, starOnly: Boolean = false, merged: Boolean = false) {
         val board = dao.boardByUid(uid)?.let { read ->
             settleText(read)
             dao.boardByUid(uid)
@@ -506,7 +512,7 @@ class BoardSyncEngine @Inject constructor(
 
         if (answer.isSuccessful) {
             val kept = answer.body() ?: error("The account kept $uid but named no revision")
-            remember(account, uid, kept.revision, fingerprint, accountStar = board.star.changedAt)
+            remember(account, uid, kept.revision, fingerprint, accountStar = board.star.changedAt, side = BoardSide(board, tiers, items))
             return sendCopies(account, kept, fingerprint, learned)
         }
         // Thrown rather than logged and returned: the run counts it as refused,
@@ -524,6 +530,7 @@ class BoardSyncEngine @Inject constructor(
         }
         // Edited elsewhere since: the next run takes that first, and a star is no reason for a second board.
         if (starOnly) return
+        if (!merged && agreements.merge(account, theirs, ::settleText)) return send(account, uid, basedOn = theirs.revision, merged = true)
 
         // Thrown away elsewhere meanwhile: ours was being sent because it
         // changed here, and that outweighs the delete.
@@ -531,7 +538,7 @@ class BoardSyncEngine @Inject constructor(
         val second = api.keep(uid, request(board, tiers, items, fingerprint, basedOn = theirs.revision).coverAsLearned(learned))
         if (!second.isSuccessful) throw refused(second, refusalOf(second), board.title, tiers.size)
         second.body()?.let { kept ->
-            remember(account, uid, kept.revision, fingerprint, accountStar = board.star.changedAt)
+            remember(account, uid, kept.revision, fingerprint, accountStar = board.star.changedAt, side = BoardSide(board, tiers, items))
             sendCopies(account, kept, fingerprint, learned)
         }
     }
@@ -577,7 +584,7 @@ class BoardSyncEngine @Inject constructor(
         val answer = api.keep(kept.uid, request(board, tiers, items, fingerprint, basedOn = kept.revision).coverAsLearned(learned))
         if (!answer.isSuccessful) throw refused(answer, refusalOf(answer), board.title, tiers.size)
         val next = answer.body() ?: error("The account kept ${kept.uid} but named no revision")
-        remember(account, next.uid, next.revision, fingerprint, accountStar = board.star.changedAt)
+        remember(account, next.uid, next.revision, fingerprint, accountStar = board.star.changedAt, side = BoardSide(board, tiers, items))
         return next to fingerprint
     }
 
@@ -597,19 +604,6 @@ class BoardSyncEngine @Inject constructor(
     private fun refusalOf(answer: Response<*>): BoardConflictDto? {
         val body = answer.errorBody()?.string() ?: return null
         return runSuspendCatching { json.decodeFromString<BoardConflictDto>(body) }.getOrNull()
-    }
-
-    private fun refused(answer: Response<*>, refusal: BoardConflictDto?, title: String, tierCount: Int): Exception {
-        val reason = when {
-            // Told by the board as well as by the words: an undo can take a board past the cap.
-            answer.code() == HTTP_TOO_LARGE && (refusal?.error == TOO_MANY_TIERS || tierCount > TierList.MAX_RANKED_TIERS + 1) ->
-                BackupRefusal.Reason.TooManyTiers
-            answer.code() == HTTP_TOO_LARGE -> BackupRefusal.Reason.TooLarge
-            answer.code() == HTTP_CONFLICT && refusal?.code == TOO_MANY_BOARDS -> BackupRefusal.Reason.TooManyBoards
-            answer.code() == HTTP_BAD_REQUEST -> BackupRefusal.Reason.NotAccepted
-            else -> return HttpException(answer)
-        }
-        return RefusedByAccount(BackupRefusal(boardTitle = title, reason = reason), HttpException(answer))
     }
 
     /**
@@ -726,7 +720,11 @@ class BoardSyncEngine @Inject constructor(
         )
     }
 
-    /** [accountStar]: when the account's star last changed, if this write or read tells; otherwise the one heard before stays. */
+    /**
+     * [accountStar]: when the account's star last changed, if this write or read tells; otherwise the one heard before stays.
+     * [side]: what was agreed on, when it is not the board here as it stands.
+     */
+    @Suppress("LongParameterList")
     private suspend fun remember(
         account: String,
         uid: String,
@@ -734,6 +732,7 @@ class BoardSyncEngine @Inject constructor(
         fingerprint: String,
         remoteFingerprint: String? = fingerprint,
         accountStar: Long? = UNHEARD,
+        side: BoardSide? = null,
     ) {
         dao.remember(
             BoardSyncEntity(
@@ -746,6 +745,7 @@ class BoardSyncEngine @Inject constructor(
                 favouriteChangedAt = if (accountStar == UNHEARD) dao.syncRecordOf(account, uid)?.favouriteChangedAt else accountStar,
             ),
         )
+        agreements.agreed(account, uid, fingerprint, side)
     }
 
     private suspend fun fingerprintOf(board: TierListEntity): String =
@@ -817,10 +817,6 @@ class BoardSyncEngine @Inject constructor(
         KeptText.cardTitle(item.title, KeptText.isKeptPicture(images.pictureIdOf(item.imageUrl), item.imageUrl))
 
     private companion object {
-        const val HTTP_BAD_REQUEST = 400
-        const val HTTP_CONFLICT = 409
-        const val HTTP_TOO_LARGE = 413
-        const val TOO_MANY_BOARDS = "TOO_MANY_BOARDS"
         const val COVER_READS_AT_ONCE = 4
 
         /** For [remember]: this write tells nothing of the account's star. */
@@ -828,11 +824,29 @@ class BoardSyncEngine @Inject constructor(
 
         /** The account copies up to 40 new pictures a write; the rest come with later writes or its daily upkeep. */
         const val COPY_ROUNDS = 3
-
-        /** What `/boards` names as the limit in a 413 for a board over its tiers. */
-        const val TOO_MANY_TIERS = "Too many tiers"
     }
 }
+
+private fun refused(answer: Response<*>, refusal: BoardConflictDto?, title: String, tierCount: Int): Exception {
+    val reason = when {
+        // Told by the board as well as by the words: an undo can take a board past the cap.
+        answer.code() == HTTP_TOO_LARGE && (refusal?.error == TOO_MANY_TIERS || tierCount > TierList.MAX_RANKED_TIERS + 1) ->
+            BackupRefusal.Reason.TooManyTiers
+        answer.code() == HTTP_TOO_LARGE -> BackupRefusal.Reason.TooLarge
+        answer.code() == HTTP_CONFLICT && refusal?.code == TOO_MANY_BOARDS -> BackupRefusal.Reason.TooManyBoards
+        answer.code() == HTTP_BAD_REQUEST -> BackupRefusal.Reason.NotAccepted
+        else -> return HttpException(answer)
+    }
+    return RefusedByAccount(BackupRefusal(boardTitle = title, reason = reason), HttpException(answer))
+}
+
+private const val HTTP_BAD_REQUEST = 400
+private const val HTTP_CONFLICT = 409
+private const val HTTP_TOO_LARGE = 413
+private const val TOO_MANY_BOARDS = "TOO_MANY_BOARDS"
+
+/** What `/boards` names as the limit in a 413 for a board over its tiers. */
+private const val TOO_MANY_TIERS = "Too many tiers"
 
 /** A write the account turns away for what the board is; trying again changes nothing until the board does. */
 internal class RefusedByAccount(val refusal: BackupRefusal, cause: HttpException) : Exception(cause.message, cause)
@@ -914,7 +928,7 @@ private fun KeepBoardRequestDto.coverAsLearned(learned: Boolean) =
 /** A card naming a tier that is not here is dropped, not guessed at; the account never stores one. */
 private fun KeptBoardDto.freshUids() = FreshUids(tiers.map { it.uid }, items.map { it.uid })
 
-private fun KeptBoardDto.tiers(
+internal fun KeptBoardDto.tiers(
     pathFor: (String) -> String,
     renamed: FreshUids? = null,
 ): List<IncomingTier> {

@@ -88,8 +88,11 @@ abstract class SyncEngineBench {
             community = community,
             ownership = ownership,
             lock = lock,
+            agreed = agreed,
         )
     }
+
+    protected val agreed by lazy { LastAgreedBoards(java.io.File(folder.root, "agreed")) }
 
     protected suspend fun throwAway(uid: String, signedInAs: String) {
         val tiers = database.tierDao()
