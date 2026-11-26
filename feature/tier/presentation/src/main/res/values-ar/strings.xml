@@ -70,6 +70,14 @@
     <string name="item_search_try_again">المحاولة مرة أخرى</string>
     <string name="item_search_scope_all">الكل</string>
     <string name="item_search_scope_animals">حيوانات</string>
+    <plurals name="item_search_results_in">
+        <item quantity="zero">%1$s نتيجة في %2$s</item>
+        <item quantity="one">نتيجة واحدة في %2$s</item>
+        <item quantity="two">نتيجتان في %2$s</item>
+        <item quantity="few">%1$s نتائج في %2$s</item>
+        <item quantity="many">%1$s نتيجة في %2$s</item>
+        <item quantity="other">%1$s نتيجة في %2$s</item>
+    </plurals>
     <string name="item_search_everywhere">ابحث في كل مكان</string>
     <string name="item_search_empty_everywhere_body">هل تبحث في كل الفهارس وعلى الويب؟</string>
     <string name="item_search_notice_web_daily">انتهى البحث على الويب لهذا اليوم. نبحث في الفهارس، وغدًا في كل مكان من جديد.</string>

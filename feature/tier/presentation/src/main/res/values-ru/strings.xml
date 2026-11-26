@@ -62,6 +62,12 @@
     <string name="item_search_try_again">Повторить</string>
     <string name="item_search_scope_all">Всё</string>
     <string name="item_search_scope_animals">Животные</string>
+    <plurals name="item_search_results_in">
+        <item quantity="one">%2$s: %1$s результат</item>
+        <item quantity="few">%2$s: %1$s результата</item>
+        <item quantity="many">%2$s: %1$s результатов</item>
+        <item quantity="other">%2$s: %1$s результата</item>
+    </plurals>
     <string name="item_search_everywhere">Искать везде</string>
     <string name="item_search_empty_everywhere_body">Поискать во всех каталогах и в интернете?</string>
     <string name="item_search_notice_web_daily">Поиск в интернете на сегодня закончился. Ищем в каталогах — завтра снова везде.</string>

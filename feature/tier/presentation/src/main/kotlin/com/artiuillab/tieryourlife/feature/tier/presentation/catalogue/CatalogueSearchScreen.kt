@@ -34,6 +34,7 @@ import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.component
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.PasteLinkChip
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ResultsGrid
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ScopeChips
+import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.ScopeLine
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SearchField
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SearchedAsLine
 import com.artiuillab.tieryourlife.feature.tier.presentation.catalogue.components.SelectionBar
@@ -139,6 +140,9 @@ fun CatalogueSearchScreenContent(
                 is CatalogueSearchUiState.Success -> Column {
                     NoticeLine(state.notice)
                     SearchedAsLine(state.searchedAs)
+                    scopes?.selected?.takeIf { it != PictureScope.All }?.let { scope ->
+                        ScopeLine(scope, count = state.items.size, more = state.canLoadMore, onSearchEverywhere = onSearchEverywhere)
+                    }
                     SourcesLine(state.items)
                     ResultsGrid(
                         items = state.items,

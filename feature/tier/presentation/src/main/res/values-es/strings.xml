@@ -58,6 +58,11 @@
     <string name="item_search_try_again">Intentar de nuevo</string>
     <string name="item_search_scope_all">Todo</string>
     <string name="item_search_scope_animals">Animales</string>
+    <plurals name="item_search_results_in">
+        <item quantity="one">%1$s resultado en %2$s</item>
+        <item quantity="many">%1$s resultados en %2$s</item>
+        <item quantity="other">%1$s resultados en %2$s</item>
+    </plurals>
     <string name="item_search_everywhere">Buscar en todas partes</string>
     <string name="item_search_empty_everywhere_body">¿Buscar en todos los catálogos y en la web?</string>
     <string name="item_search_notice_web_daily">La búsqueda web se agotó por hoy. Buscamos en los catálogos; mañana, de nuevo en todas partes.</string>

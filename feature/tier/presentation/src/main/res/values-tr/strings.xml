@@ -54,6 +54,10 @@
     <string name="item_search_try_again">Tekrar dene</string>
     <string name="item_search_scope_all">Tümü</string>
     <string name="item_search_scope_animals">Hayvanlar</string>
+    <plurals name="item_search_results_in">
+        <item quantity="one">%2$s içinde %1$s sonuç</item>
+        <item quantity="other">%2$s içinde %1$s sonuç</item>
+    </plurals>
     <string name="item_search_everywhere">Her yerde ara</string>
     <string name="item_search_empty_everywhere_body">Tüm kataloglarda ve web’de aransın mı?</string>
     <string name="item_search_notice_web_daily">Bugünlük web araması bitti. Kataloglarda arıyoruz; yarın yine her yerde.</string>
