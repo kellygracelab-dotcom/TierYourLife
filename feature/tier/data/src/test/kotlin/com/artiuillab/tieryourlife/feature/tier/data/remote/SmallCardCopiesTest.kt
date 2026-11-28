@@ -10,9 +10,13 @@ import coil3.request.CachePolicy
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
+import coil3.size.Scale
 import coil3.size.Size
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.Cover
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.SmallCardCopies
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.Tile
 import com.artiuillab.tieryourlife.feature.tier.data.remote.api.copyWidthFor
+import com.artiuillab.tieryourlife.feature.tier.data.remote.api.nextFor
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -33,6 +37,9 @@ class SmallCardCopiesTest {
     private val asked = mutableListOf<Any>()
     private var failing: (String) -> Boolean = { false }
 
+    /** What each address comes as; 1×1 for any other. */
+    private val sizes = mutableMapOf<String, Pair<Int, Int>>()
+
     @Test
     fun aTileTakesTheSmallestCopyThatCoversIt_aBiggerPictureTheOriginal() {
         assertEquals(200, copyWidthFor(Size(137, 200)))
@@ -40,6 +47,48 @@ class SmallCardCopiesTest {
         assertEquals(400, copyWidthFor(Size(400, 300)))
         assertNull(copyWidthFor(Size(485, 646)))
         assertNull(copyWidthFor(Size.ORIGINAL))
+    }
+
+    @Test
+    fun aCopyCoversItsTile_orNamesTheOneThatWould() {
+        val tall = Tile(137, 200)
+        // A poster, taller than wide: the first copy is enough.
+        assertEquals(Cover.Enough, nextFor(200, 300, 200, tall, Scale.FILL))
+        // 4:3, cropped into a tall tile: 200 wide is only 150 high, 267 wide would be 200.
+        assertEquals(Cover.Copy(400), nextFor(200, 150, 200, tall, Scale.FILL))
+        // A duel card: no copy is wide enough, so the original.
+        assertEquals(Cover.Original, nextFor(400, 300, 400, Tile(252, 357), Scale.FILL))
+        // A copy narrower than asked is the whole picture already.
+        assertEquals(Cover.Enough, nextFor(150, 100, 200, tall, Scale.FILL))
+        // Fitted, one side reaching the tile is enough.
+        assertEquals(Cover.Enough, nextFor(200, 150, 200, tall, Scale.FIT))
+        // A server rounding a height down by one pixel does not cost a bigger copy.
+        assertEquals(Cover.Enough, nextFor(200, 199, 200, tall, Scale.FILL))
+    }
+
+    @Test
+    fun aWidePictureInATallTile_isFollowedByTheCopyThatCoversIt() = runBlocking {
+        sizes["https://tieryourlife.com/img/200/published/list-1/w-ab12"] = 200 to 150
+        sizes["https://tieryourlife.com/img/400/published/list-1/w-ab12"] = 400 to 300
+
+        load(PUBLISHED, 137, 200)
+
+        assertEquals(
+            listOf<Any>(
+                "https://tieryourlife.com/img/200/published/list-1/w-ab12",
+                "https://tieryourlife.com/img/400/published/list-1/w-ab12",
+            ),
+            asked,
+        )
+    }
+
+    @Test
+    fun aWidePictureWiderThanEveryCopyNeeds_comesAsTheOriginal() = runBlocking {
+        sizes["https://tieryourlife.com/img/400/published/list-1/w-ab12"] = 400 to 300
+
+        load(PUBLISHED, 252, 357)
+
+        assertEquals(listOf<Any>("https://tieryourlife.com/img/400/published/list-1/w-ab12", PUBLISHED), asked)
     }
 
     @Test
@@ -103,7 +152,8 @@ class SmallCardCopiesTest {
             if (failing(data.toString())) {
                 ErrorResult(null, chain.request, IOException("404"))
             } else {
-                SuccessResult(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImage(), chain.request, DataSource.NETWORK)
+                val (width, height) = sizes[data.toString()] ?: (1 to 1)
+                SuccessResult(Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).asImage(), chain.request, DataSource.NETWORK)
             }
         }
         val loader = ImageLoader.Builder(context).components {
@@ -111,7 +161,7 @@ class SmallCardCopiesTest {
             add(network)
         }.build()
         return loader.execute(
-            ImageRequest.Builder(context).data(url).size(width, height)
+            ImageRequest.Builder(context).data(url).size(width, height).scale(Scale.FILL)
                 .memoryCachePolicy(CachePolicy.DISABLED).build(),
         )
     }
