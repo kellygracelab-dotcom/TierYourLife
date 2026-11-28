@@ -18,9 +18,11 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import java.io.File
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 internal const val PICTURES_AT_ONCE_PER_HOST = 16
+internal const val PICTURE_READ_TIMEOUT_SECONDS = 30L
 
 /** Coil's own folder until 28.11, kept by address: Backend then put bigger originals at the same addresses. */
 internal const val REPLACED_PICTURE_CACHE = "coil3_disk_cache"
@@ -38,12 +40,7 @@ object ImageLoaderModule {
         okHttpClient: OkHttpClient,
     ): ImageLoader {
         val lowRam = context.getSystemService(ActivityManager::class.java)?.isLowRamDevice == true
-        val imageClient = okHttpClient.newBuilder()
-            // Its own queue, wider than OkHttp's five to a host: a grid of posters from one
-            // catalogue came five at a time, where the site's browser asks for all of them at once.
-            .dispatcher(Dispatcher().apply { maxRequestsPerHost = PICTURES_AT_ONCE_PER_HOST })
-            .addInterceptor(PublicMediaInterceptor())
-            .build()
+        val imageClient = pictureClient(okHttpClient)
         return ImageLoader.Builder(context)
             .components {
                 add(SmallCardCopies())
@@ -56,6 +53,16 @@ object ImageLoaderModule {
             .build()
     }
 }
+
+internal fun pictureClient(okHttpClient: OkHttpClient): OkHttpClient = okHttpClient.newBuilder()
+    // Its own queue, wider than OkHttp's five to a host: a grid of posters from one
+    // catalogue came five at a time, where the site's browser asks for all of them at once.
+    .dispatcher(Dispatcher().apply { maxRequestsPerHost = PICTURES_AT_ONCE_PER_HOST })
+    // The web makes a copy on its first request, 2–3 s warm and longer on a cold start, and a
+    // slow network adds to that: OkHttp's 10 s left cards grey (emulator, 28.11).
+    .readTimeout(PICTURE_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    .addInterceptor(PublicMediaInterceptor())
+    .build()
 
 /** Opened on Coil's own thread at the first read from disk, so the old folder goes with no screen waiting. */
 internal fun pictureDiskCache(cacheDir: File): DiskCache {
