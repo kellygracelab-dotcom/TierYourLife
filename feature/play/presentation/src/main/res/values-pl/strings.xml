@@ -9,13 +9,6 @@
     </plurals>
     <string name="play_how_it_works">Wybierz lepszą z dwóch kart. Poziomy wypełnią się same.</string>
     <string name="play_game_kept">Możesz przerwać w każdej chwili — gra zostanie zachowana.</string>
-    <string name="play_other_ways">Inne sposoby gry</string>
-    <plurals name="play_about_duels">
-        <item quantity="one">około %1$d pojedynku</item>
-        <item quantity="few">około %1$d pojedynków</item>
-        <item quantity="many">około %1$d pojedynków</item>
-        <item quantity="other">około %1$d pojedynku</item>
-    </plurals>
     <plurals name="play_minutes">
         <item quantity="one">%1$d min</item>
         <item quantity="few">%1$d min</item>
@@ -27,33 +20,13 @@
     <string name="play_game_swiss">Nikt nie odpada</string>
     <string name="play_game_hill">Król wzgórza</string>
     <string name="play_game_bracket">Drabinka</string>
-    <string name="play_game_smart_line">Pyta tylko o karty, które mogą jeszcze zmienić poziom. Prawie te same poziomy przy znacznie mniejszej liczbie pojedynków.</string>
-    <string name="play_game_swiss_line">Każdy gra w każdej rundzie. Wolniej, ale najlepiej wypełnia poziomy.</string>
-    <string name="play_game_hill_line">Zwycięzca zostaje i spotyka następną kartę. Szybko; poziomy wychodzą przybliżone.</string>
-    <string name="play_game_bracket_line">Grają pary, zwycięzcy idą dalej, aż zostanie jedna. Szybko; poziomy wychodzą przybliżone.</string>
     <plurals name="play_estimate_duels">
         <item quantity="one">%1$d pojedynek</item>
         <item quantity="few">%1$d pojedynki</item>
         <item quantity="many">%1$d pojedynków</item>
         <item quantity="other">%1$d pojedynku</item>
     </plurals>
-    <plurals name="play_estimate_minutes">
-        <item quantity="one">około %1$d min</item>
-        <item quantity="few">około %1$d min</item>
-        <item quantity="many">około %1$d min</item>
-        <item quantity="other">około %1$d min</item>
-    </plurals>
-    <string name="play_new_game">Albo zacznij nową grę</string>
     <string name="play_resume">Wznów</string>
-    <string name="play_resume_progress">%1$s · %2$d z %3$d</string>
-    <string name="play_started_today">Rozpoczęta dziś</string>
-    <string name="play_started_yesterday">Rozpoczęta wczoraj</string>
-    <plurals name="play_started_days_ago">
-        <item quantity="one">Rozpoczęta %1$d dzień temu</item>
-        <item quantity="few">Rozpoczęta %1$d dni temu</item>
-        <item quantity="many">Rozpoczęta %1$d dni temu</item>
-        <item quantity="other">Rozpoczęta %1$d dnia temu</item>
-    </plurals>
     <plurals name="play_new_cards_join">
         <item quantity="one">%1$d nowa karta dołączy od następnej rundy</item>
         <item quantity="few">%1$d nowe karty dołączą od następnej rundy</item>
@@ -66,7 +39,6 @@
     <string name="play_start_again">Zacznij od nowa</string>
     <string name="play_into_mine_note">Wynik trafi do twojej wersji. Ranking autora się nie zmieni.</string>
     <string name="play_cancel">Anuluj</string>
-    <string name="play_start">Zacznij</string>
     <string name="play_continue">Dalej</string>
     <string name="play_back">Wstecz</string>
     <string name="play_pool">Talia</string>
@@ -129,5 +101,27 @@
         <item quantity="few">i jeszcze %1$d poziomy</item>
         <item quantity="many">i jeszcze %1$d poziomów</item>
         <item quantity="other">i jeszcze %1$d poziomu</item>
+    </plurals>
+    <string name="play_game_smart_short">Najlepsze poziomy, mniej pojedynków</string>
+    <string name="play_game_swiss_short">Każdy gra w każdej rundzie</string>
+    <string name="play_game_hill_short">Zwycięzca zostaje · poziomy przybliżone</string>
+    <string name="play_game_bracket_short">Pucharowo · poziomy przybliżone</string>
+    <string name="play_or_new_game">Albo nowa gra</string>
+    <string name="play_start_game">Zacznij: %1$s · %2$s</string>
+    <string name="play_start_new_game">Nowa gra · %1$s · %2$s</string>
+    <string name="play_saved_progress">%1$s · pojedynek %2$d z %3$d</string>
+    <string name="play_your_game_today">Twoja gra · rozpoczęta dziś</string>
+    <string name="play_your_game_yesterday">Twoja gra · rozpoczęta wczoraj</string>
+    <plurals name="play_your_game_days_ago">
+        <item quantity="one">Twoja gra · rozpoczęta %1$d dzień temu</item>
+        <item quantity="few">Twoja gra · rozpoczęta %1$d dni temu</item>
+        <item quantity="many">Twoja gra · rozpoczęta %1$d dni temu</item>
+        <item quantity="other">Twoja gra · rozpoczęta %1$d dnia temu</item>
+    </plurals>
+    <plurals name="play_cards_all">
+        <item quantity="one">Wszystkie karty: %1$d</item>
+        <item quantity="few">Wszystkie karty: %1$d</item>
+        <item quantity="many">Wszystkie karty: %1$d</item>
+        <item quantity="other">Wszystkie karty: %1$d</item>
     </plurals>
 </resources>

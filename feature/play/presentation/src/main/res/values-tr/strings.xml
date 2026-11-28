@@ -7,11 +7,6 @@
     </plurals>
     <string name="play_how_it_works">İki karttan daha iyisini seçin. Seviyeler kendiliğinden dolar.</string>
     <string name="play_game_kept">İstediğiniz zaman çıkın — oyun saklanır.</string>
-    <string name="play_other_ways">Başka oynama yolları</string>
-    <plurals name="play_about_duels">
-        <item quantity="one">yaklaşık %1$d düello</item>
-        <item quantity="other">yaklaşık %1$d düello</item>
-    </plurals>
     <plurals name="play_minutes">
         <item quantity="one">%1$d dk</item>
         <item quantity="other">%1$d dk</item>
@@ -21,27 +16,11 @@
     <string name="play_game_swiss">Kimse elenmez</string>
     <string name="play_game_hill">Tepenin kralı</string>
     <string name="play_game_bracket">Eleme</string>
-    <string name="play_game_smart_line">Yalnızca seviyesi hâlâ değişebilecek kartları sorar. Çok daha az düelloyla neredeyse aynı seviyeler.</string>
-    <string name="play_game_swiss_line">Herkes her turda oynar. Daha yavaş, seviyeleri doldurmak için en iyisi.</string>
-    <string name="play_game_hill_line">Kazanan kalır ve sıradaki kartla karşılaşır. Hızlı; seviyeler kabaca çıkar.</string>
-    <string name="play_game_bracket_line">Çiftler oynar, kazananlar tek kart kalana dek ilerler. Hızlı; seviyeler kabaca çıkar.</string>
     <plurals name="play_estimate_duels">
         <item quantity="one">%1$d düello</item>
         <item quantity="other">%1$d düello</item>
     </plurals>
-    <plurals name="play_estimate_minutes">
-        <item quantity="one">yaklaşık %1$d dk</item>
-        <item quantity="other">yaklaşık %1$d dk</item>
-    </plurals>
-    <string name="play_new_game">Ya da yeni bir oyun başlatın</string>
     <string name="play_resume">Devam et</string>
-    <string name="play_resume_progress">%1$s · %2$d/%3$d</string>
-    <string name="play_started_today">Bugün başladı</string>
-    <string name="play_started_yesterday">Dün başladı</string>
-    <plurals name="play_started_days_ago">
-        <item quantity="one">%1$d gün önce başladı</item>
-        <item quantity="other">%1$d gün önce başladı</item>
-    </plurals>
     <plurals name="play_new_cards_join">
         <item quantity="one">%1$d yeni kart bir sonraki turdan itibaren katılır</item>
         <item quantity="other">%1$d yeni kart bir sonraki turdan itibaren katılır</item>
@@ -52,7 +31,6 @@
     <string name="play_start_again">Yeniden başla</string>
     <string name="play_into_mine_note">Sonuç sürümünüze gider. Yazarın sıralaması değişmez.</string>
     <string name="play_cancel">İptal</string>
-    <string name="play_start">Başla</string>
     <string name="play_continue">Devam</string>
     <string name="play_back">Geri</string>
     <string name="play_pool">Deste</string>
@@ -105,5 +83,23 @@
     <plurals name="play_more_tiers">
         <item quantity="one">ve %1$d seviye daha</item>
         <item quantity="other">ve %1$d seviye daha</item>
+    </plurals>
+    <string name="play_game_smart_short">En iyi seviyeler, daha az düello</string>
+    <string name="play_game_swiss_short">Herkes her turda oynar</string>
+    <string name="play_game_hill_short">Kazanan kalır · kaba seviyeler</string>
+    <string name="play_game_bracket_short">Eleme usulü · kaba seviyeler</string>
+    <string name="play_or_new_game">Ya da yeni bir oyun</string>
+    <string name="play_start_game">Başlat: %1$s · %2$s</string>
+    <string name="play_start_new_game">Yeni oyun · %1$s · %2$s</string>
+    <string name="play_saved_progress">%1$s · düello %2$d/%3$d</string>
+    <string name="play_your_game_today">Oyununuz · bugün başladı</string>
+    <string name="play_your_game_yesterday">Oyununuz · dün başladı</string>
+    <plurals name="play_your_game_days_ago">
+        <item quantity="one">Oyununuz · %1$d gün önce başladı</item>
+        <item quantity="other">Oyununuz · %1$d gün önce başladı</item>
+    </plurals>
+    <plurals name="play_cards_all">
+        <item quantity="one">Tüm kartlar: %1$d</item>
+        <item quantity="other">Tüm kartlar: %1$d</item>
     </plurals>
 </resources>

@@ -6,10 +6,6 @@
     </plurals>
     <string name="play_how_it_works">2 枚のカードから良いほうを選びます。ティアは自動で埋まります。</string>
     <string name="play_game_kept">いつでも中断できます。ゲームは保存されます。</string>
-    <string name="play_other_ways">ほかの遊び方</string>
-    <plurals name="play_about_duels">
-        <item quantity="other">約 %1$d 回の対戦</item>
-    </plurals>
     <plurals name="play_minutes">
         <item quantity="other">%1$d 分</item>
     </plurals>
@@ -18,24 +14,10 @@
     <string name="play_game_swiss">負けても残る</string>
     <string name="play_game_hill">勝ち抜き戦</string>
     <string name="play_game_bracket">トーナメント</string>
-    <string name="play_game_smart_line">まだティアが変わりうるカードだけを尋ねます。ずっと少ない対戦で、ほぼ同じティアになります。</string>
-    <string name="play_game_swiss_line">全員が毎ラウンド対戦します。時間はかかりますが、ティアを埋めるには最適です。</string>
-    <string name="play_game_hill_line">勝者が残り、次のカードと対戦します。速いですが、ティアはおおまかになります。</string>
-    <string name="play_game_bracket_line">ペアで対戦し、最後のひとつになるまで勝者が進みます。速いですが、ティアはおおまかになります。</string>
     <plurals name="play_estimate_duels">
         <item quantity="other">%1$d 回の対戦</item>
     </plurals>
-    <plurals name="play_estimate_minutes">
-        <item quantity="other">約 %1$d 分</item>
-    </plurals>
-    <string name="play_new_game">または新しいゲームを始める</string>
     <string name="play_resume">再開</string>
-    <string name="play_resume_progress">%1$s · %2$d / %3$d</string>
-    <string name="play_started_today">今日開始</string>
-    <string name="play_started_yesterday">昨日開始</string>
-    <plurals name="play_started_days_ago">
-        <item quantity="other">%1$d 日前に開始</item>
-    </plurals>
     <plurals name="play_new_cards_join">
         <item quantity="other">新しいカード %1$d 枚が次のラウンドから参加します</item>
     </plurals>
@@ -45,7 +27,6 @@
     <string name="play_start_again">最初から</string>
     <string name="play_into_mine_note">結果は自分のバージョンに入ります。作者のランキングは変わりません。</string>
     <string name="play_cancel">キャンセル</string>
-    <string name="play_start">開始</string>
     <string name="play_continue">次へ</string>
     <string name="play_back">戻る</string>
     <string name="play_pool">山札</string>
@@ -93,5 +74,21 @@
     <string name="play_play_again">もう一度プレイ</string>
     <plurals name="play_more_tiers">
         <item quantity="other">ほか%1$d個のティア</item>
+    </plurals>
+    <string name="play_game_smart_short">最良のティア、少ない対戦</string>
+    <string name="play_game_swiss_short">全員が毎ラウンド対戦</string>
+    <string name="play_game_hill_short">勝者が残る · ティアはおおまか</string>
+    <string name="play_game_bracket_short">勝ち上がり · ティアはおおまか</string>
+    <string name="play_or_new_game">または新しいゲーム</string>
+    <string name="play_start_game">%1$sを開始 · %2$s</string>
+    <string name="play_start_new_game">新しく開始 · %1$s · %2$s</string>
+    <string name="play_saved_progress">%1$s · 対戦 %2$d / %3$d</string>
+    <string name="play_your_game_today">あなたのゲーム · 今日開始</string>
+    <string name="play_your_game_yesterday">あなたのゲーム · 昨日開始</string>
+    <plurals name="play_your_game_days_ago">
+        <item quantity="other">あなたのゲーム · %1$d 日前に開始</item>
+    </plurals>
+    <plurals name="play_cards_all">
+        <item quantity="other">全 %1$d 枚</item>
     </plurals>
 </resources>

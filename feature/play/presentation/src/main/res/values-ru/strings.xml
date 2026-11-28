@@ -9,13 +9,6 @@
     </plurals>
     <string name="play_how_it_works">Выбирайте лучшую из двух карточек. Уровни заполнятся сами.</string>
     <string name="play_game_kept">Можно выйти в любой момент — игра сохранится.</string>
-    <string name="play_other_ways">Другие способы игры</string>
-    <plurals name="play_about_duels">
-        <item quantity="one">около %1$d дуэли</item>
-        <item quantity="few">около %1$d дуэлей</item>
-        <item quantity="many">около %1$d дуэлей</item>
-        <item quantity="other">около %1$d дуэли</item>
-    </plurals>
     <plurals name="play_minutes">
         <item quantity="one">%1$d мин</item>
         <item quantity="few">%1$d мин</item>
@@ -27,33 +20,13 @@
     <string name="play_game_swiss">Никто не выбывает</string>
     <string name="play_game_hill">Царь горы</string>
     <string name="play_game_bracket">Турнирная сетка</string>
-    <string name="play_game_smart_line">Спрашивает только о карточках, которые ещё могут сменить уровень. Почти те же уровни за гораздо меньшее число дуэлей.</string>
-    <string name="play_game_swiss_line">Каждый играет в каждом раунде. Дольше, зато лучше всего заполняет уровни.</string>
-    <string name="play_game_hill_line">Победитель остаётся и встречает следующую карточку. Быстро; уровни получаются примерными.</string>
-    <string name="play_game_bracket_line">Играют пары, победители идут дальше, пока не останется один. Быстро; уровни получаются примерными.</string>
     <plurals name="play_estimate_duels">
         <item quantity="one">%1$d дуэль</item>
         <item quantity="few">%1$d дуэли</item>
         <item quantity="many">%1$d дуэлей</item>
         <item quantity="other">%1$d дуэли</item>
     </plurals>
-    <plurals name="play_estimate_minutes">
-        <item quantity="one">около %1$d мин</item>
-        <item quantity="few">около %1$d мин</item>
-        <item quantity="many">около %1$d мин</item>
-        <item quantity="other">около %1$d мин</item>
-    </plurals>
-    <string name="play_new_game">Или начните новую игру</string>
     <string name="play_resume">Продолжить</string>
-    <string name="play_resume_progress">%1$s · %2$d из %3$d</string>
-    <string name="play_started_today">Начата сегодня</string>
-    <string name="play_started_yesterday">Начата вчера</string>
-    <plurals name="play_started_days_ago">
-        <item quantity="one">Начата %1$d день назад</item>
-        <item quantity="few">Начата %1$d дня назад</item>
-        <item quantity="many">Начата %1$d дней назад</item>
-        <item quantity="other">Начата %1$d дня назад</item>
-    </plurals>
     <plurals name="play_new_cards_join">
         <item quantity="one">%1$d новая карточка присоединится со следующего раунда</item>
         <item quantity="few">%1$d новые карточки присоединятся со следующего раунда</item>
@@ -66,7 +39,6 @@
     <string name="play_start_again">Начать заново</string>
     <string name="play_into_mine_note">Результат попадёт в вашу версию. Расстановка автора не изменится.</string>
     <string name="play_cancel">Отмена</string>
-    <string name="play_start">Начать</string>
     <string name="play_continue">Далее</string>
     <string name="play_back">Назад</string>
     <string name="play_pool">Колода</string>
@@ -129,5 +101,27 @@
         <item quantity="few">и ещё %1$d уровня</item>
         <item quantity="many">и ещё %1$d уровней</item>
         <item quantity="other">и ещё %1$d уровня</item>
+    </plurals>
+    <string name="play_game_smart_short">Лучшие уровни, меньше дуэлей</string>
+    <string name="play_game_swiss_short">Каждый играет в каждом раунде</string>
+    <string name="play_game_hill_short">Победитель остаётся · уровни примерные</string>
+    <string name="play_game_bracket_short">На выбывание · уровни примерные</string>
+    <string name="play_or_new_game">Или новая игра</string>
+    <string name="play_start_game">Начать: %1$s · %2$s</string>
+    <string name="play_start_new_game">Начать новую · %1$s · %2$s</string>
+    <string name="play_saved_progress">%1$s · дуэль %2$d из %3$d</string>
+    <string name="play_your_game_today">Ваша игра · начата сегодня</string>
+    <string name="play_your_game_yesterday">Ваша игра · начата вчера</string>
+    <plurals name="play_your_game_days_ago">
+        <item quantity="one">Ваша игра · начата %1$d день назад</item>
+        <item quantity="few">Ваша игра · начата %1$d дня назад</item>
+        <item quantity="many">Ваша игра · начата %1$d дней назад</item>
+        <item quantity="other">Ваша игра · начата %1$d дня назад</item>
+    </plurals>
+    <plurals name="play_cards_all">
+        <item quantity="one">Все карточки: %1$d</item>
+        <item quantity="few">Все карточки: %1$d</item>
+        <item quantity="many">Все карточки: %1$d</item>
+        <item quantity="other">Все карточки: %1$d</item>
     </plurals>
 </resources>

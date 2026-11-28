@@ -1,13 +1,16 @@
 package com.artiuillab.tieryourlife.feature.play.presentation
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -30,7 +34,10 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -50,8 +58,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.artiuillab.tieryourlife.core.theme.layout.AdaptiveSheet
@@ -59,10 +67,10 @@ import com.artiuillab.tieryourlife.core.theme.layout.SheetWidth
 import com.artiuillab.tieryourlife.core.theme.layout.currentWindowShape
 import com.artiuillab.tieryourlife.core.theme.layout.isShortWindow
 import com.artiuillab.tieryourlife.core.theme.ui.BackIcon
+import com.artiuillab.tieryourlife.core.theme.ui.ChevronDownIcon
 import com.artiuillab.tieryourlife.feature.play.domain.GameKind
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedDuels
 import com.artiuillab.tieryourlife.feature.play.domain.estimatedMinutes
-import com.artiuillab.tieryourlife.feature.play.domain.isRough
 import com.artiuillab.tieryourlife.feature.tier.board.common.tierRowColors
 import java.time.Instant
 import java.time.ZoneId
@@ -75,7 +83,6 @@ internal data class PickerActions(
     val onShowCards: () -> Unit = {},
     val onShowGames: () -> Unit = {},
     val onShowIndividual: () -> Unit = {},
-    val onShowModes: () -> Unit = {},
     val onSample: (Int) -> Unit = {},
     val onToggleCard: (Long) -> Unit = {},
     val onSelectCandidates: (Boolean) -> Unit = {},
@@ -93,7 +100,7 @@ internal data class PickerActions(
 /**
  * The game picker and "Choose cards", two pages of one sheet: from the bottom
  * on a phone, in the middle on a tablet. Held sideways the window is wide and
- * low, so the dialog is too, and the three games stand side by side.
+ * low, so the dialog is too, and the four games stand side by side.
  */
 @Composable
 internal fun PickerSheet(picker: Picker, actions: PickerActions) {
@@ -122,17 +129,16 @@ internal fun ColumnScope.PickerContent(picker: Picker, actions: PickerActions, w
     when {
         picker.page == PickerPage.Individual -> IndividualCardsPage(picker, actions)
         wide && picker.page == PickerPage.Games -> WideGamesPage(picker, actions)
-        wide && picker.page == PickerPage.Modes -> WideModesPage(picker, actions)
         wide -> WideCardsPage(picker, actions)
         picker.page == PickerPage.Games -> GamesPage(picker, actions)
-        picker.page == PickerPage.Modes -> ModesPage(picker, actions)
         else -> CardsPage(picker, actions)
     }
 }
 
 /**
- * One way in: what a game is, what this one will take, and Start. The cards
- * and the other games are a tap away beneath it; a game put down stays on top.
+ * Every game on screen at once, the chosen one filled, and Start saying what
+ * it starts. A game put down comes first and is the sheet's main action; the
+ * new game sits under it (Danylo, 28.11: «на андроиде вариант B давай тоже»).
  */
 @Composable
 private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
@@ -143,68 +149,72 @@ private fun ColumnScope.GamesPage(picker: Picker, actions: PickerActions) {
             .navigationBarsPadding()
             .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
             .testTag(PlayTestTags.PICKER),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text(
-            text = stringResource(R.string.play_title),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Text(
-            text = stringResource(R.string.play_how_it_works),
-            modifier = Modifier.padding(top = 4.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(16.dp))
-        if (picker.resume != null || picker.discarded) {
-            SavedGameRow(picker, minHeight = 56.dp, actions)
-            Text(
-                text = stringResource(R.string.play_new_game),
-                modifier = Modifier.padding(start = 2.dp, top = 16.dp, bottom = 8.dp),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        GameSummary(picker)
-        PlacedWarning(picker.placedChosen)
-        Spacer(Modifier.height(12.dp))
-        BigStartButton(picker, actions.onStart)
-        PickerLinks(actions)
-        if (picker.intoMine) IntoMineNote(top = 4.dp)
+        PlayHeading(picker, actions)
+        NewGameHeader(picker, actions)
+        GameChoice(picker, actions)
+        StartButton(picker, actions.onStart, Modifier.fillMaxWidth())
+        StartNotes(picker)
     }
 }
 
-/** "Choose cards" and "Other ways to play": side by side, or one above the other when a language makes them too long. */
+/** "Play", and what it is while nothing is saved; the saved game's card when one is. */
 @Composable
-private fun PickerLinks(actions: PickerActions) {
-    Layout(
-        content = {
-            TextButton(
-                onClick = actions.onShowCards,
-                modifier = Modifier
-                    .heightIn(min = 48.dp)
-                    .testTag(PlayTestTags.CHOOSE_CARDS),
-            ) { Text(stringResource(R.string.play_choose_cards), maxLines = 1, overflow = TextOverflow.Ellipsis) }
-            TextButton(
-                onClick = actions.onShowModes,
-                modifier = Modifier
-                    .heightIn(min = 48.dp)
-                    .testTag(PlayTestTags.OTHER_WAYS),
-            ) { Text(stringResource(R.string.play_other_ways), maxLines = 1, overflow = TextOverflow.Ellipsis) }
-        },
-        modifier = Modifier.fillMaxWidth(),
-    ) { measurables, constraints ->
+private fun PlayHeading(picker: Picker, actions: PickerActions, style: TextStyle = MaterialTheme.typography.headlineSmall) {
+    Column {
+        Text(text = stringResource(R.string.play_title), style = style, color = MaterialTheme.colorScheme.onSurface)
+        if (picker.resume == null && !picker.discarded) {
+            Text(
+                text = stringResource(R.string.play_how_it_works),
+                modifier = Modifier.padding(top = 4.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+    val offer = picker.resume
+    when {
+        offer != null -> SavedGameCard(offer, actions)
+        picker.discarded -> DiscardedRow(actions.onUndoDiscard)
+    }
+}
+
+/** "Or a new game" beside a saved one, and the cards the new one is played over, which open Choose cards. */
+@Composable
+private fun NewGameHeader(picker: Picker, actions: PickerActions) {
+    val label = picker.resume?.let { stringResource(R.string.play_or_new_game) }
+    SideBySideOrStacked(Modifier.fillMaxWidth()) {
+        if (label != null) {
+            Text(
+                text = label,
+                style = HEADER_LABEL,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        CardsChip(picker, actions.onShowCards)
+    }
+}
+
+/** Two pieces side by side, the second at the end, or one above the other when a language makes them too long. */
+@Composable
+private fun SideBySideOrStacked(modifier: Modifier, content: @Composable () -> Unit) {
+    Layout(content = content, modifier = modifier) { measurables, constraints ->
         val loose = constraints.copy(minWidth = 0, minHeight = 0)
-        val (first, second) = measurables.map { it.measure(loose) }
+        val placeables = measurables.map { it.measure(loose) }
         val width = constraints.maxWidth
-        if (first.width + second.width <= width) {
-            val height = maxOf(first.height, second.height)
-            layout(width, height) {
-                first.placeRelative(0, (height - first.height) / 2)
-                second.placeRelative(width - second.width, (height - second.height) / 2)
+        val first = placeables.first()
+        val second = placeables.getOrNull(1)
+        when {
+            second == null -> layout(width, first.height) { first.placeRelative(0, 0) }
+            first.width + second.width + SIDE_GAP.roundToPx() <= width -> {
+                val height = maxOf(first.height, second.height)
+                layout(width, height) {
+                    first.placeRelative(0, (height - first.height) / 2)
+                    second.placeRelative(width - second.width, (height - second.height) / 2)
+                }
             }
-        } else {
-            layout(width, first.height + second.height) {
+            else -> layout(width, first.height + second.height) {
                 first.placeRelative(0, 0)
                 second.placeRelative(0, first.height)
             }
@@ -212,110 +222,208 @@ private fun PickerLinks(actions: PickerActions) {
     }
 }
 
-/** "25 cards · about 63 duels · 2 min" and that the game waits; the game named when it is not the usual one. */
+private val SIDE_GAP = 12.dp
+private val HEADER_LABEL = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium)
+
+/** «All 127 cards ▾», or «12 cards from S»: what a new game is played over, and the way to change it. */
 @Composable
-private fun GameSummary(picker: Picker) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        shape = RoundedCornerShape(16.dp),
+private fun CardsChip(picker: Picker, onShowCards: () -> Unit) {
+    OutlinedButton(
+        onClick = onShowCards,
         modifier = Modifier
-            .fillMaxWidth()
-            .testTag(PlayTestTags.SUMMARY),
+            .heightIn(min = 44.dp)
+            .testTag(PlayTestTags.CHOOSE_CARDS),
+        contentPadding = PaddingValues(start = 14.dp, end = 10.dp, top = 6.dp, bottom = 6.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            if (picker.kind != PlayGames.first()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    GameIcon(picker.kind, 18.dp, MaterialTheme.colorScheme.onSurface)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(picker.kind.nameRes), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface)
+        Text(text = cardsText(picker), style = CHIP_TEXT, color = MaterialTheme.colorScheme.onSurface)
+        Spacer(Modifier.width(4.dp))
+        ChevronDownIcon(18.dp, MaterialTheme.colorScheme.onSurface)
+    }
+}
+
+private val CHIP_TEXT = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium)
+
+@Composable
+private fun cardsText(picker: Picker): String {
+    val count = picker.count
+    return if (picker.everything) {
+        pluralStringResource(R.plurals.play_cards_all, count, count)
+    } else {
+        pluralStringResource(R.plurals.play_cards_from, count, count, picker.areaName())
+    }
+}
+
+/**
+ * The four games as tiles, two across, or [across] where the dialog is wide
+ * enough; as rows where two tiles do not fit or the text is large. The rule is
+ * the Designer's (28.11), and CI's 320×640 window is the rows' case.
+ */
+@Composable
+private fun GameChoice(picker: Picker, actions: PickerActions, across: Int = 2) {
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val large = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+        val columns = if (maxWidth >= TILE_MIN_WIDTH * across + TILE_GAP * (across - 1)) across else 2
+        if (large || maxWidth < TILES_MIN_WIDTH) {
+            GameRows(picker, actions)
+        } else {
+            GameTiles(picker, actions, columns)
+        }
+    }
+}
+
+/** A 340 dp window, less the sheet's sides. */
+private val TILES_MIN_WIDTH = 292.dp
+private val TILE_MIN_WIDTH = 140.dp
+private val TILE_GAP = 10.dp
+private const val LARGE_FONT_SCALE = 1.3f
+
+@Composable
+private fun GameTiles(picker: Picker, actions: PickerActions, columns: Int) {
+    Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(TILE_GAP)) {
+        PlayGames.chunked(columns).forEach { row ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.spacedBy(TILE_GAP),
+            ) {
+                row.forEach { kind ->
+                    GameTile(
+                        kind = kind,
+                        count = picker.count,
+                        selected = kind == picker.kind,
+                        onSelect = { actions.onChoose(kind) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                    )
                 }
             }
-            Text(text = summaryText(picker), style = SUMMARY_LINE, color = MaterialTheme.colorScheme.onSurface)
+        }
+    }
+}
+
+@Composable
+private fun GameTile(kind: GameKind, count: Int, selected: Boolean, onSelect: () -> Unit, modifier: Modifier) {
+    val colors = optionColors(selected, filled = true)
+    Column(
+        modifier
+            .heightIn(min = 118.dp)
+            .gameOption(kind, selected, onSelect, filled = true)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            GameIcon(kind, 24.dp, colors.icon)
+            Spacer(
+                Modifier
+                    .weight(1f)
+                    .widthIn(min = 8.dp),
+            )
+            Text(text = minutesText(kind, count), style = TILE_TIME, color = colors.content)
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(stringResource(kind.nameRes), style = GAME_NAME, color = colors.content)
+            Text(stringResource(kind.shortLineRes), style = GAME_LINE, color = colors.quiet)
+        }
+    }
+}
+
+@Composable
+private fun GameRows(picker: Picker, actions: PickerActions) {
+    Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        PlayGames.forEach { kind ->
+            GameRow(kind = kind, count = picker.count, selected = kind == picker.kind, onSelect = { actions.onChoose(kind) })
+        }
+    }
+}
+
+@Composable
+private fun GameRow(kind: GameKind, count: Int, selected: Boolean, onSelect: () -> Unit) {
+    val colors = optionColors(selected, filled = false)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 60.dp)
+            .gameOption(kind, selected, onSelect, filled = false)
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        GameIcon(kind, 24.dp, colors.icon)
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
+            Text(stringResource(kind.nameRes), style = GAME_NAME, color = colors.content)
+            Text(stringResource(kind.shortLineRes), style = GAME_LINE, color = colors.quiet)
+        }
+        Spacer(Modifier.width(12.dp))
+        Text(text = minutesText(kind, count), style = ROW_TIME, color = colors.content)
+    }
+}
+
+private val TILE_TIME = TextStyle(fontSize = 20.sp, lineHeight = 24.sp, fontWeight = FontWeight.Medium)
+private val ROW_TIME = TextStyle(fontSize = 17.sp, lineHeight = 22.sp, fontWeight = FontWeight.Medium)
+private val GAME_NAME = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
+private val GAME_LINE = TextStyle(fontSize = 12.sp, lineHeight = 17.sp)
+
+/** "21 min": what the game is expected to take over the cards chosen. */
+@Composable
+private fun minutesText(kind: GameKind, count: Int): String {
+    val minutes = estimatedMinutes(estimatedDuels(kind, count))
+    return pluralStringResource(R.plurals.play_minutes, minutes, minutes)
+}
+
+/** «Start Smart · 21 min», or «Start new · …» beside a saved game, where it is outlined and Resume is filled. */
+@Composable
+private fun StartButton(picker: Picker, onStart: () -> Unit, modifier: Modifier) {
+    val name = stringResource(picker.kind.nameRes)
+    val minutes = minutesText(picker.kind, picker.count)
+    val saved = picker.resume != null
+    val label = stringResource(if (saved) R.string.play_start_new_game else R.string.play_start_game, name, minutes)
+    val buttonModifier = modifier
+        .heightIn(min = 52.dp)
+        .testTag(PlayTestTags.START)
+    val text: @Composable RowScope.() -> Unit = {
+        Text(text = label, style = MaterialTheme.typography.titleSmall, color = LocalContentColor.current, textAlign = TextAlign.Center)
+    }
+    if (saved) {
+        OutlinedButton(
+            onClick = onStart,
+            enabled = picker.canPlay,
+            modifier = buttonModifier,
+            border = BorderStroke(1.dp, if (picker.canPlay) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant),
+            content = text,
+        )
+    } else {
+        Button(onClick = onStart, enabled = picker.canPlay, modifier = buttonModifier, content = text)
+    }
+}
+
+/** Under Start: the cards a game will move, that it waits while nothing is saved, and whose version it plays into. */
+@Composable
+private fun StartNotes(picker: Picker) {
+    val notes = buildList {
+        if (picker.placedChosen > 0) add(pluralStringResource(R.plurals.play_placed_warning, picker.placedChosen, picker.placedChosen))
+        if (picker.resume == null) add(stringResource(R.string.play_game_kept))
+        if (picker.intoMine) add(stringResource(R.string.play_into_mine_note))
+    }
+    if (notes.isEmpty()) return
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        notes.forEachIndexed { index, note ->
             Text(
-                text = stringResource(R.string.play_game_kept),
-                style = SUMMARY_NOTE,
+                text = note,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(if (index == 0 && picker.placedChosen > 0) Modifier.testTag(PlayTestTags.PLACED_WARNING) else Modifier),
+                style = FOOTNOTE,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
             )
         }
     }
 }
 
-/** Cards already in tiers will be moved by the game; Undo after it puts them back. */
-@Composable
-private fun PlacedWarning(placed: Int) {
-    if (placed == 0) return
-    Text(
-        text = pluralStringResource(R.plurals.play_placed_warning, placed, placed),
-        modifier = Modifier
-            .padding(start = 4.dp, top = 8.dp)
-            .testTag(PlayTestTags.PLACED_WARNING),
-        style = SUMMARY_NOTE,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-private val SUMMARY_LINE = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
-private val SUMMARY_NOTE = TextStyle(fontSize = 13.sp, lineHeight = 18.sp)
-
-/** The cards, and from where when not the whole board, then the duels and minutes the game is expected to take. */
-@Composable
-private fun summaryText(picker: Picker): String {
-    val count = picker.count
-    val cards = if (picker.everything) {
-        pluralStringResource(R.plurals.play_cards, count, count)
-    } else {
-        pluralStringResource(R.plurals.play_cards_from, count, count, picker.areaName())
-    }
-    val duels = estimatedDuels(picker.kind, count)
-    val duelsText = if (picker.kind.isRough) {
-        pluralStringResource(R.plurals.play_about_duels, duels, duels)
-    } else {
-        pluralStringResource(R.plurals.play_estimate_duels, duels, duels)
-    }
-    val minutes = estimatedMinutes(duels)
-    return listOf(cards, duelsText, pluralStringResource(R.plurals.play_minutes, minutes, minutes)).joinToString(" · ")
-}
-
-/** Every way to play, Smart first, with what each will take; Start here plays the one chosen. */
-@Composable
-private fun ColumnScope.ModesPage(picker: Picker, actions: PickerActions) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp, end = 24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val back = stringResource(ThemeR.string.tier_detail_content_description_back)
-        IconButton(onClick = actions.onShowGames, modifier = Modifier.semantics { contentDescription = back }) { BackIcon() }
-        Text(
-            text = stringResource(R.string.play_other_ways),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
-    Column(
-        Modifier
-            .weight(1f, fill = false)
-            .verticalScroll(rememberScrollState())
-            .padding(start = 24.dp, end = 24.dp, top = 8.dp)
-            .testTag(PlayTestTags.MODES_PAGE),
-    ) {
-        Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            PlayGames.forEach { kind ->
-                GameOption(kind = kind, count = picker.count, selected = kind == picker.kind, onSelect = { actions.onChoose(kind) })
-            }
-        }
-        if (picker.intoMine) IntoMineNote()
-    }
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 16.dp),
-    ) { BigStartButton(picker, actions.onStart) }
-}
-
-/** What the game is played over, as the first page says it: the pool, the ranked tiers, one tier, or the board. */
+/** What the game is played over, as the chip says it: the pool, the ranked tiers, one tier, or the board. */
 @Composable
 private fun Picker.areaName(): String = when {
     everything -> title
@@ -324,41 +432,7 @@ private fun Picker.areaName(): String = when {
     else -> singleTier?.title() ?: title
 }
 
-@Composable
-private fun IntoMineNote(top: Dp = 12.dp) {
-    Text(
-        text = stringResource(R.string.play_into_mine_note),
-        modifier = Modifier.padding(top = top),
-        style = FOOTNOTE,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
 private val FOOTNOTE = TextStyle(fontSize = 12.sp, lineHeight = 17.sp)
-
-/** Sideways, beside Cancel. Filled there too: of everything in the dialog it is what the dialog is for. */
-@Composable
-private fun StartButton(picker: Picker, onStart: () -> Unit) {
-    Button(
-        onClick = onStart,
-        enabled = picker.canPlay,
-        modifier = Modifier
-            .height(40.dp)
-            .testTag(PlayTestTags.START),
-    ) { Text(stringResource(R.string.play_start)) }
-}
-
-@Composable
-private fun BigStartButton(picker: Picker, onStart: () -> Unit) {
-    Button(
-        onClick = onStart,
-        enabled = picker.canPlay,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .testTag(PlayTestTags.START),
-    ) { Text(stringResource(R.string.play_start), style = MaterialTheme.typography.titleMedium) }
-}
 
 @Composable
 private fun SheetActions(content: @Composable RowScope.() -> Unit) {
@@ -372,21 +446,14 @@ private fun SheetActions(content: @Composable RowScope.() -> Unit) {
     ) { content() }
 }
 
-/** The game put down for this board: what it is, how far it got, and the one button that picks it up. */
 @Composable
-private fun SavedGameRow(picker: Picker, minHeight: Dp, actions: PickerActions) {
-    val offer = picker.resume
-    if (offer != null) ResumeRow(offer, minHeight, actions) else DiscardedRow(minHeight, actions.onUndoDiscard)
-}
-
-@Composable
-private fun DiscardedRow(minHeight: Dp, onUndo: () -> Unit) {
+private fun DiscardedRow(onUndo: () -> Unit) {
     Surface(
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = minHeight)
+            .heightIn(min = 56.dp)
             .testTag(PlayTestTags.DISCARDED_ROW),
     ) {
         Row(Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -402,7 +469,7 @@ private fun DiscardedRow(minHeight: Dp, onUndo: () -> Unit) {
             TextButton(
                 onClick = onUndo,
                 modifier = Modifier
-                    .height(36.dp)
+                    .heightIn(min = 44.dp)
                     .testTag(PlayTestTags.UNDO_DISCARD),
             ) {
                 Text(stringResource(R.string.play_snack_undo))
@@ -411,73 +478,104 @@ private fun DiscardedRow(minHeight: Dp, onUndo: () -> Unit) {
     }
 }
 
+/**
+ * The game put down for this board: when it began, how far it got, and a filled Resume.
+ * One that cannot go on as it was keeps today's Start again or Discard, and no progress.
+ */
 @Composable
-private fun ResumeRow(offer: ResumeOffer, minHeight: Dp, actions: PickerActions) {
+private fun SavedGameCard(offer: ResumeOffer, actions: PickerActions) {
     Surface(
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = minHeight)
             .testTag(PlayTestTags.RESUME_ROW),
     ) {
-        Row(Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            HistoryIcon(20.dp, MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.width(12.dp))
-            // Two lines, the game over when it began: side by side each broke in two.
-            Column(Modifier.weight(1f)) {
-                val name = stringResource(offer.kind.nameRes)
-                Text(
-                    text = if (offer.changed) name else stringResource(R.string.play_resume_progress, name, offer.played, offer.total),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                val started = startedText(offer.startedAt)
-                Text(
-                    text = when {
-                        offer.tierGone -> stringResource(R.string.play_tier_gone)
-                        offer.changed && !offer.canStartAgain -> stringResource(R.string.play_too_few_to_start_again)
-                        offer.changed -> stringResource(R.string.play_board_changed)
-                        offer.joined > 0 -> started + " · " + pluralStringResource(R.plurals.play_new_cards_join, offer.joined, offer.joined)
-                        else -> started
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+        BoxWithConstraints(Modifier.padding(14.dp)) {
+            // A narrow window leaves the text too little beside the button: then it goes under the text.
+            val stacked = maxWidth < SAVED_SIDE_BY_SIDE_WIDTH
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (stacked) {
+                    SavedGameText(offer)
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { SavedGameButton(offer, actions) }
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SavedGameText(offer, Modifier.weight(1f))
+                        Spacer(Modifier.width(12.dp))
+                        SavedGameButton(offer, actions)
+                    }
+                }
+            if (!offer.changed && offer.total > 0) {
+                LinearProgressIndicator(
+                    progress = { (offer.played.toFloat() / offer.total).coerceIn(0f, 1f) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp),
+                    drawStopIndicator = {},
                 )
             }
-            Spacer(Modifier.width(8.dp))
-            if (offer.changed && !offer.canStartAgain) {
-                // Nothing can pick it up again: letting it go is the one thing left to do.
-                FilledTonalButton(
-                    onClick = actions.onDiscard,
-                    modifier = Modifier
-                        .height(36.dp)
-                        .testTag(PlayTestTags.DISCARD_SAVED),
-                ) {
-                    Text(stringResource(R.string.play_snack_discard))
-                }
-            } else {
-                FilledTonalButton(
-                    onClick = if (offer.changed) actions.onStartAgain else actions.onResume,
-                    modifier = Modifier
-                        .height(36.dp)
-                        .testTag(PlayTestTags.RESUME),
-                ) {
-                    Text(stringResource(if (offer.changed) R.string.play_start_again else R.string.play_resume))
-                }
             }
         }
     }
 }
 
+private val SAVED_SIDE_BY_SIDE_WIDTH = 280.dp
+
 @Composable
-private fun startedText(startedAt: Long): String {
-    val days = remember(startedAt) { daysSince(startedAt) }
-    return when (days) {
-        0 -> stringResource(R.string.play_started_today)
-        1 -> stringResource(R.string.play_started_yesterday)
-        else -> pluralStringResource(R.plurals.play_started_days_ago, days, days)
+private fun SavedGameText(offer: ResumeOffer, modifier: Modifier = Modifier) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(text = savedFirstLine(offer), style = SAVED_FIRST, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        val name = stringResource(offer.kind.nameRes)
+        Text(
+            text = if (offer.changed) name else stringResource(R.string.play_saved_progress, name, offer.played, offer.total),
+            style = SAVED_SECOND,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        savedProblem(offer)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     }
+}
+
+@Composable
+private fun SavedGameButton(offer: ResumeOffer, actions: PickerActions) {
+    val modifier = Modifier.heightIn(min = 44.dp)
+    if (offer.changed && !offer.canStartAgain) {
+        // Nothing can pick it up again: letting it go is the one thing left to do.
+        FilledTonalButton(onClick = actions.onDiscard, modifier = modifier.testTag(PlayTestTags.DISCARD_SAVED)) {
+            Text(stringResource(R.string.play_snack_discard))
+        }
+    } else {
+        Button(
+            onClick = if (offer.changed) actions.onStartAgain else actions.onResume,
+            modifier = modifier.testTag(PlayTestTags.RESUME),
+        ) {
+            Text(stringResource(if (offer.changed) R.string.play_start_again else R.string.play_resume))
+        }
+    }
+}
+
+private val SAVED_FIRST = TextStyle(fontSize = 12.sp, lineHeight = 17.sp, fontWeight = FontWeight.Medium)
+private val SAVED_SECOND = TextStyle(fontSize = 16.sp, lineHeight = 21.sp, fontWeight = FontWeight.Medium)
+
+/** «Your game · started 5 days ago», and the cards that joined a Swiss game since it was put down. */
+@Composable
+private fun savedFirstLine(offer: ResumeOffer): String {
+    val days = remember(offer.startedAt) { daysSince(offer.startedAt) }
+    val started = when (days) {
+        0 -> stringResource(R.string.play_your_game_today)
+        1 -> stringResource(R.string.play_your_game_yesterday)
+        else -> pluralStringResource(R.plurals.play_your_game_days_ago, days, days)
+    }
+    if (offer.changed || offer.joined == 0) return started
+    return started + " · " + pluralStringResource(R.plurals.play_new_cards_join, offer.joined, offer.joined)
+}
+
+/** Why a game put down cannot go on as it was. */
+@Composable
+private fun savedProblem(offer: ResumeOffer): String? = when {
+    offer.tierGone -> stringResource(R.string.play_tier_gone)
+    offer.changed && !offer.canStartAgain -> stringResource(R.string.play_too_few_to_start_again)
+    offer.changed -> stringResource(R.string.play_board_changed)
+    else -> null
 }
 
 /** Calendar days, not periods of 24 hours: a game begun last night was begun yesterday. */
@@ -487,65 +585,33 @@ internal fun daysSince(startedAt: Long, now: Long = System.currentTimeMillis(), 
     return ChronoUnit.DAYS.between(then, today).toInt().coerceAtLeast(0)
 }
 
-/** The colours of a game's card, chosen or not: the same on the sheet and in the sideways dialog. */
-private data class OptionColors(val background: Color, val content: Color, val quiet: Color)
+/** The colours of a game, chosen or not: a tile sits on the container colour, a row on an outline. */
+private data class OptionColors(val background: Color, val content: Color, val quiet: Color, val icon: Color)
 
 @Composable
-private fun optionColors(selected: Boolean): OptionColors {
-    val content = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+private fun optionColors(selected: Boolean, filled: Boolean): OptionColors {
+    val scheme = MaterialTheme.colorScheme
+    if (selected) {
+        val content = scheme.onPrimaryContainer
+        return OptionColors(background = scheme.primaryContainer, content = content, quiet = content, icon = content)
+    }
     return OptionColors(
-        background = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
-        content = content,
-        quiet = if (selected) content.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
+        background = if (filled) scheme.surfaceContainerHighest else Color.Transparent,
+        content = scheme.onSurface,
+        quiet = scheme.onSurfaceVariant,
+        icon = scheme.onSurfaceVariant,
     )
 }
 
 @Composable
-private fun Modifier.gameOption(kind: GameKind, selected: Boolean, onSelect: () -> Unit): Modifier {
+private fun Modifier.gameOption(kind: GameKind, selected: Boolean, onSelect: () -> Unit, filled: Boolean): Modifier {
     val shape = RoundedCornerShape(16.dp)
+    val outlined = !selected && !filled
     return clip(shape)
-        .background(optionColors(selected).background)
-        .then(if (selected) Modifier else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape))
+        .background(optionColors(selected, filled).background)
+        .then(if (outlined) Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape) else Modifier)
         .selectable(selected = selected, onClick = onSelect, role = Role.RadioButton)
         .testTag(PlayTestTags.game(kind))
-}
-
-@Composable
-private fun GameOption(kind: GameKind, count: Int, selected: Boolean, onSelect: () -> Unit) {
-    val colors = optionColors(selected)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 72.dp)
-            .gameOption(kind, selected, onSelect)
-            .padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        RadioButton(selected = selected, onClick = null)
-        Spacer(Modifier.width(12.dp))
-        GameIcon(kind, 22.dp, colors.content)
-        Spacer(Modifier.width(14.dp))
-        Column(Modifier.weight(1f)) {
-            Text(stringResource(kind.nameRes), style = MaterialTheme.typography.titleMedium, color = colors.content)
-            Text(stringResource(kind.lineRes), style = MaterialTheme.typography.bodyMedium, color = colors.quiet)
-            Text(
-                text = estimateText(kind, count),
-                modifier = Modifier.padding(top = 2.dp),
-                style = MaterialTheme.typography.labelMedium,
-                color = colors.quiet,
-            )
-        }
-    }
-}
-
-/** "≈ 136 duels · about 5 min": Swiss and smart may stop early, so their counts are only roughly. */
-@Composable
-private fun estimateText(kind: GameKind, count: Int): String {
-    val duels = estimatedDuels(kind, count)
-    val minutes = estimatedMinutes(duels)
-    val prefix = if (kind.isRough) "≈ " else ""
-    return prefix + pluralStringResource(R.plurals.play_estimate_duels, duels, duels) + " · " +
-        pluralStringResource(R.plurals.play_estimate_minutes, minutes, minutes)
 }
 
 @Composable
@@ -700,151 +766,49 @@ internal val GameKind.nameRes: Int
     }
 
 @get:StringRes
-private val GameKind.lineRes: Int
+private val GameKind.shortLineRes: Int
     get() = when (this) {
-        GameKind.Smart -> R.string.play_game_smart_line
-        GameKind.Swiss -> R.string.play_game_swiss_line
-        GameKind.Hill -> R.string.play_game_hill_line
-        GameKind.Bracket -> R.string.play_game_bracket_line
+        GameKind.Smart -> R.string.play_game_smart_short
+        GameKind.Swiss -> R.string.play_game_swiss_short
+        GameKind.Hill -> R.string.play_game_hill_short
+        GameKind.Bracket -> R.string.play_game_bracket_short
     }
 
 private val WIDE_TITLE = TextStyle(fontSize = 22.sp, lineHeight = 28.sp)
 private val WIDE_SUBTITLE = TextStyle(fontSize = 13.sp, lineHeight = 18.sp)
 
 /**
- * Sideways, the same dialog as upright in two columns: what the game is and
- * what this one will take on the left, Start and the ways round it on the right.
+ * Sideways the dialog is wide and low: the four games abreast, and the cards
+ * at its foot beside Cancel and Start, so a saved game and the games fit its height.
  */
 @Composable
 private fun ColumnScope.WideGamesPage(picker: Picker, actions: PickerActions) {
-    Row(
-        Modifier
-            .weight(1f, fill = false)
-            .padding(start = 24.dp, end = 24.dp, bottom = 12.dp)
-            .testTag(PlayTestTags.PICKER),
-        horizontalArrangement = Arrangement.spacedBy(28.dp),
-    ) {
-        Column(
-            Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            Text(stringResource(R.string.play_title), style = WIDE_TITLE, color = MaterialTheme.colorScheme.onSurface)
-            Text(
-                text = stringResource(R.string.play_how_it_works),
-                modifier = Modifier.padding(top = 4.dp),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(Modifier.height(12.dp))
-            if (picker.resume != null || picker.discarded) {
-                SavedGameRow(picker, minHeight = 52.dp, actions)
-                Spacer(Modifier.height(10.dp))
-            }
-            GameSummary(picker)
-            PlacedWarning(picker.placedChosen)
-            if (picker.intoMine) IntoMineNote()
-        }
-        Column(
-            Modifier
-                .width(WIDE_START_WIDTH)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            Spacer(Modifier.height(30.dp))
-            BigStartButton(picker, actions.onStart)
-            Spacer(Modifier.height(4.dp))
-            PickerLinks(actions)
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                TextButton(onClick = actions.onDismiss) { Text(stringResource(R.string.play_cancel)) }
-            }
-        }
-    }
-}
-
-private val WIDE_START_WIDTH = 300.dp
-
-/** Sideways, "Other ways to play": every game side by side, in view without a scroll. */
-@Composable
-private fun ColumnScope.WideModesPage(picker: Picker, actions: PickerActions) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .heightIn(min = 44.dp)
-            .padding(start = 8.dp, end = 24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val back = stringResource(ThemeR.string.tier_detail_content_description_back)
-        IconButton(onClick = actions.onShowGames, modifier = Modifier.semantics { contentDescription = back }) { BackIcon() }
-        Text(stringResource(R.string.play_other_ways), style = WIDE_TITLE, color = MaterialTheme.colorScheme.onSurface)
-    }
     Column(
         Modifier
             .weight(1f, fill = false)
             .verticalScroll(rememberScrollState())
-            .padding(start = 24.dp, end = 24.dp, top = 6.dp)
-            .testTag(PlayTestTags.MODES_PAGE),
+            .padding(start = 24.dp, end = 24.dp)
+            .testTag(PlayTestTags.PICKER),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-                .selectableGroup(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            PlayGames.forEach { kind ->
-                GameColumn(
-                    kind = kind,
-                    count = picker.count,
-                    selected = kind == picker.kind,
-                    onSelect = { actions.onChoose(kind) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-                )
-            }
-        }
+        PlayHeading(picker, actions, style = WIDE_TITLE)
+        GameChoice(picker, actions, across = PlayGames.size)
+        StartNotes(picker)
     }
-    SheetActions {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CardsChip(picker, actions.onShowCards)
+        Spacer(Modifier.weight(1f))
         TextButton(onClick = actions.onDismiss) { Text(stringResource(R.string.play_cancel)) }
-        StartButton(picker, actions.onStart)
+        StartButton(picker, actions.onStart, Modifier)
     }
 }
-
-@Composable
-private fun GameColumn(kind: GameKind, count: Int, selected: Boolean, onSelect: () -> Unit, modifier: Modifier) {
-    val colors = optionColors(selected)
-    Column(
-        modifier
-            .heightIn(min = 146.dp)
-            .gameOption(kind, selected, onSelect)
-            // Four games abreast on a phone held sideways: the spacing gives way so the row still fits.
-            .padding(horizontal = 14.dp, vertical = 10.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = selected, onClick = null)
-            Spacer(Modifier.width(10.dp))
-            GameIcon(kind, 20.dp, colors.content)
-        }
-        Spacer(Modifier.height(6.dp))
-        Text(stringResource(kind.nameRes), style = COLUMN_NAME, color = colors.content)
-        Text(
-            text = stringResource(kind.lineRes),
-            modifier = Modifier.padding(top = 4.dp),
-            style = COLUMN_LINE,
-            color = colors.quiet,
-        )
-        Spacer(
-            Modifier
-                .weight(1f)
-                .heightIn(min = 6.dp),
-        )
-        Text(estimateText(kind, count), style = COLUMN_ESTIMATE, color = colors.quiet)
-    }
-}
-
-private val COLUMN_NAME = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
-private val COLUMN_LINE = TextStyle(fontSize = 12.sp, lineHeight = 17.sp)
-private val COLUMN_ESTIMATE = TextStyle(fontSize = 11.sp, lineHeight = 15.sp)
 
 /** Sideways: rows of 48 in two columns, the title and the buttons pinned while the tiers scroll between. */
 @Composable

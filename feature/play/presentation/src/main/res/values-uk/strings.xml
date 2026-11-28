@@ -9,13 +9,6 @@
     </plurals>
     <string name="play_how_it_works">Обирайте кращу з двох карток. Рівні заповняться самі.</string>
     <string name="play_game_kept">Можна вийти будь-коли — гру буде збережено.</string>
-    <string name="play_other_ways">Інші способи гри</string>
-    <plurals name="play_about_duels">
-        <item quantity="one">близько %1$d дуелі</item>
-        <item quantity="few">близько %1$d дуелей</item>
-        <item quantity="many">близько %1$d дуелей</item>
-        <item quantity="other">близько %1$d дуелі</item>
-    </plurals>
     <plurals name="play_minutes">
         <item quantity="one">%1$d хв</item>
         <item quantity="few">%1$d хв</item>
@@ -27,33 +20,13 @@
     <string name="play_game_swiss">Ніхто не вибуває</string>
     <string name="play_game_hill">Цар гори</string>
     <string name="play_game_bracket">Турнірна сітка</string>
-    <string name="play_game_smart_line">Питає лише про картки, які ще можуть змінити рівень. Майже ті самі рівні за значно меншу кількість дуелей.</string>
-    <string name="play_game_swiss_line">Кожен грає в кожному раунді. Довше, зате найкраще заповнює рівні.</string>
-    <string name="play_game_hill_line">Переможець лишається й зустрічає наступну картку. Швидко; рівні виходять приблизні.</string>
-    <string name="play_game_bracket_line">Грають пари, переможці йдуть далі, доки не лишиться один. Швидко; рівні виходять приблизні.</string>
     <plurals name="play_estimate_duels">
         <item quantity="one">%1$d дуель</item>
         <item quantity="few">%1$d дуелі</item>
         <item quantity="many">%1$d дуелей</item>
         <item quantity="other">%1$d дуелі</item>
     </plurals>
-    <plurals name="play_estimate_minutes">
-        <item quantity="one">близько %1$d хв</item>
-        <item quantity="few">близько %1$d хв</item>
-        <item quantity="many">близько %1$d хв</item>
-        <item quantity="other">близько %1$d хв</item>
-    </plurals>
-    <string name="play_new_game">Або почніть нову гру</string>
     <string name="play_resume">Продовжити</string>
-    <string name="play_resume_progress">%1$s · %2$d з %3$d</string>
-    <string name="play_started_today">Почато сьогодні</string>
-    <string name="play_started_yesterday">Почато вчора</string>
-    <plurals name="play_started_days_ago">
-        <item quantity="one">Почато %1$d день тому</item>
-        <item quantity="few">Почато %1$d дні тому</item>
-        <item quantity="many">Почато %1$d днів тому</item>
-        <item quantity="other">Почато %1$d дня тому</item>
-    </plurals>
     <plurals name="play_new_cards_join">
         <item quantity="one">%1$d нова картка приєднається з наступного раунду</item>
         <item quantity="few">%1$d нові картки приєднаються з наступного раунду</item>
@@ -66,7 +39,6 @@
     <string name="play_start_again">Почати знову</string>
     <string name="play_into_mine_note">Результат потрапить у вашу версію. Розстановка автора не зміниться.</string>
     <string name="play_cancel">Скасувати</string>
-    <string name="play_start">Почати</string>
     <string name="play_continue">Далі</string>
     <string name="play_back">Назад</string>
     <string name="play_pool">Колода</string>
@@ -129,5 +101,27 @@
         <item quantity="few">і ще %1$d рівні</item>
         <item quantity="many">і ще %1$d рівнів</item>
         <item quantity="other">і ще %1$d рівня</item>
+    </plurals>
+    <string name="play_game_smart_short">Найкращі рівні, менше дуелей</string>
+    <string name="play_game_swiss_short">Кожен грає в кожному раунді</string>
+    <string name="play_game_hill_short">Переможець лишається · рівні приблизні</string>
+    <string name="play_game_bracket_short">На вибування · рівні приблизні</string>
+    <string name="play_or_new_game">Або нова гра</string>
+    <string name="play_start_game">Почати: %1$s · %2$s</string>
+    <string name="play_start_new_game">Почати нову · %1$s · %2$s</string>
+    <string name="play_saved_progress">%1$s · дуель %2$d з %3$d</string>
+    <string name="play_your_game_today">Ваша гра · почата сьогодні</string>
+    <string name="play_your_game_yesterday">Ваша гра · почата вчора</string>
+    <plurals name="play_your_game_days_ago">
+        <item quantity="one">Ваша гра · почата %1$d день тому</item>
+        <item quantity="few">Ваша гра · почата %1$d дні тому</item>
+        <item quantity="many">Ваша гра · почата %1$d днів тому</item>
+        <item quantity="other">Ваша гра · почата %1$d дня тому</item>
+    </plurals>
+    <plurals name="play_cards_all">
+        <item quantity="one">Усі картки: %1$d</item>
+        <item quantity="few">Усі картки: %1$d</item>
+        <item quantity="many">Усі картки: %1$d</item>
+        <item quantity="other">Усі картки: %1$d</item>
     </plurals>
 </resources>
