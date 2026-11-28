@@ -10,6 +10,7 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.doubleClick
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -27,6 +28,8 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+
+private const val PANEL_WAIT_MILLIS = 5_000L
 
 @RunWith(AndroidJUnit4::class)
 class TierDetailTierEditorTest : TierDetailScreenTestBase() {
@@ -116,7 +119,7 @@ class TierDetailTierEditorTest : TierDetailScreenTestBase() {
 
         openTierEditor()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
-        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
+        chooseCustomColour()
 
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_TAB_DARK).performScrollTo()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_TAB_DARK).performClick()
@@ -143,7 +146,7 @@ class TierDetailTierEditorTest : TierDetailScreenTestBase() {
 
         openTierEditor()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
-        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
+        chooseCustomColour()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextClearance()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HEX_FIELD).performTextInput("F5F0FA")
 
@@ -163,7 +166,7 @@ class TierDetailTierEditorTest : TierDetailScreenTestBase() {
 
         openTierEditor()
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_LABEL_FIELD).performTextInput("Z")
-        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
+        chooseCustomColour()
 
         val hueSlider = composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER)
         hueSlider.performScrollTo()
@@ -187,7 +190,7 @@ class TierDetailTierEditorTest : TierDetailScreenTestBase() {
         setScreen(TierDetailUiState.Success(defaultList()))
 
         openTierEditor()
-        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performClick()
+        chooseCustomColour()
 
         val trackTag = TierDetailTestTags.sliderTrack(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER)
         val thumbTag = TierDetailTestTags.sliderThumb(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER)
@@ -353,5 +356,14 @@ class TierDetailTierEditorTest : TierDetailScreenTestBase() {
 
         composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_SAVE).assertHasNoClickAction()
         composeRule.runOnIdle { assertEquals(0, callCount) }
+    }
+
+    // The swatch sits low in the sheet on the 320×640 emulator: scrolled to first, and the
+    // panel waited for, the slider's own checks never start on a sheet that is still settling.
+    private fun chooseCustomColour() {
+        composeRule.onNodeWithTag(TierDetailTestTags.TIER_EDITOR_CUSTOM_SWATCH).performScrollTo().performClick()
+        composeRule.waitUntil(PANEL_WAIT_MILLIS) {
+            composeRule.onAllNodesWithTag(TierDetailTestTags.TIER_EDITOR_HUE_SLIDER).fetchSemanticsNodes().size == 1
+        }
     }
 }
