@@ -30,9 +30,9 @@
     </plurals>
     <string name="play_choose_cards">اختيار البطاقات</string>
     <string name="play_game_smart">اختيار ذكي</string>
-    <string name="play_game_swiss">الخاسرون يبقون</string>
+    <string name="play_game_swiss">لا أحد يخرج</string>
     <string name="play_game_hill">ملك التل</string>
-    <string name="play_game_bracket">جدول الإقصاء</string>
+    <string name="play_game_bracket">خروج المغلوب</string>
     <string name="play_game_smart_line">يسأل فقط عن البطاقات التي قد يتغيّر مستواها بعد. المستويات نفسها تقريبًا بمواجهات أقل بكثير.</string>
     <string name="play_game_swiss_line">الجميع يلعب في كل جولة. أبطأ، والأفضل لملء المستويات.</string>
     <string name="play_game_hill_line">يبقى الفائز ويواجه البطاقة التالية. سريع؛ والمستويات تخرج تقريبية.</string>
