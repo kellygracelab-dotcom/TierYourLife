@@ -37,8 +37,8 @@ data class ReadyState(
     val intoMine: Boolean,
 )
 
-/** Games is the one Start; Modes lists every way to play, Smart first. */
-enum class PickerPage { Games, Modes, Cards, Individual }
+/** Games holds every game and Start; Cards and Individual choose what a game is played over. */
+enum class PickerPage { Games, Cards, Individual }
 
 @Immutable
 data class CardOption(val item: TierItem, val tierId: Long)

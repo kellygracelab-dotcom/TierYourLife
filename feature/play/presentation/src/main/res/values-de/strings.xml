@@ -7,11 +7,6 @@
     </plurals>
     <string name="play_how_it_works">Wähle die bessere von zwei Karten. Die Stufen füllen sich von selbst.</string>
     <string name="play_game_kept">Jederzeit aufhören — das Spiel bleibt erhalten.</string>
-    <string name="play_other_ways">Andere Spielarten</string>
-    <plurals name="play_about_duels">
-        <item quantity="one">etwa %1$d Duell</item>
-        <item quantity="other">etwa %1$d Duelle</item>
-    </plurals>
     <plurals name="play_minutes">
         <item quantity="one">%1$d Min.</item>
         <item quantity="other">%1$d Min.</item>
@@ -21,27 +16,11 @@
     <string name="play_game_swiss">Keiner fliegt raus</string>
     <string name="play_game_hill">König des Hügels</string>
     <string name="play_game_bracket">Turnierbaum</string>
-    <string name="play_game_smart_line">Fragt nur nach Karten, die noch die Stufe wechseln könnten. Fast dieselben Stufen mit viel weniger Duellen.</string>
-    <string name="play_game_swiss_line">Alle spielen jede Runde. Langsamer, am besten zum Füllen der Stufen.</string>
-    <string name="play_game_hill_line">Der Sieger bleibt und trifft auf die nächste Karte. Schnell; die Stufen werden grob.</string>
-    <string name="play_game_bracket_line">Paare spielen, Sieger kommen weiter, bis einer übrig ist. Schnell; die Stufen werden grob.</string>
     <plurals name="play_estimate_duels">
         <item quantity="one">%1$d Duell</item>
         <item quantity="other">%1$d Duelle</item>
     </plurals>
-    <plurals name="play_estimate_minutes">
-        <item quantity="one">etwa %1$d Min.</item>
-        <item quantity="other">etwa %1$d Min.</item>
-    </plurals>
-    <string name="play_new_game">Oder ein neues Spiel starten</string>
     <string name="play_resume">Fortsetzen</string>
-    <string name="play_resume_progress">%1$s · %2$d von %3$d</string>
-    <string name="play_started_today">Heute begonnen</string>
-    <string name="play_started_yesterday">Gestern begonnen</string>
-    <plurals name="play_started_days_ago">
-        <item quantity="one">Vor %1$d Tag begonnen</item>
-        <item quantity="other">Vor %1$d Tagen begonnen</item>
-    </plurals>
     <plurals name="play_new_cards_join">
         <item quantity="one">%1$d neue Karte steigt ab der nächsten Runde ein</item>
         <item quantity="other">%1$d neue Karten steigen ab der nächsten Runde ein</item>
@@ -52,7 +31,6 @@
     <string name="play_start_again">Neu beginnen</string>
     <string name="play_into_mine_note">Das Ergebnis kommt in deine Version. Die Rangliste des Autors bleibt, wie sie ist.</string>
     <string name="play_cancel">Abbrechen</string>
-    <string name="play_start">Starten</string>
     <string name="play_continue">Weiter</string>
     <string name="play_back">Zurück</string>
     <string name="play_pool">Der Stapel</string>
@@ -105,5 +83,23 @@
     <plurals name="play_more_tiers">
         <item quantity="one">und %1$d weitere Stufe</item>
         <item quantity="other">und %1$d weitere Stufen</item>
+    </plurals>
+    <string name="play_game_smart_short">Beste Stufen, weniger Duelle</string>
+    <string name="play_game_swiss_short">Alle spielen jede Runde</string>
+    <string name="play_game_hill_short">Sieger bleibt · grobe Stufen</string>
+    <string name="play_game_bracket_short">K.-o.-System · grobe Stufen</string>
+    <string name="play_or_new_game">Oder ein neues Spiel</string>
+    <string name="play_start_game">%1$s starten · %2$s</string>
+    <string name="play_start_new_game">Neues Spiel · %1$s · %2$s</string>
+    <string name="play_saved_progress">%1$s · Duell %2$d von %3$d</string>
+    <string name="play_your_game_today">Dein Spiel · heute begonnen</string>
+    <string name="play_your_game_yesterday">Dein Spiel · gestern begonnen</string>
+    <plurals name="play_your_game_days_ago">
+        <item quantity="one">Dein Spiel · vor %1$d Tag begonnen</item>
+        <item quantity="other">Dein Spiel · vor %1$d Tagen begonnen</item>
+    </plurals>
+    <plurals name="play_cards_all">
+        <item quantity="one">Alle Karten: %1$d</item>
+        <item quantity="other">Alle Karten: %1$d</item>
     </plurals>
 </resources>

@@ -109,7 +109,7 @@ class ReadySheetTest {
                 PlayLayer(PlayRequest.ownBoard(unranked), open = true, onArranged = { _, _ -> }, onClose = { closed++ }, viewModel = viewModel)
             }
         }
-        composeRule.onNodeWithTag(PlayTestTags.START).performClick()
+        composeRule.onNodeWithTag(PlayTestTags.START).performScrollTo().performClick()
         composeRule.runOnIdle { while (viewModel.state.value.stage is PlayStage.Dueling) viewModel.duel.pick(first = true) }
         composeRule.waitUntil(5_000) { tagged(PlayTestTags.READY) == 1 }
         assertEquals(0, closed)

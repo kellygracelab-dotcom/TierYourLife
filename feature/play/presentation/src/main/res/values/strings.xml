@@ -7,11 +7,6 @@
     </plurals>
     <string name="play_how_it_works">Pick the better of two cards. The tiers fill in by themselves.</string>
     <string name="play_game_kept">Leave any time — the game is kept.</string>
-    <string name="play_other_ways">Other ways to play</string>
-    <plurals name="play_about_duels">
-        <item quantity="one">about %1$d duel</item>
-        <item quantity="other">about %1$d duels</item>
-    </plurals>
     <plurals name="play_minutes">
         <item quantity="one">%1$d min</item>
         <item quantity="other">%1$d min</item>
@@ -21,27 +16,11 @@
     <string name="play_game_swiss">Losers stay</string>
     <string name="play_game_hill">King of the hill</string>
     <string name="play_game_bracket">Bracket</string>
-    <string name="play_game_smart_line">Asks only about cards that could still change tier. Nearly the same tiers in far fewer duels.</string>
-    <string name="play_game_swiss_line">Everyone plays every round. Slower, best for filling tiers.</string>
-    <string name="play_game_hill_line">The winner stays and meets the next card. Quick; tiers come out rough.</string>
-    <string name="play_game_bracket_line">Pairs play, winners go on until one is left. Quick; tiers come out rough.</string>
     <plurals name="play_estimate_duels">
         <item quantity="one">%1$d duel</item>
         <item quantity="other">%1$d duels</item>
     </plurals>
-    <plurals name="play_estimate_minutes">
-        <item quantity="one">about %1$d min</item>
-        <item quantity="other">about %1$d min</item>
-    </plurals>
-    <string name="play_new_game">Or start a new game</string>
     <string name="play_resume">Resume</string>
-    <string name="play_resume_progress">%1$s · %2$d of %3$d</string>
-    <string name="play_started_today">Started today</string>
-    <string name="play_started_yesterday">Started yesterday</string>
-    <plurals name="play_started_days_ago">
-        <item quantity="one">Started %1$d day ago</item>
-        <item quantity="other">Started %1$d days ago</item>
-    </plurals>
     <plurals name="play_new_cards_join">
         <item quantity="one">%1$d new card joins from the next round</item>
         <item quantity="other">%1$d new cards join from the next round</item>
@@ -52,7 +31,6 @@
     <string name="play_start_again">Start again</string>
     <string name="play_into_mine_note">The result goes into your version. The author’s ranking doesn’t change.</string>
     <string name="play_cancel">Cancel</string>
-    <string name="play_start">Start</string>
     <string name="play_continue">Continue</string>
     <string name="play_back">Back</string>
     <string name="play_pool">Cards left</string>
@@ -105,5 +83,23 @@
     <plurals name="play_more_tiers">
         <item quantity="one">and %1$d more tier</item>
         <item quantity="other">and %1$d more tiers</item>
+    </plurals>
+    <string name="play_game_smart_short">Best tiers, fewer duels</string>
+    <string name="play_game_swiss_short">Everyone plays every round</string>
+    <string name="play_game_hill_short">Winner stays · rough tiers</string>
+    <string name="play_game_bracket_short">Knockout · rough tiers</string>
+    <string name="play_or_new_game">Or a new game</string>
+    <string name="play_start_game">Start %1$s · %2$s</string>
+    <string name="play_start_new_game">Start new · %1$s · %2$s</string>
+    <string name="play_saved_progress">%1$s · duel %2$d of %3$d</string>
+    <string name="play_your_game_today">Your game · started today</string>
+    <string name="play_your_game_yesterday">Your game · started yesterday</string>
+    <plurals name="play_your_game_days_ago">
+        <item quantity="one">Your game · started %1$d day ago</item>
+        <item quantity="other">Your game · started %1$d days ago</item>
+    </plurals>
+    <plurals name="play_cards_all">
+        <item quantity="one">All %1$d card</item>
+        <item quantity="other">All %1$d cards</item>
     </plurals>
 </resources>

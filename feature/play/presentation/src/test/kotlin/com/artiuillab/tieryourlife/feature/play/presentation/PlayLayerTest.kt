@@ -1,5 +1,7 @@
 package com.artiuillab.tieryourlife.feature.play.presentation
 
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -35,7 +37,8 @@ class PlayLayerTest {
     fun startingAGame_keepsThePickerUp_untilTheDuelsAreDrawnUnderIt() {
         val viewModel = PlayViewModel(FakeSavedGames(), MovingTierRepository(unranked))
         composeRule.setContent { TierYourLifeTheme { PlayLayer(request, open = true, onArranged = { _, _ -> }, onClose = {}, viewModel = viewModel) } }
-        composeRule.onNodeWithTag(PlayTestTags.START).assertExists()
+        // On a small window the four games push Start below the fold: the sheet scrolls to it.
+        composeRule.onNodeWithTag(PlayTestTags.START).performScrollTo()
 
         composeRule.mainClock.autoAdvance = false
         composeRule.onNodeWithTag(PlayTestTags.START).performClick()
@@ -53,15 +56,16 @@ class PlayLayerTest {
     }
 
     @Test
-    fun otherWaysToPlay_listsTheFourGames_andStartPlaysTheOneChosen() {
+    fun theFourGames_areOnTheSheet_andStartPlaysTheOneChosen() {
         val viewModel = PlayViewModel(FakeSavedGames(), MovingTierRepository(unranked))
         composeRule.setContent { TierYourLifeTheme { PlayLayer(request, open = true, onArranged = { _, _ -> }, onClose = {}, viewModel = viewModel) } }
-        composeRule.onNodeWithTag(PlayTestTags.SUMMARY).assertExists()
 
-        composeRule.onNodeWithTag(PlayTestTags.OTHER_WAYS).performClick()
         PlayGames.forEach { composeRule.onNodeWithTag(PlayTestTags.game(it)).assertExists() }
+        composeRule.onNodeWithTag(PlayTestTags.game(GameKind.Smart)).assertIsSelected()
         composeRule.onNodeWithTag(PlayTestTags.game(GameKind.Hill)).performScrollTo().performClick()
-        composeRule.onNodeWithTag(PlayTestTags.START).performClick()
+        composeRule.onNodeWithTag(PlayTestTags.game(GameKind.Hill)).assertIsSelected()
+        composeRule.onNodeWithTag(PlayTestTags.START).assertTextContains("King of the hill", substring = true)
+        composeRule.onNodeWithTag(PlayTestTags.START).performScrollTo().performClick()
         composeRule.waitForIdle()
 
         val duel = (viewModel.state.value.stage as PlayStage.Dueling).duel

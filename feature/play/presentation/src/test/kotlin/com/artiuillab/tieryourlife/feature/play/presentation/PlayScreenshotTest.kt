@@ -91,13 +91,31 @@ class PlayScreenshotTest {
     }
 
     @Test
-    fun otherWaysToPlay_theFourGames() = capture("play_modes") {
-        Sheet(frieren.copy(page = PickerPage.Modes, kind = GameKind.Swiss))
+    fun thePicker_aSavedGameFirst_asTheDesignDrawsIt() = capture("play_picker_saved") {
+        Sheet(frieren.copy(resume = ResumeOffer(GameKind.Smart, played = 16, total = 318, startedAt = System.currentTimeMillis() - 5 * DAY)))
+    }
+
+    @Test
+    fun thePicker_aSavedGameThatChanged_startsAgain_dark() = capture("play_picker_saved_changed_dark", dark = true) {
+        Sheet(frieren.copy(resume = savedGame.copy(kind = GameKind.Hill, changed = true)))
     }
 
     @Test
     @Config(qualifiers = "+ru", fontScale = 1.15f)
-    fun thePicker_russian_theLinksOneAboveTheOther() = capture("play_picker_ru") {
+    fun thePicker_russian_theTilesGrowWithTheirText() = capture("play_picker_ru") {
+        Sheet(frieren.copy(resume = savedGame))
+    }
+
+    // CI's emulator window: two tiles do not fit, so the games are rows.
+    @Test
+    @Config(qualifiers = "+ru-w320dp-h640dp-xhdpi")
+    fun thePicker_narrowWindow_theGamesAsRows() = capture("play_picker_narrow_ru") {
+        Sheet(frieren.copy(resume = savedGame))
+    }
+
+    @Test
+    @Config(fontScale = 1.3f)
+    fun thePicker_largeText_theGamesAsRows() = capture("play_picker_large_text") {
         Sheet(frieren)
     }
 
@@ -199,7 +217,7 @@ class PlayScreenshotTest {
 
     @Test
     @Config(qualifiers = FLIP_LANDSCAPE)
-    fun landscape_thePicker_theGamesSideBySide() = capture("play_landscape_picker") {
+    fun landscape_thePicker_theFourGamesAbreast() = capture("play_landscape_picker") {
         WideDialog(picker.copy(resume = savedGame))
     }
 
@@ -213,12 +231,6 @@ class PlayScreenshotTest {
     @Config(qualifiers = FLIP_LANDSCAPE)
     fun landscape_thePicker_placedCardsWarned() = capture("play_landscape_picker_placed") {
         WideDialog(picker.copy(page = PickerPage.Games, intoMine = true, chosen = picker.groups.filterNot { it.isPool }.map { it.tierId }.toSet()))
-    }
-
-    @Test
-    @Config(qualifiers = FLIP_LANDSCAPE)
-    fun landscape_otherWaysToPlay_theFourGamesSideBySide() = capture("play_landscape_modes") {
-        WideDialog(frieren.copy(page = PickerPage.Modes, kind = GameKind.Swiss))
     }
 
     @Test

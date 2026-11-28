@@ -11,15 +11,6 @@
     </plurals>
     <string name="play_how_it_works">اختر الأفضل من بطاقتين. تمتلئ المستويات من تلقاء نفسها.</string>
     <string name="play_game_kept">يمكنك المغادرة في أي وقت — تُحفظ اللعبة.</string>
-    <string name="play_other_ways">طرق أخرى للعب</string>
-    <plurals name="play_about_duels">
-        <item quantity="zero">لا مواجهات</item>
-        <item quantity="one">نحو مواجهة واحدة</item>
-        <item quantity="two">نحو مواجهتين</item>
-        <item quantity="few">نحو %1$d مواجهات</item>
-        <item quantity="many">نحو %1$d مواجهة</item>
-        <item quantity="other">نحو %1$d مواجهة</item>
-    </plurals>
     <plurals name="play_minutes">
         <item quantity="zero">أقل من دقيقة</item>
         <item quantity="one">دقيقة واحدة</item>
@@ -33,10 +24,6 @@
     <string name="play_game_swiss">لا أحد يخرج</string>
     <string name="play_game_hill">ملك التل</string>
     <string name="play_game_bracket">خروج المغلوب</string>
-    <string name="play_game_smart_line">يسأل فقط عن البطاقات التي قد يتغيّر مستواها بعد. المستويات نفسها تقريبًا بمواجهات أقل بكثير.</string>
-    <string name="play_game_swiss_line">الجميع يلعب في كل جولة. أبطأ، والأفضل لملء المستويات.</string>
-    <string name="play_game_hill_line">يبقى الفائز ويواجه البطاقة التالية. سريع؛ والمستويات تخرج تقريبية.</string>
-    <string name="play_game_bracket_line">تتواجه الأزواج ويتقدم الفائزون حتى تبقى بطاقة واحدة. سريع؛ والمستويات تخرج تقريبية.</string>
     <plurals name="play_estimate_duels">
         <item quantity="zero">لا مواجهات</item>
         <item quantity="one">مواجهة واحدة</item>
@@ -45,27 +32,7 @@
         <item quantity="many">%1$d مواجهة</item>
         <item quantity="other">%1$d مواجهة</item>
     </plurals>
-    <plurals name="play_estimate_minutes">
-        <item quantity="zero">أقل من دقيقة</item>
-        <item quantity="one">نحو دقيقة</item>
-        <item quantity="two">نحو دقيقتين</item>
-        <item quantity="few">نحو %1$d دقائق</item>
-        <item quantity="many">نحو %1$d دقيقة</item>
-        <item quantity="other">نحو %1$d دقيقة</item>
-    </plurals>
-    <string name="play_new_game">أو ابدأ لعبة جديدة</string>
     <string name="play_resume">متابعة</string>
-    <string name="play_resume_progress">%1$s · %2$d من %3$d</string>
-    <string name="play_started_today">بدأت اليوم</string>
-    <string name="play_started_yesterday">بدأت أمس</string>
-    <plurals name="play_started_days_ago">
-        <item quantity="zero">بدأت اليوم</item>
-        <item quantity="one">بدأت قبل يوم</item>
-        <item quantity="two">بدأت قبل يومين</item>
-        <item quantity="few">بدأت قبل %1$d أيام</item>
-        <item quantity="many">بدأت قبل %1$d يومًا</item>
-        <item quantity="other">بدأت قبل %1$d يوم</item>
-    </plurals>
     <plurals name="play_new_cards_join">
         <item quantity="zero">لا بطاقات جديدة تنضم</item>
         <item quantity="one">بطاقة جديدة واحدة تنضم من الجولة التالية</item>
@@ -80,7 +47,6 @@
     <string name="play_start_again">البدء من جديد</string>
     <string name="play_into_mine_note">تذهب النتيجة إلى نسختك. أما ترتيب المؤلف فلا يتغيّر.</string>
     <string name="play_cancel">إلغاء</string>
-    <string name="play_start">ابدأ</string>
     <string name="play_continue">التالي</string>
     <string name="play_back">رجوع</string>
     <string name="play_pool">الرزمة</string>
@@ -153,5 +119,31 @@
         <item quantity="few">و%1$d مستويات أخرى</item>
         <item quantity="many">و%1$d مستوى آخر</item>
         <item quantity="other">و%1$d مستوى آخر</item>
+    </plurals>
+    <string name="play_game_smart_short">أفضل المستويات بمواجهات أقل</string>
+    <string name="play_game_swiss_short">الجميع يلعب كل جولة</string>
+    <string name="play_game_hill_short">يبقى الفائز · مستويات تقريبية</string>
+    <string name="play_game_bracket_short">إقصاء · مستويات تقريبية</string>
+    <string name="play_or_new_game">أو لعبة جديدة</string>
+    <string name="play_start_game">ابدأ: %1$s · %2$s</string>
+    <string name="play_start_new_game">لعبة جديدة · %1$s · %2$s</string>
+    <string name="play_saved_progress">%1$s · المواجهة %2$d من %3$d</string>
+    <string name="play_your_game_today">لعبتك · بدأت اليوم</string>
+    <string name="play_your_game_yesterday">لعبتك · بدأت أمس</string>
+    <plurals name="play_your_game_days_ago">
+        <item quantity="zero">لعبتك · بدأت اليوم</item>
+        <item quantity="one">لعبتك · بدأت قبل يوم</item>
+        <item quantity="two">لعبتك · بدأت قبل يومين</item>
+        <item quantity="few">لعبتك · بدأت قبل %1$d أيام</item>
+        <item quantity="many">لعبتك · بدأت قبل %1$d يومًا</item>
+        <item quantity="other">لعبتك · بدأت قبل %1$d يوم</item>
+    </plurals>
+    <plurals name="play_cards_all">
+        <item quantity="zero">كل البطاقات: %1$d</item>
+        <item quantity="one">كل البطاقات: %1$d</item>
+        <item quantity="two">كل البطاقات: %1$d</item>
+        <item quantity="few">كل البطاقات: %1$d</item>
+        <item quantity="many">كل البطاقات: %1$d</item>
+        <item quantity="other">كل البطاقات: %1$d</item>
     </plurals>
 </resources>

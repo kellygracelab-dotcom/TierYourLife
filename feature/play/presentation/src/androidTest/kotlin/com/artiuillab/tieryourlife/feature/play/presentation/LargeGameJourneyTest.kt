@@ -52,7 +52,7 @@ class LargeGameJourneyTest {
             vm.picker.show(PickerPage.Games)
             vm.picker.choose(GameKind.Hill)
         }
-        compose.onNodeWithTag(PlayTestTags.START).performClick()
+        compose.onNodeWithTag(PlayTestTags.START).performScrollTo().performClick()
         repeat(15) { compose.onNodeWithTag(PlayTestTags.FIRST_CARD).performClick() }
         // The last answer puts the result on the board: one tier is only ordered, its unplayed cards behind.
         seeMyList()
@@ -71,7 +71,7 @@ class LargeGameJourneyTest {
             assertEquals(91, picking().count)
             vm.picker.choose(GameKind.Bracket)
         }
-        compose.onNodeWithTag(PlayTestTags.START).performClick()
+        compose.onNodeWithTag(PlayTestTags.START).performScrollTo().performClick()
         repeat(90) { compose.onNodeWithTag(PlayTestTags.FIRST_CARD).performClick() }
         seeMyList()
         compose.waitUntil(10_000) { board.tiers.first { it.isPool }.items.isEmpty() }
