@@ -24,7 +24,7 @@
     </plurals>
     <string name="play_choose_cards">Wybierz karty</string>
     <string name="play_game_smart">Sprytny wybór</string>
-    <string name="play_game_swiss">Przegrani zostają</string>
+    <string name="play_game_swiss">Nikt nie odpada</string>
     <string name="play_game_hill">Król wzgórza</string>
     <string name="play_game_bracket">Drabinka</string>
     <string name="play_game_smart_line">Pyta tylko o karty, które mogą jeszcze zmienić poziom. Prawie te same poziomy przy znacznie mniejszej liczbie pojedynków.</string>

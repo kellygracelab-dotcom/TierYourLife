@@ -18,7 +18,7 @@
     </plurals>
     <string name="play_choose_cards">Karten wählen</string>
     <string name="play_game_smart">Clevere Auswahl</string>
-    <string name="play_game_swiss">Verlierer bleiben</string>
+    <string name="play_game_swiss">Keiner fliegt raus</string>
     <string name="play_game_hill">König des Hügels</string>
     <string name="play_game_bracket">Turnierbaum</string>
     <string name="play_game_smart_line">Fragt nur nach Karten, die noch die Stufe wechseln könnten. Fast dieselben Stufen mit viel weniger Duellen.</string>

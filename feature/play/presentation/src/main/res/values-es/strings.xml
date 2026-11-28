@@ -21,7 +21,7 @@
     </plurals>
     <string name="play_choose_cards">Elegir tarjetas</string>
     <string name="play_game_smart">Elección inteligente</string>
-    <string name="play_game_swiss">Los perdedores siguen</string>
+    <string name="play_game_swiss">Nadie queda fuera</string>
     <string name="play_game_hill">Rey de la colina</string>
     <string name="play_game_bracket">Eliminatoria</string>
     <string name="play_game_smart_line">Solo pregunta por las tarjetas que aún podrían cambiar de nivel. Casi los mismos niveles con muchos menos duelos.</string>
