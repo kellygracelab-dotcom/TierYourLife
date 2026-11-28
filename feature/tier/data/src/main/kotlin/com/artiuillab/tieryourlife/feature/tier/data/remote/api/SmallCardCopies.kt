@@ -11,7 +11,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import kotlin.math.ceil
 
 /** The web's copies of a published card picture, by width. */
-internal val CARD_COPY_WIDTHS = listOf(200, 400)
+internal val CARD_COPY_WIDTHS = listOf(200, 400, 800)
 
 /** A copy's height is rounded on the server, a decoded size on the phone. */
 private const val ROUNDING_PX = 1

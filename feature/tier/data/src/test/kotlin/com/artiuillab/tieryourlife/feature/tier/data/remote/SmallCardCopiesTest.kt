@@ -45,7 +45,8 @@ class SmallCardCopiesTest {
         assertEquals(200, copyWidthFor(Size(137, 200)))
         assertEquals(400, copyWidthFor(Size(156, 228)))
         assertEquals(400, copyWidthFor(Size(400, 300)))
-        assertNull(copyWidthFor(Size(485, 646)))
+        assertEquals(800, copyWidthFor(Size(482, 678)))
+        assertNull(copyWidthFor(Size(900, 1200)))
         assertNull(copyWidthFor(Size.ORIGINAL))
     }
 
@@ -56,8 +57,10 @@ class SmallCardCopiesTest {
         assertEquals(Cover.Enough, nextFor(200, 300, 200, tall, Scale.FILL))
         // 4:3, cropped into a tall tile: 200 wide is only 150 high, 267 wide would be 200.
         assertEquals(Cover.Copy(400), nextFor(200, 150, 200, tall, Scale.FILL))
-        // A duel card: no copy is wide enough, so the original.
-        assertEquals(Cover.Original, nextFor(400, 300, 400, Tile(252, 357), Scale.FILL))
+        // A duel card on a small screen: 400 wide is 300 high, the 800 copy covers it.
+        assertEquals(Cover.Copy(800), nextFor(400, 300, 400, Tile(252, 357), Scale.FILL))
+        // On an ordinary one 678 high needs 904 wide: no copy is, so the original.
+        assertEquals(Cover.Original, nextFor(800, 600, 800, Tile(482, 678), Scale.FILL))
         // A copy narrower than asked is the whole picture already.
         assertEquals(Cover.Enough, nextFor(150, 100, 200, tall, Scale.FILL))
         // Fitted, one side reaching the tile is enough.
@@ -84,11 +87,20 @@ class SmallCardCopiesTest {
 
     @Test
     fun aWidePictureWiderThanEveryCopyNeeds_comesAsTheOriginal() = runBlocking {
-        sizes["https://tieryourlife.com/img/400/published/list-1/w-ab12"] = 400 to 300
+        sizes["https://tieryourlife.com/img/800/published/list-1/w-ab12"] = 800 to 600
 
-        load(PUBLISHED, 252, 357)
+        load(PUBLISHED, 482, 678)
 
-        assertEquals(listOf<Any>("https://tieryourlife.com/img/400/published/list-1/w-ab12", PUBLISHED), asked)
+        assertEquals(listOf<Any>("https://tieryourlife.com/img/800/published/list-1/w-ab12", PUBLISHED), asked)
+    }
+
+    @Test
+    fun aDuelCard_takesTheBiggestCopy_ratherThanTheOriginal() = runBlocking {
+        sizes["https://tieryourlife.com/img/800/published/list-1/w-ab12"] = 800 to 1200
+
+        load(PUBLISHED, 482, 678)
+
+        assertEquals(listOf<Any>("https://tieryourlife.com/img/800/published/list-1/w-ab12"), asked)
     }
 
     @Test
@@ -139,7 +151,7 @@ class SmallCardCopiesTest {
             "file:///data/pictures/own.jpg",
         )
         for (url in unchanged) load(url, 137, 200)
-        load(PUBLISHED, 485, 646)
+        load(PUBLISHED, 900, 1200)
 
         assertEquals(unchanged + PUBLISHED, asked)
     }
