@@ -37,10 +37,8 @@ class TierImageStoreTest {
         val storedPath = store.copyToInternalStorage("content://gallery/photo")
 
         val stored = BitmapFactory.decodeFile(storedPath)
-        assertTrue(
-            "longest edge was ${maxOf(stored.width, stored.height)}",
-            maxOf(stored.width, stored.height) <= MAX_STORED_EDGE_PX,
-        )
+        assertEquals(MAX_STORED_EDGE_PX, maxOf(stored.width, stored.height))
+        assertEquals(MAX_STORED_EDGE_PX * 3 / 4, minOf(stored.width, stored.height))
         assertTrue(
             "stored ${File(storedPath).length()} bytes vs original ${original.size}",
             File(storedPath).length() < original.size,

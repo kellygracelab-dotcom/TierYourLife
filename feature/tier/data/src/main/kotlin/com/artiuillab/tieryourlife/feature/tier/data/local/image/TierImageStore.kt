@@ -23,8 +23,14 @@ import java.net.URL
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.roundToInt
 
-internal const val MAX_STORED_EDGE_PX = 1000
+/**
+ * A photo or an AI picture is kept this long on its longer side, exactly: a
+ * duel card or the big view on a dense phone is about this many pixels, and
+ * 1000 left them soft (Danylo, 28.11).
+ */
+internal const val MAX_STORED_EDGE_PX = 1200
 
 private const val JPEG_QUALITY = 85
 
@@ -255,9 +261,9 @@ private fun decodeWithinLimit(file: File): Bitmap? {
 
     return runCatching {
         ImageDecoder.decodeBitmap(ImageDecoder.createSource(file)) { decoder, info, _ ->
-            val longestEdge = maxOf(info.size.width, info.size.height)
-            if (longestEdge > MAX_STORED_EDGE_PX) {
-                decoder.setTargetSampleSize(sampleSizeFor(longestEdge))
+            if (maxOf(info.size.width, info.size.height) > MAX_STORED_EDGE_PX) {
+                val (width, height) = storedSize(info.size.width, info.size.height)
+                decoder.setTargetSize(width, height)
             }
             decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
         }
@@ -270,7 +276,21 @@ private fun decodeFirstFrame(file: File): Bitmap? {
     decode(file, bounds)
     val longestEdge = maxOf(bounds.outWidth, bounds.outHeight)
     if (longestEdge <= 0) return null
-    return decode(file, BitmapFactory.Options().apply { inSampleSize = sampleSizeFor(longestEdge) })
+    return decode(file, BitmapFactory.Options().apply { inSampleSize = sampleSizeFor(longestEdge) })?.let(::toStoredSize)
+}
+
+private fun toStoredSize(sampled: Bitmap): Bitmap {
+    if (maxOf(sampled.width, sampled.height) <= MAX_STORED_EDGE_PX) return sampled
+    val (width, height) = storedSize(sampled.width, sampled.height)
+    return sampled.scale(width, height).also { if (it !== sampled) sampled.recycle() }
+}
+
+/** The size a picture is kept at: [MAX_STORED_EDGE_PX] on its longer side, never grown. */
+internal fun storedSize(width: Int, height: Int): Pair<Int, Int> {
+    val longest = maxOf(width, height)
+    if (longest <= MAX_STORED_EDGE_PX) return width to height
+    val ratio = MAX_STORED_EDGE_PX.toDouble() / longest
+    return maxOf(1, (width * ratio).roundToInt()) to maxOf(1, (height * ratio).roundToInt())
 }
 
 /** Through a stream closed here: a file still held open could be neither replaced nor deleted. */
