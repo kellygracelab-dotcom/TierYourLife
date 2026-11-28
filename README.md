@@ -71,6 +71,13 @@ Light and dark themes, eleven languages.
 AI agents wrote a large share of the code against my specifications. The specifications,
 architecture decisions, code review and testing on a real phone are mine.
 
+## License
+
+The code is under the [GNU General Public License v3.0](LICENSE). © 2026 Artiuillab.
+
+The license covers the code only. The TierYourLife name, the logo, the pictures on cards and lists,
+and other providers' marks such as TMDB's are not covered by it.
+
 ---
 
 <sub>Photo credits for the pictures above: <a href="https://tieryourlife.com/store-credits">tieryourlife.com/store-credits</a>. This product uses the TMDB API but is not endorsed or certified by TMDB.</sub>
