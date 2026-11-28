@@ -60,7 +60,7 @@ private fun webOriginalPath(url: HttpUrl): String? {
 }
 
 /**
- * The web's smaller copy of a published card picture, /img/{200|400}/published/{id}/{picture},
+ * The web's smaller copy of a published card picture, /img/{200|400|800}/published/{id}/{picture},
  * for its address in our bucket or the web's address for its original, as lists now carry it.
  */
 internal fun publishedCopyUrl(url: HttpUrl, width: Int): String? =
