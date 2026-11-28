@@ -24,9 +24,9 @@
     </plurals>
     <string name="play_choose_cards">Выбрать карточки</string>
     <string name="play_game_smart">Умный выбор</string>
-    <string name="play_game_swiss">Проигравшие остаются</string>
+    <string name="play_game_swiss">Никто не выбывает</string>
     <string name="play_game_hill">Царь горы</string>
-    <string name="play_game_bracket">Сетка</string>
+    <string name="play_game_bracket">Турнирная сетка</string>
     <string name="play_game_smart_line">Спрашивает только о карточках, которые ещё могут сменить уровень. Почти те же уровни за гораздо меньшее число дуэлей.</string>
     <string name="play_game_swiss_line">Каждый играет в каждом раунде. Дольше, зато лучше всего заполняет уровни.</string>
     <string name="play_game_hill_line">Победитель остаётся и встречает следующую карточку. Быстро; уровни получаются примерными.</string>
