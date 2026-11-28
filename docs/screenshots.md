@@ -1,6 +1,33 @@
 # The pictures in the README
 
-They are drawn by a test, not taken by hand.
+Since 28.11.2026 the README shows two kinds of picture, both in `docs/screenshots/`.
+
+**The strip at the top**, `play-gallery.jpg`, is the Play listing's gallery: the six frames uploaded
+on 20.11.2026, side by side, 2000 px wide. When the listing's frames change, replace it with the
+new preview.
+
+**The eight phone screens** are drawn by `StoreListingScreenshotTest`, the test that draws the
+Play listing's phone pictures; [store-listing.md](store-listing.md) says how to run it. It uses
+invented content and only pictures made for the app, so no poster or real person's list reaches a
+public page. Run it on an ordinary phone window (the committed set came from 1080×2400 at 420 dpi),
+copy the eight files below and shrink them to 540 px wide.
+
+| In the README | The test's file |
+|---|---|
+| `board-dark.png` | `dark-16-hero-board.png` |
+| `duel-dark.png` | `dark-18-game.png` |
+| `section-dark.png` | `dark-19-section.png` |
+| `community-dark.png` | `dark-24-community.png` |
+| `rankings-light.png` | `light-4-rankings.png` |
+| `pool-light.png` | `light-11-pool.png` |
+| `lists-light.png` | `light-12-lists.png` |
+| `settings-light.png` | `light-14-settings.png` |
+
+## The older tests
+
+`ReadmeScreenshotTest` and `ReadmeTabletScreenshotTest` drew the README's pictures before that,
+with TMDB posters on the cards. The README no longer uses their output; the rest of this page
+describes them.
 
 `ReadmeScreenshotTest` renders each screen from invented content and writes a PNG per screen per
 theme. Two reasons it works that way:
@@ -71,12 +98,6 @@ own bounds, without the feed behind it.
 That is also why the take-down sheet is not here. A `ModalBottomSheet`'s window is the whole
 screen, so capturing it the same way gives a grey field with the sheet clipped along the bottom
 edge rather than a picture of a sheet.
-
-## What is still taken by hand
-
-`drag.gif`. It is a recording, and if it is ever re-taken, take it on a device signed into an
-account that is not a real person's. The AI-studio pictures used to be here too; they went when
-the README stopped showing a feature the first release switches off.
 
 ## The store icon
 
